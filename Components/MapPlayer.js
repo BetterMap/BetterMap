@@ -9,16 +9,14 @@ class MapPlayer {
         this.networkPlayerInfo = networkPlayerInfo
         this.dungeonMap = dungeonMap
 
-        this.worldX = new SoopyNumber(0)
-        this.worldY = new SoopyNumber(0)
+        this.location = new Location(0, 0)
 
-        this.yaw = new SoopyNumber(0)
+        this.yaw = 0
         this.username = p[m.getDisplayName.NetworkPlayerInfo]()[m.getUnformattedText]() //TODO: NetworkPlayerInfo may be loaded from tab list -> filter out stuff around tab list name
     }
 
     /**
      * TODO: Option for black border
-     * TODO: render at map x, y not 0,0
      * @param {Number} mapSize 
      * @param {Number} imgSize 
      */
@@ -30,7 +28,7 @@ class MapPlayer {
         let rw = headScale * size / 100
         let rh = headScale * size / 100
 
-        Renderer.translate(x, y)
+        Renderer.translate(x + this.location.renderX * size, y + this.location.renderY * size)
         Renderer.rotate(this.yaw)
         GlStateManager[m.enableBlend]()
         GlStateManager[m.scale](1, 1, 50)

@@ -1,4 +1,4 @@
-class Location {
+class Position {
     constructor(worldX, worldY) {
         this.worldX = worldX
         this.worldY = worldY
@@ -24,3 +24,5 @@ class Location {
         //TODO: logic
     }
 }
+
+export default Position

@@ -19,7 +19,7 @@ class Room {
     /**
      * Creates a room based on a type, components, and a room id
      * @param {Number} type 
-     * @param {Array<[Number,Number]>} components 
+     * @param {Array<Position>} components 
      * @param {String} roomId 
      */
     constructor(type, components, roomId) {

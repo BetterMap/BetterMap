@@ -5,7 +5,7 @@ class MapPlayer {
      * @param {NetworkPlayerInfo} networkPlayerInfo
      * @param {DungeonMap} dunegonMap
      */
-    constructor(networkPlayerInfo, dunegonMap) {
+    constructor(networkPlayerInfo, dungeonMap) {
         this.networkPlayerInfo = networkPlayerInfo
         this.dungeonMap = dungeonMap
 

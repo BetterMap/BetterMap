@@ -1,0 +1,12 @@
+{
+  "$schema": "../CTAutocomplete/schema.json",
+  "creator": "BetterMap",
+  "author": "BetterMap",
+  "entry": "index.js",
+  "description": "Better Map !!!",
+  "name": "BetterMap",
+  "version": "0.0.1",
+  "requires": [
+    "mappings"
+  ]
+}

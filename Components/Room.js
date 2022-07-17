@@ -9,9 +9,11 @@ class Room {
     static MINIBOSS = 3
     static FAIRY = 4
     static BLOOD = 5
-    static TRAP = 7
     static UNKNOWN = 6
+    static TRAP = 7
+    static BLACK = 8 //for wither door only
 
+    static FAILED = -1;
     static UNOPENED = 0;
     static ADJACENT = 1;
     static OPENED = 2;
@@ -30,6 +32,7 @@ class Room {
         this.roomId = roomId
 
         /**
+         * -1 -> failed
          * 0 -> not opened / not on the map yet
          * 1 -> adjacent, not opened, but visible on the map
          * 2 -> opened
@@ -82,7 +85,7 @@ class Room {
 
             graphics.fillRect(x + 3, y + 3, 32 - 6, 32 * uniqueY - 6)
         } else if (uniqueY === 1) { // Long, flat rooms
-            let y = xComponents.values().next().value
+            let y = yComponents.values().next().value
             let x = Math.min(...xComponents)
 
             graphics.fillRect(x + 3, y + 3, 32 * uniqueX - 6, 32 - 6)
@@ -121,7 +124,26 @@ class Room {
                 }
             }
         }
+
+        let location = this.components[0]
+        if (this.checkmarkState === 1) {
+            graphics.drawImage(questionMark, location.worldX + 11, location.worldY + 9, 10, 14, null)
+        }
+        if (this.checkmarkState === 3) {
+            graphics.drawImage(whiteCheck, location.worldX + 11, location.worldY + 11, 10, 10, null)
+        }
+        if (this.checkmarkState === 4) {
+            graphics.drawImage(greenCheck, location.worldX + 11, location.worldY + 11, 10, 10, null)
+        }
+        if (this.checkmarkState === 5) {
+            graphics.drawImage(failedRoom, location.worldX + 9, location.worldY + 9, 14, 14, null)
+        }
     }
 }
 
 export default Room
+
+const greenCheck = new Image("greenCheckVanilla.png", "https://i.imgur.com/h2WM1LO.png").image
+const whiteCheck = new Image("whiteCheckVanilla.png", "https://i.imgur.com/hwEAcnI.png").image
+const failedRoom = new Image("failedRoomVanilla.png", "https://i.imgur.com/WqW69z3.png").image
+const questionMark = new Image("questionMarkVanilla.png", "https://i.imgur.com/1jyxH9I.png").image

@@ -4,6 +4,7 @@ import MapPlayer from "./MapPlayer.js"
 import Room from "./Room.js"
 
 import { getScoreboardInfo, getTabListInfo, getRequiredSecrets } from "../Utils/Score"
+import Door from "./Door.js"
 
 const BufferedImage = Java.type("java.awt.image.BufferedImage")
 
@@ -13,6 +14,10 @@ class DungeonMap {
          * @type {Map<String, Room>} The string is in form x,y eg 102,134 and will correspond to the top left corner of a room component
          */
         this.rooms = new Map()
+        /**
+         * @type {Map<String, Door>} The string is in form x,y eg 102,134 and will correspond to the top left corner of a door
+         */
+        this.doors = new Map()
 
         this.fullRoomScaleMap = 0 //how many pixels on the map is 32 blocks
         this.widthRoomImageMap = 0 //how wide the main boxes are on the map
@@ -44,7 +49,7 @@ class DungeonMap {
 
     destroy() {
         for (let context of this.renderContexts) {
-            context.lastImage.getTexture()[m.deleteGlTexture]()
+            context.lastImage?.getTexture()[m.deleteGlTexture]()
             context.image.getTexture()[m.deleteGlTexture]()
             context.lastImage = undefined
             context.image = undefined
@@ -136,19 +141,22 @@ class DungeonMap {
             let roomX = 0
             let roomY = 0
             let roomwidth = 0
-            for (let x = 0; x < 128; x += 20) {
-                for (let y = 0; y < 128; y += 20) {
-                    if (bytes[x + y * 128] !== 0) {
+            for (let x = 0; x < 128; x += 5) {
+                for (let y = 0; y < 128; y += 5) {
+                    if (bytes[x + y * 128] === 30
+                        && bytes[x + 1 + y * 128] === 30
+                        && bytes[x + 2 + y * 128] === 30
+                        && bytes[x + 3 + y * 128] === 30) {
                         roomX = x
                         roomY = y
-                        while (bytes[(roomX - 1) + roomY * 128] !== 0) {
+                        while (bytes[(roomX - 1) + roomY * 128] === 30) {
                             roomX--
                         }
-                        while (bytes[(roomX) + (roomY - 1) * 128] !== 0) {
+                        while (bytes[(roomX) + (roomY - 1) * 128] === 30) {
                             roomY--
                         }
 
-                        while (bytes[(roomX + roomwidth) + roomY * 128] !== 0) {
+                        while (bytes[(roomX + roomwidth) + roomY * 128] === 30) {
                             roomwidth++
                         }
                         break;
@@ -156,18 +164,19 @@ class DungeonMap {
                 }
                 if (roomX) break;
             }
-            if (!roomX) return
+            if (!roomX || !roomY || !roomwidth) return
 
-            this.fullRoomScaleMap = roomwidth * 5 / 4
+            this.fullRoomScaleMap = Math.floor(roomwidth * 5 / 4)
             this.widthRoomImageMap = roomwidth
 
             roomX = roomX % this.fullRoomScaleMap
             roomY = roomY % this.fullRoomScaleMap
 
             if (this.floor[this.floor.length - 1] === "1" || this.floor === "E") {
-                roomX += this.roomScaleMap
+                roomX += this.fullRoomScaleMap
             }
             this.dungeonTopLeft = [roomX, roomY]
+            console.log(this.dungeonTopLeft)
         }
         let r1x1s = {
             30: Room.SPAWN,
@@ -180,8 +189,12 @@ class DungeonMap {
         }
         let r1x1sM = new Set(Object.keys(r1x1s).map(a => parseInt(a)))
 
-        for (let x = 0; x < 6; x++) {//Scan top left of rooms looking for valid rooms
-            for (let y = 0; y < 6; y++) {
+        let f1Thing = false
+        if (this.floor[this.floor.length - 1] === "1" || this.floor === "E") {
+            f1Thing = true
+        }
+        for (let y = 0; y < (f1Thing ? 5 : 6); y++) {//Scan top left of rooms looking for valid rooms
+            for (let x = 0; x < (f1Thing ? 4 : 6); x++) {
                 let mapX = this.dungeonTopLeft[0] + this.fullRoomScaleMap * x
                 let mapY = this.dungeonTopLeft[1] + this.fullRoomScaleMap * y
                 if (bytes[(mapX) + (mapY) * 128] === 0) continue
@@ -195,11 +208,12 @@ class DungeonMap {
                         let room = new Room(r1x1s[bytes[(mapX) + (mapY) * 128]], [position], undefined)
                         this.rooms.set(position.worldX + "," + position.worldY, room)
                         this.roomsArr.add(room)
-
+                        room.checkmarkState = room.type === Room.UNKNOWN ? Room.ADJACENT : Room.OPENED
                         this.markChanged()
                     } else {
                         if (currRoom.type !== r1x1s[bytes[(mapX) + (mapY) * 128]]) {
                             currRoom.setType(r1x1s[bytes[(mapX) + (mapY) * 128]])
+                            currRoom.checkmarkState = Room.OPENED
                             this.markChanged()
                         }
                     }
@@ -216,9 +230,7 @@ class DungeonMap {
 
                         let room = new Room(Room.NORMAL, [position], undefined)
 
-                        room.components.forEach(c => {
-                            this.rooms.set(c.worldX + "," + c.worldY, room)
-                        })
+                        this.rooms.set(position.worldX + "," + position.worldY, room)
                         this.roomsArr.add(room)
 
                         this.markChanged()
@@ -226,20 +238,20 @@ class DungeonMap {
 
                         if (currRoom && currRoom.type !== Room.NORMAL) { //anopther room in the same location
                             currRoom.setType(Room.NORMAL)
+                            currRoom.checkmarkState = Room.OPENED
                             this.markChanged()
                         }
-
-                        if (currRoom2) {
+                        if (currRoom2 && currRoom !== currRoom2 && currRoom2.type === Room.NORMAL) {
                             if (!currRoom2.components.some(a => position.equals(a))) { //need to merge left
                                 if (currRoom) this.roomsArr.delete(currRoom)
 
                                 currRoom2.components.push(position)
                                 this.rooms.set(position.worldX + "," + position.worldY, currRoom2)
                                 this.markChanged()
-                            } 1
+                            }
                         }
 
-                        if (currRoom3) {
+                        if (currRoom3 && currRoom !== currRoom3 && currRoom3.type === Room.NORMAL) {
                             if (!currRoom3.components.some(a => position.equals(a))) { //need to merge up
                                 if (currRoom) this.roomsArr.delete(currRoom)
 
@@ -248,6 +260,70 @@ class DungeonMap {
                                 this.markChanged()
                             }
                         }
+                    }
+                }
+
+                //check for checkmark
+
+                if (bytes[(mapX + this.widthRoomImageMap / 2) + (mapY + this.widthRoomImageMap / 2) * 128] === 34) {
+                    let position = new Position(0, 0, this)
+                    position.mapX = mapX
+                    position.mapY = mapY
+                    let currRoom = this.rooms.get(position.worldX + "," + position.worldY)
+                    currRoom.checkmarkState = Room.CLEARED
+                    this.markChanged()
+                }
+                if (bytes[(mapX + this.widthRoomImageMap / 2) + (mapY + this.widthRoomImageMap / 2) * 128] === 30) {
+                    let position = new Position(0, 0, this)
+                    position.mapX = mapX
+                    position.mapY = mapY
+                    let currRoom = this.rooms.get(position.worldX + "," + position.worldY)
+                    currRoom.checkmarkState = Room.COMPLETED
+                    this.markChanged()
+                }
+
+                //Check for doors
+
+                if (bytes[(mapX + this.widthRoomImageMap / 2) + (mapY - 1) * 128] !== 0 //door above room
+                    && bytes[(mapX) + (mapY - 1) * 128] === 0) {
+
+                    let color = bytes[(mapX + this.widthRoomImageMap / 2) + (mapY - 1) * 128]
+                    let type = Room.NORMAL
+                    if (r1x1sM.has(color)) {
+                        type = r1x1s[color]
+                    }
+                    if (color === 119) {
+                        type = Room.BLACK
+                    }
+
+                    let position = new Position(0, 0, this)
+                    position.mapX = mapX + this.widthRoomImageMap / 2 - 1
+                    position.mapY = mapY - 3
+                    if (!this.doors.get(position.worldX + "," + position.worldY)) {
+                        this.doors.set(position.worldX + "," + position.worldY, new Door(type, position, false))
+                    } else {
+                        this.doors.get(position.worldX + "," + position.worldY).type = type
+                    }
+                }
+                if (bytes[(mapX - 1) + (mapY + this.widthRoomImageMap / 2) * 128] !== 0 //door left of room
+                    && bytes[(mapX - 1) + (mapY) * 128] === 0) {
+
+                    let color = bytes[(mapX - 1) + (mapY + this.widthRoomImageMap / 2) * 128]
+                    let type = Room.NORMAL
+                    if (r1x1sM.has(color)) {
+                        type = r1x1s[color]
+                    }
+                    if (color === 119) {
+                        type = Room.BLACK
+                    }
+
+                    let position = new Position(0, 0, this)
+                    position.mapX = mapX - 3
+                    position.mapY = mapY + this.widthRoomImageMap / 2 - 1
+                    if (!this.doors.get(position.worldX + "," + position.worldY)) {
+                        this.doors.set(position.worldX + "," + position.worldY, new Door(type, position, true))
+                    } else {
+                        this.doors.get(position.worldX + "," + position.worldY).type = type
                     }
                 }
             }
@@ -264,7 +340,10 @@ class DungeonMap {
         //translate dungeon into view
         graphics.translate(256 - 32, 256 - 32)
 
-        //TODO: render doors
+        //render doors
+        for (let door of this.doors.values()) {
+            door.render(graphics)
+        }
 
         //render rooms
         for (let room of this.roomsArr) {
@@ -283,7 +362,7 @@ class DungeonMap {
         let skill = 0;
         let bonus = 0;
 
-        let requiredSecrets = getRequiredSecrets(7, false);
+        let requiredSecrets = getRequiredSecrets(7, false); //TODO: load required secrets from this.floor
         let roomCompletion = getScoreboardInfo();
         let [secrets, crypts, deaths, unfinshedPuzzles, completedRoomsTab] = getTabListInfo();
         let completedRooms = this.rooms?.filter(r => r.isCleared())?.length ?? rooms;

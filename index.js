@@ -10,11 +10,12 @@ import DataLoader from "./Utils/DataLoader"
 /**@type {DungeonMap} */
 let currentDungeonMap = undefined
 let dungeonMapRenderContext = undefined
+let deadPlayers = new Set()
 
 register("step", () => {
     if (DataLoader.isInDungeon && DataLoader.dungeonFloor) {
         if (!currentDungeonMap) {
-            currentDungeonMap = new DungeonMap(DataLoader.dungeonFloor)
+            currentDungeonMap = new DungeonMap(DataLoader.dungeonFloor, deadPlayers)
 
             dungeonMapRenderContext = currentDungeonMap.createRenderContext({ x: Renderer.screen.getWidth() - 150 - 10, y: 10, size: 150 })
         }
@@ -38,9 +39,13 @@ register("step", () => {
         }
     }
 }).setFps(5)
+register("step", () => {
+    if (currentDungeonMap) currentDungeonMap.updatePlayers()
+}).setFps(1)
 
 register("renderOverlay", () => {
     if (dungeonMapRenderContext && currentDungeonMap) {
+        currentDungeonMap.updatePlayersFast()
         currentDungeonMap.draw(dungeonMapRenderContext)
     }
 })
@@ -49,4 +54,16 @@ register("worldLoad", () => {
     if (currentDungeonMap) {
         currentDungeonMap.destroy()
     }
+    deadPlayers.clear()
 })
+
+register("chat", (info) => {
+    let player = ChatLib.removeFormatting(info.split(" ")[0])
+
+    deadPlayers.add(player.toLowerCase())
+}).setChatCriteria("&r&c ☠ ${info} and became a ghost&r&7.&r")
+register("chat", (info) => {
+    let player = ChatLib.removeFormatting(info.split(" ")[0])
+
+    deadPlayers.delete(player.toLowerCase())
+}).setChatCriteria("&r&a ❣ &r${info} was revived${*}!&r")

@@ -12,23 +12,29 @@ class Position {
     }
 
     get mapX() {
+        if (!this.dungeonMap.dungeonTopLeft) return 0
         return MathLib.map(this.worldX, -200, -8, this.dungeonMap.dungeonTopLeft[0], this.dungeonMap.dungeonTopLeft[0] + this.dungeonMap.fullRoomScaleMap * 6)
     }
     get mapY() {
+        if (!this.dungeonMap.dungeonTopLeft) return 0
         return MathLib.map(this.worldY, -200, -8, this.dungeonMap.dungeonTopLeft[1], this.dungeonMap.dungeonTopLeft[1] + this.dungeonMap.fullRoomScaleMap * 6)
     }
     set mapX(val) {
+        if (!this.dungeonMap.dungeonTopLeft) return 0
         this.worldX = MathLib.map(val, this.dungeonMap.dungeonTopLeft[0], this.dungeonMap.dungeonTopLeft[0] + this.dungeonMap.fullRoomScaleMap * 6, -200, -8)
     }
     set mapY(val) {
+        if (!this.dungeonMap.dungeonTopLeft) return 0
         this.worldY = MathLib.map(val, this.dungeonMap.dungeonTopLeft[1], this.dungeonMap.dungeonTopLeft[1] + this.dungeonMap.fullRoomScaleMap * 6, -200, -8)
     }
 
     get renderX() {
-        //TODO: logic
+        if (!this.dungeonMap.dungeonTopLeft) return 0
+        return MathLib.map(this.worldX, -200, -8, 0, 1)
     }
-    get renderX() {
-        //TODO: logic
+    get renderY() {
+        if (!this.dungeonMap.dungeonTopLeft) return 0
+        return MathLib.map(this.worldY, -200, -8, 0, 1)
     }
 }
 

@@ -1,18 +1,41 @@
+import { f, m } from "../../mappings/mappings.js"
 import Position from "../Utils/Position.js"
+
+const DefaultVertexFormats = Java.type("net.minecraft.client.renderer.vertex.DefaultVertexFormats")
+const MCTessellator = Java.type("net.minecraft.client.renderer.Tessellator")
 
 class MapPlayer {
     /**
      * @param {NetworkPlayerInfo} networkPlayerInfo
      * @param {DungeonMap} dunegonMap
      */
-    constructor(networkPlayerInfo, dungeonMap) {
+    constructor(networkPlayerInfo, dungeonMap, username) {
         this.networkPlayerInfo = networkPlayerInfo
         this.dungeonMap = dungeonMap
 
         this.location = new Position(0, 0, dungeonMap)
 
         this.yaw = 0
-        this.username = p[m.getDisplayName.NetworkPlayerInfo]()[m.getUnformattedText]() //TODO: NetworkPlayerInfo may be loaded from tab list -> filter out stuff around tab list name
+        this.username = username
+    }
+
+    setX(x) {
+        this.location.worldX = x
+    }
+    setY(y) {
+        this.location.worldY = y
+    }
+    setRotate(yaw) {
+        this.yaw = yaw
+    }
+    setXAnimate(x) { //TODO: make these actually animate
+        this.location.worldX = x
+    }
+    setYAnimate(y) {
+        this.location.worldY = y
+    }
+    setRotateAnimate(yaw) {
+        this.yaw = yaw
     }
 
     /**
@@ -21,18 +44,17 @@ class MapPlayer {
      * @param {Number} imgSize 
      */
     drawIcon() {
-        let { x, y, size, headScale } = dungeonMap.getCurrentRenderContext()
+        let { x, y, size, headScale } = this.dungeonMap.getCurrentRenderContext()
 
         let rx = -headScale / 2 * size / 100 //offsetting to the left by half image width,
         let ry = -headScale / 2 * size / 100 //image width = headscale* size /100 (size = map size eg 100px, dividing by 100 so its exactly headscale when mapsize is 100)
         let rw = headScale * size / 100
         let rh = headScale * size / 100
 
-        Renderer.translate(x + this.location.renderX * size, y + this.location.renderY * size)
+        Renderer.translate(x + (this.location.worldX + 256 - 32) * size / 256, y + (this.location.worldY + 256 - 32) * size / 256, 50)
         Renderer.rotate(this.yaw)
         GlStateManager[m.enableBlend]()
-        GlStateManager[m.scale](1, 1, 50)
-        Client.getMinecraft()[m.getTextureManager]()[m.bindTexture.TextureManager](player.skin)
+        Client.getMinecraft()[m.getTextureManager]()[m.bindTexture.TextureManager](this.networkPlayerInfo[m.getLocationSkin.NetworkPlayerInfo]())
         GlStateManager[m.enableTexture2D]()
 
         let tessellator = MCTessellator[m.getInstance.Tessellator]()

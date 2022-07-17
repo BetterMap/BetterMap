@@ -8,8 +8,14 @@ import Door from "./Door.js"
 
 const BufferedImage = Java.type("java.awt.image.BufferedImage")
 
+let PlayerComparator = Java.type("net.minecraft.client.gui.GuiPlayerTabOverlay").PlayerComparator
+let c = PlayerComparator.class.getDeclaredConstructor()
+c.setAccessible(true);
+let sorter = c.newInstance()
+let nethandlerplayclient = Player.getPlayer()[f.sendQueue.EntityPlayerSP]
+
 class DungeonMap {
-    constructor(floor, masterMode) {
+    constructor(floor, deadPlayers) {
         /**
          * @type {Map<String, Room>} The string is in form x,y eg 102,134 and will correspond to the top left corner of a room component
          */
@@ -27,8 +33,9 @@ class DungeonMap {
          */
         this.roomsArr = new Set()
 
-        this.floor = floor
-        this.masterMode = masterMode;
+        this.floor = floor //eg "M2" or "E" or "F7"
+
+        this.deadPlayers = deadPlayers
 
         this.lastChanged = Date.now()
 
@@ -38,6 +45,7 @@ class DungeonMap {
          * @type {Array<MapPlayer>}
          */
         this.players = []
+        this.playersNameToId = {}
 
         this.currentRenderContextId = 0
 
@@ -49,8 +57,10 @@ class DungeonMap {
 
     destroy() {
         for (let context of this.renderContexts) {
-            context.lastImage?.getTexture()[m.deleteGlTexture]()
-            context.image.getTexture()[m.deleteGlTexture]()
+            if (!context) continue
+
+            context.lastImage?.getTexture()?.[m.deleteGlTexture]()
+            context.image?.getTexture()?.[m.deleteGlTexture]()
             context.lastImage = undefined
             context.image = undefined
         }
@@ -92,6 +102,7 @@ class DungeonMap {
 
     draw(contextId) {
         this.currentRenderContextId = contextId
+        if (!this.getCurrentRenderContext()) return
 
         let { x, y, size } = this.getCurrentRenderContext()
 
@@ -127,10 +138,75 @@ class DungeonMap {
         Renderer.drawRect(Renderer.color(0, 0, 0), x + size - 2, y, 2, size)
         Renderer.drawRect(Renderer.color(0, 0, 0), x, y + size - 2, size, 2)
 
-        //TODO: render stuff overlayed on the image (heads, text on map, secrets info ect)
+
+        //render heads
+        for (let player of this.players) {
+            player.drawIcon()
+        }
+
+        //TODO: render stuff overlayed on the image (text on map, secrets info ect)
+    }
+    updatePlayers() {
+        let pl = nethandlerplayclient[m.getPlayerInfoMap]().sort((a, b) => sorter.compare(a, b))
+        let i = 0
+        for (let p of pl) {
+            if (!p[m.getDisplayName.NetworkPlayerInfo]()) continue
+            let line = p[m.getDisplayName.NetworkPlayerInfo]()[m.getUnformattedText]().trim().replace("♲ ", "") //TODO: Remove bingo symbol and support yt/admin rank
+            if (line.endsWith(")") && line.includes(" (") && line.split(" (").length === 2 && line.split(" (")[0].split(" ").length === 1 && line.split(" (")[1].length > 5) {
+                let name = line.split(" ")[0]
+
+                if (!this.players[i]) {
+                    this.players[i] = new MapPlayer(p, this, name)
+                    console.log(name)
+                }
+                this.playersNameToId[name] = i
+
+                i++
+            }
+        }
+    }
+
+    updatePlayersFast() {
+        return
+        World.getAllPlayers().forEach(player => {
+            let p = this.players[this.playersNameToId[ChatLib.removeFormatting(player.getName()).trim()]]
+            if (!p) return
+
+            p.setX(player.getX())
+            p.setY(player.getZ())
+            p.setRotate(player.getYaw() + 180)
+        })
     }
 
     loadPlayersFromDecoration(deco) {
+        if (!this.dungeonTopLeft) return
+
+        let i = 0
+        deco.forEach((icon, vec4b) => {
+            if (i > this.players.length) {
+                return
+            }
+            while (!this.players[i] || this.deadPlayers.has(this.players[i].username)) {
+                i++
+                if (i > this.players.length) {
+                    return
+                }
+            }
+
+
+            let x = vec4b.func_176112_b() //TODO: put X and Y in correct spot
+            let y = vec4b.func_176113_c()
+            let rot = vec4b.func_176111_d()
+            rot = rot * 360 / 16 + 180
+            // x = (x) / this.fullRoomScaleMap * 32
+            // y = (y) / this.fullRoomScaleMap * 32
+
+            this.players[i].setRotateAnimate(rot)
+            this.players[i].setXAnimate(x)
+            this.players[i].setYAnimate(y)
+
+            i++
+        });
     }
 
     updateFromMap(mapData) {
@@ -176,7 +252,6 @@ class DungeonMap {
                 roomX += this.fullRoomScaleMap
             }
             this.dungeonTopLeft = [roomX, roomY]
-            console.log(this.dungeonTopLeft)
         }
         let r1x1s = {
             30: Room.SPAWN,
@@ -281,6 +356,14 @@ class DungeonMap {
                     currRoom.checkmarkState = Room.COMPLETED
                     this.markChanged()
                 }
+                // if (bytes[(mapX + this.widthRoomImageMap / 2) + (mapY + this.widthRoomImageMap / 2) * 128] === 18) { //Apparanatly puzzles dont show crosses when failed anymore
+                //     let position = new Position(0, 0, this)
+                //     position.mapX = mapX
+                //     position.mapY = mapY
+                //     let currRoom = this.rooms.get(position.worldX + "," + position.worldY)
+                //     currRoom.checkmarkState = Room.FAILED
+                //     this.markChanged()
+                // }
 
                 //Check for doors
 

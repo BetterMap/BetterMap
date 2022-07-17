@@ -454,7 +454,11 @@ class DungeonMap {
         let requiredSecrets = getRequiredSecrets(7, false); //TODO: load required secrets from this.floor
         let roomCompletion = getScoreboardInfo();
         let [secrets, crypts, deaths, unfinshedPuzzles, completedRoomsTab] = getTabListInfo();
-        let completedRooms = this.rooms?.filter(r => r.isCleared())?.length ?? rooms;
+        let completedRooms = 0;
+        for (let room of this.rooms.values()) {
+            if (room.isCleared())
+                completedRooms++;
+        }
 
         //if map data is incomplete, it's worth using the higher number
         completedRooms = Math.max(completedRooms, completedRoomsTab);

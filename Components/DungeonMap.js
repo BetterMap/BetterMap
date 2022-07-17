@@ -18,6 +18,8 @@ class DungeonMap {
 
         this.floor = floor
 
+        this.lastChanged = Date.now()
+
         /**
          * @type {Array<MapPlayer>}
          */
@@ -27,6 +29,10 @@ class DungeonMap {
 
         this.lastRenderContext = 0
         this.renderContexts = []
+    }
+
+    markChanged() {
+        this.lastChanged = Date.now()
     }
 
     createRenderContext({ x, y, size, headScale = 8 }) {
@@ -62,6 +68,10 @@ class DungeonMap {
         //TODO: render map background
         //TODO: render image
         //TODO: render stuff overlayed on the image (heads, text on map, secrets info ect)
+    }
+
+    updateFromMap(mapData) {
+
     }
 
     renderImage(contextId) {

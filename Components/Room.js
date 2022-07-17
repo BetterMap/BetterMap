@@ -48,6 +48,7 @@ class Room {
     }
 
     setType(type) {
+        if (this.roomId) return
         this.type = type
     }
     /**

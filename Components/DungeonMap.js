@@ -5,6 +5,7 @@ import Room from "./Room.js"
 
 import { getScoreboardInfo, getTabListInfo, getRequiredSecrets } from "../Utils/Score"
 import Door from "./Door.js"
+import DungeonRoomData from "../Data/DungeonRoomData.js"
 
 const BufferedImage = Java.type("java.awt.image.BufferedImage")
 
@@ -12,7 +13,6 @@ let PlayerComparator = Java.type("net.minecraft.client.gui.GuiPlayerTabOverlay")
 let c = PlayerComparator.class.getDeclaredConstructor()
 c.setAccessible(true);
 let sorter = c.newInstance()
-let nethandlerplayclient = Player.getPlayer()[f.sendQueue.EntityPlayerSP]
 
 class DungeonMap {
     constructor(floor, deadPlayers) {
@@ -53,6 +53,14 @@ class DungeonMap {
         this.renderContexts = []
 
         this.mimicKilled = false;
+
+
+        //load from world datra
+
+        this.lastRoomId = undefined
+        this.lastChange = 0
+        this.roomXY = this.getRoomXYWorld().join(",")
+        this.lastXY = undefined
     }
 
     destroy() {
@@ -147,7 +155,7 @@ class DungeonMap {
         //TODO: render stuff overlayed on the image (text on map, secrets info ect)
     }
     updatePlayers() {
-        let pl = nethandlerplayclient[m.getPlayerInfoMap]().sort((a, b) => sorter.compare(a, b))
+        let pl = Player.getPlayer()[f.sendQueue.EntityPlayerSP][m.getPlayerInfoMap]().sort((a, b) => sorter.compare(a, b))
         let i = 0
         for (let p of pl) {
             if (!p[m.getDisplayName.NetworkPlayerInfo]()) continue
@@ -167,7 +175,6 @@ class DungeonMap {
     }
 
     updatePlayersFast() {
-        return
         World.getAllPlayers().forEach(player => {
             let p = this.players[this.playersNameToId[ChatLib.removeFormatting(player.getName()).trim()]]
             if (!p) return
@@ -193,13 +200,12 @@ class DungeonMap {
                 }
             }
 
-
-            let x = vec4b.func_176112_b() //TODO: put X and Y in correct spot
-            let y = vec4b.func_176113_c()
+            let iconX = MathLib.map(vec4b.func_176112_b() - this.dungeonTopLeft[0] * 2, 0, 256, 0, 138)
+            let iconY = MathLib.map(vec4b.func_176113_c() - this.dungeonTopLeft[1] * 2, 0, 256, 0, 138)
+            let x = iconX / (128 / 6) * 32 - 96
+            let y = iconY / (128 / 6) * 32 - 96
             let rot = vec4b.func_176111_d()
             rot = rot * 360 / 16 + 180
-            // x = (x) / this.fullRoomScaleMap * 32
-            // y = (y) / this.fullRoomScaleMap * 32
 
             this.players[i].setRotateAnimate(rot)
             this.players[i].setXAnimate(x)
@@ -479,6 +485,284 @@ class DungeonMap {
         //TODO: Add toggle to check add +10 score anyway, cause of jerry mayor
 
         return [exploration, time, skill, bonus]
+    }
+
+    //==============================
+    // UPDATING FROM WORLD CODE
+    //==============================
+    updateFromWorld() {
+        let roomid = this.getCurrentRoomId()
+        if (!roomid.includes(",")) return
+        if (this.roomXY !== this.getRoomXYWorld().join(",")) {
+            this.roomXY = this.getRoomXYWorld().join(",")
+            this.lastChange = Date.now()
+        }
+
+        let x = Math.floor((Player.getX() + 8) / 32) * 32 - 9
+        let y = Math.floor((Player.getZ() + 8) / 32) * 32 - 9
+
+        if (roomid !== this.lastRoomId && Date.now() - this.lastChange > 500) {
+            this.lastRoomId = roomid
+
+            let roomWorldData = this.getRoomWorldData()
+
+            let rotation = roomWorldData.width > roomWorldData.height ? 0 : 1
+
+            if (this.getCurrentRoomData().shape === "L") rotation = roomWorldData.rotation
+            if (this.getCurrentRoomData().type === "spawn") {
+                roomWorldData.x = x + 1
+                roomWorldData.y = y + 1
+            }
+
+            this.setRoom(roomWorldData.x, roomWorldData.y, rotation, roomid)
+        }
+
+
+        if (this.lastXY !== x + "," + y) {
+            this.lastXY = x + "," + y
+            if (this.getBlockAt(x + 16, 73, y) !== 0) {
+                this.setDoor(x + 16, y, -1, 0)
+            }
+            if (this.getBlockAt(x, 73, y + 16) !== 0) {
+                this.setDoor(x, y + 16, -1, 1)
+            }
+            if (this.getBlockAt(x + 16, 73, y + 32) !== 0) {
+                this.setDoor(x + 16, y + 32, -1, 0)
+            }
+            if (this.getBlockAt(x + 32, 73, y + 16) !== 0) {
+                this.setDoor(x + 32, y + 16, -1, 1)
+            }
+        }
+    }
+    setRoom(x, y, rotation, roomId) {
+        let locstr = x + "," + y
+
+        if (this.rooms.get(locstr)) {
+            return
+        }
+
+        let roomData = DungeonRoomData.getDataFromId(roomId)
+        let type = Room.NORMAL
+        switch (roomData.type) {
+            case "mobs":
+                type = Room.NORMAL
+                break
+            case "miniboss":
+                type = Room.NORMAL
+                break
+            case "spawn":
+                type = Room.SPAWN
+                break
+            case "puzzle":
+                type = Room.PUZZLE
+                break
+            case "gold":
+                type = Room.MINIBOSS
+                break
+            case "fairy":
+                type = Room.FAIRY
+                break
+            case "blood":
+                type = Room.BLOOD
+                break
+            case "trap":
+                type = Room.TRAP
+                break
+        }
+
+        let components = []
+
+        switch (roomData.shape) {
+            case "1x1":
+                components.push(new Position(x, y))
+                break
+            case "1x2":
+                components.push(new Position(x, y))
+                if (rotation === 0) {
+                    components.push(new Position(x + 32, y))
+                } else {
+                    components.push(new Position(x, y + 32))
+                }
+                break
+            case "1x3":
+                components.push(new Position(x, y))
+                if (rotation === 0) {
+                    components.push(new Position(x + 32, y))
+                    components.push(new Position(x + 64, y))
+                } else {
+                    components.push(new Position(x, y + 32))
+                    components.push(new Position(x, y + 64))
+                }
+                break
+            case "1x4":
+                components.push(new Position(x, y))
+                if (rotation === 0) {
+                    components.push(new Position(x + 32, y))
+                    components.push(new Position(x + 64, y))
+                    components.push(new Position(x + 96, y))
+                } else {
+                    components.push(new Position(x, y + 32))
+                    components.push(new Position(x, y + 64))
+                    components.push(new Position(x, y + 96))
+                }
+                break
+            case "2x2":
+                components.push(new Position(x, y))
+                components.push(new Position(x + 32, y))
+                components.push(new Position(x, y + 32))
+                components.push(new Position(x + 32, y + 32))
+                break
+            case "L":
+                if (rotation !== 1) components.push(new Position(x, y))
+                if (rotation !== 3) components.push(new Position(x + 32, y))
+                if (rotation !== 2) components.push(new Position(x + 32, y + 32))
+                if (rotation !== 0) components.push(new Position(x, y + 32))
+                break
+        }
+
+        let room = new Room(type, components, roomId)
+
+        this.roomsArr.add(room)
+        room.components.forEach(c => {
+            this.rooms.set(c.worldX + "," + c.worldY, room)
+        })
+        this.markChanged()
+    }
+
+    setDoor(x, y, type, ishorisontal) {
+        let rx = x - 3
+        let ry = y - 3
+        if (this.doors.get(rx + "," + ry)) return
+        if (type === -1) {
+            let id = World.getBlockStateAt(new BlockPos(x, 69, y)).getBlockId()
+            if (id === 0) type = Room.NORMAL
+            else if (id === 97) type = Room.NORMAL
+            else if (id === 173) type = Room.BLACK
+            else if (id === 159) type = Room.BLOOD
+            else return
+        }
+
+        let door = new Door(type, new Position(rx, ry), ishorisontal)
+        this.doors.set(rx + "," + ry, door)
+        this.markChanged()
+    }
+
+    getCurrentRoomId() {
+        if (Scoreboard.getLines().length === 0) return undefined
+        let id = Scoreboard.getLineByIndex(Scoreboard.getLines().length - 1).getName().trim().split(" ").pop()
+
+        return id
+    }
+
+    getRoomXYWorld() {
+        let roomData = this.getRoomWorldData()
+        if (roomData.rotation === 4) {
+            return [roomData.x, roomData.y + 32]
+        }
+
+        return [roomData.x, roomData.y]
+    }
+
+    getCurrentRoomData() {
+        return DungeonRoomData.getDataFromId(this.getCurrentRoomId())
+    }
+
+    getRotation(x, y, width, height, roofY) {
+        let currRoomData = this.getCurrentRoomData()
+        if (!currRoomData) return -1
+
+        if (currRoomData.shape !== "L") {
+            if (this.getTopBlockAt(x, y, roofY) === 11) return 0
+            if (this.getTopBlockAt(x + width, y, roofY) === 11) return 1
+            if (this.getTopBlockAt(x + width, y + height, roofY) === 11) return 2
+            if (this.getTopBlockAt(x, y + height, roofY) === 11) return 3
+        } else {
+            let one = this.getTopBlockAt2(x + width / 2 + 1, y + height / 2, roofY)
+            let two = this.getTopBlockAt2(x + width / 2 - 1, y + height / 2, roofY)
+            let three = this.getTopBlockAt2(x + width / 2, y + height / 2 + 1, roofY)
+            let four = this.getTopBlockAt2(x + width / 2, y + height / 2 - 1, roofY)
+
+            if (one === 0 && three === 0) return 0
+            if (two === 0 && three === 0) return 1
+            if (one === 0 && four === 0) return 3
+            if (two === 0 && four === 0) return 2//3 IS SO TOXIK HGOLY HEL I HATE L SHAPE ROOMS WHY DO THIS TO ME
+        }
+
+        return -1
+    }
+
+    getRoomWorldData() {
+        let x = Math.floor((Player.getX() + 8) / 32) * 32 - 8
+        let y = Math.floor((Player.getZ() + 8) / 32) * 32 - 8
+        let width = 30
+        let height = 30
+
+        let roofY = this.getRoofAt(x, y)
+
+        while (World.getBlockStateAt(new BlockPos(x - 1, roofY, y)).getBlockId() !== 0) {
+            x -= 32
+            width += 32
+        }
+        while (World.getBlockStateAt(new BlockPos(x, roofY, y - 1)).getBlockId() !== 0) {
+            y -= 32
+            height += 32
+        }
+        while (World.getBlockStateAt(new BlockPos(x - 1, roofY, y)).getBlockId() !== 0) { //second iteration incase of L shape
+            x -= 32
+            width += 32
+        }
+        while (World.getBlockStateAt(new BlockPos(x + width + 1, roofY, y)).getBlockId() !== 0) {
+            width += 32
+        }
+        while (World.getBlockStateAt(new BlockPos(x, roofY, y + height + 1)).getBlockId() !== 0) {
+            height += 32
+        }
+        while (World.getBlockStateAt(new BlockPos(x + width, roofY, y + height + 1)).getBlockId() !== 0) { //second iteration incase of L shape
+            height += 32
+        }
+        while (World.getBlockStateAt(new BlockPos(x + width + 1, roofY, y + height)).getBlockId() !== 0) { //second iteration incase of L shape
+            width += 32
+        }
+        while (World.getBlockStateAt(new BlockPos(x + width, roofY, y - 1)).getBlockId() !== 0) {//second iteration incase of L shape
+            y -= 32
+            height += 32
+        }
+        while (World.getBlockStateAt(new BlockPos(x - 1, roofY, y + height)).getBlockId() !== 0) { //third iteration incase of L shape
+            x -= 32
+            width += 32
+        }
+
+
+        return {
+            x,
+            y,
+            width,
+            height,
+            cx: x + width / 2,
+            cy: y + height / 2,
+            rotation: this.getRotation(x, y, width, height, roofY)
+        }
+    }
+
+    getRoofAt(x, z) {
+        let y = 255
+        while (y > 0 && World.getBlockStateAt(new BlockPos(x, y, z)).getBlockId() === 0) y--
+
+        return y
+    }
+
+    getTopBlockAt(x, z, y) {
+        if (!y) y = this.getHeightAt(x, z)
+
+        return World.getBlockStateAt(new BlockPos(x, y, z)).getMetadata()
+    }
+    getBlockAt(x, y, z) {
+        return World.getBlockStateAt(new BlockPos(x, y, z)).getBlockId()
+    }
+    getTopBlockAt2(x, z, y) {
+        if (!y) y = this.getHeightAt(x, z)
+
+        return World.getBlockStateAt(new BlockPos(x, y, z)).getBlockId()
     }
 }
 

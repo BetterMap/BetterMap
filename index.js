@@ -34,8 +34,11 @@ register("step", () => {
             mapData = item.getItem()[m.getMapData](item.getItemStack(), World.getWorld())
         } catch (error) {
         }
+
         if (mapData) {
             currentDungeonMap.updateFromMap(mapData)
+        } else {
+            currentDungeonMap.updateFromWorld()
         }
     }
 }).setFps(5)

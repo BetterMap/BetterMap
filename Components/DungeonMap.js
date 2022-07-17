@@ -103,7 +103,7 @@ class DungeonMap {
 
             useOldImg = true
             this.getCurrentRenderContext().image.draw(0, 0, 0, 0)
-
+            this.getCurrentRenderContext().imageLastUpdate = Date.now()
         }
 
         let img
@@ -213,9 +213,8 @@ class DungeonMap {
                     let currRoom2 = bytes[(mapX - 1) + (mapY) * 128] === 63 ? this.rooms.get((position.worldX - 32) + "," + position.worldY) : undefined
                     let currRoom3 = bytes[(mapX) + (mapY - 1) * 128] === 63 ? this.rooms.get(position.worldX + "," + (position.worldY - 32)) : undefined
                     if (!currRoom && !currRoom2 && !currRoom3) {
-                        let positions = [position]
 
-                        let room = new Room(Room.NORMAL, positions, undefined)
+                        let room = new Room(Room.NORMAL, [position], undefined)
 
                         room.components.forEach(c => {
                             this.rooms.set(c.worldX + "," + c.worldY, room)
@@ -223,24 +222,29 @@ class DungeonMap {
                         this.roomsArr.add(room)
 
                         this.markChanged()
-                    } else {
-                        if (currRoom && currRoom.type !== Room.NORMAL) {
+                    } else { //already a normal room either in same location, or needs to merge up or left
+
+                        if (currRoom && currRoom.type !== Room.NORMAL) { //anopther room in the same location
                             currRoom.setType(Room.NORMAL)
                             this.markChanged()
                         }
+
                         if (currRoom2) {
-                            let position2 = new Position(position.worldX - 32, position.worldY, this)
-                            if (!currRoom2.components.some(a => position2.equals(a))) {
-                                currRoom2.components.push(position2)
-                                this.rooms.set(position2.worldX + "," + position2.worldY, currRoom2)
+                            if (!currRoom2.components.some(a => position.equals(a))) { //need to merge left
+                                if (currRoom) this.roomsArr.delete(currRoom)
+
+                                currRoom2.components.push(position)
+                                this.rooms.set(position.worldX + "," + position.worldY, currRoom2)
                                 this.markChanged()
-                            }
+                            } 1
                         }
+
                         if (currRoom3) {
-                            let position3 = new Position(position.worldX, position.worldY - 32, this)
-                            if (!currRoom3.components.some(a => position3.equals(a))) {
-                                currRoom3.components.push(position3)
-                                this.rooms.set(position3.worldX + "," + position3.worldY, currRoom3)
+                            if (!currRoom3.components.some(a => position.equals(a))) { //need to merge up
+                                if (currRoom) this.roomsArr.delete(currRoom)
+
+                                currRoom3.components.push(position)
+                                this.rooms.set(position.worldX + "," + position.worldY, currRoom3)
                                 this.markChanged()
                             }
                         }

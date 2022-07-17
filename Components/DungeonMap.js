@@ -14,6 +14,11 @@ let c = PlayerComparator.class.getDeclaredConstructor()
 c.setAccessible(true);
 let sorter = c.newInstance()
 
+const dungeonOffsetX = 200;
+const dungeonOffsetY = 200;
+
+let debug = 0;
+
 class DungeonMap {
     constructor(floor, deadPlayers) {
         /**
@@ -61,6 +66,9 @@ class DungeonMap {
         this.lastChange = 0
         this.roomXY = this.getRoomXYWorld().join(",")
         this.lastXY = undefined
+
+        //rooms that were already identified
+        this.identifiedRoomIds = new Set();
     }
 
     destroy() {
@@ -116,9 +124,8 @@ class DungeonMap {
 
         let useOldImg = false
         if (!this.getCurrentRenderContext().image
-            || this.getCurrentRenderContext().imageLastUpdate < this.lastChanged) {
+            || (this.getCurrentRenderContext().imageLastUpdate < this.lastChanged)) {
             //create image if not cached or cache outdated
-
             if (this.getCurrentRenderContext().lastImage) {
                 this.getCurrentRenderContext().lastImage.getTexture()[m.deleteGlTexture]()
             }
@@ -291,40 +298,41 @@ class DungeonMap {
             for (let x = 0; x < (f1Thing ? 4 : 6); x++) {
                 let mapX = this.dungeonTopLeft[0] + this.fullRoomScaleMap * x
                 let mapY = this.dungeonTopLeft[1] + this.fullRoomScaleMap * y
-                if (bytes[(mapX) + (mapY) * 128] === 0) continue
+                let pixelColor = bytes[(mapX) + (mapY) * 128]
+                if (pixelColor === 0) continue
                 if (r1x1sM.has(bytes[(mapX) + (mapY) * 128])) {
                     //special room at that location
                     let position = new Position(0, 0, this)
                     position.mapX = mapX
                     position.mapY = mapY
-                    let currRoom = this.rooms.get(position.worldX + "," + position.worldY)
+                    let currRoom = this.rooms.get(x + "," + y)
                     if (!currRoom) {
-                        let room = new Room(r1x1s[bytes[(mapX) + (mapY) * 128]], [position], undefined)
-                        this.rooms.set(position.worldX + "," + position.worldY, room)
+                        let room = new Room(r1x1s[pixelColor], [position], undefined)
+                        this.rooms.set(x + "," + y, room)
                         this.roomsArr.add(room)
                         room.checkmarkState = room.type === Room.UNKNOWN ? Room.ADJACENT : Room.OPENED
                         this.markChanged()
                     } else {
-                        if (currRoom.type !== r1x1s[bytes[(mapX) + (mapY) * 128]]) {
-                            currRoom.setType(r1x1s[bytes[(mapX) + (mapY) * 128]])
+                        if (currRoom.type !== r1x1s[pixelColor]) {
+                            currRoom.setType(r1x1s[pixelColor])
                             currRoom.checkmarkState = Room.OPENED
-                            this.markChanged()
+                            this.markChanged();
                         }
                     }
                 }
-                if (bytes[(mapX) + (mapY) * 128] === 63) {
+                if (pixelColor === 63) {
                     //normal room at that location
                     let position = new Position(0, 0, this)
                     position.mapX = mapX
                     position.mapY = mapY
-                    let currRoom = this.rooms.get(position.worldX + "," + position.worldY)
-                    let currRoom2 = bytes[(mapX - 1) + (mapY) * 128] === 63 ? this.rooms.get((position.worldX - 32) + "," + position.worldY) : undefined
-                    let currRoom3 = bytes[(mapX) + (mapY - 1) * 128] === 63 ? this.rooms.get(position.worldX + "," + (position.worldY - 32)) : undefined
+                    let currRoom = this.rooms.get(x + "," + y)
+                    let currRoom2 = bytes[(mapX - 1) + (mapY) * 128] === 63 ? this.rooms.get((x - 1) + "," + y) : undefined
+                    let currRoom3 = bytes[(mapX) + (mapY - 1) * 128] === 63 ? this.rooms.get(x + "," + (y - 1)) : undefined
                     if (!currRoom && !currRoom2 && !currRoom3) {
 
                         let room = new Room(Room.NORMAL, [position], undefined)
 
-                        this.rooms.set(position.worldX + "," + position.worldY, room)
+                        this.rooms.set(x + "," + y, room)
                         this.roomsArr.add(room)
 
                         this.markChanged()
@@ -340,7 +348,7 @@ class DungeonMap {
                                 if (currRoom) this.roomsArr.delete(currRoom)
 
                                 currRoom2.components.push(position)
-                                this.rooms.set(position.worldX + "," + position.worldY, currRoom2)
+                                this.rooms.set(x + "," + y, currRoom2)
                                 this.markChanged()
                             }
                         }
@@ -350,7 +358,7 @@ class DungeonMap {
                                 if (currRoom) this.roomsArr.delete(currRoom)
 
                                 currRoom3.components.push(position)
-                                this.rooms.set(position.worldX + "," + position.worldY, currRoom3)
+                                this.rooms.set(x + "," + y, currRoom3)
                                 this.markChanged()
                             }
                         }
@@ -363,17 +371,21 @@ class DungeonMap {
                     let position = new Position(0, 0, this)
                     position.mapX = mapX
                     position.mapY = mapY
-                    let currRoom = this.rooms.get(position.worldX + "," + position.worldY)
-                    currRoom.checkmarkState = Room.CLEARED
-                    this.markChanged()
+                    let currRoom = this.rooms.get(position.arrayX + "," + position.arrayY)
+                    if (currRoom.checkmarkState < Room.CLEARED) {
+                        currRoom.checkmarkState = Room.CLEARED
+                        this.markChanged()
+                    }
                 }
                 if (bytes[(mapX + this.widthRoomImageMap / 2) + (mapY + this.widthRoomImageMap / 2) * 128] === 30) {
                     let position = new Position(0, 0, this)
                     position.mapX = mapX
                     position.mapY = mapY
-                    let currRoom = this.rooms.get(position.worldX + "," + position.worldY)
-                    currRoom.checkmarkState = Room.COMPLETED
-                    this.markChanged()
+                    let currRoom = this.rooms.get(position.arrayX + "," + position.arrayY)
+                    if (currRoom.checkmarkState < Room.COMPLETED) {
+                        currRoom.checkmarkState = Room.COMPLETED
+                        this.markChanged()
+                    }
                 }
                 // if (bytes[(mapX + this.widthRoomImageMap / 2) + (mapY + this.widthRoomImageMap / 2) * 128] === 18) { //Apparanatly puzzles dont show crosses when failed anymore
                 //     let position = new Position(0, 0, this)
@@ -501,7 +513,17 @@ class DungeonMap {
         //TODO: Check for Paul through API
         //TODO: Add toggle to check add +10 score anyway, cause of jerry mayor
 
-        return [exploration, time, skill, bonus]
+        return {
+            "skill": skill,
+            "exploration": exploration,
+            "time": time,
+            "bonus": bonus
+        }
+    }
+
+    identifyCurrentRoom() {
+        let currentPlayerRoomXCoordinate = ~~((Player.getX() + dungeonOffsetX) / 32);
+        let currentPlayerRoomYCoordinate = ~~((Player.getZ() + dungeonOffsetY) / 32);
     }
 
     //==============================
@@ -509,7 +531,8 @@ class DungeonMap {
     //==============================
     updateFromWorld() {
         let roomid = this.getCurrentRoomId()
-        if (!roomid.includes(",")) return
+        if (!roomid?.includes(",")) return
+        if (this.identifiedRoomIds.has(roomid)) return;
         if (this.roomXY !== this.getRoomXYWorld().join(",")) {
             this.roomXY = this.getRoomXYWorld().join(",")
             this.lastChange = Date.now()
@@ -517,6 +540,14 @@ class DungeonMap {
 
         let x = Math.floor((Player.getX() + 8) / 32) * 32 - 9
         let y = Math.floor((Player.getZ() + 8) / 32) * 32 - 9
+
+        let playerMapX = ~~((Player.getX() + 200) / 32);
+        let playerMapY = ~~((Player.getZ() + 200) / 32);
+        let currentRoom = this.rooms.get(playerMapX + ',' + playerMapY);
+
+        if (currentRoom && currentRoom.roomId) {
+            return;
+        }
 
         if (roomid !== this.lastRoomId && Date.now() - this.lastChange > 500) {
             this.lastRoomId = roomid
@@ -532,6 +563,7 @@ class DungeonMap {
             }
 
             this.setRoom(roomWorldData.x, roomWorldData.y, rotation, roomid)
+            this.identifiedRoomIds.add(roomid);
         }
 
 
@@ -626,9 +658,9 @@ class DungeonMap {
                 components.push(new Position(x + 32, y + 32))
                 break
             case "L":
-                if (rotation !== 1) components.push(new Position(x, y))
+                if (rotation !== 1) components.push(new Position(x + 32, y + 32))
                 if (rotation !== 3) components.push(new Position(x + 32, y))
-                if (rotation !== 2) components.push(new Position(x + 32, y + 32))
+                if (rotation !== 2) components.push(new Position(x, y))
                 if (rotation !== 0) components.push(new Position(x, y + 32))
                 break
         }
@@ -641,7 +673,7 @@ class DungeonMap {
             room.checkmarkState = 0
             this.roomsArr.add(room)
             room.components.forEach(c => {
-                this.rooms.set(c.worldX + "," + c.worldY, room)
+                this.rooms.set(c.arrayX + "," + c.arrayY, room)
             })
             this.markChanged()
             return
@@ -650,7 +682,7 @@ class DungeonMap {
 
         this.roomsArr.add(room)
         room.components.forEach(c => {
-            this.rooms.set(c.worldX + "," + c.worldY, room)
+            this.rooms.set(c.arrayX + "," + c.arrayY, room)
         })
         this.markChanged()
     }
@@ -672,11 +704,12 @@ class DungeonMap {
             {
                 let x2 = Math.floor((x + 15 + 8) / 32) * 32 - 8
                 let y2 = Math.floor((y + 8) / 32) * 32 - 8
-
-                if (!this.rooms.get(x2 + "," + y2)) {
+                let mapCoordX = ~~((x2 + dungeonOffsetX) / 32);
+                let mapCoordY = ~~((y2 + dungeonOffsetY) / 32);
+                if (!this.rooms.get(mapCoordX + "," + mapCoordY)) {
                     let room = new Room(Room.UNKNOWN, [new Position(x2, y2)], undefined)
                     room.checkmarkState = 1
-                    this.rooms.set(x2 + "," + y2, room)
+                    this.rooms.set(mapCoordX + "," + mapCoordY, room)
                     this.roomsArr.add(room)
                 }
             }
@@ -684,10 +717,13 @@ class DungeonMap {
                 let x2 = Math.floor((x - 15 + 8) / 32) * 32 - 8
                 let y2 = Math.floor((y + 8) / 32) * 32 - 8
 
-                if (!this.rooms.get(x2 + "," + y2)) {
+                let mapCoordX = ~~((x2 + dungeonOffsetX) / 32);
+                let mapCoordY = ~~((y2 + dungeonOffsetY) / 32);
+
+                if (!this.rooms.get(mapCoordX + "," + mapCoordY)) {
                     let room = new Room(Room.UNKNOWN, [new Position(x2, y2)], undefined)
                     room.checkmarkState = 1
-                    this.rooms.set(x2 + "," + y2, room)
+                    this.rooms.set(mapCoordX + "," + mapCoordY, room)
                     this.roomsArr.add(room)
                 }
             }
@@ -695,22 +731,26 @@ class DungeonMap {
             {
                 let x2 = Math.floor((x + 8) / 32) * 32 - 8
                 let y2 = Math.floor((y + 15 + 8) / 32) * 32 - 8
+                let mapCoordX = ~~((x2 + dungeonOffsetX) / 32);
+                let mapCoordY = ~~((y2 + dungeonOffsetY) / 32);
 
-                if (!this.rooms.get(x2 + "," + y2)) {
+                if (!this.rooms.get(mapCoordX + "," + mapCoordY)) {
                     let room = new Room(Room.UNKNOWN, [new Position(x2, y2)], undefined)
                     room.checkmarkState = 1
-                    this.rooms.set(x2 + "," + y2, room)
+                    this.rooms.set(mapCoordX + "," + mapCoordY, room)
                     this.roomsArr.add(room)
                 }
             }
             {
                 let x2 = Math.floor((x + 8) / 32) * 32 - 8
                 let y2 = Math.floor((y - 15 + 8) / 32) * 32 - 8
+                let mapCoordX = ~~((x2 + dungeonOffsetX) / 32);
+                let mapCoordY = ~~((y2 + dungeonOffsetY) / 32);
 
-                if (!this.rooms.get(x2 + "," + y2)) {
+                if (!this.rooms.get(mapCoordX + "," + mapCoordY)) {
                     let room = new Room(Room.UNKNOWN, [new Position(x2, y2)], undefined)
                     room.checkmarkState = 1
-                    this.rooms.set(x2 + "," + y2, room)
+                    this.rooms.set(mapCoordX + "," + mapCoordY, room)
                     this.roomsArr.add(room)
                 }
             }
@@ -807,7 +847,7 @@ class DungeonMap {
             width += 32
         }
 
-
+        let rotation = this.getRotation(x, y, width, height, roofY);
         return {
             x,
             y,
@@ -815,7 +855,7 @@ class DungeonMap {
             height,
             cx: x + width / 2,
             cy: y + height / 2,
-            rotation: this.getRotation(x, y, width, height, roofY)
+            rotation: rotation
         }
     }
 
@@ -827,7 +867,7 @@ class DungeonMap {
     }
 
     getTopBlockAt(x, z, y) {
-        if (!y) y = this.getHeightAt(x, z)
+        if (!y) y = this.getRoofAt(x, z)
 
         return World.getBlockStateAt(new BlockPos(x, y, z)).getMetadata()
     }
@@ -835,7 +875,7 @@ class DungeonMap {
         return World.getBlockStateAt(new BlockPos(x, y, z)).getBlockId()
     }
     getTopBlockAt2(x, z, y) {
-        if (!y) y = this.getHeightAt(x, z)
+        if (!y) y = this.getRoofAt(x, z)
 
         return World.getBlockStateAt(new BlockPos(x, y, z)).getBlockId()
     }

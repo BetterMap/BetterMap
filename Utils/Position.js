@@ -19,6 +19,12 @@ class Position {
         if (!this.dungeonMap.dungeonTopLeft) return 0
         return MathLib.map(this.worldY, -200, -8, this.dungeonMap.dungeonTopLeft[1], this.dungeonMap.dungeonTopLeft[1] + this.dungeonMap.fullRoomScaleMap * 6)
     }
+    get arrayX() {
+        return ~~((this.worldX + 200) / 32);
+    }
+    get arrayY() {
+        return ~~((this.worldY + 200) / 32);
+    }
     set mapX(val) {
         if (!this.dungeonMap.dungeonTopLeft) return 0
         this.worldX = MathLib.map(val, this.dungeonMap.dungeonTopLeft[0], this.dungeonMap.dungeonTopLeft[0] + this.dungeonMap.fullRoomScaleMap * 6, -200, -8)

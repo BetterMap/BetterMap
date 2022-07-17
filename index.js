@@ -41,8 +41,12 @@ register("step", () => {
         }
     }
 }).setFps(5)
+
 register("step", () => {
-    if (currentDungeonMap) currentDungeonMap.updatePlayers()
+    if (!currentDungeonMap)
+        return;
+    currentDungeonMap.updatePlayers()
+    currentDungeonMap.identifyCurrentRoom();
 }).setFps(1)
 
 register("renderOverlay", () => {
@@ -55,6 +59,7 @@ register("renderOverlay", () => {
 register("worldLoad", () => {
     if (currentDungeonMap) {
         currentDungeonMap.destroy()
+        currentDungeonMap = null
     }
     deadPlayers.clear()
 })

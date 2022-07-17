@@ -1,7 +1,9 @@
 class Position {
-    constructor(worldX, worldY) {
+    constructor(worldX, worldY, dungeonMap) {
         this.worldX = worldX
         this.worldY = worldY
+
+        this.dungeonMap = dungeonMap
     }
 
     get mapX() {

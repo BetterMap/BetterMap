@@ -9,7 +9,7 @@ class MapPlayer {
         this.networkPlayerInfo = networkPlayerInfo
         this.dungeonMap = dungeonMap
 
-        this.location = new Position(0, 0)
+        this.location = new Position(0, 0, dungeonMap)
 
         this.yaw = 0
         this.username = p[m.getDisplayName.NetworkPlayerInfo]()[m.getUnformattedText]() //TODO: NetworkPlayerInfo may be loaded from tab list -> filter out stuff around tab list name

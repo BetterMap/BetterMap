@@ -53,6 +53,7 @@ register("renderOverlay", () => {
     if (dungeonMapRenderContext && currentDungeonMap) {
         currentDungeonMap.updatePlayersFast()
         currentDungeonMap.draw(dungeonMapRenderContext)
+        currentDungeonMap.drawRoomTooltip(dungeonMapRenderContext);
     }
 })
 

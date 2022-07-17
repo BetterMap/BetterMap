@@ -75,7 +75,7 @@ class DungeonMap {
         for (let context of this.renderContexts) {
             if (!context) continue
 
-            context.lastImage?.getTexture()?.[m.deleteGlTexture]()
+            context.lastImage?.getTexture()?.func_147631_c()//[m.deleteGlTexture]()
             context.image?.getTexture()?.[m.deleteGlTexture]()
             context.lastImage = undefined
             context.image = undefined
@@ -161,6 +161,7 @@ class DungeonMap {
 
         //TODO: render stuff overlayed on the image (text on map, secrets info ect)
     }
+
     updatePlayers() {
         let pl = Player.getPlayer()[f.sendQueue.EntityPlayerSP][m.getPlayerInfoMap]().sort((a, b) => sorter.compare(a, b))
         let i = 0
@@ -522,8 +523,45 @@ class DungeonMap {
     }
 
     identifyCurrentRoom() {
-        let currentPlayerRoomXCoordinate = ~~((Player.getX() + dungeonOffsetX) / 32);
-        let currentPlayerRoomYCoordinate = ~~((Player.getZ() + dungeonOffsetY) / 32);
+        let x = ~~((Player.getX() + dungeonOffsetX) / 32);
+        let y = ~~((Player.getZ() + dungeonOffsetY) / 32);
+        let roomId = this.getCurrentRoomId();
+        if (!roomId || !roomId.includes(',')) { return };
+        if (this.identifiedRoomIds.has(roomId)) { return };
+        let currentRoom = this.rooms.get(x + ',' + y);
+        if (!currentRoom || currentRoom.roomId) { return };
+        ChatLib.chat('Identified current room as ' + roomId);
+        currentRoom.roomId = roomId;
+        currentRoom.data = DungeonRoomData.getDataFromId(roomId)
+        this.identifiedRoomIds.add(roomId);
+    }
+
+    drawRoomTooltip() {
+        if (!Client.isInChat()) return;
+
+        let cursorX = Client.getMouseX();
+        let cursorY = Client.getMouseY();
+        let { x, y, size } = this.getCurrentRenderContext()
+        const borderPixels = 27 / 256 * size;
+        if (cursorX < x + borderPixels || cursorY < y + borderPixels || cursorX > x + size - borderPixels || cursorY > y + size - borderPixels) return;
+
+        let mapRoomSize = 26 / 256 * size;
+        let mapGapSize = 6 / 256 * size;
+
+        xCoord = ~~((cursorX - x - borderPixels) / (mapRoomSize + mapGapSize));
+        yCoord = ~~((cursorY - y - borderPixels) / (mapRoomSize + mapGapSize));
+
+        if (!this.rooms.has(xCoord + ',' + yCoord)) {
+            return;
+        }
+        let room = this.rooms.get(xCoord + ',' + yCoord);
+        Renderer.drawString(room?.data?.name || '???', cursorX + 5, cursorY - 5);
+        return;
+        if (xCoord < 0 || xCoord >= dungeon.width || yCoord < 0 || yCoord >= dungeon.height) return;
+        if (!(xCoord in dungeon.roomLookupMap) || !(yCoord in dungeon.roomLookupMap[xCoord])) return;
+        if (!room) return;
+        renderTooltip(x, y, room.getInfoTooltip(), room.identified);
+
     }
 
     //==============================
@@ -587,6 +625,7 @@ class DungeonMap {
         let locstr = x + "," + y
 
         let roomData = DungeonRoomData.getDataFromId(roomId)
+        ChatLib.chat(JSON.stringify(roomData));
         let type = Room.NORMAL
         switch (roomData.type) {
             case "mobs":

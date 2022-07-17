@@ -12,6 +12,12 @@ class Room {
     static TRAP = 7
     static UNKNOWN = 6
 
+    static UNOPENED = 0;
+    static ADJACENT = 1;
+    static OPENED = 2;
+    static CLEARED = 3;
+    static COMPLETED = 4;
+
     /**
      * Creates a room based on a type, components, and a room id
      * @param {Number} type 
@@ -24,9 +30,11 @@ class Room {
         this.roomId = roomId
 
         /**
-         * 0 -> no checkmark
-         * 1 -> white tick
-         * 2 -> green tick
+         * 0 -> not opened / not on the map yet
+         * 1 -> adjacent, not opened, but visible on the map
+         * 2 -> opened
+         * 3 -> white tick
+         * 4 -> green tick
          */
         this.checkmarkState = 0
 
@@ -34,6 +42,16 @@ class Room {
          * @type {Array<Door>}
          */
         this.adjecentDoors = []
+    }
+
+    /**
+     * returns true if a room was cleared (at least white checkmark)
+     */
+    isCleared() {
+        //always assume blood is cleared
+        if (this.type === Room.BLOOD) return true;
+
+        return this.checkmarkState >= Room.CLEARED;
     }
 
     getRenderColor() {

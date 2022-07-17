@@ -1,5 +1,5 @@
-import { m } from "../../mappings/mappings"
-import { roomColorMap } from "../Data/Colors"
+import { m } from "../../mappings/mappings.js"
+import { roomColorMap } from "../Data/Colors.js"
 
 class Room {
 

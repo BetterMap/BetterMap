@@ -1,4 +1,4 @@
-import Position from "../Utils/Position"
+import Position from "../Utils/Position.js"
 
 class MapPlayer {
     /**

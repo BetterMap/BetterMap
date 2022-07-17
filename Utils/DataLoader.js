@@ -15,8 +15,8 @@ class DataLoader {
 
         this.dungeonPercentCleared = 0
 
-        register("step", this.step).setFps(2)
-        register("worldLoad", this.worldLoad)
+        register("step", this.step.bind(this)).setFps(2)
+        register("worldLoad", this.worldLoad.bind(this))
 
         this.currentMayorPerks = new Set()
 
@@ -58,9 +58,12 @@ class DataLoader {
                 this.partyMembers.add(p.trim().split(" ").pop().trim())
             })
         })
-        this.registerCommand("pmembdebugmap", () => {
+        register("command", () => {
             ChatLib.chat([...this.partyMembers].join(" | "))
-        })
+        }).setName("pmembdebugmap", true)
+    }
+    registerChat(msg, fun) {
+        return register("chat", fun.bind(this)).setChatCriteria(msg)
     }
 
     worldLoad() {

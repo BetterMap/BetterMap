@@ -1,3 +1,4 @@
+import { f, m } from "../../mappings/mappings.js"
 import Position from "../Utils/Position.js"
 import MapPlayer from "./MapPlayer.js"
 import Room from "./Room.js"
@@ -32,7 +33,7 @@ class DungeonMap {
 
         this.currentRenderContextId = 0
 
-        this.lastRenderContext = 0
+        this.lastRenderContext = 1 //starting at one so that if(renderContext) returns true always if it exists
         this.renderContexts = []
     }
 
@@ -61,9 +62,9 @@ class DungeonMap {
             y,
             size,
             headScale,
-            image,
-            imageLastUpdate,
-            lastImage
+            image: undefined,
+            imageLastUpdate: 0,
+            lastImage: undefined
         }
 
         this.renderContexts[contextId] = contextData
@@ -93,7 +94,7 @@ class DungeonMap {
                 this.getCurrentRenderContext().lastImage.getTexture()[m.deleteGlTexture]()
             }
             this.getCurrentRenderContext().lastImage = this.getCurrentRenderContext().image
-            this.getCurrentRenderContext().image = this.renderImage(contextId)
+            this.getCurrentRenderContext().image = new Image(this.renderImage(contextId))
 
             useOldImg = true
             this.getCurrentRenderContext().image.draw(0, 0, 0, 0)
@@ -101,7 +102,7 @@ class DungeonMap {
         }
 
         let img
-        if (useOldImg) {
+        if (useOldImg && this.getCurrentRenderContext().lastImage) {
             img = this.getCurrentRenderContext().lastImage
         } else {
             img = this.getCurrentRenderContext().image
@@ -150,46 +151,94 @@ class DungeonMap {
                 }
                 if (roomX) break;
             }
+            if (!roomX) return
 
-            roomX = roomX % this.roomScaleMap
-            roomY = roomY % this.roomScaleMap
+            this.fullRoomScaleMap = roomwidth * 5 / 4
+            this.widthRoomImageMap = roomwidth
+
+            roomX = roomX % this.fullRoomScaleMap
+            roomY = roomY % this.fullRoomScaleMap
 
             if (this.floor[this.floor.length - 1] === "1" || this.floor === "E") {
                 roomX += this.roomScaleMap
             }
             this.dungeonTopLeft = [roomX, roomY]
-            this.fullRoomScaleMap = roomwidth * 5 / 4
-            this.widthRoomImageMap = roomwidth
         }
+        let r1x1s = {
+            30: Room.SPAWN,
+            66: Room.PUZZLE,
+            82: Room.FAIRY,
+            18: Room.BLOOD,
+            62: Room.TRAP,
+            74: Room.MINIBOSS,
+            85: Room.UNKNOWN
+        }
+        let r1x1sM = new Set(Object.keys(r1x1s).map(a => parseInt(a)))
 
         for (let x = 0; x < 6; x++) {//Scan top left of rooms looking for valid rooms
             for (let y = 0; y < 6; y++) {
                 let mapX = this.dungeonTopLeft[0] + this.fullRoomScaleMap * x
                 let mapY = this.dungeonTopLeft[1] + this.fullRoomScaleMap * y
-
-                if (bytes[(mapX) + (mapY - 1) * 128] === 0) continue
-                let r1x1s = {
-                    30: Room.SPAWN,
-                    66: Room.PUZZLE,
-                    82: Room.FAIRY,
-                    18: Room.BLOOD,
-                    64: Room.TRAP,
-                    74: Room.MINIBOSS,
-                    85: Room.UNKNOWN
-                }
-                if (r1x1s[bytes[(mapX) + (mapY - 1) * 128]]) {
-                    //green room at that location
-                    let currRoom = this.rooms.get(mapX, mapY)
+                if (bytes[(mapX) + (mapY) * 128] === 0) continue
+                if (r1x1sM.has(bytes[(mapX) + (mapY) * 128])) {
+                    //special room at that location
+                    let position = new Position(0, 0, this)
+                    position.mapX = mapX
+                    position.mapY = mapY
+                    let currRoom = this.rooms.get(position.worldX + "," + position.worldY)
                     if (!currRoom) {
-                        let position = new Position(0, 0)
-                        position.mapX = mapX
-                        position.mapY = mapY
-
-                        let room = new Room(r1x1s[bytes[(mapX) + (mapY - 1) * 128]], [position], undefined)
+                        let room = new Room(r1x1s[bytes[(mapX) + (mapY) * 128]], [position], undefined)
                         this.rooms.set(position.worldX + "," + position.worldY, room)
                         this.roomsArr.add(room)
+
+                        this.markChanged()
                     } else {
-                        //TODO: this
+                        if (currRoom.type !== r1x1s[bytes[(mapX) + (mapY) * 128]]) {
+                            currRoom.setType(r1x1s[bytes[(mapX) + (mapY) * 128]])
+                            this.markChanged()
+                        }
+                    }
+                }
+                if (bytes[(mapX) + (mapY) * 128] === 63) {
+                    //normal room at that location
+                    let position = new Position(0, 0, this)
+                    position.mapX = mapX
+                    position.mapY = mapY
+                    let currRoom = this.rooms.get(position.worldX + "," + position.worldY)
+                    let currRoom2 = bytes[(mapX - 1) + (mapY) * 128] === 63 ? this.rooms.get((position.worldX - 32) + "," + position.worldY) : undefined
+                    let currRoom3 = bytes[(mapX) + (mapY - 1) * 128] === 63 ? this.rooms.get(position.worldX + "," + (position.worldY - 32)) : undefined
+                    if (!currRoom && !currRoom2 && !currRoom3) {
+                        let positions = [position]
+
+                        let room = new Room(Room.NORMAL, positions, undefined)
+
+                        room.components.forEach(c => {
+                            this.rooms.set(c.worldX + "," + c.worldY, room)
+                        })
+                        this.roomsArr.add(room)
+
+                        this.markChanged()
+                    } else {
+                        if (currRoom && currRoom.type !== Room.NORMAL) {
+                            currRoom.setType(Room.NORMAL)
+                            this.markChanged()
+                        }
+                        if (currRoom2) {
+                            let position2 = new Position(position.worldX - 32, position.worldY, this)
+                            if (!currRoom2.components.some(a => position2.equals(a))) {
+                                currRoom2.components.push(position2)
+                                this.rooms.set(position2.worldX + "," + position2.worldY, currRoom2)
+                                this.markChanged()
+                            }
+                        }
+                        if (currRoom3) {
+                            let position3 = new Position(position.worldX, position.worldY - 32, this)
+                            if (!currRoom3.components.some(a => position3.equals(a))) {
+                                currRoom3.components.push(position3)
+                                this.rooms.set(position3.worldX + "," + position3.worldY, currRoom3)
+                                this.markChanged()
+                            }
+                        }
                     }
                 }
             }

@@ -36,6 +36,10 @@ class Room {
         this.adjecentDoors = []
     }
 
+    setType(type) {
+        this.type = type
+    }
+
     getRenderColor() {
         return roomColorMap.get(this.type)
     }

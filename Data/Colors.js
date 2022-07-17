@@ -9,6 +9,8 @@ let roomHash = {
     UNKNOWN: 6
 }
 
+const Color = Java.type("java.awt.Color")
+
 export let roomColorMap = new Map()
 roomColorMap.set(roomHash.SPAWN, new Color(Renderer.color(0, 124, 0, 255)))
 roomColorMap.set(roomHash.NORMAL, new Color(Renderer.color(114, 67, 27, 255)))

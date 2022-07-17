@@ -3,20 +3,25 @@ class Position {
         this.worldX = worldX
         this.worldY = worldY
 
+
         this.dungeonMap = dungeonMap
     }
 
+    equals(otherPosition) {
+        return this.worldX === otherPosition.worldX && this.worldY === otherPosition.worldY
+    }
+
     get mapX() {
-        //TODO: logic
+        return MathLib.map(this.worldX, -200, -8, this.dungeonMap.dungeonTopLeft[0], this.dungeonMap.dungeonTopLeft[0] + this.dungeonMap.fullRoomScaleMap * 6)
     }
     get mapY() {
-        //TODO: logic
+        return MathLib.map(this.worldY, -200, -8, this.dungeonMap.dungeonTopLeft[1], this.dungeonMap.dungeonTopLeft[1] + this.dungeonMap.fullRoomScaleMap * 6)
     }
     set mapX(val) {
-        //TODO: logic
+        this.worldX = MathLib.map(val, this.dungeonMap.dungeonTopLeft[0], this.dungeonMap.dungeonTopLeft[0] + this.dungeonMap.fullRoomScaleMap * 6, -200, -8)
     }
     set mapY(val) {
-        //TODO: logic
+        this.worldY = MathLib.map(val, this.dungeonMap.dungeonTopLeft[1], this.dungeonMap.dungeonTopLeft[1] + this.dungeonMap.fullRoomScaleMap * 6, -200, -8)
     }
 
     get renderX() {

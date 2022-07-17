@@ -1,5 +1,6 @@
 /// <reference types="../CTAutocomplete" />
 
+import { m } from "../mappings/mappings"
 import DungeonMap from "./Components/DungeonMap"
 import DataLoader from "./Utils/DataLoader"
 
@@ -40,5 +41,11 @@ register("step", () => {
 register("renderOverlay", () => {
     if (dungeonMapRenderContext && currentDungeonMap) {
         currentDungeonMap.draw(dungeonMapRenderContext)
+    }
+})
+
+register("worldLoad", () => {
+    if (currentDungeonMap) {
+        currentDungeonMap.destroy()
     }
 })

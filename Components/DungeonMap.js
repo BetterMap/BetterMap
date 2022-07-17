@@ -3,6 +3,17 @@ import Room from "./Room"
 
 const BufferedImage = Java.type("java.awt.image.BufferedImage")
 
+let mapDataScale = {
+    "E": 22,
+    "1": 22,
+    "2": 22,
+    "3": 22,
+    "4": 20,
+    "5": 20,
+    "6": 20,
+    "7": 20
+}
+
 
 class DungeonMap {
     constructor(floor) {
@@ -10,6 +21,8 @@ class DungeonMap {
          * @type {Map<String, Room>} The string is in form x,y eg 102,134 and will correspond to the top left corner of a room component
          */
         this.rooms = new Map()
+
+        this.roomScaleMap = mapDataScale[floor[floor.length - 1]] //how many pixels on the map is 32 blocks
 
         /**
          * @type {Set<Room>} So that its easy to loop over all rooms without duplicates

@@ -537,10 +537,6 @@ class DungeonMap {
     setRoom(x, y, rotation, roomId) {
         let locstr = x + "," + y
 
-        if (this.rooms.get(locstr)) {
-            return
-        }
-
         let roomData = DungeonRoomData.getDataFromId(roomId)
         let type = Room.NORMAL
         switch (roomData.type) {
@@ -620,6 +616,19 @@ class DungeonMap {
                 break
         }
 
+        if (this.rooms.get(locstr)) {
+            let room = this.rooms.get(locstr)
+            room.setType(type)
+            room.components = components
+            room.roomId = roomId
+            room.checkmarkState = 0
+            this.roomsArr.add(room)
+            room.components.forEach(c => {
+                this.rooms.set(c.worldX + "," + c.worldY, room)
+            })
+            this.markChanged()
+            return
+        }
         let room = new Room(type, components, roomId)
 
         this.roomsArr.add(room)
@@ -641,6 +650,55 @@ class DungeonMap {
             else if (id === 159) type = Room.BLOOD
             else return
         }
+
+        if (ishorisontal) {
+            {
+                let x2 = Math.floor((x + 15 + 8) / 32) * 32 - 8
+                let y2 = Math.floor((y + 8) / 32) * 32 - 8
+
+                if (!this.rooms.get(x2 + "," + y2)) {
+                    let room = new Room(Room.UNKNOWN, [new Position(x2, y2)], undefined)
+                    room.checkmarkState = 1
+                    this.rooms.set(x2 + "," + y2, room)
+                    this.roomsArr.add(room)
+                }
+            }
+            {
+                let x2 = Math.floor((x - 15 + 8) / 32) * 32 - 8
+                let y2 = Math.floor((y + 8) / 32) * 32 - 8
+
+                if (!this.rooms.get(x2 + "," + y2)) {
+                    let room = new Room(Room.UNKNOWN, [new Position(x2, y2)], undefined)
+                    room.checkmarkState = 1
+                    this.rooms.set(x2 + "," + y2, room)
+                    this.roomsArr.add(room)
+                }
+            }
+        } else {
+            {
+                let x2 = Math.floor((x + 8) / 32) * 32 - 8
+                let y2 = Math.floor((y + 15 + 8) / 32) * 32 - 8
+
+                if (!this.rooms.get(x2 + "," + y2)) {
+                    let room = new Room(Room.UNKNOWN, [new Position(x2, y2)], undefined)
+                    room.checkmarkState = 1
+                    this.rooms.set(x2 + "," + y2, room)
+                    this.roomsArr.add(room)
+                }
+            }
+            {
+                let x2 = Math.floor((x + 8) / 32) * 32 - 8
+                let y2 = Math.floor((y - 15 + 8) / 32) * 32 - 8
+
+                if (!this.rooms.get(x2 + "," + y2)) {
+                    let room = new Room(Room.UNKNOWN, [new Position(x2, y2)], undefined)
+                    room.checkmarkState = 1
+                    this.rooms.set(x2 + "," + y2, room)
+                    this.roomsArr.add(room)
+                }
+            }
+        }
+
 
         let door = new Door(type, new Position(rx, ry), ishorisontal)
         this.doors.set(rx + "," + ry, door)

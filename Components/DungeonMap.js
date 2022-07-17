@@ -157,20 +157,33 @@ class DungeonMap {
     updatePlayers() {
         let pl = Player.getPlayer()[f.sendQueue.EntityPlayerSP][m.getPlayerInfoMap]().sort((a, b) => sorter.compare(a, b))
         let i = 0
+
+        let thePlayer = undefined
         for (let p of pl) {
             if (!p[m.getDisplayName.NetworkPlayerInfo]()) continue
             let line = p[m.getDisplayName.NetworkPlayerInfo]()[m.getUnformattedText]().trim().replace("♲ ", "") //TODO: Remove bingo symbol and support yt/admin rank
             if (line.endsWith(")") && line.includes(" (") && line.split(" (").length === 2 && line.split(" (")[0].split(" ").length === 1 && line.split(" (")[1].length > 5) {
                 let name = line.split(" ")[0]
 
+                if (name === Player.getName()) {
+                    thePlayer = [p, name]
+                    continue
+                }
+
                 if (!this.players[i]) {
                     this.players[i] = new MapPlayer(p, this, name)
-                    console.log(name)
                 }
                 this.playersNameToId[name] = i
 
                 i++
             }
+        }
+
+        if (thePlayer) {
+            if (!this.players[i]) {
+                this.players[i] = new MapPlayer(thePlayer[0], this, thePlayer[1])
+            }
+            this.playersNameToId[thePlayer[1]] = i
         }
     }
 

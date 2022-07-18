@@ -73,7 +73,7 @@ class MapRenderer {
                 renderContext.image.getTexture()[m.deleteGlTexture]()
                 const index = images.indexOf(renderContext.image);
                 if (index > -1) {
-                    images.splice(index, 1)
+                    images.splice(index, 1) //TODO: this likely doesent work, change to ct method when added
                 }
             }
             renderContext.image = new Image(this.createMapImage(dungeonMap));

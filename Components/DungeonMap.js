@@ -76,6 +76,8 @@ class DungeonMap {
         switch (data.type) {
             case "playerLocation":
                 let p = this.players[this.playersNameToId[data.username]]
+                if (!p) return
+
                 p.setXAnimate(data.x)
                 p.setYAnimate(data.z)
                 p.setRotateAnimate(data.yaw)

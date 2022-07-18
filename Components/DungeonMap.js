@@ -98,6 +98,7 @@ class DungeonMap {
                 this.setDoor(data.x, data.y, data.ishorisontal, false, data.doorType)
                 break;
             case "roomLocation":
+                console.log(JSON.stringify(data, undefined, 2))
                 this.setRoom(data.x, data.y, data.rotation, data.roomid, false)
                 break;
             case "roomId":
@@ -704,6 +705,8 @@ class DungeonMap {
         }
     }
     setRoom(x, y, rotation, roomId, locallyFound) {
+        if (!roomId) return
+
         let locstr = x + "," + y
 
         let roomData = DungeonRoomData.getDataFromId(roomId)

@@ -20,16 +20,16 @@ let mapRenderer = new MapRenderer();
 
 register("step", () => {
     if (DataLoader.isInDungeon && DataLoader.dungeonFloor) {
-        if (!currentDungeonMap) {
+        if (!currentDungeonMap) { //entered dungeon, create map data
             currentDungeonMap = new DungeonMap(DataLoader.dungeonFloor, deadPlayers)
 
             dungeonMapRenderContext = renderContextManager.createRenderContext(Renderer.screen.getWidth() - 150 - 10, 10, 150);
         }
     } else {
-        if (currentDungeonMap) {
+        if (currentDungeonMap) { //left dungeon, clear map data
             currentDungeonMap.destroy();
             currentDungeonMap = undefined
-            renderContextManager.destroy();
+            dungeonMapRenderContext = undefined
         }
     }
 
@@ -57,6 +57,7 @@ register("step", () => {
 
 register("renderOverlay", () => {
     if (dungeonMapRenderContext && currentDungeonMap) {
+
         mapContext = renderContextManager.getRenderContextData(dungeonMapRenderContext)
         currentDungeonMap.updatePlayersFast()
         mapRenderer.draw(mapContext, currentDungeonMap)
@@ -72,6 +73,7 @@ register("renderOverlay", () => {
             let cursorY = Client.getMouseY();
             currentDungeonMap.drawRoomTooltip(mapContext, cursorX, cursorY);
         }
+
     }
 })
 
@@ -79,6 +81,7 @@ register("worldLoad", () => {
     if (currentDungeonMap) {
         currentDungeonMap.destroy()
         currentDungeonMap = null
+        dungeonMapRenderContext = undefined
     }
     deadPlayers.clear()
 })

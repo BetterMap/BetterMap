@@ -27,6 +27,8 @@ class Room {
      * @param {String} roomId 
      */
     constructor(type, components, roomId) {
+        this._roomId = undefined
+
         this.type = type
         this.components = components
         /**@type {String} */
@@ -51,9 +53,12 @@ class Room {
         this.data = undefined
     }
 
+    get roomId() {
+        return this._roomId
+    }
     set roomId(value) {
-        this.roomId = value
-        this.data = DungeonRoomData.getDataFromId(roomId)
+        this._roomId = value
+        this.data = DungeonRoomData.getDataFromId(this._roomId)
     }
 
     setType(type) {

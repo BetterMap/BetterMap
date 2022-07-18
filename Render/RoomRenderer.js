@@ -45,14 +45,14 @@ class RoomRenderer {
                 let [x, count] = data
 
                 if (count === 2) {
-                    graphics.fillRect(x + 3, minY + 3, 32 - 6, 64 - 6)
+                    graphics.fillRect(x * this.blockSize, minY * this.blockSize, 32 - this.roomGap, 64 - this.roomGap)
                 }
             }
             for (let data of yCounts.entries()) {
                 let [y, count] = data
 
                 if (count === 2) {
-                    graphics.fillRect(minX + 3, y + 3, 64 - 6, 32 - 6)
+                    graphics.fillRect(minX * this.blockSize, y * this.blockSize, 64 - this.roomGap, 32 - this.roomGap)
                 }
             }
         } else { //every other case is easy af since its just a rect
@@ -64,16 +64,16 @@ class RoomRenderer {
 
         let location = room.components[0]
         if (room.checkmarkState === 1) {
-            graphics.drawImage(questionMark, this.blockSize * location.arrayX + 11, this.blockSize * location.arrayY + 9, 10, 14, null)
+            graphics.drawImage(questionMark, this.blockSize * location.arrayX + 8, this.blockSize * location.arrayY + 8, 10, 14, null)
         }
         if (room.checkmarkState === 3) {
-            graphics.drawImage(whiteCheck, this.blockSize * location.arrayX + 11, this.blockSize * location.arrayY + 11, 10, 10, null)
+            graphics.drawImage(whiteCheck, this.blockSize * location.arrayX + 8, this.blockSize * location.arrayY + 8, 10, 10, null)
         }
         if (room.checkmarkState === 4) {
-            graphics.drawImage(greenCheck, this.blockSize * location.arrayX + 11, this.blockSize * location.arrayY + 11, 10, 10, null)
+            graphics.drawImage(greenCheck, this.blockSize * location.arrayX + 8, this.blockSize * location.arrayY + 8, 10, 10, null)
         }
         if (room.checkmarkState === 5) {
-            graphics.drawImage(failedRoom, this.blockSize * location.arrayX + 9, this.blockSize * location.arrayY + 9, 14, 14, null)
+            graphics.drawImage(failedRoom, this.blockSize * location.arrayX + 8, this.blockSize * location.arrayY + 9, 14, 14, null)
         }
     }
 

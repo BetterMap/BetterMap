@@ -6,6 +6,7 @@ import DungeonMap from "./Components/DungeonMap"
 import MapRenderer from "./Render/MapRenderer"
 import RenderContextManager from "./Render/RenderContextManager"
 import DataLoader from "./Utils/DataLoader"
+import betterMapServer from "./socketConnection"
 
 /// <reference lib="es2015" />
 
@@ -17,6 +18,7 @@ let renderContextManager = new RenderContextManager();
 let dungeonMapRenderContext = null;
 
 let mapRenderer = new MapRenderer();
+
 
 register("step", () => {
     if (DataLoader.isInDungeon && DataLoader.dungeonFloor) {
@@ -55,6 +57,12 @@ register("step", () => {
     currentDungeonMap.updatePlayers()
     currentDungeonMap.identifyCurrentRoom();
 }).setFps(1)
+
+betterMapServer.datacallback = (data) => {
+    if (currentDungeonMap) {
+        currentDungeonMap.socketData(data)
+    }
+}
 
 register("renderOverlay", () => {
     if (dungeonMapRenderContext && currentDungeonMap) {

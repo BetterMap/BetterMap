@@ -9,9 +9,10 @@ class BetterMapServer extends WebsiteCommunicator {
     }
 
     onData(data) {
-        if (data.type === "dungeonSecretsData") {
-            if (this.datachangecallback) this.datachangecallback(data.data)
-        }
+        if (this.datacallback) this.datacallback(data)
+    }
+    sendDungeonData(data) {
+        this.sendData(data)
     }
 
     onConnect() {
@@ -20,7 +21,7 @@ class BetterMapServer extends WebsiteCommunicator {
 }
 
 if (!global.betterMapServer) {
-    global.betterMapServer = new LegalMapServer()
+    global.betterMapServer = new BetterMapServer()
 
     register("gameUnload", () => {
         global.betterMapServer = undefined

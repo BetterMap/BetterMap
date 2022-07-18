@@ -7,6 +7,7 @@ import { getScoreboardInfo, getTabListInfo, getRequiredSecrets } from "../Utils/
 import Door from "./Door.js"
 import DungeonRoomData from "../Data/DungeonRoomData.js"
 import { renderLore } from "../Utils/Utils.js"
+import socketConnection from "../socketConnection.js"
 
 const BufferedImage = Java.type("java.awt.image.BufferedImage")
 
@@ -17,8 +18,6 @@ let sorter = c.newInstance()
 
 const dungeonOffsetX = 200;
 const dungeonOffsetY = 200;
-
-let debug = 0;
 
 class DungeonMap {
     constructor(floor, deadPlayers) {
@@ -73,6 +72,14 @@ class DungeonMap {
         this.identifiedRoomIds = new Set();
     }
 
+    socketData(data) {
+        console.log(JSON.stringify(data, undefined, 2))
+    }
+
+    sendSocketData(data) {
+        socketConnection.sendDungeonData({ data, players: this.players.map(a => a.username) })
+    }
+
     destroy() {
         this.rooms.clear()
         this.roomsArr.clear()
@@ -86,7 +93,7 @@ class DungeonMap {
     }
 
     /**
-     * Update players from tab list
+     * Update players from tab list, also sends locations of players in render distance to other players
      */
     updatePlayers() {
         let pl = Player.getPlayer()[f.sendQueue.EntityPlayerSP][m.getPlayerInfoMap]().sort((a, b) => sorter.compare(a, b)) //tab player list
@@ -120,6 +127,25 @@ class DungeonMap {
             }
             this.playersNameToId[thePlayer[1]] = i
         }
+
+
+        World.getAllPlayers().forEach(player => {
+            let p = this.players[this.playersNameToId[ChatLib.removeFormatting(player.getName()).trim()]]
+            if (!p) return
+
+            p.setX(player.getX())
+            p.setY(player.getZ())
+            p.setRotate(player.getYaw() + 180)
+
+            this.sendSocketData({
+                type: "playerLocation",
+                username: ChatLib.removeFormatting(player.getName()).trim(),
+                x: player.getX(),
+                y: player.getY(),
+                z: player.getZ(),
+                yaw: player.getYaw() + 180
+            })
+        })
     }
 
     /**
@@ -527,6 +553,7 @@ class DungeonMap {
         if (room.roomId) { //TODO: COLOR CODES!
             roomLore.push(room.data?.name || '???')
             roomLore.push("&8" + (room.roomId || ""))
+            if (room.data?.soul) roomLore.push("&dFAIRY SOUL!")
             if (room.maxSecrets) roomLore.push("Secrets: " + room.currentSecrets + ' / ' + room.maxSecrets)
             if (room.type === Room.NORMAL) roomLore.push("Spiders: " + (room.data?.spiders ? "Yes" : "No"))
         } else {

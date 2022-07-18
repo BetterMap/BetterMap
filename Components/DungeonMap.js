@@ -153,6 +153,7 @@ class DungeonMap {
                 if (!this.players[i]) {
                     this.players[i] = new MapPlayer(p, this, name)
                 }
+                this.players[i].networkPlayerInfo = p
                 this.playersNameToId[name] = i
 
                 i++

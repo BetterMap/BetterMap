@@ -34,54 +34,47 @@ class MapRenderer {
         //shift border + padding so less math involved
         graphics.translate(this.paddingLeft + this.borderWidth, +this.paddingTop + this.borderWidth);
 
+        //render all doors
+        //rendering before rooms that way rooms cover it as there is 1 specific situation where early dungeon will put a room in the middle of an L shape
+        for (let door of dungeon.doors.values()) {
+            this.doorRenderer.drawDoor(graphics, door);
+        }
         //render all rooms
         for (let room of dungeon.roomsArr) {
             this.roomRenderer.drawRoom(graphics, room);
         }
 
-        //render all doors
-        for (let door of dungeon.doors.values()) {
-            this.doorRenderer.drawDoor(graphics, door);
-        }
         graphics.dispose();
         return image;
     }
 
     draw(renderContext, dungeonMap) {
-        if (!renderContext) { return }
+        if (!renderContext) return
 
-        let { x, y, size } = renderContext.getMapDimensions()
+        if (renderContext.image) {
+            let { x, y, size } = renderContext.getMapDimensions()
 
-        let useOldImg = false
+            Renderer.drawRect(Renderer.color(0, 0, 0, 100), x, y, size, size)//background
+
+            renderContext.image.draw(x, y, size, size)
+
+            Renderer.drawRect(Renderer.color(0, 0, 0), x, y, size, this.borderWidth) //border
+            Renderer.drawRect(Renderer.color(0, 0, 0), x, y, this.borderWidth, size)
+            Renderer.drawRect(Renderer.color(0, 0, 0), x + size - this.borderWidth, y, this.borderWidth, size)
+            Renderer.drawRect(Renderer.color(0, 0, 0), x, y + size - this.borderWidth, size, this.borderWidth)
+
+        }
+
         if (!renderContext.image
             || (renderContext.imageLastUpdate < dungeonMap.lastChanged)) {
             //create image if not cached or cache outdated
-            if (renderContext.lastImage) {
-                renderContext.lastImage.getTexture()[m.deleteGlTexture]()
+            if (renderContext.image) {
+                renderContext.image.getTexture()[m.deleteGlTexture]()
             }
-            renderContext.lastImage = renderContext.image
             renderContext.image = new Image(this.createMapImage(dungeonMap));
 
-            useOldImg = true
-            renderContext.image.draw(0, 0, 0, 0)
             renderContext.imageLastUpdate = Date.now()
         }
-
-        let img
-        if (useOldImg && renderContext.lastImage) {
-            img = renderContext.lastImage
-        } else {
-            img = renderContext.image
-        }
-
-        Renderer.drawRect(Renderer.color(0, 0, 0, 100), x, y, size, size)//background
-
-        img.draw(x, y, size, size)
-
-        Renderer.drawRect(Renderer.color(0, 0, 0), x, y, size, this.borderWidth) //border
-        Renderer.drawRect(Renderer.color(0, 0, 0), x, y, this.borderWidth, size)
-        Renderer.drawRect(Renderer.color(0, 0, 0), x + size - this.borderWidth, y, this.borderWidth, size)
-        Renderer.drawRect(Renderer.color(0, 0, 0), x, y + size - this.borderWidth, size, this.borderWidth)
     }
 
 }

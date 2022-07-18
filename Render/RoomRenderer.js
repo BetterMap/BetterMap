@@ -64,7 +64,7 @@ class RoomRenderer {
 
         let location = room.components[0]
         if (room.checkmarkState === 1) {
-            graphics.drawImage(questionMark, this.blockSize * location.arrayX + 8, this.blockSize * location.arrayY + 8, 10, 14, null)
+            graphics.drawImage(questionMark, this.blockSize * location.arrayX + 8, this.blockSize * location.arrayY + 6, 10, 16, null)
         }
         if (room.checkmarkState === 3) {
             graphics.drawImage(whiteCheck, this.blockSize * location.arrayX + 8, this.blockSize * location.arrayY + 8, 10, 10, null)

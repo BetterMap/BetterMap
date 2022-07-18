@@ -31,8 +31,6 @@ class Room {
 
         this.type = type
         this.components = components
-        /**@type {String} */
-        this.roomId = roomId
 
         /**
          * -1 -> failed
@@ -44,21 +42,33 @@ class Room {
          */
         this.checkmarkState = 0
 
+        this.maxSecrets = 0
+        this.currentSecrets = 0
+
         /**
          * @type {Array<Door>}
          */
         this.adjecentDoors = []
 
-        //room data from the 
+        //room data from the room id
         this.data = undefined
+
+        this.roomId = roomId
     }
 
     get roomId() {
         return this._roomId
     }
+    /**@param {String} value */
     set roomId(value) {
-        this._roomId = value
-        this.data = DungeonRoomData.getDataFromId(this._roomId)
+        if (!value) return
+
+        this._roomId = value.trim()
+        this.data = DungeonRoomData.getDataFromId(value.trim())
+
+        if (this.data) {
+            this.maxSecrets = this.data.secrets
+        }
     }
 
     setType(type) {

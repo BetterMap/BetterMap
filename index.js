@@ -18,6 +18,9 @@ let dungeonMapRenderContext = null;
 
 let mapRenderer = new MapRenderer();
 
+asd = true
+register('command', () => asd = false).setName("asd", true)
+
 register("step", () => {
     if (DataLoader.isInDungeon && DataLoader.dungeonFloor) {
         if (!currentDungeonMap) { //entered dungeon, create map data
@@ -40,6 +43,7 @@ register("step", () => {
             mapData = item.getItem()[m.getMapData](item.getItemStack(), World.getWorld())
         } catch (error) {
         }
+        if (asd) mapData = undefined
         if (mapData) {
             currentDungeonMap.updateFromMap(mapData)
         } else {
@@ -76,6 +80,12 @@ register("renderOverlay", () => {
 
     }
 })
+
+register("actionBar", (curr, max) => {
+    if (currentDungeonMap) {
+        currentDungeonMap.secretCountActionBar(parseInt(curr), parseInt(max))
+    }
+}).setCriteria('&7${curr}/${max} Secrets').setParameter('contains')
 
 register("worldLoad", () => {
     if (currentDungeonMap) {

@@ -9,7 +9,7 @@
 
 /**
  * @typedef {Object} DungeonData
- * @property {Array<String>} ids - Array of possible room ids
+ * @property {Array<String>} id - Array of possible room ids
  * @property {String} name - Name of the room
  * @property {"spawn"|"mobs"|"miniboss"|"rare"|"gold"|"puzzle"|"trap"|"blood"|"fairy"} type - Name of the room
  * @property {"1x1"|"1x2"|"1x3"|"1x4"|"2x2"|"L"} shape - Shape of the room

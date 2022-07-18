@@ -73,7 +73,45 @@ class DungeonMap {
     }
 
     socketData(data) {
-        console.log(JSON.stringify(data, undefined, 2))
+        switch (data.type) {
+            case "playerLocation":
+                let p = this.players[this.playersNameToId[data.username]]
+                p.setXAnimate(data.x)
+                p.setYAnimate(data.z)
+                p.setRotateAnimate(data.yaw)
+                break;
+            case "roomSecrets":
+                let currentRoom = this.rooms.get(data.x + ',' + data.y);
+
+                if (!currentRoom || currentRoom.type === Room.UNKNOWN) return; //current room not loaded yet
+
+                if (currentRoom.currentSecrets !== data.min || currentRoom.maxSecrets !== data.max) {
+                    currentRoom.maxSecrets = data.max
+                    currentRoom.currentSecrets = data.min
+
+                    this.markChanged() //re-render map incase of a secret count specific texturing
+                }
+                break;
+            case "doorLocation":
+                this.setDoor(data.x, data.y, data.ishorisontal, false, data.type)
+                break;
+            case "roomLocation":
+                this.setRoom(data.x, data.y, data.rotation, data.roomid, false)
+                break;
+            case "roomId":
+                let currentRoom2 = this.rooms.get(data.x + ',' + data.y);
+
+                if (!currentRoom2 || currentRoom2.roomId || currentRoom2.type === Room.UNKNOWN) return; //current room not loaded yet, or already loaded id
+
+                currentRoom2.roomId = data.roomId;
+                this.identifiedRoomIds.add(data.roomId);
+
+                this.markChanged() //re-render map incase of a room-id specific texturing
+                break;
+            default:
+                console.log(JSON.stringify(data, undefined, 2))
+                break;
+        }
     }
 
     sendSocketData(data) {
@@ -507,6 +545,14 @@ class DungeonMap {
             currentRoom.currentSecrets = min
 
             this.markChanged() //re-render map incase of a secret count specific texturing
+
+            this.sendSocketData({
+                type: 'roomSecrets',
+                min: min,
+                max: max,
+                x: x,
+                y: y
+            })
         }
     }
 
@@ -528,6 +574,11 @@ class DungeonMap {
         this.identifiedRoomIds.add(roomId);
 
         this.markChanged() //re-render map incase of a room-id specific texturing
+
+        this.sendSocketData({
+            type: "roomId",
+            x, y, roomId
+        })
     }
 
     drawRoomTooltip(context, cursorX, cursorY) {
@@ -637,20 +688,20 @@ class DungeonMap {
 
             //checking for doors on all sides of room
             if (this.getBlockAt(x + 16, 73, y) !== 0) {
-                this.setDoor(x + 16, y, 0)
+                this.setDoor(x + 16, y, 0, true)
             }
             if (this.getBlockAt(x, 73, y + 16) !== 0) {
-                this.setDoor(x, y + 16, 1)
+                this.setDoor(x, y + 16, 1, true)
             }
             if (this.getBlockAt(x + 16, 73, y + 32) !== 0) {
-                this.setDoor(x + 16, y + 32, 0)
+                this.setDoor(x + 16, y + 32, 0, true)
             }
             if (this.getBlockAt(x + 32, 73, y + 16) !== 0) {
-                this.setDoor(x + 32, y + 16, 1)
+                this.setDoor(x + 32, y + 16, 1, true)
             }
         }
     }
-    setRoom(x, y, rotation, roomId) {
+    setRoom(x, y, rotation, roomId, locallyFound) {
         let locstr = x + "," + y
 
         let roomData = DungeonRoomData.getDataFromId(roomId)
@@ -758,19 +809,28 @@ class DungeonMap {
             this.rooms.set(c.arrayX + "," + c.arrayY, room)
         })
         this.markChanged()
+
+        if (locallyFound) {
+            this.sendSocketData({
+                type: "roomLocation",
+                x, y, rotation, roomId
+            })
+        }
     }
 
-    setDoor(x, y, ishorisontal) {
+    setDoor(x, y, ishorisontal, locallyFound, type = -1) {
         let rx = x - 4 //offset xy of room placed in world so it matches nicely with rendering
         let ry = y - 4
         if (this.doors.get(rx + "," + ry)) return //already door loaded there
 
         let id = World.getBlockStateAt(new BlockPos(x, 69, y)).getBlockId() //get type of door
-        if (id === 0) type = Room.UNKNOWN
-        else if (id === 97) type = Room.NORMAL
-        else if (id === 173) type = Room.BLACK
-        else if (id === 159) type = Room.BLOOD
-        else return //return if door issnt made of those blocks (maby its not actually a door, eg back of green room)
+        if (type === -1) {
+            if (id === 0) type = Room.UNKNOWN
+            else if (id === 97) type = Room.NORMAL
+            else if (id === 173) type = Room.BLACK
+            else if (id === 159) type = Room.BLOOD
+            else return //return if door issnt made of those blocks (maby its not actually a door, eg back of green room)
+        }
 
         if (ishorisontal) {
             {
@@ -844,6 +904,13 @@ class DungeonMap {
         let door = new Door(type, new Position(rx, ry), ishorisontal)
         this.doors.set(rx + "," + ry, door)
         this.markChanged()
+
+        if (locallyFound) {
+            this.sendSocketData({
+                type: "doorLocation",
+                x, y, ishorisontal, type
+            })
+        }
     }
 
     /**

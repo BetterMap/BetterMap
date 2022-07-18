@@ -679,7 +679,7 @@ class DungeonMap {
                     this.setAirLocs.add((x - 1 + 32) + "," + (y - 1 + 1 + 32))
                 }
 
-                this.setRoom(roomWorldData.x, roomWorldData.y, rotation, roomid)
+                this.setRoom(roomWorldData.x, roomWorldData.y, rotation, roomid, true)
                 this.identifiedRoomIds.add(roomid);
             }
         }

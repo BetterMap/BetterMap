@@ -71,7 +71,10 @@ class MapRenderer {
             //create image if not cached or cache outdated
             if (renderContext.image) {
                 renderContext.image.getTexture()[m.deleteGlTexture]()
-                images.delete(renderContext.image)
+                const index = images.indexOf(renderContext.image);
+                if (index > -1) {
+                    images.splice(index, 1)
+                }
             }
             renderContext.image = new Image(this.createMapImage(dungeonMap));
 

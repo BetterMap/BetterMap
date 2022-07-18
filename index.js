@@ -64,7 +64,14 @@ register("renderOverlay", () => {
         for (let player of currentDungeonMap.players) {
             player.drawIcon(mapContext)
         }
-        currentDungeonMap.drawRoomTooltip(mapContext);
+
+
+        if (Client.isInChat()) {
+            //Putting checks and xy loading here so that we can draw tooltips in other guis in the future
+            let cursorX = Client.getMouseX();
+            let cursorY = Client.getMouseY();
+            currentDungeonMap.drawRoomTooltip(mapContext, cursorX, cursorY);
+        }
     }
 })
 

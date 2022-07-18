@@ -1,4 +1,5 @@
 import { m } from "../../mappings/mappings.js"
+import DungeonRoomData from "../Data/DungeonRoomData.js"
 
 class Room {
 
@@ -28,6 +29,7 @@ class Room {
     constructor(type, components, roomId) {
         this.type = type
         this.components = components
+        /**@type {String} */
         this.roomId = roomId
 
         /**
@@ -44,6 +46,14 @@ class Room {
          * @type {Array<Door>}
          */
         this.adjecentDoors = []
+
+        //room data from the 
+        this.data = undefined
+    }
+
+    set roomId(value) {
+        this.roomId = value
+        this.data = DungeonRoomData.getDataFromId(roomId)
     }
 
     setType(type) {

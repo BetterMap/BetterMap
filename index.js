@@ -40,7 +40,7 @@ register("step", () => {
             mapData = item.getItem()[m.getMapData](item.getItemStack(), World.getWorld())
         } catch (error) {
         }
-        mapData = undefined
+
         if (mapData) {
             currentDungeonMap.updateFromMap(mapData)
         } else {

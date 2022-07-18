@@ -95,7 +95,7 @@ class DungeonMap {
                 }
                 break;
             case "doorLocation":
-                this.setDoor(data.x, data.y, data.ishorisontal, false, data.type)
+                this.setDoor(data.x, data.y, data.ishorisontal, false, data.doorType)
                 break;
             case "roomLocation":
                 this.setRoom(data.x, data.y, data.rotation, data.roomid, false)
@@ -652,7 +652,6 @@ class DungeonMap {
                 this.lastRoomId = roomid
 
                 let roomWorldData = this.getRoomWorldData()
-                console.log(JSON.stringify(roomWorldData, undefined, 2))
 
                 let rotation = roomWorldData.width > roomWorldData.height ? 0 : 1
 
@@ -911,7 +910,7 @@ class DungeonMap {
         if (locallyFound) {
             this.sendSocketData({
                 type: "doorLocation",
-                x, y, ishorisontal, type
+                x, y, ishorisontal, doorType: type
             })
         }
     }

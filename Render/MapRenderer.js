@@ -7,6 +7,7 @@ import DoorRenderer from "./DoorRenderer"
 import DungeonMap from "../Components/DungeonMap"
 import Room from "../Components/Room"
 import Door from "../Components/Door"
+let images = Java.type("com.chattriggers.ctjs.CTJS").INSTANCE.images
 
 class MapRenderer {
 
@@ -70,6 +71,7 @@ class MapRenderer {
             //create image if not cached or cache outdated
             if (renderContext.image) {
                 renderContext.image.getTexture()[m.deleteGlTexture]()
+                images.delete(renderContext.image)
             }
             renderContext.image = new Image(this.createMapImage(dungeonMap));
 

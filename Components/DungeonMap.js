@@ -110,9 +110,6 @@ class DungeonMap {
 
                 this.markChanged() //re-render map incase of a room-id specific texturing
                 break;
-            default:
-                console.log(JSON.stringify(data, undefined, 2))
-                break;
         }
     }
 

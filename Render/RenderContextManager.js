@@ -10,7 +10,7 @@ class RenderContextManager {
 
     destroy() {
         for (context of this.renderContexts) {
-            context.destroy();
+            context?.destroy();
         }
         this.renderContexts = []
     }

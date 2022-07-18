@@ -16,11 +16,6 @@ class Door {
         return roomColorMap.get(this.type)
     }
 
-    render(graphics) {
-        graphics.setColor(this.getRenderColor())
-
-        graphics.fillRect(this.position.worldX + (this.horisontal ? 1 : 0), this.position.worldY + (this.horisontal ? 0 : 1), this.horisontal ? 6 : 8, this.horisontal ? 8 : 6)
-    }
 }
 
 export default Door

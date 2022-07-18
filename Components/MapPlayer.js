@@ -43,8 +43,8 @@ class MapPlayer {
      * @param {Number} mapSize 
      * @param {Number} imgSize 
      */
-    drawIcon() {
-        let { x, y, size, headScale } = this.dungeonMap.getCurrentRenderContext()
+    drawIcon(renderContext) {
+        let { x, y, size, headScale } = renderContext.getMapDimensions()
 
         let rx = -headScale / 2 * size / 100 //offsetting to the left by half image width,
         let ry = -headScale / 2 * size / 100 //image width = headscale* size /100 (size = map size eg 100px, dividing by 100 so its exactly headscale when mapsize is 100)

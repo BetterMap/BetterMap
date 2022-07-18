@@ -3,27 +3,33 @@
 
 import { m } from "../mappings/mappings"
 import DungeonMap from "./Components/DungeonMap"
+import MapRenderer from "./Render/MapRenderer"
+import RenderContextManager from "./Render/RenderContextManager"
 import DataLoader from "./Utils/DataLoader"
 
 /// <reference lib="es2015" />
 
 /**@type {DungeonMap} */
 let currentDungeonMap = undefined
-let dungeonMapRenderContext = undefined
 let deadPlayers = new Set()
+
+let renderContextManager = new RenderContextManager();
+let dungeonMapRenderContext = null;
+
+let mapRenderer = new MapRenderer();
 
 register("step", () => {
     if (DataLoader.isInDungeon && DataLoader.dungeonFloor) {
         if (!currentDungeonMap) {
             currentDungeonMap = new DungeonMap(DataLoader.dungeonFloor, deadPlayers)
 
-            dungeonMapRenderContext = currentDungeonMap.createRenderContext({ x: Renderer.screen.getWidth() - 150 - 10, y: 10, size: 150 })
+            dungeonMapRenderContext = renderContextManager.createRenderContext(Renderer.screen.getWidth() - 150 - 10, 10, 150);
         }
     } else {
         if (currentDungeonMap) {
-            currentDungeonMap.destroy()
+            currentDungeonMap.destroy();
             currentDungeonMap = undefined
-            dungeonMapRenderContext = undefined
+            renderContextManager.destroy();
         }
     }
 
@@ -51,9 +57,14 @@ register("step", () => {
 
 register("renderOverlay", () => {
     if (dungeonMapRenderContext && currentDungeonMap) {
+        mapContext = renderContextManager.getRenderContextData(dungeonMapRenderContext)
         currentDungeonMap.updatePlayersFast()
-        currentDungeonMap.draw(dungeonMapRenderContext)
-        currentDungeonMap.drawRoomTooltip(dungeonMapRenderContext);
+        mapRenderer.draw(mapContext, currentDungeonMap)
+        //render heads
+        for (let player of currentDungeonMap.players) {
+            player.drawIcon(mapContext)
+        }
+        currentDungeonMap.drawRoomTooltip(mapContext);
     }
 })
 

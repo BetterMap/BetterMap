@@ -52,8 +52,6 @@ class DungeonMap {
         this.players = []
         this.playersNameToId = {}
 
-        this.currentRenderContextId = 0
-
         this.lastRenderContext = 1 //starting at one so that if(renderContext) returns true always if it exists
         this.renderContexts = []
 
@@ -72,94 +70,12 @@ class DungeonMap {
     }
 
     destroy() {
-        for (let context of this.renderContexts) {
-            if (!context) continue
-
-            context.lastImage?.getTexture()?.func_147631_c()//[m.deleteGlTexture]()
-            context.image?.getTexture()?.[m.deleteGlTexture]()
-            context.lastImage = undefined
-            context.image = undefined
-        }
-
-        this.renderContexts = []
         this.rooms.clear()
         this.roomsArr.clear()
     }
 
     markChanged() {
         this.lastChanged = Date.now()
-    }
-
-    createRenderContext({ x, y, size, headScale = 8 }) {
-        let contextId = this.lastRenderContext++
-
-        let contextData = {
-            x,
-            y,
-            size,
-            headScale,
-            image: undefined,
-            imageLastUpdate: 0,
-            lastImage: undefined
-        }
-
-        this.renderContexts[contextId] = contextData
-
-        return contextId
-    }
-
-    getRenderContextData(contextId) {
-        return this.renderContexts[contextId]
-    }
-
-    getCurrentRenderContext() {
-        return this.getRenderContextData(this.currentRenderContextId)
-    }
-
-    draw(contextId) {
-        this.currentRenderContextId = contextId
-        if (!this.getCurrentRenderContext()) return
-
-        let { x, y, size } = this.getCurrentRenderContext()
-
-        let useOldImg = false
-        if (!this.getCurrentRenderContext().image
-            || (this.getCurrentRenderContext().imageLastUpdate < this.lastChanged)) {
-            //create image if not cached or cache outdated
-            if (this.getCurrentRenderContext().lastImage) {
-                this.getCurrentRenderContext().lastImage.getTexture()[m.deleteGlTexture]()
-            }
-            this.getCurrentRenderContext().lastImage = this.getCurrentRenderContext().image
-            this.getCurrentRenderContext().image = new Image(this.renderImage(contextId))
-
-            useOldImg = true
-            this.getCurrentRenderContext().image.draw(0, 0, 0, 0)
-            this.getCurrentRenderContext().imageLastUpdate = Date.now()
-        }
-
-        let img
-        if (useOldImg && this.getCurrentRenderContext().lastImage) {
-            img = this.getCurrentRenderContext().lastImage
-        } else {
-            img = this.getCurrentRenderContext().image
-        }
-
-        Renderer.drawRect(Renderer.color(0, 0, 0, 100), x, y, size, size)//background
-
-        img.draw(x, y, size, size)
-
-        Renderer.drawRect(Renderer.color(0, 0, 0), x, y, size, 2) //border
-        Renderer.drawRect(Renderer.color(0, 0, 0), x, y, 2, size)
-        Renderer.drawRect(Renderer.color(0, 0, 0), x + size - 2, y, 2, size)
-        Renderer.drawRect(Renderer.color(0, 0, 0), x, y + size - 2, size, 2)
-
-
-        //render heads
-        for (let player of this.players) {
-            player.drawIcon()
-        }
-
-        //TODO: render stuff overlayed on the image (text on map, secrets info ect)
     }
 
     updatePlayers() {
@@ -373,7 +289,7 @@ class DungeonMap {
                     position.mapX = mapX
                     position.mapY = mapY
                     let currRoom = this.rooms.get(position.arrayX + "," + position.arrayY)
-                    if (currRoom.checkmarkState < Room.CLEARED) {
+                    if (currRoom && currRoom.checkmarkState < Room.CLEARED) {
                         currRoom.checkmarkState = Room.CLEARED
                         this.markChanged()
                     }
@@ -445,32 +361,6 @@ class DungeonMap {
         }
     }
 
-    renderImage(contextId) {
-        //create 256x256 image
-        let image = new BufferedImage(256, 256, BufferedImage.TYPE_INT_ARGB)
-
-        //create graphics rendering context
-        let graphics = image.createGraphics()
-
-        //translate dungeon into view
-        graphics.translate(256 - 32, 256 - 32)
-
-        //render doors
-        for (let door of this.doors.values()) {
-            door.render(graphics)
-        }
-
-        //render rooms
-        for (let room of this.roomsArr) {
-            room.render(graphics)
-        }
-
-        //undo translation
-        graphics.translate(-256 + 32, -256 + 32)
-
-        return image
-    }
-
     getScore() {
         let exploration = 0;
         let time = 100; //TODO:  Figure out how to actually do this one
@@ -530,18 +420,17 @@ class DungeonMap {
         if (this.identifiedRoomIds.has(roomId)) { return };
         let currentRoom = this.rooms.get(x + ',' + y);
         if (!currentRoom || currentRoom.roomId) { return };
-        ChatLib.chat('Identified current room as ' + roomId);
         currentRoom.roomId = roomId;
         currentRoom.data = DungeonRoomData.getDataFromId(roomId)
         this.identifiedRoomIds.add(roomId);
     }
 
-    drawRoomTooltip() {
+    drawRoomTooltip(context) {
         if (!Client.isInChat()) return;
 
         let cursorX = Client.getMouseX();
         let cursorY = Client.getMouseY();
-        let { x, y, size } = this.getCurrentRenderContext()
+        let { x, y, size } = context.getMapDimensions();
         const borderPixels = 27 / 256 * size;
         if (cursorX < x + borderPixels || cursorY < y + borderPixels || cursorX > x + size - borderPixels || cursorY > y + size - borderPixels) return;
 
@@ -625,7 +514,6 @@ class DungeonMap {
         let locstr = x + "," + y
 
         let roomData = DungeonRoomData.getDataFromId(roomId)
-        ChatLib.chat(JSON.stringify(roomData));
         let type = Room.NORMAL
         switch (roomData.type) {
             case "mobs":

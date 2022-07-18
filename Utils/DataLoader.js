@@ -82,6 +82,8 @@ class DataLoader {
 
         if (!this.isInSkyblock) {
             this.stats = {}
+            this.isInDungeon = false
+            this.dungeonFloor = undefined
             return
         }
 

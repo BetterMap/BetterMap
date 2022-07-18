@@ -256,7 +256,7 @@ class DungeonMap {
                         room.checkmarkState = room.type === Room.UNKNOWN ? Room.ADJACENT : Room.OPENED
                         this.markChanged()
                     } else {
-                        if (currRoom.type !== r1x1s[pixelColor]) { //TODO: account for incorrect room being here due to early map scanning
+                        if (currRoom.type !== r1x1s[pixelColor] && !currRoom.roomId) { //TODO: account for incorrect room being here due to early map scanning
                             currRoom.setType(r1x1s[pixelColor])
                             currRoom.checkmarkState = currRoom.type === Room.UNKNOWN ? Room.ADJACENT : Room.OPENED
                             this.markChanged();
@@ -329,7 +329,7 @@ class DungeonMap {
                     position.mapX = mapX
                     position.mapY = mapY
                     let currRoom = this.rooms.get(position.arrayX + "," + position.arrayY)
-                    if (currRoom && currRoom.checkmarkState < Room.CLEARED) {
+                    if (currRoom && currRoom.checkmarkState !== Room.CLEARED) {
                         currRoom.checkmarkState = Room.CLEARED
                         this.markChanged()
                     }
@@ -340,7 +340,7 @@ class DungeonMap {
                     position.mapX = mapX
                     position.mapY = mapY
                     let currRoom = this.rooms.get(position.arrayX + "," + position.arrayY)
-                    if (currRoom.checkmarkState < Room.COMPLETED) {
+                    if (currRoom.checkmarkState !== Room.COMPLETED) {
                         currRoom.checkmarkState = Room.COMPLETED
                         this.markChanged()
                     }
@@ -527,8 +527,8 @@ class DungeonMap {
         if (room.roomId) { //TODO: COLOR CODES!
             roomLore.push(room.data?.name || '???')
             roomLore.push("&8" + (room.roomId || ""))
-            roomLore.push("Secrets: " + room.currentSecrets + ' / ' + room.maxSecrets)
-            roomLore.push("Spiders: " + (room.data?.spiders ? "Yes" : "No"))
+            if (room.maxSecrets) roomLore.push("Secrets: " + room.currentSecrets + ' / ' + room.maxSecrets)
+            if (room.type === Room.NORMAL) roomLore.push("Spiders: " + (room.data?.spiders ? "Yes" : "No"))
         } else {
             roomLore.push('Unknown room!')
         }
@@ -571,6 +571,7 @@ class DungeonMap {
                 this.lastRoomId = roomid
 
                 let roomWorldData = this.getRoomWorldData()
+                console.log(JSON.stringify(roomWorldData, undefined, 2))
 
                 let rotation = roomWorldData.width > roomWorldData.height ? 0 : 1
 
@@ -912,12 +913,12 @@ class DungeonMap {
             width += 32
         }
         while (this.getBlockIdAt(x + width, roofY, y - 1) !== 0
-            && this.getBlockIdAt(x + width, roofY, y - 1 + 32) !== 0) {//second iteration incase of L shape
+            && this.getBlockIdAt(x + width, roofY, y - 1 + (height === 30 ? 0 : 32)) !== 0) {//second iteration incase of L shape
             y -= 32
             height += 32
         }
         while (this.getBlockIdAt(x - 1, roofY, y + height) !== 0
-            && this.getBlockIdAt(x - 1 + 32, roofY, y + height) !== 0) { //third iteration incase of L shape
+            && this.getBlockIdAt(x - 1 + (width === 30 ? 0 : 32), roofY, y + height) !== 0) { //third iteration incase of L shape
             x -= 32
             width += 32
         }

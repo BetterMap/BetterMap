@@ -258,7 +258,7 @@ class DungeonMap {
                     } else {
                         if (currRoom.type !== r1x1s[pixelColor]) { //TODO: account for incorrect room being here due to early map scanning
                             currRoom.setType(r1x1s[pixelColor])
-                            currRoom.checkmarkState = Room.OPENED
+                            currRoom.checkmarkState = currRoom.type === Room.UNKNOWN ? Room.ADJACENT : Room.OPENED
                             this.markChanged();
                         }
                         if (currRoom.checkmarkState === Room.ADJACENT && currRoom.type !== Room.UNKNOWN && r1x1s[pixelColor] !== Room.UNKNOWN) {
@@ -410,7 +410,6 @@ class DungeonMap {
                     } else {
                         //door already there
                         this.doors.get(position.worldX + "," + position.worldY).type = type
-
                     }
                 }
             }

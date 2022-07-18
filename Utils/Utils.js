@@ -34,11 +34,11 @@ export function renderLore(x, y, lore) {
         k += 2 + (lore.length - 1) * 10;
     }
 
-    if (l1 + maxWidth > Renderer.screen.getWidth()) {
+    if (l1 + maxWidth > Renderer.screen.getWidth() - 6) {
         l1 -= 28 + maxWidth;
     }
 
-    if (i2 + k + 6 > Renderer.screen.getHeight()) {
+    if (i2 + k + 6 > Renderer.screen.getHeight() - 6) {
         i2 = Renderer.screen.getHeight() - k - 6;
     }
 

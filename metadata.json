@@ -8,6 +8,7 @@
   "version": "0.0.1",
   "requires": [
     "mappings",
-    "soopyApis"
+    "soopyApis",
+    "guimanager"
   ]
 }

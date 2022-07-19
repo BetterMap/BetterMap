@@ -4,9 +4,8 @@ import { m } from "../../mappings/mappings"
 
 import RoomRenderer from "./RoomRenderer"
 import DoorRenderer from "./DoorRenderer"
+import renderLibs from "../../guimanager/renderLibs"
 import DungeonMap from "../Components/DungeonMap"
-import Room from "../Components/Room"
-import Door from "../Components/Door"
 
 class MapRenderer {
 
@@ -48,6 +47,11 @@ class MapRenderer {
         return image;
     }
 
+    /**
+     * 
+     * @param {*} renderContext 
+     * @param {DungeonMap} dungeonMap 
+     */
     draw(renderContext, dungeonMap) {
         if (!renderContext) return
 
@@ -61,7 +65,27 @@ class MapRenderer {
             Renderer.drawRect(Renderer.color(0, 0, 0), x, y, size, this.borderWidth) //border
             Renderer.drawRect(Renderer.color(0, 0, 0), x, y, this.borderWidth, size)
             Renderer.drawRect(Renderer.color(0, 0, 0), x + size - this.borderWidth, y, this.borderWidth, size)
-            Renderer.drawRect(Renderer.color(0, 0, 0), x, y + size - this.borderWidth, size, this.borderWidth)
+
+            //dont render bottom line if scoreinfo rendering
+            //Renderer.drawRect(Renderer.color(0, 0, 0), x, y + size - this.borderWidth, size, this.borderWidth)
+
+            //score info under map
+            //TODO: add toggle
+
+            let scoreInfoHeight = 10 * size / 100
+
+            Renderer.drawRect(Renderer.color(0, 0, 0, 100), x, y + size, size, scoreInfoHeight)//background
+
+            let scoreInfo = dungeonMap.getScore() //TODO: better display text
+            renderLibs.drawStringCenteredFull(scoreInfo.total, x + size / 4, y + size + scoreInfoHeight / 2, size / 100)
+
+            renderLibs.drawStringCenteredFull(scoreInfo.mimic.toString(), x + size / 4 * 3, y + size + scoreInfoHeight / 2, size / 100)
+
+            Renderer.drawRect(Renderer.color(0, 0, 0, 100), x, y + size - this.borderWidth, size, this.borderWidth)
+
+            Renderer.drawRect(Renderer.color(0, 0, 0), x, y + size, this.borderWidth, scoreInfoHeight) //border of score info
+            Renderer.drawRect(Renderer.color(0, 0, 0), x + size - this.borderWidth, y + size, this.borderWidth, scoreInfoHeight)
+            Renderer.drawRect(Renderer.color(0, 0, 0), x, y + size + scoreInfoHeight, size, this.borderWidth)
 
         }
 

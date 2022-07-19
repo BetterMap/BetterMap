@@ -9,8 +9,9 @@ import DungeonRoomData from "../Data/DungeonRoomData.js"
 import { renderLore } from "../Utils/Utils.js"
 import socketConnection from "../socketConnection.js"
 import DataLoader from "../Utils/DataLoader.js"
+import { fetch } from "../Utils/networkUtils.js"
 
-const BufferedImage = Java.type("java.awt.image.BufferedImage")
+const MESSAGE_PREFIX = "&6[BetterMap]&7 "
 
 let PlayerComparator = Java.type("net.minecraft.client.gui.GuiPlayerTabOverlay").PlayerComparator
 let c = PlayerComparator.class.getDeclaredConstructor()
@@ -57,6 +58,8 @@ class DungeonMap {
         this.renderContexts = []
 
         this.mimicKilled = false;
+        this.firstDeath = false
+        this.firstDeathHadSpirit = false
 
 
         //load from world datra
@@ -512,7 +515,7 @@ class DungeonMap {
         }
     }
 
-    getScore() {
+    getScore() { //TODO: cache this so it doesent re-calculate every frame
         let exploration = 0;
         let time = 100; //TODO:  Figure out how to actually do this one
         let skill = 0;
@@ -542,9 +545,10 @@ class DungeonMap {
         //NOPE
 
         //skill
-        //TODO: Check for spirit pet through API
         skill += ~~(completedRooms / totalRoomEstimate * 80) - unfinshedPuzzles * 10;
         skill -= deaths * 2;
+        if (this.firstDeathHadSpirit) skill += 1
+
         //cant physically drop below 20 score, no matter what
         skill = Math.max(0, skill);
         skill += 20;
@@ -564,7 +568,50 @@ class DungeonMap {
             "skill": skill,
             "exploration": exploration,
             "time": time,
-            "bonus": bonus
+            "bonus": bonus,
+            "total": skill + exploration + time + bonus,
+            "mimic": this.mimicKilled
+        }
+    }
+
+    scanFirstDeathForSpiritPet(username) {
+        if (this.firstDeath) return
+        this.firstDeath = true
+        if (!this.nameToUuid[username.toLowerCase()]) return
+        let uuid = this.nameToUuid[username.toLowerCase()]?.replace(/-/g, "")
+
+        let apiKey = undefined//TODO: this
+
+        if (apiKey) {
+            fetch(`https://api.hypixel.net/skyblock/profiles?key=${apiKey}&uuid=${uuid}`).json(data => {
+                if (!data.success) return
+
+                let latestProfile = [0, undefined]
+
+                data.profiles.forEach(p => {
+                    if (p.members[uuid].last_save > latestProfile[0]) {
+                        latestProfile = [p.members[uuid].last_save, p.members[uuid].pets.some(pet => pet.type === "SPIRIT" && pet.tier === "LEGENDARY")]
+                    }
+                })
+
+                if (latestProfile[1]) {
+                    this.firstDeathHadSpirit = true
+                    ChatLib.chat(messagePrefix + username + " has spirit pet!")
+                } else {
+                    ChatLib.chat(messagePrefix + username + " does not have spirit pet!")
+                }
+            })
+        } else {
+            fetch(`http://soopy.dev/api/v2/player_skyblock/${uuid}`).json(data => {
+                if (!data.success) return
+
+                if (data.data.profiles[data2.data.stats.currentProfileId].members[uuid].pets.some(pet => pet.type === "SPIRIT" && pet.tier === "LEGENDARY")) {
+                    this.firstDeathHadSpirit = true
+                    ChatLib.chat(messagePrefix + username + " has spirit pet!")
+                } else {
+                    ChatLib.chat(messagePrefix + username + " does not have spirit pet!")
+                }
+            })
         }
     }
 

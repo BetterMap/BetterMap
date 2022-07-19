@@ -69,7 +69,9 @@ class MapRenderer {
             || (renderContext.imageLastUpdate < dungeonMap.lastChanged)) {
             //create image if not cached or cache outdated
             if (renderContext.image) {
-                renderContext.image.destroy()
+                try {
+                    renderContext.image.destroy()
+                } catch (_) { }//if u dont have modified ct version
             }
             renderContext.image = new Image(this.createMapImage(dungeonMap));
 

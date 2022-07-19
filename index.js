@@ -15,7 +15,7 @@ let currentDungeonMap = undefined
 let deadPlayers = new Set()
 
 let renderContextManager = new RenderContextManager();
-let dungeonMapRenderContext = null;
+let dungeonMapRenderContext = renderContextManager.createRenderContext(Renderer.screen.getWidth() - 150 - 10, 10, 150);
 
 let mapRenderer = new MapRenderer();
 
@@ -24,14 +24,11 @@ register("step", () => {
     if (DataLoader.isInDungeon && DataLoader.dungeonFloor) {
         if (!currentDungeonMap) { //entered dungeon, create map data
             currentDungeonMap = new DungeonMap(DataLoader.dungeonFloor, deadPlayers)
-
-            dungeonMapRenderContext = renderContextManager.createRenderContext(Renderer.screen.getWidth() - 150 - 10, 10, 150);
         }
     } else {
         if (currentDungeonMap) { //left dungeon, clear map data
             currentDungeonMap.destroy();
             currentDungeonMap = undefined
-            dungeonMapRenderContext = undefined
         }
     }
 
@@ -67,7 +64,7 @@ betterMapServer.datacallback = (data) => {
 register("renderOverlay", () => {
     if (dungeonMapRenderContext && currentDungeonMap) {
 
-        mapContext = renderContextManager.getRenderContextData(dungeonMapRenderContext)
+        let mapContext = renderContextManager.getRenderContextData(dungeonMapRenderContext)
         currentDungeonMap.updatePlayersFast()
         mapRenderer.draw(mapContext, currentDungeonMap)
         //render heads
@@ -96,7 +93,6 @@ register("worldLoad", () => {
     if (currentDungeonMap) {
         currentDungeonMap.destroy()
         currentDungeonMap = null
-        dungeonMapRenderContext = undefined
     }
     deadPlayers.clear()
 })

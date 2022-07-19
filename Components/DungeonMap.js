@@ -74,13 +74,15 @@ class DungeonMap {
 
 
         let mimicDeadMessages = ["$SKYTILS-DUNGEON-SCORE-MIMIC$", "Mimic Killed!", "Mimic Dead!", "Mimic dead!"]
-        register("chat", (msg) => {
+
+        this.triggers = []
+        this.triggers.push(register("chat", (msg) => {
             mimicDeadMessages.forEach(dmsg => {
                 if (msg.includes(dmsg)) this.mimicKilled = true
             })
-        }).setChatCriteria("&r&9Party &8> ${msg}")
+        }).setChatCriteria("&r&9Party &8> ${msg}"))
 
-        register("entityDeath", (entity) => {
+        this.triggers.push(register("entityDeath", (entity) => {
             if (entity.getClassName() === "EntityZombie") {
                 if (entity.getEntity().func_70631_g_()) {
                     if (entity.getEntity().func_82169_q(0) === null && entity.getEntity().func_82169_q(1) === null && entity.getEntity().func_82169_q(2) === null && entity.getEntity().func_82169_q(3) === null) {
@@ -89,7 +91,7 @@ class DungeonMap {
                     }
                 }
             }
-        })
+        }))
     }
 
     socketData(data) {
@@ -143,6 +145,8 @@ class DungeonMap {
     destroy() {
         this.rooms.clear()
         this.roomsArr.clear()
+        this.triggers.forEach(a => a.unregister())
+        this.triggers = []
     }
 
     /**

@@ -74,14 +74,12 @@ class MapRenderer {
 
             let scoreInfoHeight = 10 * size / 100
 
-            Renderer.drawRect(Renderer.color(0, 0, 0, 100), x, y + size, size, scoreInfoHeight)//background
-
             let scoreInfo = dungeonMap.getScore() //TODO: better display text
             renderLibs.drawStringCenteredFull(scoreInfo.total, x + size / 4, y + size + scoreInfoHeight / 2, size / 100)
 
             renderLibs.drawStringCenteredFull(scoreInfo.mimic.toString(), x + size / 4 * 3, y + size + scoreInfoHeight / 2, size / 100)
 
-            Renderer.drawRect(Renderer.color(0, 0, 0, 100), x, y + size - this.borderWidth, size, scoreInfoHeight)
+            Renderer.drawRect(Renderer.color(0, 0, 0, 150), x, y + size, size, scoreInfoHeight)
 
             Renderer.drawRect(Renderer.color(0, 0, 0), x, y + size, this.borderWidth, scoreInfoHeight) //border of score info
             Renderer.drawRect(Renderer.color(0, 0, 0), x + size - this.borderWidth, y + size, this.borderWidth, scoreInfoHeight)

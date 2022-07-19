@@ -95,6 +95,12 @@ class DungeonMap {
                 }
             }
         }))
+
+        this.triggers.push(register("chat", (info) => {
+            let player = ChatLib.removeFormatting(info.split(" ")[0])
+
+            this.scanFirstDeathForSpiritPet(player)
+        }).setChatCriteria("&r&c ☠ ${info} and became a ghost&r&7.&r"))
     }
 
     socketData(data) {

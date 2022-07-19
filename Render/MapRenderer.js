@@ -81,7 +81,7 @@ class MapRenderer {
 
             renderLibs.drawStringCenteredFull(scoreInfo.mimic.toString(), x + size / 4 * 3, y + size + scoreInfoHeight / 2, size / 100)
 
-            Renderer.drawRect(Renderer.color(0, 0, 0, 100), x, y + size - this.borderWidth, size, this.borderWidth)
+            Renderer.drawRect(Renderer.color(0, 0, 0, 100), x, y + size - this.borderWidth, size, scoreInfoHeight)
 
             Renderer.drawRect(Renderer.color(0, 0, 0), x, y + size, this.borderWidth, scoreInfoHeight) //border of score info
             Renderer.drawRect(Renderer.color(0, 0, 0), x + size - this.borderWidth, y + size, this.borderWidth, scoreInfoHeight)

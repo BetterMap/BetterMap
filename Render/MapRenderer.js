@@ -70,13 +70,7 @@ class MapRenderer {
             //create image if not cached or cache outdated
             if (renderContext.image) {
                 renderContext.image.getTexture()[m.deleteGlTexture]()
-
-                let images = Java.type("com.chattriggers.ctjs.CTJS").INSTANCE.images
-                const index = images.indexOf(renderContext.image);
-                if (index > -1) {
-                    images.splice(index, 1) //TODO: change to ct method when added
-                }
-                Java.type("com.chattriggers.ctjs.CTJS").INSTANCE.images = images
+                //TODO: add image.destroy() and use that
             }
             renderContext.image = new Image(this.createMapImage(dungeonMap));
 

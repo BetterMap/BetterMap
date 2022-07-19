@@ -69,8 +69,7 @@ class MapRenderer {
             || (renderContext.imageLastUpdate < dungeonMap.lastChanged)) {
             //create image if not cached or cache outdated
             if (renderContext.image) {
-                renderContext.image.getTexture()[m.deleteGlTexture]()
-                //TODO: add image.destroy() and use that
+                renderContext.image.destroy()
             }
             renderContext.image = new Image(this.createMapImage(dungeonMap));
 

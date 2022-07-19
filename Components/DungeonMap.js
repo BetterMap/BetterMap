@@ -61,6 +61,10 @@ class DungeonMap {
         this.firstDeath = false
         this.firstDeathHadSpirit = false
 
+        this.nameToUuid = {
+            "you": Player.getUUID().toString()
+        }
+
 
         //load from world datra
 
@@ -210,6 +214,7 @@ class DungeonMap {
             p.setX(player.getX())
             p.setY(player.getZ())
             p.setRotate(player.getYaw() + 180)
+            this.nameToUuid[player.getName().toLowerCase()] = player.getUUID().toString()
 
             this.sendSocketData({
                 type: "playerLocation",

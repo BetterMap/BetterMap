@@ -8,6 +8,7 @@ import Door from "./Door.js"
 import DungeonRoomData from "../Data/DungeonRoomData.js"
 import { renderLore } from "../Utils/Utils.js"
 import socketConnection from "../socketConnection.js"
+import DataLoader from "../Utils/DataLoader.js"
 
 const BufferedImage = Java.type("java.awt.image.BufferedImage")
 
@@ -70,6 +71,25 @@ class DungeonMap {
 
         //rooms that were already identified
         this.identifiedRoomIds = new Set();
+
+
+        let mimicDeadMessages = ["$SKYTILS-DUNGEON-SCORE-MIMIC$", "Mimic Killed!", "Mimic Dead!", "Mimic dead!"]
+        register("chat", (msg) => {
+            mimicDeadMessages.forEach(dmsg => {
+                if (msg.includes(dmsg)) this.mimicKilled = true
+            })
+        }).setChatCriteria("&r&9Party &8> ${msg}")
+
+        register("entityDeath", (entity) => {
+            if (entity.getClassName() === "EntityZombie") {
+                if (entity.getEntity().func_70631_g_()) {
+                    if (entity.getEntity().func_82169_q(0) === null && entity.getEntity().func_82169_q(1) === null && entity.getEntity().func_82169_q(2) === null && entity.getEntity().func_82169_q(3) === null) {
+                        this.mimicKilled = true
+                        this.sendSocketData({ type: "mimicKilled" })
+                    }
+                }
+            }
+        })
     }
 
     socketData(data) {
@@ -109,6 +129,9 @@ class DungeonMap {
                 this.identifiedRoomIds.add(data.roomId);
 
                 this.markChanged() //re-render map incase of a room-id specific texturing
+                break;
+            case "mimicKilled":
+                this.mimicKilled = true
                 break;
         }
     }
@@ -491,7 +514,8 @@ class DungeonMap {
         let skill = 0;
         let bonus = 0;
 
-        let requiredSecrets = getRequiredSecrets(7, false); //TODO: load floor and master mode from this.floor
+        //If floor is enterance the floor integer entered should be 0
+        let requiredSecrets = getRequiredSecrets(parseInt(this.floor[this.floor.length - 1]) || 0, this.floor[0] === "M");
         let roomCompletion = getScoreboardInfo();
         let [secrets, crypts, deaths, unfinshedPuzzles, completedRoomsTab] = getTabListInfo();
         let completedRooms = 0;
@@ -525,8 +549,12 @@ class DungeonMap {
         bonus += Math.min(5, crypts);
         if (this.floor >= 6 && this.mimicKilled)
             bonus += 2;
-        //TODO: Check for Paul through API
+
+        let paul = DataLoader.currentMayorPerks.has("EZPZ")
         //TODO: Add toggle to check add +10 score anyway, cause of jerry mayor
+        if (paul) {
+            bonus += 10
+        }
 
         return {
             "skill": skill,

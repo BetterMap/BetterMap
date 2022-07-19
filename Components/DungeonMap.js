@@ -445,8 +445,10 @@ class DungeonMap {
 
                     } else {
                         //door already there
-                        this.doors.get(position.worldX + "," + position.worldY).type = type
-
+                        if (this.doors.get(position.worldX + "," + position.worldY).type !== type) {
+                            this.doors.get(position.worldX + "," + position.worldY).type = type
+                            this.markChanged()
+                        }
                     }
                 }
 
@@ -473,7 +475,10 @@ class DungeonMap {
 
                     } else {
                         //door already there
-                        this.doors.get(position.worldX + "," + position.worldY).type = type
+                        if (this.doors.get(position.worldX + "," + position.worldY).type !== type) {
+                            this.doors.get(position.worldX + "," + position.worldY).type = type
+                            this.markChanged()
+                        }
                     }
                 }
             }

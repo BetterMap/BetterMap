@@ -5,7 +5,6 @@ class RenderContextManager {
     constructor() {
         this.renderContexts = [];
         this.lastContext = 0;
-        this.currentRenderContextId = 0
     }
 
     destroy() {
@@ -18,12 +17,6 @@ class RenderContextManager {
     getRenderContextData(contextId) {
         return this.renderContexts[contextId];
     }
-
-
-    getCurrentRenderContext() {
-        return this.getRenderContextData(this.currentRenderContextId)
-    }
-
 
     createRenderContext(x, y, size, headScale = 8) {
         this.lastContext++;

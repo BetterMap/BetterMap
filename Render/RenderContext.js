@@ -7,13 +7,10 @@ class RenderContext {
         this.headScale = headScale;
         this.image = null;
         this.imageLastUpdate = 0;
-        this.lastImage = 0;
     }
 
     destroy() {
-        this.lastImage?.getTexture()?.func_147631_c()//[m.deleteGlTexture]()
         this.image?.getTexture()?.[m.deleteGlTexture]()
-        this.lastImage = undefined
         this.image = undefined
     }
 

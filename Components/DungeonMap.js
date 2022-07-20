@@ -54,9 +54,6 @@ class DungeonMap {
         this.players = []
         this.playersNameToId = {}
 
-        this.lastRenderContext = 1 //starting at one so that if(renderContext) returns true always if it exists
-        this.renderContexts = []
-
         this.mimicKilled = false;
         this.firstDeath = false
         this.firstDeathHadSpirit = false

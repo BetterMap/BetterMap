@@ -1,16 +1,35 @@
-import { roomColorMap } from "../Data/Colors"
+import Door from "../Components/Door"
+import Room from "../Components/Room"
+import RenderContext from "./RenderContext"
 
 class DoorRenderer {
 
-    drawDoor(graphics, door) {
-        graphics.setColor(this.getRenderColor(door.type))
-        //TODO: This only works because the roomsize + gapsize is the same amount as blocks in a room. Find a way to fix this properly
-        //do NOT ask me why 198, i got no clue either
-        graphics.fillRect(door.position.worldX + 198 + (door.horisontal ? 1 : 0), door.position.worldY + 198 + (door.horisontal ? 0 : 1), door.horisontal ? 6 : 8, door.horisontal ? 8 : 6)
+    /**
+     * 
+     * @param {RenderContext} renderContext 
+     * @param {*} graphics 
+     * @param {Door} door 
+     */
+    drawDoor(renderContext, graphics, door) {
+        graphics.setColor(this.getRenderColor(renderContext, door.type))
+
+        let doorWidth = renderContext.doorWidth
+        let roomGap = renderContext.roomGap
+
+        graphics.fillRect(door.position.arrayX * renderContext.blockSize - (door.horisontal ? doorWidth : roomGap), door.position.arrayY * renderContext.blockSize - (door.horisontal ? roomGap : doorWidth), door.horisontal ? doorWidth : roomGap, door.horisontal ? roomGap : doorWidth)
     }
 
-    getRenderColor(type) {
-        return roomColorMap.get(type)
+    /**
+     * @param {RenderContext} renderContext 
+     * @param {*} type 
+     * @returns 
+     */
+    getRenderColor(renderContext, type) {
+        if (type === Room.NORMAL) {
+            type = 9 //NORMAL_CONNECTION
+        }
+
+        return renderContext.colorMap.get(type)
     }
 }
 

@@ -18,11 +18,11 @@ class RenderContextManager {
         return this.renderContexts[contextId];
     }
 
-    createRenderContext(x, y, size, headScale = 8) {
+    createRenderContext(settings = {}) {
         this.lastContext++;
         let contextId = this.lastContext;
 
-        let newContext = new RenderContext(x, y, size, headScale);
+        let newContext = new RenderContext(settings);
 
         this.renderContexts[contextId] = newContext;
 

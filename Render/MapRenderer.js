@@ -25,7 +25,7 @@ class MapRenderer {
     }
 
 
-    createMapImage(dungeon) {
+    createMapImage(dungeon, renderContext) {
         let image = new BufferedImage(this.imageSize, this.imageSize, BufferedImage.TYPE_INT_ARGB);
 
         let graphics = image.createGraphics();
@@ -36,11 +36,11 @@ class MapRenderer {
         //render all doors
         //rendering before rooms that way rooms cover it as there is 1 specific situation where early dungeon will put a room in the middle of an L shape
         for (let door of dungeon.doors.values()) {
-            this.doorRenderer.drawDoor(graphics, door);
+            this.doorRenderer.drawDoor(renderContext, graphics, door);
         }
         //render all rooms
         for (let room of dungeon.roomsArr) {
-            this.roomRenderer.drawRoom(graphics, room);
+            this.roomRenderer.drawRoom(renderContext, graphics, room);
         }
 
         graphics.dispose();
@@ -48,7 +48,6 @@ class MapRenderer {
     }
 
     /**
-     * 
      * @param {*} renderContext 
      * @param {DungeonMap} dungeonMap 
      */
@@ -95,7 +94,7 @@ class MapRenderer {
                     renderContext.image.destroy()
                 } catch (_) { }//if u dont have modified ct version
             }
-            renderContext.image = new Image(this.createMapImage(dungeonMap));
+            renderContext.image = new Image(this.createMapImage(dungeonMap, renderContext));
 
             renderContext.imageLastUpdate = Date.now()
         }

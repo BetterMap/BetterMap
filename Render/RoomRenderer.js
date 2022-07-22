@@ -1,5 +1,6 @@
 
-import { roomColorMap } from "../Data/Colors.js"
+import Room from "../Components/Room.js"
+import RenderContext from "./RenderContext.js"
 
 const greenCheck = new Image("greenCheckVanilla.png", "https://i.imgur.com/h2WM1LO.png").image
 const whiteCheck = new Image("whiteCheckVanilla.png", "https://i.imgur.com/hwEAcnI.png").image
@@ -8,14 +9,17 @@ const questionMark = new Image("questionMarkVanilla.png", "https://i.imgur.com/1
 
 class RoomRenderer {
 
-    constructor(roomSize, roomGap) {
-        this.roomSize = roomSize;
-        this.roomGap = roomGap;
-        this.blockSize = this.roomSize + this.roomGap;
+    constructor() {
     }
 
-    drawRoom(graphics, room) {
-        graphics.setColor(this.getRenderColor(room.type))
+    /**
+     * 
+     * @param {RenderContext} context 
+     * @param {*} graphics 
+     * @param {Room} room 
+     */
+    drawRoom(context, graphics, room) {
+        graphics.setColor(this.getRenderColor(context, room.type))
 
         //Count number of unique X and Y's there are
         let xComponents = new Set()
@@ -45,40 +49,46 @@ class RoomRenderer {
                 let [x, count] = data
 
                 if (count === 2) {
-                    graphics.fillRect(x * this.blockSize, minY * this.blockSize, 32 - this.roomGap, 64 - this.roomGap)
+                    graphics.fillRect(x * context.blockSize, minY * context.blockSize, 32 - context.roomGap, 64 - context.roomGap)
                 }
             }
             for (let data of yCounts.entries()) {
                 let [y, count] = data
 
                 if (count === 2) {
-                    graphics.fillRect(minX * this.blockSize, y * this.blockSize, 64 - this.roomGap, 32 - this.roomGap)
+                    graphics.fillRect(minX * context.blockSize, y * context.blockSize, 64 - context.roomGap, 32 - context.roomGap)
                 }
             }
         } else { //every other case is easy af since its just a rect
             let x = Math.min(...xComponents)
             let y = Math.min(...yComponents)
 
-            graphics.fillRect(x * this.blockSize, y * this.blockSize, this.blockSize * uniqueX - this.roomGap, uniqueY * this.blockSize - this.roomGap);
+            graphics.fillRect(x * context.blockSize, y * context.blockSize, context.blockSize * uniqueX - context.roomGap, uniqueY * context.blockSize - context.roomGap);
         }
 
         let location = room.components[0]
         if (room.checkmarkState === 1) {
-            graphics.drawImage(questionMark, this.blockSize * location.arrayX + 8, this.blockSize * location.arrayY + 6, 10, 16, null)
+            graphics.drawImage(questionMark, context.blockSize * location.arrayX + 8, context.blockSize * location.arrayY + 6, 10, 16, null)
         }
         if (room.checkmarkState === 3) {
-            graphics.drawImage(whiteCheck, this.blockSize * location.arrayX + 8, this.blockSize * location.arrayY + 8, 10, 10, null)
+            graphics.drawImage(whiteCheck, context.blockSize * location.arrayX + 8, context.blockSize * location.arrayY + 8, 10, 10, null)
         }
         if (room.checkmarkState === 4) {
-            graphics.drawImage(greenCheck, this.blockSize * location.arrayX + 8, this.blockSize * location.arrayY + 8, 10, 10, null)
+            graphics.drawImage(greenCheck, context.blockSize * location.arrayX + 8, context.blockSize * location.arrayY + 8, 10, 10, null)
         }
         if (room.checkmarkState === 5) {
-            graphics.drawImage(failedRoom, this.blockSize * location.arrayX + 8, this.blockSize * location.arrayY + 9, 14, 14, null)
+            graphics.drawImage(failedRoom, context.blockSize * location.arrayX + 8, context.blockSize * location.arrayY + 9, 14, 14, null)
         }
     }
 
-    getRenderColor(type) {
-        return roomColorMap.get(type)
+    /**
+     * 
+     * @param {RenderContext} context 
+     * @param {*} type 
+     * @returns 
+     */
+    getRenderColor(context, type) {
+        return context.colorMap.get(type)
     }
 
 }

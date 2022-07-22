@@ -132,12 +132,12 @@ class RenderContext {
             case "hypixel":
                 switch (type) {
                     case "questionMark":
-                        return [16, 16]
+                        return [10, 16]
                     case "whiteCheck":
                     case "greenCheck":
-                        return [16, 16]
+                        return [10, 10]
                     case "failedRoom":
-                        return [16, 16]
+                        return [14, 14]
                 }
         }
     }

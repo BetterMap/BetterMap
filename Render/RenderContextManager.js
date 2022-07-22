@@ -3,7 +3,8 @@ import RenderContext from "./RenderContext";
 class RenderContextManager {
 
     constructor() {
-        this.renderContexts = [];
+        /**@type {Map<Number, RenderContext>} */
+        this.renderContexts = new Map();
         this.lastContext = 0;
     }
 
@@ -11,11 +12,10 @@ class RenderContextManager {
         for (context of this.renderContexts) {
             context?.destroy();
         }
-        this.renderContexts = []
     }
 
     getRenderContextData(contextId) {
-        return this.renderContexts[contextId];
+        return this.renderContexts.get(contextId);
     }
 
     createRenderContext(settings = {}) {
@@ -24,7 +24,11 @@ class RenderContextManager {
 
         let newContext = new RenderContext(settings);
 
-        this.renderContexts[contextId] = newContext;
+        this.renderContexts.set(contextId, newContext);
+
+        newContext.onDestroy(() => {
+            this.renderContexts.delete(contextId)
+        })
 
         return contextId
     }

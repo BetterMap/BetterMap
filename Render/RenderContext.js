@@ -14,24 +14,16 @@
 
 class RenderContext {
 
-    constructor({ mapStyle = "legalmap", posX = 0, posY = 0, size = 100, headScale = 8, iconScale = 8, tickStyle = "hypixel", puzzleNames = "none", headBorder = false, playerNames = true }) {
+    constructor(settings) {
 
         /**@type {ContextSettings} */
-        this.settings = {
-            mapStyle,
-            posX,
-            posY,
-            size,
-            headScale,
-            iconScale,
-            tickStyle,
-            puzzleNames,
-            headBorder,
-            playerNames
-        }
+        this.settings = {}
+        this.setSettings(settings)
 
         this.image = null;
         this.imageLastUpdate = 0;
+
+        this.onDestroys = []
     }
 
     get posX() {
@@ -112,13 +104,72 @@ class RenderContext {
             case "soopymap":
                 return 10
             case "teniosmap":
-                return 6 //TODO: this value
+                return 15 //TODO: this value (atm i just set it high to show of changes)
         }
+    }
+
+    getImage(type) {
+        switch (this.tickStyle) {
+            case "default":
+                return LegalMapTicks.get(type)
+            case "hypixel":
+                return HypixelTicks.get(type)
+        }
+    }
+
+    getIconSize(type) {
+        switch (this.tickStyle) {
+            case "default":
+                switch (type) {
+                    case "questionMark":
+                        return [15, 15]
+                    case "whiteCheck":
+                    case "greenCheck":
+                        return [15, 15]
+                    case "failedRoom":
+                        return [15, 15]
+                }
+            case "hypixel":
+                switch (type) {
+                    case "questionMark":
+                        return [10, 16]
+                    case "whiteCheck":
+                    case "greenCheck":
+                        return [10, 10]
+                    case "failedRoom":
+                        return [14, 14]
+                }
+        }
+    }
+
+    setSettings({ mapStyle = "legalmap", posX = 0, posY = 0, size = 100, headScale = 8, iconScale = 8, tickStyle = "default", puzzleNames = "none", headBorder = false, playerNames = true }) {
+        this.settings = {
+            mapStyle,
+            posX,
+            posY,
+            size,
+            headScale,
+            iconScale,
+            tickStyle,
+            puzzleNames,
+            headBorder,
+            playerNames
+        }
+    }
+
+    markReRender() {
+        this.imageLastUpdate = 0
+    }
+
+    onDestroy(callback) {
+        this.onDestroys.push(callback)
     }
 
     destroy() {
         this.image?.getTexture()?.[m.deleteGlTexture]()
         this.image = undefined
+
+        this.onDestroys.forEach(fun => fun())
     }
 
     getMapDimensions() {
@@ -159,3 +210,15 @@ SoopyMapColorMap.set(roomHash.BLOOD, new Color(Renderer.color(255, 0, 0, 255)))
 SoopyMapColorMap.set(roomHash.TRAP, new Color(Renderer.color(216, 127, 51, 255)))
 SoopyMapColorMap.set(roomHash.UNKNOWN, new Color(Renderer.color(65, 65, 65, 255)))
 SoopyMapColorMap.set(roomHash.BLACK, new Color(Renderer.color(0, 0, 0, 255)))
+
+const HypixelTicks = new Map()
+HypixelTicks.set("greenCheck", new Image("greenCheckVanilla.png", "https://i.imgur.com/h2WM1LO.png").image)
+HypixelTicks.set("whiteCheck", new Image("whiteCheckVanilla.png", "https://i.imgur.com/hwEAcnI.png").image)
+HypixelTicks.set("failedRoom", new Image("failedRoomVanilla.png", "https://i.imgur.com/WqW69z3.png").image)
+HypixelTicks.set("questionMark", new Image("questionMarkVanilla.png", "https://i.imgur.com/1jyxH9I.png").image)
+
+const LegalMapTicks = new Map()
+LegalMapTicks.set("greenCheck", new Image("BloomMapGreenCheck.png", "https://i.imgur.com/GQfTfmp.png").image)
+LegalMapTicks.set("whiteCheck", new Image("BloomMapWhiteCheck.png", "https://i.imgur.com/9cZ28bJ.png").image)
+LegalMapTicks.set("failedRoom", new Image("BloomMapFailedRoom.png", "https://i.imgur.com/qAb4O9H.png").image)
+LegalMapTicks.set("questionMark", new Image("BloomMapQuestionMark.png", "https://i.imgur.com/kp92Inw.png").image)

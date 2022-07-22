@@ -2,11 +2,6 @@
 import Room from "../Components/Room.js"
 import RenderContext from "./RenderContext.js"
 
-const greenCheck = new Image("greenCheckVanilla.png", "https://i.imgur.com/h2WM1LO.png").image
-const whiteCheck = new Image("whiteCheckVanilla.png", "https://i.imgur.com/hwEAcnI.png").image
-const failedRoom = new Image("failedRoomVanilla.png", "https://i.imgur.com/WqW69z3.png").image
-const questionMark = new Image("questionMarkVanilla.png", "https://i.imgur.com/1jyxH9I.png").image
-
 class RoomRenderer {
 
     constructor() {
@@ -49,35 +44,39 @@ class RoomRenderer {
                 let [x, count] = data
 
                 if (count === 2) {
-                    graphics.fillRect(x * context.blockSize, minY * context.blockSize, 32 - context.roomGap, 64 - context.roomGap)
+                    graphics.fillRect(x * context.blockSize + context.roomGap / 2, minY * context.blockSize + context.roomGap / 2, context.blockSize - context.roomGap, context.blockSize * 2 - context.roomGap)
                 }
             }
             for (let data of yCounts.entries()) {
                 let [y, count] = data
 
                 if (count === 2) {
-                    graphics.fillRect(minX * context.blockSize, y * context.blockSize, 64 - context.roomGap, 32 - context.roomGap)
+                    graphics.fillRect(minX * context.blockSize + context.roomGap / 2, y * context.blockSize + context.roomGap / 2, context.blockSize * 2 - context.roomGap, context.blockSize - context.roomGap)
                 }
             }
         } else { //every other case is easy af since its just a rect
             let x = Math.min(...xComponents)
             let y = Math.min(...yComponents)
 
-            graphics.fillRect(x * context.blockSize, y * context.blockSize, context.blockSize * uniqueX - context.roomGap, uniqueY * context.blockSize - context.roomGap);
+            graphics.fillRect(x * context.blockSize + context.roomGap / 2, y * context.blockSize + context.roomGap / 2, context.blockSize * uniqueX - context.roomGap, uniqueY * context.blockSize - context.roomGap);
         }
 
         let location = room.components[0]
         if (room.checkmarkState === 1) {
-            graphics.drawImage(questionMark, context.blockSize * location.arrayX + 8, context.blockSize * location.arrayY + 6, 10, 16, null)
+            let [w, h] = context.getIconSize("questionMark")
+            graphics.drawImage(context.getImage("questionMark"), context.roomGap / 2 + context.blockSize * location.arrayX + context.roomSize / 2 - w / 2, context.roomGap / 2 + context.blockSize * location.arrayY + context.roomSize / 2 - h / 2, w, h, null)
         }
         if (room.checkmarkState === 3) {
-            graphics.drawImage(whiteCheck, context.blockSize * location.arrayX + 8, context.blockSize * location.arrayY + 8, 10, 10, null)
+            let [w, h] = context.getIconSize("whiteCheck")
+            graphics.drawImage(context.getImage("whiteCheck"), context.roomGap / 2 + context.blockSize * location.arrayX + context.roomSize / 2 - w / 2, context.roomGap / 2 + context.blockSize * location.arrayY + context.roomSize / 2 - h / 2, w, h, null)
         }
         if (room.checkmarkState === 4) {
-            graphics.drawImage(greenCheck, context.blockSize * location.arrayX + 8, context.blockSize * location.arrayY + 8, 10, 10, null)
+            let [w, h] = context.getIconSize("greenCheck")
+            graphics.drawImage(context.getImage("greenCheck"), context.roomGap / 2 + context.blockSize * location.arrayX + context.roomSize / 2 - w / 2, context.roomGap / 2 + context.blockSize * location.arrayY + context.roomSize / 2 - h / 2, w, h, null)
         }
         if (room.checkmarkState === 5) {
-            graphics.drawImage(failedRoom, context.blockSize * location.arrayX + 8, context.blockSize * location.arrayY + 9, 14, 14, null)
+            let [w, h] = context.getIconSize("failedRoom")
+            graphics.drawImage(context.getImage("failedRoom"), context.roomGap / 2 + context.blockSize * location.arrayX + context.roomSize / 2 - w / 2, context.roomGap / 2 + context.blockSize * location.arrayY + context.roomSize / 2 - h / 2, w, h, null)
         }
     }
 

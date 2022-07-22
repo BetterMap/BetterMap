@@ -1,5 +1,5 @@
 //Creating JSON code to create a dummy map
-console.log(`let dungeon = new DungeonMap("F7", new Set());`)
+console.log(`let dungeon = new DungeonMap("F7", new Set(), false);`)
 
 for (let room of global.betterMapDungeonMap.roomsArr) {
     console.log(`{`)

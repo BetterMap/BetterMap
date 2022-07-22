@@ -69,7 +69,7 @@ class SettingsManager {
      * @returns {DungeonMap}
      */
     createFakeDungeon() {
-        let dungeon = new DungeonMap("F7", new Set());
+        let dungeon = new DungeonMap("F7", new Set(), false);
         {
             let r = new Room(0, [new Position(-168, -200)], "102,66");
             r.currentSecrets = 0

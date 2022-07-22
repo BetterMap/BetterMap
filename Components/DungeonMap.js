@@ -22,7 +22,7 @@ const dungeonOffsetX = 200;
 const dungeonOffsetY = 200;
 
 class DungeonMap {
-    constructor(floor, deadPlayers) {
+    constructor(floor, deadPlayers, registerEvents = true) {
         /**
          * @type {Map<String, Room>} The string is in form x,y eg 102,134 and will correspond to the top left corner of a room component
          */
@@ -80,28 +80,30 @@ class DungeonMap {
         let mimicDeadMessages = ["$SKYTILS-DUNGEON-SCORE-MIMIC$", "Mimic Killed!", "Mimic Dead!", "Mimic dead!"]
 
         this.triggers = []
-        this.triggers.push(register("chat", (msg) => {
-            mimicDeadMessages.forEach(dmsg => {
-                if (msg.includes(dmsg)) this.mimicKilled = true
-            })
-        }).setChatCriteria("&r&9Party &8> ${msg}"))
+        if (registerEvents) {
+            this.triggers.push(register("chat", (msg) => {
+                mimicDeadMessages.forEach(dmsg => {
+                    if (msg.includes(dmsg)) this.mimicKilled = true
+                })
+            }).setChatCriteria("&r&9Party &8> ${msg}"))
 
-        this.triggers.push(register("entityDeath", (entity) => {
-            if (entity.getClassName() === "EntityZombie") {
-                if (entity.getEntity().func_70631_g_()) {
-                    if (entity.getEntity().func_82169_q(0) === null && entity.getEntity().func_82169_q(1) === null && entity.getEntity().func_82169_q(2) === null && entity.getEntity().func_82169_q(3) === null) {
-                        this.mimicKilled = true
-                        this.sendSocketData({ type: "mimicKilled" })
+            this.triggers.push(register("entityDeath", (entity) => {
+                if (entity.getClassName() === "EntityZombie") {
+                    if (entity.getEntity().func_70631_g_()) {
+                        if (entity.getEntity().func_82169_q(0) === null && entity.getEntity().func_82169_q(1) === null && entity.getEntity().func_82169_q(2) === null && entity.getEntity().func_82169_q(3) === null) {
+                            this.mimicKilled = true
+                            this.sendSocketData({ type: "mimicKilled" })
+                        }
                     }
                 }
-            }
-        }))
+            }))
 
-        this.triggers.push(register("chat", (info) => {
-            let player = ChatLib.removeFormatting(info.split(" ")[0])
+            this.triggers.push(register("chat", (info) => {
+                let player = ChatLib.removeFormatting(info.split(" ")[0])
 
-            this.scanFirstDeathForSpiritPet(player)
-        }).setChatCriteria("&r&c ☠ ${info} and became a ghost&r&7.&r"))
+                this.scanFirstDeathForSpiritPet(player)
+            }).setChatCriteria("&r&c ☠ ${info} and became a ghost&r&7.&r"))
+        }
     }
 
     socketData(data) {

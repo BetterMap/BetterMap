@@ -61,6 +61,8 @@ class RoomRenderer {
             graphics.fillRect(x * context.blockSize + context.roomGap / 2, y * context.blockSize + context.roomGap / 2, context.blockSize * uniqueX - context.roomGap, uniqueY * context.blockSize - context.roomGap);
         }
 
+        if (room.type === Room.SPAWN) return //Dont render tick on spawn room
+
         let location = room.components[0]
         if (room.checkmarkState === 1) {
             let [w, h] = context.getIconSize("questionMark")

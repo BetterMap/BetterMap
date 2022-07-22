@@ -1,6 +1,6 @@
 /**
  * @typedef {Object} ContextSettings
- * @property {"legalmap"|"soopymap"|"teniosmap"} mapStyle - Style of the map rendering
+ * @property {"legalmap"|"hypixelmap"|"teniosmap"} mapStyle - Style of the map rendering
  * @property {Number} posX - X Position of the map on screen
  * @property {Number} posY - y Position of the map on screen
  * @property {Number} size - Width/height of the map when rendered
@@ -63,11 +63,11 @@ class RenderContext {
     get colorMap() {
         switch (this.mapStyle) {
             case "legalmap":
+                return LegalMapColorMap
+            case "hypixelmap":
                 return SoopyMapColorMap
-            case "soopymap":
-                return SoopyMapColorMap //TODO: add other color maps
             case "teniosmap":
-                return SoopyMapColorMap
+                return SoopyMapColorMap //TODO: this color map
         }
     }
 
@@ -75,7 +75,7 @@ class RenderContext {
         switch (this.mapStyle) {
             case "legalmap":
                 return 8 // 1/3 roomSize
-            case "soopymap":
+            case "hypixelmap":
                 return 6
             case "teniosmap":
                 return 6 //TODO: this value
@@ -86,7 +86,7 @@ class RenderContext {
         switch (this.mapStyle) {
             case "legalmap":
                 return 24
-            case "soopymap":
+            case "hypixelmap":
                 return 24
             case "teniosmap":
                 return 24 //TODO: this value
@@ -101,7 +101,7 @@ class RenderContext {
         switch (this.mapStyle) {
             case "legalmap":
                 return 8
-            case "soopymap":
+            case "hypixelmap":
                 return 10
             case "teniosmap":
                 return 15 //TODO: this value (atm i just set it high to show of changes)
@@ -122,22 +122,22 @@ class RenderContext {
             case "default":
                 switch (type) {
                     case "questionMark":
-                        return [15, 15]
+                        return [16, 16]
                     case "whiteCheck":
                     case "greenCheck":
-                        return [15, 15]
+                        return [16, 16]
                     case "failedRoom":
-                        return [15, 15]
+                        return [16, 16]
                 }
             case "hypixel":
                 switch (type) {
                     case "questionMark":
-                        return [10, 16]
+                        return [16, 16]
                     case "whiteCheck":
                     case "greenCheck":
-                        return [10, 10]
+                        return [16, 16]
                     case "failedRoom":
-                        return [14, 14]
+                        return [16, 16]
                 }
         }
     }
@@ -210,6 +210,19 @@ SoopyMapColorMap.set(roomHash.BLOOD, new Color(Renderer.color(255, 0, 0, 255)))
 SoopyMapColorMap.set(roomHash.TRAP, new Color(Renderer.color(216, 127, 51, 255)))
 SoopyMapColorMap.set(roomHash.UNKNOWN, new Color(Renderer.color(65, 65, 65, 255)))
 SoopyMapColorMap.set(roomHash.BLACK, new Color(Renderer.color(0, 0, 0, 255)))
+
+
+const LegalMapColorMap = new Map()
+LegalMapColorMap.set(roomHash.SPAWN, new Color(Renderer.color(20, 133, 0, 255)))
+LegalMapColorMap.set(roomHash.NORMAL, new Color(Renderer.color(107, 58, 17, 255)))
+LegalMapColorMap.set(roomHash.NORMAL_CONNECTION, new Color(Renderer.color(92, 52, 14, 255)))
+LegalMapColorMap.set(roomHash.PUZZLE, new Color(Renderer.color(117, 0, 133, 255)))
+LegalMapColorMap.set(roomHash.MINIBOSS, new Color(Renderer.color(254, 223, 0, 255)))
+LegalMapColorMap.set(roomHash.FAIRY, new Color(Renderer.color(224, 0, 255, 255)))
+LegalMapColorMap.set(roomHash.BLOOD, new Color(Renderer.color(255, 0, 0, 255)))
+LegalMapColorMap.set(roomHash.TRAP, new Color(Renderer.color(216, 127, 51, 255)))
+LegalMapColorMap.set(roomHash.UNKNOWN, new Color(Renderer.color(65, 65, 65, 255)))
+LegalMapColorMap.set(roomHash.BLACK, new Color(Renderer.color(0, 0, 0, 255)))
 
 const HypixelTicks = new Map()
 HypixelTicks.set("greenCheck", new Image("greenCheckVanilla.png", "https://i.imgur.com/h2WM1LO.png").image)

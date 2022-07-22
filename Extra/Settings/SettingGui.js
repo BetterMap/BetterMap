@@ -38,7 +38,7 @@ class SettingGui {
 
         this.addSidebarElement(new DropDown().setOptions({
             "legalmap": "Legal Map",
-            "soopymap": "Soopy Map",
+            "hypixelmap": "Hypixel",
             "teniosmap": "Tenios Map"
         }).setSelectedOption("legalmap").addEvent(new SoopyContentChangeEvent().setHandler((val, prev, cancelFun) => {
             this.changed("mapStyle", val)

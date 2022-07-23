@@ -23,13 +23,16 @@ class RenderContext {
         this.image = null;
         this.imageLastUpdate = 0;
 
-        this.imageSize = 256
         this.paddingTop = 24;
         this.paddingLeft = 24;
 
         this.borderWidth = 2;
 
         this.onDestroys = []
+    }
+
+    getImageSize(floor) {
+        return this.paddingLeft * 2 + this.blockSize * 6 + this.roomGap
     }
 
     get posX() {

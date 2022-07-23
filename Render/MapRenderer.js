@@ -21,7 +21,7 @@ class MapRenderer {
      * @returns 
      */
     createMapImage(dungeon, renderContext) {
-        let image = new BufferedImage(renderContext.imageSize, renderContext.imageSize, BufferedImage.TYPE_INT_ARGB);
+        let image = new BufferedImage(renderContext.getImageSize(dungeon.floor), renderContext.getImageSize(dungeon.floor), BufferedImage.TYPE_INT_ARGB);
 
         let graphics = image.createGraphics();
 
@@ -54,10 +54,10 @@ class MapRenderer {
 
             Renderer.drawRect(Renderer.color(0, 0, 0, 100), x, y, size, size)//background
 
-            renderContext.image.draw(x, y, size, size)
+            renderContext.image.draw(x + renderContext.borderWidth, y + renderContext.borderWidth, size, size)
 
             for (let room of dungeonMap.roomsArr) {
-                this.roomRenderer.drawExtras(renderContext, room)
+                this.roomRenderer.drawExtras(renderContext, room, dungeonMap)
             }
 
             Renderer.drawRect(Renderer.color(0, 0, 0), x, y, size, renderContext.borderWidth) //border

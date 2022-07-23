@@ -90,18 +90,22 @@ class RoomRenderer {
      * @param {RenderContext} context 
      * @param {Room} room 
      */
-    drawExtras(context, room) {
+    drawExtras(context, room, dungeon) {
         if (context.tickStyle === 'secrets') {
 
             if (room.type === Room.SPAWN || room.type === Room.FAIRY) return
 
             let location = room.components[0]
 
-            let x = (context.roomGap / 2 + context.blockSize * location.arrayX + context.roomSize / 2 + context.borderWidth + context.paddingLeft) / context.imageSize
-            let y = (context.roomGap / 2 + context.blockSize * location.arrayY + context.roomSize / 2 + context.borderWidth + context.paddingTop) / context.imageSize
+            let x = (context.roomGap / 2 + context.blockSize * location.arrayX + context.roomSize / 2 + context.borderWidth + context.paddingLeft) / context.getImageSize(dungeon.floor)
+            let y = (context.roomGap / 2 + context.blockSize * location.arrayY + context.roomSize / 2 + context.borderWidth + context.paddingTop) / context.getImageSize(dungeon.floor)
 
-            x = context.posX + x * context.size
-            y = context.posY + y * context.size
+            x = context.posX + x * context.size + context.borderWidth
+            y = context.posY + y * context.size + context.borderWidth
+
+            let scale = context.size / 200
+
+            if (room.maxSecrets === 10) x += 12 * scale
 
             let text = (room.currentSecrets ?? "?") + "/" + (room.maxSecrets ?? "?")
 
@@ -127,8 +131,6 @@ class RoomRenderer {
                     break;
             }
             text = "&0" + text
-
-            let scale = context.size / 200
 
             renderLibs.drawStringCenteredShadow(text, x + scale, y - 4.5 * scale, scale)
             renderLibs.drawStringCenteredShadow(text, x - scale, y - 4.5 * scale, scale)

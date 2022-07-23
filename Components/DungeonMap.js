@@ -22,7 +22,7 @@ const dungeonOffsetX = 200;
 const dungeonOffsetY = 200;
 
 class DungeonMap {
-    constructor(floor, deadPlayers) {
+    constructor(floor, deadPlayers, registerEvents = true) {
         /**
          * @type {Map<String, Room>} The string is in form x,y eg 102,134 and will correspond to the top left corner of a room component
          */
@@ -67,7 +67,7 @@ class DungeonMap {
 
         this.lastRoomId = undefined
         this.lastChange = 0
-        this.roomXY = this.getRoomXYWorld().join(",")
+        this.roomXY = "0,0"
         this.lastXY = undefined
 
         //simulate changing bloccks to air to fix green room not having air border around it
@@ -80,28 +80,30 @@ class DungeonMap {
         let mimicDeadMessages = ["$SKYTILS-DUNGEON-SCORE-MIMIC$", "Mimic Killed!", "Mimic Dead!", "Mimic dead!"]
 
         this.triggers = []
-        this.triggers.push(register("chat", (msg) => {
-            mimicDeadMessages.forEach(dmsg => {
-                if (msg.includes(dmsg)) this.mimicKilled = true
-            })
-        }).setChatCriteria("&r&9Party &8> ${msg}"))
+        if (registerEvents) {
+            this.triggers.push(register("chat", (msg) => {
+                mimicDeadMessages.forEach(dmsg => {
+                    if (msg.includes(dmsg)) this.mimicKilled = true
+                })
+            }).setChatCriteria("&r&9Party &8> ${msg}"))
 
-        this.triggers.push(register("entityDeath", (entity) => {
-            if (entity.getClassName() === "EntityZombie") {
-                if (entity.getEntity().func_70631_g_()) {
-                    if (entity.getEntity().func_82169_q(0) === null && entity.getEntity().func_82169_q(1) === null && entity.getEntity().func_82169_q(2) === null && entity.getEntity().func_82169_q(3) === null) {
-                        this.mimicKilled = true
-                        this.sendSocketData({ type: "mimicKilled" })
+            this.triggers.push(register("entityDeath", (entity) => {
+                if (entity.getClassName() === "EntityZombie") {
+                    if (entity.getEntity().func_70631_g_()) {
+                        if (entity.getEntity().func_82169_q(0) === null && entity.getEntity().func_82169_q(1) === null && entity.getEntity().func_82169_q(2) === null && entity.getEntity().func_82169_q(3) === null) {
+                            this.mimicKilled = true
+                            this.sendSocketData({ type: "mimicKilled" })
+                        }
                     }
                 }
-            }
-        }))
+            }))
 
-        this.triggers.push(register("chat", (info) => {
-            let player = ChatLib.removeFormatting(info.split(" ")[0])
+            this.triggers.push(register("chat", (info) => {
+                let player = ChatLib.removeFormatting(info.split(" ")[0])
 
-            this.scanFirstDeathForSpiritPet(player)
-        }).setChatCriteria("&r&c ☠ ${info} and became a ghost&r&7.&r"))
+                this.scanFirstDeathForSpiritPet(player)
+            }).setChatCriteria("&r&c ☠ ${info} and became a ghost&r&7.&r"))
+        }
     }
 
     socketData(data) {
@@ -380,8 +382,9 @@ class DungeonMap {
                     //will be undefined if no merge needs to happen
                     let currRoomLeft = bytes[(mapX - 1) + (mapY) * 128] === 63 ? this.rooms.get((x - 1) + "," + y) : undefined
                     let currRoomTop = bytes[(mapX) + (mapY - 1) * 128] === 63 ? this.rooms.get(x + "," + (y - 1)) : undefined
+                    let currRoomTopRight = bytes[(mapX + this.fullRoomScaleMap - 1) + (mapY) * 128] === 63 && bytes[(mapX + this.fullRoomScaleMap) + (mapY - 1) * 128] === 63 ? this.rooms.get((x + 1) + "," + (y - 1)) : undefined
 
-                    if (!currRoom && !currRoomLeft && !currRoomTop) { //no room and no merge
+                    if (!currRoom && !currRoomLeft && !currRoomTop && !currRoomTopRight) { //no room and no merge
 
                         let room = new Room(Room.NORMAL, [position], undefined)
 
@@ -417,6 +420,16 @@ class DungeonMap {
 
                                 currRoomTop.components.push(position)
                                 this.rooms.set(x + "," + y, currRoomTop)
+                                this.markChanged()
+                            }
+                        }
+
+                        if (currRoomTopRight && currRoom !== currRoomTopRight && currRoomTopRight.type === Room.NORMAL) {
+                            if (!currRoomTopRight.components.some(a => position.equals(a))) { //need to merge up
+                                if (currRoom) this.roomsArr.delete(currRoom)
+
+                                currRoomTopRight.components.unshift(position)
+                                this.rooms.set(x + "," + y, currRoomTopRight)
                                 this.markChanged()
                             }
                         }
@@ -477,6 +490,9 @@ class DungeonMap {
                     position.mapX = mapX + this.widthRoomImageMap / 2 - 1
                     position.mapY = mapY - 3
 
+                    position.worldX = Math.round(position.worldX)
+                    position.worldY = Math.round(position.worldY)
+
                     if (!this.doors.get(position.worldX + "," + position.worldY)) {
                         //door not in map, add new door
                         this.doors.set(position.worldX + "," + position.worldY, new Door(type, position, false))
@@ -506,6 +522,9 @@ class DungeonMap {
                     let position = new Position(0, 0, this)
                     position.mapX = mapX - 3
                     position.mapY = mapY + this.widthRoomImageMap / 2 - 1
+
+                    position.worldX = Math.round(position.worldX)
+                    position.worldY = Math.round(position.worldY)
 
                     if (!this.doors.get(position.worldX + "," + position.worldY)) {
                         //door not in map, add new door
@@ -693,11 +712,12 @@ class DungeonMap {
         let room = this.rooms.get(xCoord + ',' + yCoord);
 
         let roomLore = []
-        if (room.roomId) { //TODO: COLOR CODES!
+        if (room.roomId) { //TODO: COLORS!
             roomLore.push(room.data?.name || '???')
             roomLore.push("&8" + (room.roomId || ""))
             if (room.data?.soul) roomLore.push("&dFAIRY SOUL!")
             if (room.maxSecrets) roomLore.push("Secrets: " + room.currentSecrets + ' / ' + room.maxSecrets)
+            if (room.data?.crypts !== undefined) roomLore.push("Crypts: " + room.data.crypts)
             if (room.type === Room.NORMAL) roomLore.push("Spiders: " + (room.data?.spiders ? "Yes" : "No"))
         } else {
             roomLore.push('Unknown room!')

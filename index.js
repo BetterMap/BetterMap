@@ -7,6 +7,7 @@ import MapRenderer from "./Render/MapRenderer"
 import RenderContextManager from "./Render/RenderContextManager"
 import DataLoader from "./Utils/DataLoader"
 import betterMapServer from "./socketConnection"
+import SettingsManager from "./Extra/Settings/SettingsManager"
 
 /// <reference lib="es2015" />
 
@@ -15,15 +16,18 @@ let currentDungeonMap = undefined
 let deadPlayers = new Set()
 
 let renderContextManager = new RenderContextManager();
-let dungeonMapRenderContext = renderContextManager.createRenderContext(Renderer.screen.getWidth() - 150 - 10, 10, 150);
-
 let mapRenderer = new MapRenderer();
+
+let settingsManager = new SettingsManager(renderContextManager, mapRenderer)
+let dungeonMapRenderContext = settingsManager.createRenderContext();
+
 
 
 register("step", () => {
     if (DataLoader.isInDungeon && DataLoader.dungeonFloor) {
         if (!currentDungeonMap) { //entered dungeon, create map data
             currentDungeonMap = new DungeonMap(DataLoader.dungeonFloor, deadPlayers)
+            global.betterMapDungeonMap = currentDungeonMap
         }
     } else {
         if (currentDungeonMap) { //left dungeon, clear map data

@@ -1,21 +1,21 @@
 
-import { roomColorMap } from "../Data/Colors.js"
-
-const greenCheck = new Image("greenCheckVanilla.png", "https://i.imgur.com/h2WM1LO.png").image
-const whiteCheck = new Image("whiteCheckVanilla.png", "https://i.imgur.com/hwEAcnI.png").image
-const failedRoom = new Image("failedRoomVanilla.png", "https://i.imgur.com/WqW69z3.png").image
-const questionMark = new Image("questionMarkVanilla.png", "https://i.imgur.com/1jyxH9I.png").image
+import renderLibs from "../../guimanager/renderLibs.js"
+import Room from "../Components/Room.js"
+import RenderContext from "./RenderContext.js"
 
 class RoomRenderer {
 
-    constructor(roomSize, roomGap) {
-        this.roomSize = roomSize;
-        this.roomGap = roomGap;
-        this.blockSize = this.roomSize + this.roomGap;
+    constructor() {
     }
 
-    drawRoom(graphics, room) {
-        graphics.setColor(this.getRenderColor(room.type))
+    /**
+     * 
+     * @param {RenderContext} context 
+     * @param {*} graphics 
+     * @param {Room} room 
+     */
+    drawRoom(context, graphics, room) {
+        graphics.setColor(this.getRenderColor(context, room.type))
 
         //Count number of unique X and Y's there are
         let xComponents = new Set()
@@ -45,40 +45,111 @@ class RoomRenderer {
                 let [x, count] = data
 
                 if (count === 2) {
-                    graphics.fillRect(x * this.blockSize, minY * this.blockSize, 32 - this.roomGap, 64 - this.roomGap)
+                    graphics.fillRect(x * context.blockSize + context.roomGap / 2, minY * context.blockSize + context.roomGap / 2, context.blockSize - context.roomGap, context.blockSize * 2 - context.roomGap)
                 }
             }
             for (let data of yCounts.entries()) {
                 let [y, count] = data
 
                 if (count === 2) {
-                    graphics.fillRect(minX * this.blockSize, y * this.blockSize, 64 - this.roomGap, 32 - this.roomGap)
+                    graphics.fillRect(minX * context.blockSize + context.roomGap / 2, y * context.blockSize + context.roomGap / 2, context.blockSize * 2 - context.roomGap, context.blockSize - context.roomGap)
                 }
             }
         } else { //every other case is easy af since its just a rect
             let x = Math.min(...xComponents)
             let y = Math.min(...yComponents)
 
-            graphics.fillRect(x * this.blockSize, y * this.blockSize, this.blockSize * uniqueX - this.roomGap, uniqueY * this.blockSize - this.roomGap);
+            graphics.fillRect(x * context.blockSize + context.roomGap / 2, y * context.blockSize + context.roomGap / 2, context.blockSize * uniqueX - context.roomGap, uniqueY * context.blockSize - context.roomGap);
         }
+
+        if (room.type === Room.SPAWN) return //Dont render tick on spawn room
+
+        if (context.tickStyle === 'secrets') return //Needs to be rendered in renderoverlay
 
         let location = room.components[0]
         if (room.checkmarkState === 1) {
-            graphics.drawImage(questionMark, this.blockSize * location.arrayX + 8, this.blockSize * location.arrayY + 6, 10, 16, null)
+            let [w, h] = context.getIconSize("questionMark")
+            graphics.drawImage(context.getImage("questionMark"), context.roomGap / 2 + context.blockSize * location.arrayX + context.roomSize / 2 - w / 2, context.roomGap / 2 + context.blockSize * location.arrayY + context.roomSize / 2 - h / 2, w, h, null)
         }
         if (room.checkmarkState === 3) {
-            graphics.drawImage(whiteCheck, this.blockSize * location.arrayX + 8, this.blockSize * location.arrayY + 8, 10, 10, null)
+            let [w, h] = context.getIconSize("whiteCheck")
+            graphics.drawImage(context.getImage("whiteCheck"), context.roomGap / 2 + context.blockSize * location.arrayX + context.roomSize / 2 - w / 2, context.roomGap / 2 + context.blockSize * location.arrayY + context.roomSize / 2 - h / 2, w, h, null)
         }
         if (room.checkmarkState === 4) {
-            graphics.drawImage(greenCheck, this.blockSize * location.arrayX + 8, this.blockSize * location.arrayY + 8, 10, 10, null)
+            let [w, h] = context.getIconSize("greenCheck")
+            graphics.drawImage(context.getImage("greenCheck"), context.roomGap / 2 + context.blockSize * location.arrayX + context.roomSize / 2 - w / 2, context.roomGap / 2 + context.blockSize * location.arrayY + context.roomSize / 2 - h / 2, w, h, null)
         }
         if (room.checkmarkState === 5) {
-            graphics.drawImage(failedRoom, this.blockSize * location.arrayX + 8, this.blockSize * location.arrayY + 9, 14, 14, null)
+            let [w, h] = context.getIconSize("failedRoom")
+            graphics.drawImage(context.getImage("failedRoom"), context.roomGap / 2 + context.blockSize * location.arrayX + context.roomSize / 2 - w / 2, context.roomGap / 2 + context.blockSize * location.arrayY + context.roomSize / 2 - h / 2, w, h, null)
         }
     }
 
-    getRenderColor(type) {
-        return roomColorMap.get(type)
+    /**
+     * 
+     * @param {RenderContext} context 
+     * @param {Room} room 
+     */
+    drawExtras(context, room, dungeon) {
+        if (context.tickStyle === 'secrets') {
+
+            if (room.type === Room.SPAWN || room.type === Room.FAIRY) return
+
+            let location = room.components[0]
+
+            let x = (context.roomGap / 2 + context.blockSize * location.arrayX + context.roomSize / 2 + context.borderWidth + context.paddingLeft) / context.getImageSize(dungeon.floor)
+            let y = (context.roomGap / 2 + context.blockSize * location.arrayY + context.roomSize / 2 + context.borderWidth + context.paddingTop) / context.getImageSize(dungeon.floor)
+
+            x = context.posX + x * context.size + context.borderWidth
+            y = context.posY + y * context.size + context.borderWidth
+
+            let scale = context.size / 200
+
+            if (room.maxSecrets === 10) x += 12 * scale
+
+            let text = (room.currentSecrets ?? "?") + "/" + (room.maxSecrets ?? "?")
+
+            if (room.type === Room.BLOOD) text = "0/0"
+
+            let textColored = ""
+            switch (room.checkmarkState) {
+                case Room.ADJACENT:
+                    textColored = "&7" + text
+                    break;
+                case Room.CLEARED:
+                    textColored = "&f" + text
+                    break;
+                case Room.COMPLETED:
+                    textColored = "&a" + text
+                    break;
+                case Room.FAILED:
+                    textColored = "&4" + text
+                    break;
+                case Room.OPENED:
+                default:
+                    textColored = "&8" + text
+                    break;
+            }
+            text = "&0" + text
+
+            renderLibs.drawStringCenteredShadow(text, x + scale, y - 4.5 * scale, scale)
+            renderLibs.drawStringCenteredShadow(text, x - scale, y - 4.5 * scale, scale)
+            renderLibs.drawStringCenteredShadow(text, x, y + scale - 4.5 * scale, scale)
+            renderLibs.drawStringCenteredShadow(text, x, y - scale - 4.5 * scale, scale)
+            renderLibs.drawStringCenteredShadow(textColored, x, y - 4.5 * scale, scale)
+        }
+
+        //TODO: draw puzzle names/icons here as per setting
+    }
+
+    /**
+     * 
+     * @param {RenderContext} context 
+     * @param {*} type 
+     * @returns 
+     */
+    getRenderColor(context, type) {
+        return context.colorMap.get(type)
     }
 
 }

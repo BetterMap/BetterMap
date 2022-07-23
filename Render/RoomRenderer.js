@@ -112,9 +112,6 @@ class RoomRenderer {
                 case Room.ADJACENT:
                     textColored = "&7" + text
                     break;
-                case Room.OPENED:
-                    textColored = "&8" + text
-                    break;
                 case Room.CLEARED:
                     textColored = "&f" + text
                     break;
@@ -123,6 +120,10 @@ class RoomRenderer {
                     break;
                 case Room.FAILED:
                     textColored = "&4" + text
+                    break;
+                case Room.OPENED:
+                default:
+                    textColored = "&8" + text
                     break;
             }
             text = "&0" + text

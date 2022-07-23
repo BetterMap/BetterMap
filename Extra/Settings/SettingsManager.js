@@ -14,7 +14,7 @@ class SettingsManager {
     constructor(renderContextManager, mapRenderer) {
         this.renderContextManager = renderContextManager
 
-        this.currentSettings = {}
+        this.currentSettings = JSON.parse(FileLib.read("soopyaddonsdata", "bettermapsettings.json") || "{}") || {}
 
         /**
          * @type {Map<RenderContext, Object>}
@@ -28,10 +28,12 @@ class SettingsManager {
         let settingY = Renderer.screen.getHeight() / 2 - settingSize / 2
         this.settingRenderContext = this.createRenderContext({ posX: settingX, posY: settingY, size: settingSize })
 
-        this.settingsGui = new SettingGui(this.fakeDungeon, this.renderContextManager.getRenderContextData(this.settingRenderContext), mapRenderer)
+        this.settingsGui = new SettingGui(this.currentSettings, this.fakeDungeon, this.renderContextManager.getRenderContextData(this.settingRenderContext), mapRenderer)
 
         this.settingsGui.changed = (key, val) => {
             this.currentSettings[key] = val
+
+            this.saveSettings()
 
             for (let contextData of this.renderContexts.entries()) {
                 let [context, settingOverrides] = contextData
@@ -43,6 +45,12 @@ class SettingsManager {
                 data.markReRender()
             }
         }
+    }
+
+    saveSettings() {
+        new Thread(() => {
+            FileLib.write("soopyaddonsdata", "bettermapsettings.json", JSON.stringify(this.currentSettings))
+        }).start()
     }
 
     /**

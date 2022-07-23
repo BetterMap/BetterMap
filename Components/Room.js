@@ -68,6 +68,7 @@ class Room {
 
         if (this.data) {
             this.maxSecrets = this.data.secrets
+            this.currentSecrets = this.currentSecrets || 0
         }
     }
 

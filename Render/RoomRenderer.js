@@ -1,4 +1,5 @@
 
+import renderLibs from "../../guimanager/renderLibs.js"
 import Room from "../Components/Room.js"
 import RenderContext from "./RenderContext.js"
 
@@ -63,6 +64,8 @@ class RoomRenderer {
 
         if (room.type === Room.SPAWN) return //Dont render tick on spawn room
 
+        if (context.tickStyle === 'secrets') return //Needs to be rendered in renderoverlay
+
         let location = room.components[0]
         if (room.checkmarkState === 1) {
             let [w, h] = context.getIconSize("questionMark")
@@ -80,6 +83,60 @@ class RoomRenderer {
             let [w, h] = context.getIconSize("failedRoom")
             graphics.drawImage(context.getImage("failedRoom"), context.roomGap / 2 + context.blockSize * location.arrayX + context.roomSize / 2 - w / 2, context.roomGap / 2 + context.blockSize * location.arrayY + context.roomSize / 2 - h / 2, w, h, null)
         }
+    }
+
+    /**
+     * 
+     * @param {RenderContext} context 
+     * @param {Room} room 
+     */
+    drawExtras(context, room) {
+        if (context.tickStyle === 'secrets') {
+
+            if (room.type === Room.SPAWN || room.type === Room.FAIRY) return
+
+            let location = room.components[0]
+
+            let x = (context.roomGap / 2 + context.blockSize * location.arrayX + context.roomSize / 2 + context.borderWidth + context.paddingLeft) / context.imageSize
+            let y = (context.roomGap / 2 + context.blockSize * location.arrayY + context.roomSize / 2 + context.borderWidth + context.paddingTop) / context.imageSize
+
+            x = context.posX + x * context.size
+            y = context.posY + y * context.size
+
+            let text = (room.currentSecrets ?? "?") + "/" + (room.maxSecrets ?? "?")
+
+            if (room.type === Room.BLOOD) text = "0/0"
+
+            let textColored = ""
+            switch (room.checkmarkState) {
+                case Room.ADJACENT:
+                    textColored = "&7" + text
+                    break;
+                case Room.OPENED:
+                    textColored = "&8" + text
+                    break;
+                case Room.CLEARED:
+                    textColored = "&f" + text
+                    break;
+                case Room.COMPLETED:
+                    textColored = "&a" + text
+                    break;
+                case Room.FAILED:
+                    textColored = "&4" + text
+                    break;
+            }
+            text = "&0" + text
+
+            let scale = context.size / 200
+
+            renderLibs.drawStringCenteredShadow(text, x + scale, y - 4.5 * scale, scale)
+            renderLibs.drawStringCenteredShadow(text, x - scale, y - 4.5 * scale, scale)
+            renderLibs.drawStringCenteredShadow(text, x, y + scale - 4.5 * scale, scale)
+            renderLibs.drawStringCenteredShadow(text, x, y - scale - 4.5 * scale, scale)
+            renderLibs.drawStringCenteredShadow(textColored, x, y - 4.5 * scale, scale)
+        }
+
+        //TODO: draw puzzle names/icons here as per setting
     }
 
     /**

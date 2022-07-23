@@ -42,8 +42,8 @@ class Room {
          */
         this.checkmarkState = 0
 
-        this.maxSecrets = 0
-        this.currentSecrets = 0
+        this.maxSecrets = undefined
+        this.currentSecrets = undefined
 
         /**
          * @type {Array<Door>}

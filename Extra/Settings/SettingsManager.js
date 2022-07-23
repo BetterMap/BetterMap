@@ -126,7 +126,7 @@ class SettingsManager {
         }
         {
             let r = new Room(5, [new Position(-200, -72)], undefined);
-            r.currentSecrets = 0
+            r.currentSecrets = undefined
             r.checkmarkState = 2;
             dungeon.roomsArr.add(r);
             r.components.forEach(c => {
@@ -197,7 +197,7 @@ class SettingsManager {
             });
         }
         {
-            let r = new Room(1, [new Position(-72, -104), new Position(-72, -72)], "438,-524");
+            let r = new Room(1, [new Position(-72, -104), new Position(-72, -72), new Position(-104, -72)], "438,-524");
             r.currentSecrets = 0
             r.checkmarkState = 2;
             dungeon.roomsArr.add(r);
@@ -215,17 +215,8 @@ class SettingsManager {
             });
         }
         {
-            let r = new Room(1, [new Position(-104, -72), new Position(-72, -72)], undefined);
-            r.currentSecrets = 0
-            r.checkmarkState = 3;
-            dungeon.roomsArr.add(r);
-            r.components.forEach(c => {
-                dungeon.rooms.set(c.arrayX + "," + c.arrayY, r);
-            });
-        }
-        {
             let r = new Room(6, [new Position(-104, -40)], undefined);
-            r.currentSecrets = 0
+            r.currentSecrets = undefined
             r.checkmarkState = 1;
             dungeon.roomsArr.add(r);
             r.components.forEach(c => {

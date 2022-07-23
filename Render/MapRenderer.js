@@ -6,32 +6,27 @@ import RoomRenderer from "./RoomRenderer"
 import DoorRenderer from "./DoorRenderer"
 import renderLibs from "../../guimanager/renderLibs"
 import DungeonMap from "../Components/DungeonMap"
+import RenderContext from "./RenderContext"
 
 class MapRenderer {
-
-    imageSize = 256;
-
-    paddingTop = 24;
-    paddingLeft = 24;
-
-    borderWidth = 2;
-
-    roomGap = 6;
-    roomSize = 26;
-
     constructor() {
-        this.roomRenderer = new RoomRenderer(this.roomSize, this.roomGap);
+        this.roomRenderer = new RoomRenderer();
         this.doorRenderer = new DoorRenderer();
     }
 
-
+    /**
+     * 
+     * @param {DungeonMap} dungeon 
+     * @param {RenderContext} renderContext 
+     * @returns 
+     */
     createMapImage(dungeon, renderContext) {
-        let image = new BufferedImage(this.imageSize, this.imageSize, BufferedImage.TYPE_INT_ARGB);
+        let image = new BufferedImage(renderContext.imageSize, renderContext.imageSize, BufferedImage.TYPE_INT_ARGB);
 
         let graphics = image.createGraphics();
 
         //shift border + padding so less math involved
-        graphics.translate(this.paddingLeft + this.borderWidth, +this.paddingTop + this.borderWidth);
+        graphics.translate(renderContext.paddingLeft + renderContext.borderWidth, renderContext.paddingTop + renderContext.borderWidth);
 
         //render all doors
         //rendering before rooms that way rooms cover it as there is 1 specific situation where early dungeon will put a room in the middle of an L shape
@@ -61,9 +56,13 @@ class MapRenderer {
 
             renderContext.image.draw(x, y, size, size)
 
-            Renderer.drawRect(Renderer.color(0, 0, 0), x, y, size, this.borderWidth) //border
-            Renderer.drawRect(Renderer.color(0, 0, 0), x, y, this.borderWidth, size)
-            Renderer.drawRect(Renderer.color(0, 0, 0), x + size - this.borderWidth, y, this.borderWidth, size)
+            for (let room of dungeonMap.roomsArr) {
+                this.roomRenderer.drawExtras(renderContext, room)
+            }
+
+            Renderer.drawRect(Renderer.color(0, 0, 0), x, y, size, renderContext.borderWidth) //border
+            Renderer.drawRect(Renderer.color(0, 0, 0), x, y, renderContext.borderWidth, size)
+            Renderer.drawRect(Renderer.color(0, 0, 0), x + size - renderContext.borderWidth, y, renderContext.borderWidth, size)
 
             //dont render bottom line if scoreinfo rendering
             //Renderer.drawRect(Renderer.color(0, 0, 0), x, y + size - this.borderWidth, size, this.borderWidth)
@@ -80,9 +79,9 @@ class MapRenderer {
             renderLibs.drawStringCenteredFull(scoreInfo.mimic.toString(), x + size / 4 * 3, y + size + scoreInfoHeight / 2, size / 100)
 
 
-            Renderer.drawRect(Renderer.color(0, 0, 0), x, y + size, this.borderWidth, scoreInfoHeight) //border of score info
-            Renderer.drawRect(Renderer.color(0, 0, 0), x + size - this.borderWidth, y + size, this.borderWidth, scoreInfoHeight)
-            Renderer.drawRect(Renderer.color(0, 0, 0), x, y + size + scoreInfoHeight, size, this.borderWidth)
+            Renderer.drawRect(Renderer.color(0, 0, 0), x, y + size, renderContext.borderWidth, scoreInfoHeight) //border of score info
+            Renderer.drawRect(Renderer.color(0, 0, 0), x + size - renderContext.borderWidth, y + size, renderContext.borderWidth, scoreInfoHeight)
+            Renderer.drawRect(Renderer.color(0, 0, 0), x, y + size + scoreInfoHeight, size, renderContext.borderWidth)
 
         }
 

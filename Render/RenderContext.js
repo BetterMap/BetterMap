@@ -6,7 +6,7 @@
  * @property {Number} size - Width/height of the map when rendered
  * @property {Number} headScale - Width/height of heads (scales with size, will be same if size is 100)
  * @property {Number} iconScale - Width/height of icons (scales with size, will be same if size is 100)
- * @property {"hypixel"|"default"} tickStyle - Style of the ticks
+ * @property {"hypixel"|"default"|"secrets"} tickStyle - Style of the ticks
  * @property {"none"|"text"|"icon"} puzzleNames - Render style of puzzle names
  * @property {Boolean} headBorder - Wether to put a black border around heads on the map
  * @property {Boolean} playerNames - Wether to show player names when holding spirit leaps
@@ -22,6 +22,12 @@ class RenderContext {
 
         this.image = null;
         this.imageLastUpdate = 0;
+
+        this.imageSize = 256
+        this.paddingTop = 24;
+        this.paddingLeft = 24;
+
+        this.borderWidth = 2;
 
         this.onDestroys = []
     }

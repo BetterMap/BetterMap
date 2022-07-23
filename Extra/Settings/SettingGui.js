@@ -50,7 +50,8 @@ class SettingGui {
 
         this.addSidebarElement(new DropDown().setOptions({
             "default": "Legal Map",
-            "hypixel": "Hypixel"
+            "hypixel": "Hypixel",
+            "secrets": "Secrets Found"
         }).setSelectedOption("default").addEvent(new SoopyContentChangeEvent().setHandler((val, prev, cancelFun) => {
             this.changed("tickStyle", val)
         })), 0.5, 0.4, 0.075)

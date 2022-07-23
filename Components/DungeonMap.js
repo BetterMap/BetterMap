@@ -67,7 +67,7 @@ class DungeonMap {
 
         this.lastRoomId = undefined
         this.lastChange = 0
-        this.roomXY = this.getRoomXYWorld().join(",")
+        this.roomXY = "0,0"
         this.lastXY = undefined
 
         //simulate changing bloccks to air to fix green room not having air border around it
@@ -695,11 +695,12 @@ class DungeonMap {
         let room = this.rooms.get(xCoord + ',' + yCoord);
 
         let roomLore = []
-        if (room.roomId) { //TODO: COLOR CODES!
+        if (room.roomId) { //TODO: COLORS!
             roomLore.push(room.data?.name || '???')
             roomLore.push("&8" + (room.roomId || ""))
             if (room.data?.soul) roomLore.push("&dFAIRY SOUL!")
             if (room.maxSecrets) roomLore.push("Secrets: " + room.currentSecrets + ' / ' + room.maxSecrets)
+            if (room.data?.crypts !== undefined) roomLore.push("Crypts: " + room.data.crypts)
             if (room.type === Room.NORMAL) roomLore.push("Spiders: " + (room.data?.spiders ? "Yes" : "No"))
         } else {
             roomLore.push('Unknown room!')

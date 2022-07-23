@@ -7,6 +7,7 @@ import MapRenderer from "../../Render/MapRenderer"
 import RenderContext from "../../Render/RenderContext"
 import SoopyTextElement from "../../../guimanager/GuiElement/SoopyTextElement"
 import DropDown from "../../../guimanager/GuiElement/Dropdown"
+import Toggle from "../../../guimanager/GuiElement/Toggle"
 import SoopyContentChangeEvent from "../../../guimanager/EventListener/SoopyContentChangeEvent"
 
 class SettingGui {
@@ -42,8 +43,8 @@ class SettingGui {
             "teniosmap": "Tenios Map"
         }).setSelectedOption("legalmap").addEvent(new SoopyContentChangeEvent().setHandler((val, prev, cancelFun) => {
             this.changed("mapStyle", val)
-        })), 0.4, 0.4, 0.075)
-        this.addSidebarElement(new SoopyTextElement().setText("§0Map Style:").setMaxTextScale(2), 0, 0.4)
+        })), 0.5, 0.4, 0.075)
+        this.addSidebarElement(new SoopyTextElement().setText("§0Map Style:").setMaxTextScale(2), 0.1, 0.4)
 
         this.addSidebarElement()
 
@@ -52,12 +53,31 @@ class SettingGui {
             "hypixel": "Hypixel"
         }).setSelectedOption("default").addEvent(new SoopyContentChangeEvent().setHandler((val, prev, cancelFun) => {
             this.changed("tickStyle", val)
-        })), 0.4, 0.4, 0.075)
-        this.addSidebarElement(new SoopyTextElement().setText("§0Tick Style:").setMaxTextScale(2), 0, 0.4)
+        })), 0.5, 0.4, 0.075)
+        this.addSidebarElement(new SoopyTextElement().setText("§0Tick Style:").setMaxTextScale(2), 0.1, 0.4)
+
+        this.addSidebarElement(new DropDown().setOptions({
+            "none": "None",
+            "text": "Text",
+            "icon": "Icon"
+        }).setSelectedOption("text").addEvent(new SoopyContentChangeEvent().setHandler((val, prev, cancelFun) => {
+            this.changed("puzzleNames", val)
+        })), 0.5, 0.4, 0.075)
+        this.addSidebarElement(new SoopyTextElement().setText("§0Puzzle Style:").setMaxTextScale(2), 0.1, 0.4)
+
+        this.addSidebarElement(new Toggle().addEvent(new SoopyContentChangeEvent().setHandler((val, prev, cancelFun) => {
+            this.changed("headBorder", val)
+        })), 0.6, 0.2, 0.05)
+        this.addSidebarElement(new SoopyTextElement().setText("§0Border around heads:").setMaxTextScale(2), 0.1, 0.4)
+
+        this.addSidebarElement(new Toggle().addEvent(new SoopyContentChangeEvent().setHandler((val, prev, cancelFun) => {
+            this.changed("playerNames", val)
+        })), 0.6, 0.2, 0.05)
+        this.addSidebarElement(new SoopyTextElement().setText("§0Player names when holding leap:").setMaxTextScale(2), 0.1, 0.4)
     }
 
-    addSidebarElement(elm, x = 0.1, width = 0.8, height = 0.1) {
-        if (elm) this.mainSidebar.addChild(elm.setLocation(x + 0.1 - height, this.y, width, height))
+    addSidebarElement(elm = null, x = 0.1, width = 0.8, height = 0.1) {
+        if (elm) this.mainSidebar.addChild(elm.setLocation(x, this.y + 0.05 - height / 2, width, height))
         if (x === 0.1) this.y += 0.1
     }
 }

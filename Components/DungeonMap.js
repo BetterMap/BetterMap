@@ -479,6 +479,9 @@ class DungeonMap {
                     position.mapX = mapX + this.widthRoomImageMap / 2 - 1
                     position.mapY = mapY - 3
 
+                    position.worldX = Math.round(position.worldX)
+                    position.worldY = Math.round(position.worldY)
+
                     if (!this.doors.get(position.worldX + "," + position.worldY)) {
                         //door not in map, add new door
                         this.doors.set(position.worldX + "," + position.worldY, new Door(type, position, false))
@@ -508,6 +511,9 @@ class DungeonMap {
                     let position = new Position(0, 0, this)
                     position.mapX = mapX - 3
                     position.mapY = mapY + this.widthRoomImageMap / 2 - 1
+
+                    position.worldX = Math.round(position.worldX)
+                    position.worldY = Math.round(position.worldY)
 
                     if (!this.doors.get(position.worldX + "," + position.worldY)) {
                         //door not in map, add new door

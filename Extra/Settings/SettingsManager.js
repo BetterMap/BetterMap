@@ -351,10 +351,6 @@ class SettingsManager {
             let d = new Door(7, new Position(-156.8000030517578, -76.80000305175781), false);
             dungeon.doors.set("-156.8000030517578,-76.80000305175781", d);
         }
-        {
-            let d = new Door(6, new Position(-157, -77), 0);
-            dungeon.doors.set("-157,-77", d);
-        }
         return dungeon;
     }
 }

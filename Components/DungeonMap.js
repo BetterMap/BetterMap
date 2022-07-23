@@ -382,7 +382,7 @@ class DungeonMap {
                     //will be undefined if no merge needs to happen
                     let currRoomLeft = bytes[(mapX - 1) + (mapY) * 128] === 63 ? this.rooms.get((x - 1) + "," + y) : undefined
                     let currRoomTop = bytes[(mapX) + (mapY - 1) * 128] === 63 ? this.rooms.get(x + "," + (y - 1)) : undefined
-                    let currRoomTopRight = bytes[(mapX + 1) + (mapY) * 128] === 63 && bytes[(mapX + this.fullRoomScaleMap) + (mapY - 1) * 128] === 63 ? this.rooms.get((x + 1) + "," + (y - 1)) : undefined
+                    let currRoomTopRight = bytes[(mapX + this.fullRoomScaleMap - 1) + (mapY) * 128] === 63 && bytes[(mapX + this.fullRoomScaleMap) + (mapY - 1) * 128] === 63 ? this.rooms.get((x + 1) + "," + (y - 1)) : undefined
 
                     if (!currRoom && !currRoomLeft && !currRoomTop && !currRoomTopRight) { //no room and no merge
 

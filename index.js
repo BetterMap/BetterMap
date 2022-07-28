@@ -73,7 +73,7 @@ register("renderOverlay", () => {
         mapRenderer.draw(mapContext, currentDungeonMap)
         //render heads
         for (let player of currentDungeonMap.players) {
-            player.drawIcon(mapContext)
+            player.drawIcon(mapContext, currentDungeonMap)
         }
 
 

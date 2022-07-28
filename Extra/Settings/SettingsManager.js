@@ -24,23 +24,9 @@ class SettingsManager {
 
         this.fakeDungeon = this.createFakeDungeon()
 
-        let settingX = Renderer.screen.getWidth() / 2 + Renderer.screen.getWidth() / 10
-        let settingSize = Renderer.screen.getWidth() - (Renderer.screen.getWidth() / 2 + Renderer.screen.getWidth() / 5)
-        let settingY = Renderer.screen.getHeight() / 2 - settingSize / 2
-        this.settingRenderContext = this.createRenderContext({ posX: settingX, posY: settingY, size: settingSize })
+        this.settingRenderContext = this.createRenderContext()
 
         this.settingsGui = new SettingGui(this.currentSettings, this.fakeDungeon, this.renderContextManager.getRenderContextData(this.settingRenderContext), mapRenderer)
-
-        this.settingsGui.gui.element.addEvent(new SoopyOpenGuiEvent().setHandler(() => {
-            let settingX = Renderer.screen.getWidth() / 2 + Renderer.screen.getWidth() / 10
-            let settingSize = Renderer.screen.getWidth() - (Renderer.screen.getWidth() / 2 + Renderer.screen.getWidth() / 5)
-            let settingY = Renderer.screen.getHeight() / 2 - settingSize / 2
-
-            let d = this.renderContextManager.getRenderContextData(this.settingRenderContext)
-            d.settings.posX = settingX
-            d.settings.posY = settingY
-            d.settings.size = settingSize
-        }))
 
         this.settingsGui.changed = (key, val) => {
             this.currentSettings[key] = val
@@ -57,6 +43,10 @@ class SettingsManager {
                 data.markReRender()
             }
         }
+
+        register("renderOverlay", () => {
+            this.settingsGui.renderOverlay()
+        })
     }
 
     saveSettings() {

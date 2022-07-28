@@ -12,6 +12,8 @@ import SoopyContentChangeEvent from "../../../guimanager/EventListener/SoopyCont
 import ButtonWithArrow from "../../../guimanager/GuiElement/ButtonWithArrow"
 import LocationGui from "./LocationEditGui"
 import SoopyMouseClickEvent from "../../../guimanager/EventListener/SoopyMouseClickEvent"
+import SoopyNumber from "../../../guimanager/Classes/SoopyNumber"
+import SoopyOpenGuiEvent from "../../../guimanager/EventListener/SoopyOpenGuiEvent"
 
 class SettingGui {
     /**
@@ -89,6 +91,55 @@ class SettingGui {
         })), 0.6, 0.2, 0.05)
         this.addSidebarElement(new SoopyTextElement().setText("§0Player names when holding leap:").setMaxTextScale(2), 0.1, 0.4)
 
+        
+        //ANIMATIONS!!!!
+        this.lastOpen = 0
+        this.mapRenderX = new SoopyNumber(Renderer.screen.getWidth())
+        this.gui.element.addEvent(new SoopyOpenGuiEvent().setHandler(() => {
+            let settingX = Renderer.screen.getWidth() / 2 + Renderer.screen.getWidth() / 10
+
+            this.mapRenderX.set(Renderer.screen.getWidth(), 0)
+            this.mapRenderX.set(settingX, 200)
+            renderContext.settings.posX = Renderer.screen.getWidth()
+
+            this.mainSidebar.location.location.x.set(-0.5, 0)
+            this.mainSidebar.location.location.x.set(0, 200)
+
+            this.backgroundOpacity.set(0, 0)
+            this.backgroundOpacity.set(100, 200)
+        }))
+
+        this.gui.element.addEvent(new SoopyRenderEvent().setHandler(() => {
+            let settingX = Renderer.screen.getWidth() / 2 + Renderer.screen.getWidth() / 10
+            let settingSize = Renderer.screen.getWidth() - (Renderer.screen.getWidth() / 2 + Renderer.screen.getWidth() / 5)
+            let settingY = Renderer.screen.getHeight() / 2 - settingSize / 2
+
+            if (this.gui.ctGui.isOpen()) {
+                this.lastOpen = Date.now()
+                this.mapRenderX.set(settingX, 200)
+            }
+
+            renderContext.settings.posX = this.mapRenderX.get()
+            renderContext.settings.posY = settingY
+            renderContext.settings.size = settingSize
+        }))
+
+        this.backgroundOpacity = new SoopyNumber(0)
+
+        this.gui._renderBackground = () => {
+            Renderer.drawRect(Renderer.color(0, 0, 0, this.backgroundOpacity.get()), 0, 0, Renderer.screen.getWidth(), Renderer.screen.getHeight())
+        }
+    }
+
+    renderOverlay() {
+        if (!this.gui.ctGui.isOpen() && Date.now() - this.lastOpen < 200) {
+
+            this.mapRenderX.set(Renderer.screen.getWidth(), 200)
+            this.mainSidebar.location.location.x.set(-0.5, 200)
+            this.backgroundOpacity.set(0, 200)
+
+            this.gui._render(-10, -10, 0)
+        }
     }
 
     addSidebarElement(elm = null, x = 0.1, width = 0.8, height = 0.1) {

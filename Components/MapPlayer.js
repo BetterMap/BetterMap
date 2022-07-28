@@ -1,4 +1,5 @@
 import { f, m } from "../../mappings/mappings.js"
+import RenderContext from "../Render/RenderContext.js"
 import Position from "../Utils/Position.js"
 
 const DefaultVertexFormats = Java.type("net.minecraft.client.renderer.vertex.DefaultVertexFormats")
@@ -40,10 +41,9 @@ class MapPlayer {
 
     /**
      * TODO: Option for black border
-     * @param {Number} mapSize 
-     * @param {Number} imgSize 
+     * @param {RenderContext} renderContext 
      */
-    drawIcon(renderContext) {
+    drawIcon(renderContext, dungeon) {
         let { x, y, size, headScale } = renderContext.getMapDimensions()
 
         let rx = -headScale / 2 * size / 100 //offsetting to the left by half image width,
@@ -51,7 +51,17 @@ class MapPlayer {
         let rw = headScale * size / 100
         let rh = headScale * size / 100
 
-        Renderer.translate(x + (this.location.worldX + 256 - 32) * size / 256, y + (this.location.worldY + 256 - 32) * size / 256, 50)
+        let arrayX = (this.location.worldX + 200) / 32 - 0.5
+        let arrayY = (this.location.worldY + 200) / 32 - 0.5
+
+        let x2 = (renderContext.roomGap / 2 + renderContext.blockSize * arrayX + renderContext.roomSize / 2 + renderContext.paddingLeft) / renderContext.getImageSize(dungeon.floor)
+        let y2 = (renderContext.roomGap / 2 + renderContext.blockSize * arrayY + renderContext.roomSize / 2 + renderContext.paddingTop) / renderContext.getImageSize(dungeon.floor)
+
+        x2 = x + x2 * renderContext.size + renderContext.borderWidth
+        y2 = y + y2 * renderContext.size + renderContext.borderWidth
+
+        Renderer.translate(x2, y2, 50)
+        // Renderer.translate(x + (this.location.worldX + 256 - 32) * size / 256, y + (this.location.worldY + 256 - 32) * size / 256, 50)
         Renderer.rotate(this.yaw)
         GlStateManager[m.enableBlend]()
         Client.getMinecraft()[m.getTextureManager]()[m.bindTexture.TextureManager](this.networkPlayerInfo[m.getLocationSkin.NetworkPlayerInfo]())

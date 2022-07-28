@@ -360,7 +360,7 @@ class DungeonMap {
                         room.checkmarkState = room.type === Room.UNKNOWN ? Room.ADJACENT : Room.OPENED
                         this.markChanged()
                     } else {
-                        if (currRoom.type !== r1x1s[pixelColor] && !currRoom.roomId) { //TODO: account for incorrect room being here due to early map scanning
+                        if (currRoom.type !== r1x1s[pixelColor] && !currRoom.roomId) {
                             currRoom.setType(r1x1s[pixelColor])
                             currRoom.checkmarkState = currRoom.type === Room.UNKNOWN ? Room.ADJACENT : Room.OPENED
                             this.markChanged();

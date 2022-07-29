@@ -117,6 +117,9 @@ class SettingGui {
             this.backgroundOpacity.set(100, 200)
 
             this.updateChangelogtext()
+
+            this.mainpage.location.location.x.set(0)
+            this.changelog.location.location.x.set(1)
         }))
 
         this.gui.element.addEvent(new SoopyRenderEvent().setHandler(() => {

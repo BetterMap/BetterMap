@@ -723,7 +723,7 @@ class DungeonMap {
             roomLore.push("&8" + (room.roomId || ""))
             if (room.data?.soul) roomLore.push("&dFAIRY SOUL!")
             if (room.maxSecrets) roomLore.push("Secrets: " + room.currentSecrets + ' / ' + room.maxSecrets)
-            if (room.data?.crypts !== undefined) roomLore.push("Crypts: " + room.data.crypts)
+            if (room.data?.crypts !== undefined && (room.type === Room.NORMAL || room.type === Room.MINIBOSS)) roomLore.push("Crypts: " + room.data.crypts)
             if (room.type === Room.NORMAL) roomLore.push("Spiders: " + (room.data?.spiders ? "Yes" : "No"))
         } else {
             roomLore.push('Unknown room!')

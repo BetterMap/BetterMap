@@ -47,6 +47,7 @@ class DungeonMap {
         this.lastChanged = Date.now()
 
         this.dungeonTopLeft = undefined
+        this.dungeonTopLeft2 = undefined
 
         /**
          * @type {Array<MapPlayer>}
@@ -324,6 +325,11 @@ class DungeonMap {
                 roomX += this.fullRoomScaleMap
             }
             this.dungeonTopLeft = [roomX, roomY]
+        }
+        if (!this.dungeonTopLeft || !this.dungeonTopLeft2 || this.dungeonTopLeft.join(" ") !== this.dungeonTopLeft2.join(" ")) {
+            this.dungeonTopLeft2 = this.dungeonTopLeft
+            this.dungeonTopLeft = undefined
+            return
         }
 
         let r1x1s = {

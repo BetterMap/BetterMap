@@ -15,6 +15,8 @@ class LocationGui {
 
         this.changeEvent = undefined
 
+        let defaultLocation = [10, 10, 1.5]
+
         this.imageWBase = 100
         this.imageHBase = 100
 
@@ -94,7 +96,6 @@ class LocationGui {
             this.x = defaultLocation[0]
             this.y = defaultLocation[1]
             this.scale = defaultLocation[2]
-            this.shadowType = defaultLocation[3]
         }))
         this.elmSettings.addChild(button)
 

@@ -76,7 +76,7 @@ class SettingGui {
             editLocationGui.editPosition()
         })), 0.3, 0.4, 0.075)
 
-        this.addSidebarElement() //adds a gap
+        this.addSidebarElement() //adds 2 gaps (button from above diddnt get one added automatically + seperating setting areas)
         this.addSidebarElement()
 
         this.addDropdown("Tick Style", {

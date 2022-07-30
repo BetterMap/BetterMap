@@ -1,4 +1,4 @@
-import { roomColorMap } from "../Data/Colors"
+import Position from "../Utils/Position"
 
 class Door {
     /**
@@ -11,11 +11,6 @@ class Door {
 
         this.horisontal = horisontal
     }
-
-    getRenderColor() {
-        return roomColorMap.get(this.type)
-    }
-
 }
 
 export default Door

@@ -1058,7 +1058,7 @@
         "type": "mobs",
         "shape": "1x2",
         "secrets": 2,
-        "crypts": 0,
+        "crypts": 1,
         "revive_stones": 0,
         "journals": 0,
         "spiders": false,

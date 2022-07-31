@@ -804,6 +804,9 @@ class DungeonMap {
         let worldX = (((cursorX - x - context.borderWidth) / context.size * context.getImageSize(this.floor) - context.paddingLeft - context.roomSize / 2 - context.roomGap / 2) / context.blockSize + 0.5) * 32 - 200
         let worldY = (((cursorY - y - context.borderWidth) / context.size * context.getImageSize(this.floor) - context.paddingTop - context.roomSize / 2 - context.roomGap / 2) / context.blockSize + 0.5) * 32 - 200
 
+        if (((worldX + 200) / 32) < 0) return
+        if (((worldY + 200) / 32) < 0) return
+
         let coordsX = ~~((worldX + 200) / 32)
         let coordsY = ~~((worldY + 200) / 32)
 

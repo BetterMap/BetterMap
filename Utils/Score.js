@@ -1,10 +1,10 @@
 
 
 /**
- * Returns the amount of secrets required to get 100% exploration
+ * Returns the percentage of total secrets required to get the maximum exploration score for secrets.
  * @param {Number} floor The floor number
  * @param {Boolean} masterMode true if mastermode 
- * @returns {Number} the amount of secrets needed
+ * @returns {Number} the percentage of secrets needed eg 50 = 50%
  */
 function getRequiredSecrets(floor, masterMode) {
 

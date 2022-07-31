@@ -188,6 +188,22 @@ class Room {
         return this.checkmarkState >= Room.CLEARED;
     }
 
+    getLore() {
+        let roomLore = []
+        if (this.roomId) { //TODO: COLORS!
+            roomLore.push(this.data?.name || '???')
+            roomLore.push("&8" + (this.roomId || ""))
+            if (this.data?.soul) roomLore.push("&dFAIRY SOUL!")
+            if (this.maxSecrets) roomLore.push("Secrets: " + this.currentSecrets + ' / ' + this.maxSecrets)
+            if (this.data?.crypts !== undefined && (this.type === Room.NORMAL || this.type === Room.MINIBOSS)) roomLore.push("Crypts: " + this.data.crypts)
+            if (this.type === Room.NORMAL) roomLore.push("Spiders: " + (this.data?.spiders ? "Yes" : "No"))
+        } else {
+            roomLore.push('Unknown room!')
+        }
+
+        return roomLore
+    }
+
 }
 
 export default Room

@@ -10,6 +10,7 @@ import { renderLore } from "../Utils/Utils.js"
 import socketConnection from "../socketConnection.js"
 import DataLoader from "../Utils/DataLoader.js"
 import { fetch } from "../Utils/networkUtils.js"
+import renderLibs from "../../guimanager/renderLibs.js"
 
 const MESSAGE_PREFIX = "&6[BetterMap]&7 "
 
@@ -63,6 +64,8 @@ class DungeonMap {
             "you": Player.getUUID().toString()
         }
 
+        this.cursorStoreXY = undefined
+        this.dropdownXY = undefined
 
         //load from world datra
 
@@ -122,8 +125,7 @@ class DungeonMap {
 
                 if (!currentRoom || currentRoom.type === Room.UNKNOWN) return; //current room not loaded yet
 
-                if (currentRoom.currentSecrets !== data.min || currentRoom.maxSecrets !== data.max) {
-                    currentRoom.maxSecrets = data.max
+                if (currentRoom.currentSecrets !== data.min) {
                     currentRoom.currentSecrets = data.min
 
                     this.markChanged() //re-render map incase of a secret count specific texturing
@@ -483,6 +485,7 @@ class DungeonMap {
                     let currRoom = this.rooms.get(position.arrayX + "," + position.arrayY)
                     if (currRoom.checkmarkState !== Room.COMPLETED) {
                         currRoom.checkmarkState = Room.COMPLETED
+                        currRoom.currentSecrets = currRoom.maxSecrets
                         this.markChanged()
                     }
                 }
@@ -678,6 +681,17 @@ class DungeonMap {
         }
     }
 
+    /**
+     * Gets the current room the player is standing in
+     * @returns {Room}
+     */
+    getPlayerRoom() {
+        let x = ~~((Player.getX() + dungeonOffsetX) / 32);
+        let y = ~~((Player.getZ() + dungeonOffsetY) / 32);
+
+        return this.rooms.get(x + ',' + y);
+    }
+
     scanFirstDeathForSpiritPet(username) {
         if (this.firstDeath) return
         this.firstDeath = true
@@ -728,8 +742,7 @@ class DungeonMap {
 
         if (!currentRoom || currentRoom.type === Room.UNKNOWN) return; //current room not loaded yet
 
-        if (currentRoom.currentSecrets !== min || currentRoom.maxSecrets !== max) {
-            currentRoom.maxSecrets = max
+        if (currentRoom.currentSecrets !== min && currentRoom.maxSecrets === max) {
             currentRoom.currentSecrets = min
 
             this.markChanged() //re-render map incase of a secret count specific texturing
@@ -737,7 +750,6 @@ class DungeonMap {
             this.sendSocketData({
                 type: 'roomSecrets',
                 min: min,
-                max: max,
                 x: x,
                 y: y
             })
@@ -769,24 +781,55 @@ class DungeonMap {
         })
     }
 
-    drawRoomTooltip(context, cursorX, cursorY) {
+    roomGuiClicked(context, cursorX, cursorY, button, isPress) {
+        if (!isPress) return
+
+        if (this.dropdownXY) {
+            dungeonMapButtons.forEach(([name, callback], index) => {
+
+                let bx = this.dropdownXY[0] + 1
+                let by = this.dropdownXY[1] + 25 * index + 1
+                let bw = 73
+                let bh = 23
+
+                let hovered = cursorX >= bx && cursorX <= bx + bw && cursorY >= by && cursorY <= by + bh
+
+                if (hovered) {
+                    callback(this, this.dropdownXY[2])
+                }
+            })
+            this.dropdownXY = undefined
+            return
+        }
+
+        if (button === 1) { //right click -> store x, y and render even if chat not open
+            this.dropdownXY = undefined
+            if (this.cursorStoreXY) {
+                this.cursorStoreXY = undefined
+            } else {
+                this.cursorStoreXY = [cursorX, cursorY]
+            }
+            return
+        }
+
         let { x, y, size } = context.getMapDimensions();
         const borderPixels = 27 / 256 * size;
         if (cursorX < x + borderPixels || cursorY < y + borderPixels || cursorX > x + size - borderPixels || cursorY > y + size - borderPixels) return;
 
         //Mouse somewhere on map
 
-        let mapRoomSize = 26 / 256 * size;
-        let mapGapSize = 6 / 256 * size;
+        let worldX = (((cursorX - x - context.borderWidth) / context.size * context.getImageSize(this.floor) - context.paddingLeft - context.roomSize / 2 - context.roomGap / 2) / context.blockSize + 0.5) * 32 - 200
+        let worldY = (((cursorY - y - context.borderWidth) / context.size * context.getImageSize(this.floor) - context.paddingTop - context.roomSize / 2 - context.roomGap / 2) / context.blockSize + 0.5) * 32 - 200
 
-        xCoord = ~~((cursorX - x - borderPixels) / (mapRoomSize + mapGapSize));
-        yCoord = ~~((cursorY - y - borderPixels) / (mapRoomSize + mapGapSize));
+        let coordsX = ~~((worldX + 200) / 32)
+        let coordsY = ~~((worldY + 200) / 32)
 
-        if (!this.rooms.has(xCoord + ',' + yCoord)) { //no room at mouse
+
+        if (!this.rooms.has(coordsX + ',' + coordsY)) { //no room at mouse
             return;
         }
 
-        let room = this.rooms.get(xCoord + ',' + yCoord);
+        let room = this.rooms.get(coordsX + ',' + coordsY); //hovered room
 
         let roomLore = []
         if (room.roomId) { //TODO: COLORS!
@@ -799,21 +842,73 @@ class DungeonMap {
             if (room.type === Room.NORMAL) roomLore.push("Spiders: " + (room.data?.spiders ? "Yes" : "No"))
         } else {
             roomLore.push('Unknown room!')
+            roomLore.push('&9Rotation: ' + (room.rotation || 'NONE'));
+
+            if (button !== 0) return //ignore buttons like middle mouse
+
+            this.dropdownXY = [cursorX + 8, cursorY - 16, room]
+            this.cursorStoreXY = undefined
         }
+    }
+
+    drawRoomTooltip(context, cursorX, cursorY) {
+        if (this.cursorStoreXY) {
+            [cursorX, cursorY] = this.cursorStoreXY
+        }
+
+        let { x, y, size } = context.getMapDimensions();
+
+        if (this.dropdownXY) {
+            Renderer.retainTransforms(true)
+            Renderer.translate(0, 0, 100)
+            Renderer.drawRect(Renderer.color(0, 0, 0), this.dropdownXY[0], this.dropdownXY[1], 75, 25 * dungeonMapButtons.length)
+
+            dungeonMapButtons.forEach(([name, callback], index) => {
+
+                let bx = this.dropdownXY[0] + 1
+                let by = this.dropdownXY[1] + 25 * index + 1
+                let bw = 73
+                let bh = 23
+
+                let hovered = cursorX >= bx && cursorX <= bx + bw && cursorY >= by && cursorY <= by + bh
+
+                Renderer.drawRect(Renderer.color(hovered ? 100 : 50, hovered ? 100 : 50, hovered ? 100 : 50), bx, by, bw, bh)
+
+                let scale = Math.min(1, (bw - 4) / Renderer.getStringWidth(ChatLib.removeFormatting(name)))
+                renderLibs.drawStringCenteredFull(name, bx + bw / 2, by + bh / 2, scale)
+                Renderer.scale(1 / scale, 1 / scale)
+            })
+            Renderer.retainTransforms(false)
+            return
+        }
+
+        if (cursorX < x || cursorY < y || cursorX > x + size || cursorY > y + size) return;
+
+        //Mouse somewhere on map
+
+        let worldX = (((cursorX - x - context.borderWidth) / context.size * context.getImageSize(this.floor) - context.paddingLeft - context.roomSize / 2 - context.roomGap / 2) / context.blockSize + 0.5) * 32 - 200
+        let worldY = (((cursorY - y - context.borderWidth) / context.size * context.getImageSize(this.floor) - context.paddingTop - context.roomSize / 2 - context.roomGap / 2) / context.blockSize + 0.5) * 32 - 200
+
+        let coordsX = ~~((worldX + 200) / 32)
+        let coordsY = ~~((worldY + 200) / 32)
+
+        if (!this.rooms.has(coordsX + ',' + coordsY)) { //no room at mouse
+            return;
+        }
+
+        let room = this.rooms.get(coordsX + ',' + coordsY);
+
+        let roomLore = room.getLore()
 
         renderLore(cursorX, cursorY, roomLore)
 
         return;
-        if (xCoord < 0 || xCoord >= dungeon.width || yCoord < 0 || yCoord >= dungeon.height) return;
-        if (!(xCoord in dungeon.roomLookupMap) || !(yCoord in dungeon.roomLookupMap[xCoord])) return;
-        if (!room) return;
-        renderTooltip(x, y, room.getInfoTooltip(), room.identified);
-
     }
 
     canUpdateRoom() {
-        if (this.roomXY !== this.getRoomXYWorld().join(",")) {
-            this.roomXY = this.getRoomXYWorld().join(",")
+        let currRoom = this.getRoomXYWorld().join(",")
+        if (this.roomXY !== currRoom) {
+            this.roomXY = currRoom
             this.lastChange = Date.now() //add delay between checking for rooms if switch room
         }
 
@@ -1246,3 +1341,12 @@ class DungeonMap {
 }
 
 export default DungeonMap
+
+
+let dungeonMapButtons = [
+    ["Test button 1", (dungeonMap, clickedRoom) => { ChatLib.chat("You clicked the test button 1") }],
+    ["Test button 2", (dungeonMap, clickedRoom) => { ChatLib.chat("You clicked the test button 2") }],
+    ["Test button 3", (dungeonMap, clickedRoom) => { ChatLib.chat("You clicked the test button 3") }],
+    ["Test button 4", (dungeonMap, clickedRoom) => { ChatLib.chat("You clicked the test button 4") }],
+    ["Test button 5", (dungeonMap, clickedRoom) => { ChatLib.chat("You clicked the test button 5") }],
+]

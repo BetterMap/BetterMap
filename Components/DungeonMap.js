@@ -42,7 +42,7 @@ class DungeonMap {
         this.roomsArr = new Set()
 
         this.floor = floor //eg "M2" or "E" or "F7"
-        this.floorNumber = this.floor == "E" ? 0 : this.floor[this.floor.length -1]
+        this.floorNumber = this.floor == "E" ? 0 : this.floor[this.floor.length - 1]
 
         this.deadPlayers = deadPlayers
 
@@ -834,24 +834,11 @@ class DungeonMap {
 
         let room = this.rooms.get(coordsX + ',' + coordsY); //hovered room
 
-        let roomLore = []
-        if (room.roomId) { //TODO: COLORS!
-            roomLore.push(room.data?.name || '???')
-            roomLore.push("&8" + (room.roomId || ""))
-            roomLore.push('&9Rotation: ' + (room.rotation || 'NONE'));
-            if (room.data && room?.data?.soul) roomLore.push("&dFAIRY SOUL!")
-            if (room?.maxSecrets) roomLore.push("Secrets: " + room.currentSecrets + ' / ' + room.maxSecrets)
-            if (room?.data?.crypts !== undefined && (room.type === Room.NORMAL || room.type === Room.MINIBOSS)) roomLore.push("Crypts: " + room.data.crypts)
-            if (room.type === Room.NORMAL) roomLore.push("Spiders: " + (room.data?.spiders ? "Yes" : "No"))
-        } else {
-            roomLore.push('Unknown room!')
-            roomLore.push('&9Rotation: ' + (room.rotation || 'NONE'));
+        if (button !== 0) return //ignore buttons like middle mouse
 
-            if (button !== 0) return //ignore buttons like middle mouse
+        this.dropdownXY = [cursorX + 8, cursorY - 16, room]
+        this.cursorStoreXY = undefined
 
-            this.dropdownXY = [cursorX + 8, cursorY - 16, room]
-            this.cursorStoreXY = undefined
-        }
     }
 
     drawRoomTooltip(context, cursorX, cursorY) {

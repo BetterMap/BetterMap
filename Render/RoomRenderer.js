@@ -64,7 +64,7 @@ class RoomRenderer {
 
         if (room.type === Room.SPAWN) return //Dont render tick on spawn room
 
-        if (context.tickStyle === 'secrets') return //Needs to be rendered in renderoverlay
+        if (context.tickStyle === 'secrets') return //Needs to be rendered in renderoverlay, see drawExtras()
 
         let location = room.components[0]
         if (room.checkmarkState === 1) {
@@ -132,10 +132,15 @@ class RoomRenderer {
             }
             text = "&0" + text
 
+            Renderer.translate(0, 0, 100)
             renderLibs.drawStringCenteredShadow(text, x + scale, y - 4.5 * scale, scale)
+            Renderer.translate(0, 0, 100)
             renderLibs.drawStringCenteredShadow(text, x - scale, y - 4.5 * scale, scale)
+            Renderer.translate(0, 0, 100)
             renderLibs.drawStringCenteredShadow(text, x, y + scale - 4.5 * scale, scale)
+            Renderer.translate(0, 0, 100)
             renderLibs.drawStringCenteredShadow(text, x, y - scale - 4.5 * scale, scale)
+            Renderer.translate(0, 0, 100)
             renderLibs.drawStringCenteredShadow(textColored, x, y - 4.5 * scale, scale)
         }
 

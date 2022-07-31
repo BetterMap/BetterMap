@@ -125,8 +125,7 @@ class DungeonMap {
 
                 if (!currentRoom || currentRoom.type === Room.UNKNOWN) return; //current room not loaded yet
 
-                if (currentRoom.currentSecrets !== data.min || currentRoom.maxSecrets !== data.max) {
-                    currentRoom.maxSecrets = data.max
+                if (currentRoom.currentSecrets !== data.min) {
                     currentRoom.currentSecrets = data.min
 
                     this.markChanged() //re-render map incase of a secret count specific texturing
@@ -611,6 +610,17 @@ class DungeonMap {
         }
     }
 
+    /**
+     * Gets the current room the player is standing in
+     * @returns {Room}
+     */
+    getPlayerRoom() {
+        let x = ~~((Player.getX() + dungeonOffsetX) / 32);
+        let y = ~~((Player.getZ() + dungeonOffsetY) / 32);
+
+        return this.rooms.get(x + ',' + y);
+    }
+
     scanFirstDeathForSpiritPet(username) {
         if (this.firstDeath) return
         this.firstDeath = true
@@ -661,8 +671,7 @@ class DungeonMap {
 
         if (!currentRoom || currentRoom.type === Room.UNKNOWN) return; //current room not loaded yet
 
-        if (currentRoom.currentSecrets !== min || currentRoom.maxSecrets !== max) {
-            currentRoom.maxSecrets = max
+        if (currentRoom.currentSecrets !== min && currentRoom.maxSecrets === max) {
             currentRoom.currentSecrets = min
 
             this.markChanged() //re-render map incase of a secret count specific texturing
@@ -670,7 +679,6 @@ class DungeonMap {
             this.sendSocketData({
                 type: 'roomSecrets',
                 min: min,
-                max: max,
                 x: x,
                 y: y
             })
@@ -708,8 +716,8 @@ class DungeonMap {
         if (this.dropdownXY) {
             dungeonMapButtons.forEach(([name, callback], index) => {
 
-                let bx = this.dropdownXY[0] + 6
-                let by = this.dropdownXY[1] - 10 + 25 * index + 1
+                let bx = this.dropdownXY[0] + 1
+                let by = this.dropdownXY[1] + 25 * index + 1
                 let bw = 73
                 let bh = 23
 
@@ -754,7 +762,8 @@ class DungeonMap {
 
         if (button !== 0) return //ignore buttons like middle mouse
 
-        this.dropdownXY = [cursorX, cursorY, room]
+        this.dropdownXY = [cursorX + 8, cursorY - 16, room]
+        this.cursorStoreXY = undefined
     }
 
     drawRoomTooltip(context, cursorX, cursorY) {
@@ -765,12 +774,14 @@ class DungeonMap {
         let { x, y, size } = context.getMapDimensions();
 
         if (this.dropdownXY) {
-            Renderer.drawRect(Renderer.color(0, 0, 0), this.dropdownXY[0] + 5, this.dropdownXY[1] - 10, 75, 25 * dungeonMapButtons.length)
+            Renderer.retainTransforms(true)
+            Renderer.translate(0, 0, 100)
+            Renderer.drawRect(Renderer.color(0, 0, 0), this.dropdownXY[0], this.dropdownXY[1], 75, 25 * dungeonMapButtons.length)
 
             dungeonMapButtons.forEach(([name, callback], index) => {
 
-                let bx = this.dropdownXY[0] + 6
-                let by = this.dropdownXY[1] - 10 + 25 * index + 1
+                let bx = this.dropdownXY[0] + 1
+                let by = this.dropdownXY[1] + 25 * index + 1
                 let bw = 73
                 let bh = 23
 
@@ -780,8 +791,9 @@ class DungeonMap {
 
                 let scale = Math.min(1, (bw - 4) / Renderer.getStringWidth(ChatLib.removeFormatting(name)))
                 renderLibs.drawStringCenteredFull(name, bx + bw / 2, by + bh / 2, scale)
-
+                Renderer.scale(1 / scale, 1 / scale)
             })
+            Renderer.retainTransforms(false)
             return
         }
 
@@ -801,17 +813,7 @@ class DungeonMap {
 
         let room = this.rooms.get(coordsX + ',' + coordsY);
 
-        let roomLore = []
-        if (room.roomId) { //TODO: COLORS!
-            roomLore.push(room.data?.name || '???')
-            roomLore.push("&8" + (room.roomId || ""))
-            if (room.data?.soul) roomLore.push("&dFAIRY SOUL!")
-            if (room.maxSecrets) roomLore.push("Secrets: " + room.currentSecrets + ' / ' + room.maxSecrets)
-            if (room.data?.crypts !== undefined && (room.type === Room.NORMAL || room.type === Room.MINIBOSS)) roomLore.push("Crypts: " + room.data.crypts)
-            if (room.type === Room.NORMAL) roomLore.push("Spiders: " + (room.data?.spiders ? "Yes" : "No"))
-        } else {
-            roomLore.push('Unknown room!')
-        }
+        let roomLore = room.getLore()
 
         renderLore(cursorX, cursorY, roomLore)
 
@@ -819,8 +821,9 @@ class DungeonMap {
     }
 
     canUpdateRoom() {
-        if (this.roomXY !== this.getRoomXYWorld().join(",")) {
-            this.roomXY = this.getRoomXYWorld().join(",")
+        let currRoom = this.getRoomXYWorld().join(",")
+        if (this.roomXY !== currRoom) {
+            this.roomXY = currRoom
             this.lastChange = Date.now() //add delay between checking for rooms if switch room
         }
 

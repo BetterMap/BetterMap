@@ -125,8 +125,7 @@ class DungeonMap {
 
                 if (!currentRoom || currentRoom.type === Room.UNKNOWN) return; //current room not loaded yet
 
-                if (currentRoom.currentSecrets !== data.min || currentRoom.maxSecrets !== data.max) {
-                    currentRoom.maxSecrets = data.max
+                if (currentRoom.currentSecrets !== data.min) {
                     currentRoom.currentSecrets = data.min
 
                     this.markChanged() //re-render map incase of a secret count specific texturing
@@ -672,8 +671,7 @@ class DungeonMap {
 
         if (!currentRoom || currentRoom.type === Room.UNKNOWN) return; //current room not loaded yet
 
-        if (currentRoom.currentSecrets !== min || currentRoom.maxSecrets !== max) {
-            currentRoom.maxSecrets = max
+        if (currentRoom.currentSecrets !== min && currentRoom.maxSecrets === max) {
             currentRoom.currentSecrets = min
 
             this.markChanged() //re-render map incase of a secret count specific texturing
@@ -681,7 +679,6 @@ class DungeonMap {
             this.sendSocketData({
                 type: 'roomSecrets',
                 min: min,
-                max: max,
                 x: x,
                 y: y
             })
@@ -766,6 +763,7 @@ class DungeonMap {
         if (button !== 0) return //ignore buttons like middle mouse
 
         this.dropdownXY = [cursorX + 8, cursorY - 16, room]
+        this.cursorStoreXY = undefined
     }
 
     drawRoomTooltip(context, cursorX, cursorY) {
@@ -823,8 +821,9 @@ class DungeonMap {
     }
 
     canUpdateRoom() {
-        if (this.roomXY !== this.getRoomXYWorld().join(",")) {
-            this.roomXY = this.getRoomXYWorld().join(",")
+        let currRoom = this.getRoomXYWorld().join(",")
+        if (this.roomXY !== currRoom) {
+            this.roomXY = currRoom
             this.lastChange = Date.now() //add delay between checking for rooms if switch room
         }
 

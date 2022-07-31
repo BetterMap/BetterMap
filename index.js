@@ -47,8 +47,9 @@ register("step", () => {
         if (mapData) {
             currentDungeonMap.updateFromMap(mapData)
         } else {
-            currentDungeonMap.updateFromWorld()
+            currentDungeonMap.updateFromWorld();
         }
+        currentDungeonMap.updatePuzzles();
     }
 }).setFps(5)
 
@@ -106,6 +107,7 @@ register("chat", (info) => {
 
     deadPlayers.add(player.toLowerCase())
 }).setChatCriteria("&r&c ☠ ${info} and became a ghost&r&7.&r")
+
 register("chat", (info) => {
     let player = ChatLib.removeFormatting(info.split(" ")[0])
 

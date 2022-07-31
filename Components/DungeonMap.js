@@ -76,7 +76,7 @@ class DungeonMap {
 
         //rooms that were already identified
         this.identifiedRoomIds = new Set();
-
+        this.identifiedPuzzleCount = 0;
 
         let mimicDeadMessages = ["$SKYTILS-DUNGEON-SCORE-MIMIC$", "Mimic Killed!", "Mimic Dead!", "Mimic dead!"]
 
@@ -130,7 +130,7 @@ class DungeonMap {
                 }
                 break;
             case "doorLocation":
-                this.setDoor(data.x, data.y, data.ishorisontal, false, data.doorType)
+                this.setDoor(data.x, data.y, data.ishorizontal, false, data.doorType)
                 break;
             case "roomLocation":
                 this.setRoom(data.x, data.y, data.rotation, data.roomId, false)
@@ -149,6 +149,27 @@ class DungeonMap {
                 this.mimicKilled = true
                 break;
         }
+    }
+
+    addDoorToAdjacentRooms(door) {
+        if (door.horizontal) {
+            let left = door.position.arrayX - 1;
+            let right = door.position.arrayX
+            let y = Math.round(door.position.arrayY - 0.3);
+            let leftRoom = this.rooms.get(left + ',' + y);
+            let rightRoom = this.rooms.get(right + ',' + y);
+            if (leftRoom) leftRoom.addDoor(door);
+            if (rightRoom) rightRoom.addDoor(door);
+        } else {
+            let up = door.position.arrayY - 1
+            let down = door.position.arrayY
+            let x = Math.round(door.position.arrayX - 0.3);
+            let upRoom = this.rooms.get(x + ',' + up);
+            let downRoom = this.rooms.get(x + ',' + down);
+            if (upRoom) upRoom.addDoor(door);
+            if (downRoom) downRoom.addDoor(door);
+        }
+
     }
 
     sendSocketData(data) {
@@ -413,8 +434,7 @@ class DungeonMap {
                         if (currRoomLeft && currRoom !== currRoomLeft && currRoomLeft.type === Room.NORMAL) {
                             if (!currRoomLeft.components.some(a => position.equals(a))) { //need to merge left
                                 if (currRoom) this.roomsArr.delete(currRoom)
-
-                                currRoomLeft.components.push(position)
+                                currRoomLeft.addComponents(position)
                                 this.rooms.set(x + "," + y, currRoomLeft)
                                 this.markChanged()
                             }
@@ -424,7 +444,7 @@ class DungeonMap {
                             if (!currRoomTop.components.some(a => position.equals(a))) { //need to merge up
                                 if (currRoom) this.roomsArr.delete(currRoom)
 
-                                currRoomTop.components.push(position)
+                                currRoomTop.addComponents(position)
                                 this.rooms.set(x + "," + y, currRoomTop)
                                 this.markChanged()
                             }
@@ -434,7 +454,7 @@ class DungeonMap {
                             if (!currRoomTopRight.components.some(a => position.equals(a))) { //need to merge up
                                 if (currRoom) this.roomsArr.delete(currRoom)
 
-                                currRoomTopRight.components.unshift(position)
+                                currRoomTopRight.addComponents(position)
                                 this.rooms.set(x + "," + y, currRoomTopRight)
                                 this.markChanged()
                             }
@@ -499,14 +519,16 @@ class DungeonMap {
                     position.worldX = Math.round(position.worldX)
                     position.worldY = Math.round(position.worldY)
 
-                    if (!this.doors.get(position.worldX + "," + position.worldY)) {
+                    if (!this.doors.get(position.arrayX + "," + position.arrayY)) {
                         //door not in map, add new door
-                        this.doors.set(position.worldX + "," + position.worldY, new Door(type, position, false))
+                        let door = new Door(type, position, false)
+                        this.doors.set(position.arrayX + "," + position.arrayY, door)
+                        this.addDoorToAdjacentRooms(door);
 
                     } else {
                         //door already there
-                        if (this.doors.get(position.worldX + "," + position.worldY).type !== type) {
-                            this.doors.get(position.worldX + "," + position.worldY).type = type
+                        if (this.doors.get(position.arrayX + "," + position.arrayY).type !== type) {
+                            this.doors.get(position.arrayX + "," + position.arrayY).type = type
                             this.markChanged()
                         }
                     }
@@ -532,20 +554,69 @@ class DungeonMap {
                     position.worldX = Math.round(position.worldX)
                     position.worldY = Math.round(position.worldY)
 
-                    if (!this.doors.get(position.worldX + "," + position.worldY)) {
+                    if (!this.doors.get(position.arrayX + "," + position.arrayY)) {
                         //door not in map, add new door
-                        this.doors.set(position.worldX + "," + position.worldY, new Door(type, position, true))
+                        let door = new Door(type, position, true)
+                        this.doors.set(position.arrayX + "," + position.arrayY, door);
+                        this.addDoorToAdjacentRooms(door);
 
                     } else {
                         //door already there
-                        if (this.doors.get(position.worldX + "," + position.worldY).type !== type) {
-                            this.doors.get(position.worldX + "," + position.worldY).type = type
+                        if (this.doors.get(position.arrayX + "," + position.arrayY).type !== type) {
+                            this.doors.get(position.arrayX + "," + position.arrayY).type = type
                             this.markChanged()
                         }
                     }
                 }
             }
         }
+    }
+
+    updatePuzzles() {
+        let puzzleNamesList = [];
+        let readingPuzzles = false
+        if (!TabList) return;
+        TabList?.getNames()?.forEach((line) => {
+            line = ChatLib.removeFormatting(line).trim();
+            if (line.includes('Puzzles:')) {
+                readingPuzzles = true;
+            } else if (readingPuzzles) {
+                if (line.includes('[')) {
+                    if (!line.includes('???'))
+                        puzzleNamesList.push(line.split(':')[0])
+                } else {
+                    readingPuzzles = false;
+                }
+            }
+        });
+        let puzzleCount = 0
+        this.roomsArr.forEach((room) => {
+            if (room.type === Room.PUZZLE)
+                puzzleCount++;
+        })
+        if (puzzleNamesList.length <= this.identifiedPuzzleCount) {
+            return
+        };
+        if (puzzleNamesList.length != puzzleCount) {
+            return;
+        }
+        for (let i = 0; i < 6; i++) {
+            for (let j = 0; j < 6; j++) {
+                let coords = i + ',' + j;
+                let room = this.rooms.get(coords);
+                if (!room) continue;
+                if (room.type == Room.PUZZLE && !room.roomId) {
+                    let puzzleName = puzzleNamesList.shift();
+                    if (!puzzleName) continue;
+                    let ids = DungeonRoomData.getRoomIdsFromName(puzzleName)
+                    room.roomId = ids[0];
+                    this.identifiedRoomIds.addAll(ids);
+                } else if (room.type == Room.PUZZLE) {
+                    puzzleNamesList.shift();
+                }
+            }
+        }
+        this.identifiedPuzzleCount = puzzleNamesList.length;
     }
 
     getScore() { //TODO: cache this so it doesent re-calculate every frame
@@ -721,9 +792,10 @@ class DungeonMap {
         if (room.roomId) { //TODO: COLORS!
             roomLore.push(room.data?.name || '???')
             roomLore.push("&8" + (room.roomId || ""))
-            if (room.data?.soul) roomLore.push("&dFAIRY SOUL!")
-            if (room.maxSecrets) roomLore.push("Secrets: " + room.currentSecrets + ' / ' + room.maxSecrets)
-            if (room.data?.crypts !== undefined && (room.type === Room.NORMAL || room.type === Room.MINIBOSS)) roomLore.push("Crypts: " + room.data.crypts)
+            roomLore.push('&9Rotation: ' + (room.rotation || 'NONE'));
+            if (room.data && room?.data?.soul) roomLore.push("&dFAIRY SOUL!")
+            if (room?.maxSecrets) roomLore.push("Secrets: " + room.currentSecrets + ' / ' + room.maxSecrets)
+            if (room?.data?.crypts !== undefined && (room.type === Room.NORMAL || room.type === Room.MINIBOSS)) roomLore.push("Crypts: " + room.data.crypts)
             if (room.type === Room.NORMAL) roomLore.push("Spiders: " + (room.data?.spiders ? "Yes" : "No"))
         } else {
             roomLore.push('Unknown room!')
@@ -770,7 +842,7 @@ class DungeonMap {
 
                 let rotation = roomWorldData.width > roomWorldData.height ? 0 : 1
 
-                //L shape rooms only rooms that 'need' rotation all others can be 0 -> horisontal or 1-> verticle
+                //L shape rooms only rooms that 'need' rotation all others can be 0 -> horizontal or 1-> verticle
 
                 if (this.getCurrentRoomData().shape === "L") rotation = roomWorldData.rotation
                 if (this.getCurrentRoomData().type === "spawn") {
@@ -910,6 +982,7 @@ class DungeonMap {
             let room = this.rooms.get(locstr)
             room.setType(type)
             room.components = components
+            room.rotation = room.findRotation();
             room.roomId = roomId
             room.checkmarkState = 1
             this.roomsArr.add(room)
@@ -938,10 +1011,11 @@ class DungeonMap {
         }
     }
 
-    setDoor(x, y, ishorisontal, locallyFound, type = -1) {
+    setDoor(x, y, ishorizontal, locallyFound, type = -1) {
         let rx = x - 4 //offset xy of room placed in world so it matches nicely with rendering
         let ry = y - 4
-        if (this.doors.get(rx + "," + ry)) return //already door loaded there
+        let pos = new Position(rx, ry);
+        if (this.doors.get(pos.arrayX + "," + pos.arrayY)) return //already door loaded there
 
         let id = World.getBlockStateAt(new BlockPos(x, 69, y)).getBlockId() //get type of door
         if (type === -1) {
@@ -952,7 +1026,7 @@ class DungeonMap {
             else return //return if door issnt made of those blocks (maby its not actually a door, eg back of green room)
         }
 
-        if (ishorisontal) {
+        if (ishorizontal) {
             {
                 //add Room.UNKNOWN to the right if needed
 
@@ -1020,15 +1094,15 @@ class DungeonMap {
             }
         }
 
-
-        let door = new Door(type, new Position(rx, ry), ishorisontal)
-        this.doors.set(rx + "," + ry, door)
+        let door = new Door(type, pos, ishorizontal)
+        this.addDoorToAdjacentRooms(door);
+        this.doors.set(pos.arrayX + "," + pos.arrayY, door)
         this.markChanged()
 
         if (locallyFound) {
             this.sendSocketData({
                 type: "doorLocation",
-                x, y, ishorisontal, doorType: type
+                x, y, ishorizontal, doorType: type
             })
         }
     }

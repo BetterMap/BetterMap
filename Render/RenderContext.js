@@ -136,22 +136,22 @@ class RenderContext {
             case "default":
                 switch (type) {
                     case "questionMark":
-                        return [16, 16]
+                        return [16 * this.iconScale / 8, 16 * this.iconScale / 8]
                     case "whiteCheck":
                     case "greenCheck":
-                        return [16, 16]
+                        return [16 * this.iconScale / 8, 16 * this.iconScale / 8]
                     case "failedRoom":
-                        return [16, 16]
+                        return [16 * this.iconScale / 8, 16 * this.iconScale / 8]
                 }
             case "hypixel":
                 switch (type) {
                     case "questionMark":
-                        return [10, 16]
+                        return [10 * this.iconScale / 8, 16 * this.iconScale / 8]
                     case "whiteCheck":
                     case "greenCheck":
-                        return [10, 10]
+                        return [10 * this.iconScale / 8, 10 * this.iconScale / 8]
                     case "failedRoom":
-                        return [14, 14]
+                        return [14 * this.iconScale / 8, 14 * this.iconScale / 8]
                 }
         }
     }

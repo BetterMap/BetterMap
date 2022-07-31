@@ -83,19 +83,24 @@ class SettingGui {
             "default": "Legal Map",
             "hypixel": "Hypixel",
             "secrets": "Secrets Found"
-        }, "tickStyle", "default")
+        }, "tickStyle", this.defaultSettings.tickStyle)
 
 
         this.addDropdown("Puzzle Style", {
             "none": "None",
             "text": "Text",
             "icon": "Icon"
-        }, "puzzleNames", "text")
+        }, "puzzleNames", this.defaultSettings.puzzleNames)
 
-        this.addToggle("Border around heads", "headBorder", true)
+        this.addToggle("Border around heads", "headBorder", this.defaultSettings.headBorder)
 
-        this.addToggle("Player names when holding leaps", "playerNames", true)
+        this.addToggle("Player names when holding leaps", "playerNames", this.defaultSettings.playerNames)
 
+        this.addDropdown("Current room info next to map", {
+            "none": "None",
+            "left": "Left of map",
+            "right": "Right of map"
+        }, "currentRoomInfo", this.defaultSettings.currentRoomInfo)
 
 
         //END OF SETTINGS

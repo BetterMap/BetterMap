@@ -64,7 +64,7 @@ class RoomRenderer {
 
         if (room.type === Room.SPAWN) return //Dont render tick on spawn room
 
-        if (context.tickStyle === 'secrets') return //Needs to be rendered in renderoverlay
+        if (context.tickStyle === 'secrets') return //Needs to be rendered in renderoverlay, see drawExtras()
 
         let location = room.components[0]
         if (room.checkmarkState === 1) {

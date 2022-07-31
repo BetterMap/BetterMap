@@ -611,6 +611,17 @@ class DungeonMap {
         }
     }
 
+    /**
+     * Gets the current room the player is standing in
+     * @returns {Room}
+     */
+    getPlayerRoom() {
+        let x = ~~((Player.getX() + dungeonOffsetX) / 32);
+        let y = ~~((Player.getZ() + dungeonOffsetY) / 32);
+
+        return this.rooms.get(x + ',' + y);
+    }
+
     scanFirstDeathForSpiritPet(username) {
         if (this.firstDeath) return
         this.firstDeath = true
@@ -804,17 +815,7 @@ class DungeonMap {
 
         let room = this.rooms.get(coordsX + ',' + coordsY);
 
-        let roomLore = []
-        if (room.roomId) { //TODO: COLORS!
-            roomLore.push(room.data?.name || '???')
-            roomLore.push("&8" + (room.roomId || ""))
-            if (room.data?.soul) roomLore.push("&dFAIRY SOUL!")
-            if (room.maxSecrets) roomLore.push("Secrets: " + room.currentSecrets + ' / ' + room.maxSecrets)
-            if (room.data?.crypts !== undefined && (room.type === Room.NORMAL || room.type === Room.MINIBOSS)) roomLore.push("Crypts: " + room.data.crypts)
-            if (room.type === Room.NORMAL) roomLore.push("Spiders: " + (room.data?.spiders ? "Yes" : "No"))
-        } else {
-            roomLore.push('Unknown room!')
-        }
+        let roomLore = room.getLore()
 
         renderLore(cursorX, cursorY, roomLore)
 

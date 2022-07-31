@@ -10,6 +10,7 @@
  * @property {"none"|"text"|"icon"} puzzleNames - Render style of puzzle names
  * @property {Boolean} headBorder - Wether to put a black border around heads on the map
  * @property {Boolean} playerNames - Wether to show player names when holding spirit leaps
+ * @property {"none"|"left"|"right"} currentRoomInfo - Render current room hover info on side of map
  */
 
 class RenderContext {
@@ -67,6 +68,10 @@ class RenderContext {
 
     get mapStyle() {
         return this.settings.mapStyle
+    }
+
+    get currentRoomInfo() {
+        return this.settings.currentRoomInfo
     }
 
     get colorMap() {
@@ -151,7 +156,7 @@ class RenderContext {
         }
     }
 
-    setSettings({ mapStyle = "legalmap", posX = 0, posY = 0, size = 100, headScale = 8, iconScale = 8, tickStyle = "default", puzzleNames = "none", headBorder = false, playerNames = true }) {
+    setSettings({ mapStyle = "legalmap", posX = 0, posY = 0, size = 100, headScale = 8, iconScale = 8, tickStyle = "default", puzzleNames = "none", headBorder = false, playerNames = true, currentRoomInfo = "none" }) {
         this.settings = {
             mapStyle,
             posX,
@@ -162,7 +167,8 @@ class RenderContext {
             tickStyle,
             puzzleNames,
             headBorder,
-            playerNames
+            playerNames,
+            currentRoomInfo
         }
     }
 

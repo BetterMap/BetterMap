@@ -7,6 +7,7 @@ import DoorRenderer from "./DoorRenderer"
 import renderLibs from "../../guimanager/renderLibs"
 import DungeonMap from "../Components/DungeonMap"
 import RenderContext from "./RenderContext"
+import { renderLore } from "../Utils/Utils"
 
 class MapRenderer {
     constructor() {
@@ -43,7 +44,7 @@ class MapRenderer {
     }
 
     /**
-     * @param {*} renderContext 
+     * @param {RenderContext} renderContext 
      * @param {DungeonMap} dungeonMap 
      */
     draw(renderContext, dungeonMap) {
@@ -68,9 +69,11 @@ class MapRenderer {
             //Renderer.drawRect(Renderer.color(0, 0, 0), x, y + size - this.borderWidth, size, this.borderWidth)
 
             //render heads
+            renderLibs.scizzor(x + renderContext.borderWidth, y + renderContext.borderWidth, size - 2 * renderContext.borderWidth, size - renderContext.borderWidth)
             for (let player of dungeonMap.players) {
                 player.drawIcon(renderContext, dungeonMap)
             }
+            renderLibs.stopScizzor()
 
             //score info under map
             //TODO: add toggle
@@ -88,6 +91,22 @@ class MapRenderer {
             Renderer.drawRect(Renderer.color(0, 0, 0), x + size - renderContext.borderWidth, y + size, renderContext.borderWidth, scoreInfoHeight)
             Renderer.drawRect(Renderer.color(0, 0, 0), x, y + size + scoreInfoHeight, size, renderContext.borderWidth)
 
+            if (renderContext.currentRoomInfo !== "none") {
+                let roomInfo = dungeonMap.getPlayerRoom()?.getLore()
+
+                if (roomInfo) {
+                    let rx
+                    let maxLoreWidth = roomInfo.reduce((cum, c) => Math.max(cum, Renderer.getStringWidth(ChatLib.removeFormatting(c))), 0)
+
+                    if (renderContext.currentRoomInfo === "left") {
+                        rx = x - maxLoreWidth - 8
+                    } else {
+                        rx = x + size
+                    }
+
+                    renderLore(rx - 12 + 4, y + 12 + 4, roomInfo)
+                }
+            }
         }
 
         if (!renderContext.image

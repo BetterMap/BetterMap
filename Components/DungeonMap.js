@@ -42,6 +42,7 @@ class DungeonMap {
         this.roomsArr = new Set()
 
         this.floor = floor //eg "M2" or "E" or "F7"
+        this.floorNumber = this.floor == "E" ? 0 : this.floor[this.floor.length -1]
 
         this.deadPlayers = deadPlayers
 
@@ -92,13 +93,15 @@ class DungeonMap {
             }).setChatCriteria("&r&9Party &8> ${msg}"))
 
             this.triggers.push(register("entityDeath", (entity) => {
-                if (entity.getClassName() === "EntityZombie") {
-                    if (entity.getEntity().func_70631_g_()) {
-                        if (entity.getEntity().func_82169_q(0) === null && entity.getEntity().func_82169_q(1) === null && entity.getEntity().func_82169_q(2) === null && entity.getEntity().func_82169_q(3) === null) {
-                            this.mimicKilled = true
-                            this.sendSocketData({ type: "mimicKilled" })
-                        }
-                    }
+                if (entity.getClassName() !== "EntityZombie") return
+                let e = entity.getEntity()
+                if (!e.func_70631_g_()) return // .isChild()
+                let armor = e.func_82169_q() // .getCurrentArmor()
+                // Check all armor slots, if they are all null then mimic is die!
+                if ([0, 1, 2, 3].every(a => !armor[a])) {
+                    ChatLib.chat("Mimic Kapow!")
+                    this.mimicKilled = true
+                    this.sendSocketData({ type: "mimicKilled" })
                 }
             }))
 

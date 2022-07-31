@@ -10,6 +10,7 @@
     "mappings",
     "soopyApis",
     "guimanager",
-    "soopyAddonsData"
+    "soopyAddonsData",
+    "renderLib"
   ]
 }

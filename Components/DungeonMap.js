@@ -759,6 +759,27 @@ class DungeonMap {
         }
     }
 
+    /**
+     * Transforms world coords to relative coords. If the coords are not in a known room, returns null
+     * @param {Number} x 
+     * @param {Number} y 
+     * @param {Number} z 
+     */
+    toRelativeCoords(x, y, z) {
+        let px = ~~((x + dungeonOffsetX) / 32);
+        let py = ~~((z + dungeonOffsetY) / 32);
+        let room = this.rooms.get(px + ',' + py);
+        if (!room) return null;
+        return room.getRelativeCoords(x, y, z);
+    }
+
+    getCurrentRoom() {
+        let x = ~~((Player.getX() + dungeonOffsetX) / 32);
+        let y = ~~((Player.getZ() + dungeonOffsetY) / 32);
+
+        return this.rooms.get(x + ',' + y);
+    }
+
     identifyCurrentRoom() {
         if (!this.canUpdateRoom()) return
         let x = ~~((Player.getX() + dungeonOffsetX) / 32);

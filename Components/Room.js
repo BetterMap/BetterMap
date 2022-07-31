@@ -34,6 +34,10 @@ class Room {
 
         this.type = type
         this.components = components
+        this.width = 30;
+        this.height = 30;
+        this.minX = null;
+        this.minY = null;
         this.rotation = this.findRotation();
 
         /**
@@ -83,10 +87,18 @@ class Room {
                 minY = c.arrayY;
             if (maxY < 0 || c.arrayY > maxY)
                 maxY = c.arrayY;
+
+            if (!this.minX || this.minX > c.worldX)
+                this.minX = c.worldX;
+            if (!this.minY || this.minY > c.worldY)
+                this.minY = c.worldY;
         });
 
         let dx = maxX - minX;
         let dy = maxY - minY;
+
+        this.width = 30 + 32 * dx;
+        this.height = 30 + 32 * dy;
 
         if (dx > 0 && dy > 0) {
             //2x2
@@ -125,15 +137,11 @@ class Room {
                 //do not ask me why
                 return 1;
             } else if (this.adjacentDoors.length === 3) {
-                if (!doorLocations.includes(roomX + ',' + (roomY + 0.5))) {
-                    return 3;
-                } else if (!doorLocations.includes((roomX + 1) + ',' + (roomY + 0.5))) {
-                    return 1;
-                } else if (!doorLocations.includes((roomX + 0.5) + ',' + (roomY))) {
-                    return 2;
-                } else if (!doorLocations.includes((roomX + 0.5) + ',' + (roomY + 1))) {
-                    return 4;
-                }
+                if (!left) return 3;
+                if (!right) return 1;
+                if (!up) return 4;
+                if (!down) return 2;
+
             } else if (this.adjacentDoors.length === 1) {
                 //dead end 
                 if (right)
@@ -194,7 +202,7 @@ class Room {
             roomLore.push(this.data?.name || '???')
             roomLore.push("&8" + (this.roomId || ""))
             roomLore.push('&9Rotation: ' + (this.rotation || 'NONE'));
-            if (this.data?.soul) roomLore.push("&dFAIRY SOUL!")
+            if (this.data && this.data?.soul) roomLore.push("&dFAIRY SOUL!")
             if (this.maxSecrets) roomLore.push("Secrets: " + this.currentSecrets + ' / ' + this.maxSecrets)
             if (this.data?.crypts !== undefined && (this.type === Room.NORMAL || this.type === Room.MINIBOSS)) roomLore.push("Crypts: " + this.data.crypts)
             if (this.type === Room.NORMAL) roomLore.push("Spiders: " + (this.data?.spiders ? "Yes" : "No"))
@@ -204,6 +212,45 @@ class Room {
         }
 
         return roomLore
+    }
+
+    toRoomCoords(px, py, pz) {
+        let { x, y, z } = this.rotateCoords(px, py, pz);
+        return { x: this.minX + x, y: y, z: this.minY + z };
+    }
+
+    getRelativeCoords(x, y, z) {
+        let dx = x - this.minX
+        let dy = y;
+        let dz = z - this.minY;
+        ChatLib.chat('relative coords ' + dx + '/' + dy + '/' + dz);
+        //rotate opposite direction
+        switch (this.rotation) {
+            case 2:
+                return { x: dz, y: dy, z: this.width - dx };
+            case 3:
+                return { x: this.width - dx, y: dy, z: this.height - dz };;
+            case 4:
+                return { x: this.height - dz, y: dy, z: dx };;
+            case 1:
+            default:
+                return { x: dx, y: dy, z: dz };
+        }
+    }
+
+    rotateCoords(x, y, z) {
+        switch (this.rotation) {
+            case 2:
+                return { x: this.width - z, y: y, z: x };
+            case 3:
+                return { x: this.width - x, y: y, z: this.height - z };
+            case 4:
+                return { x: z, y: y, z: this.height - x };
+            case 1:
+            //no break, default rotation
+            default:
+                return { x: x, y: y, z: z };
+        }
     }
 
 }

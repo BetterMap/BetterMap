@@ -67,6 +67,11 @@ class MapRenderer {
             //dont render bottom line if scoreinfo rendering
             //Renderer.drawRect(Renderer.color(0, 0, 0), x, y + size - this.borderWidth, size, this.borderWidth)
 
+            //render heads
+            for (let player of dungeonMap.players) {
+                player.drawIcon(renderContext, dungeonMap)
+            }
+
             //score info under map
             //TODO: add toggle
 

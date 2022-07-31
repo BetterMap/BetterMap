@@ -708,8 +708,8 @@ class DungeonMap {
         if (this.dropdownXY) {
             dungeonMapButtons.forEach(([name, callback], index) => {
 
-                let bx = this.dropdownXY[0] + 6
-                let by = this.dropdownXY[1] - 10 + 25 * index + 1
+                let bx = this.dropdownXY[0] + 1
+                let by = this.dropdownXY[1] + 25 * index + 1
                 let bw = 73
                 let bh = 23
 
@@ -754,7 +754,7 @@ class DungeonMap {
 
         if (button !== 0) return //ignore buttons like middle mouse
 
-        this.dropdownXY = [cursorX, cursorY, room]
+        this.dropdownXY = [cursorX + 8, cursorY - 16, room]
     }
 
     drawRoomTooltip(context, cursorX, cursorY) {
@@ -765,12 +765,14 @@ class DungeonMap {
         let { x, y, size } = context.getMapDimensions();
 
         if (this.dropdownXY) {
-            Renderer.drawRect(Renderer.color(0, 0, 0), this.dropdownXY[0] + 5, this.dropdownXY[1] - 10, 75, 25 * dungeonMapButtons.length)
+            Renderer.retainTransforms(true)
+            Renderer.translate(0, 0, 100)
+            Renderer.drawRect(Renderer.color(0, 0, 0), this.dropdownXY[0], this.dropdownXY[1], 75, 25 * dungeonMapButtons.length)
 
             dungeonMapButtons.forEach(([name, callback], index) => {
 
-                let bx = this.dropdownXY[0] + 6
-                let by = this.dropdownXY[1] - 10 + 25 * index + 1
+                let bx = this.dropdownXY[0] + 1
+                let by = this.dropdownXY[1] + 25 * index + 1
                 let bw = 73
                 let bh = 23
 
@@ -780,8 +782,9 @@ class DungeonMap {
 
                 let scale = Math.min(1, (bw - 4) / Renderer.getStringWidth(ChatLib.removeFormatting(name)))
                 renderLibs.drawStringCenteredFull(name, bx + bw / 2, by + bh / 2, scale)
-
+                Renderer.scale(1 / scale, 1 / scale)
             })
+            Renderer.retainTransforms(false)
             return
         }
 

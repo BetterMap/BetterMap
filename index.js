@@ -71,10 +71,6 @@ register("renderOverlay", () => {
         let mapContext = renderContextManager.getRenderContextData(dungeonMapRenderContext)
         currentDungeonMap.updatePlayersFast()
         mapRenderer.draw(mapContext, currentDungeonMap)
-        //render heads
-        for (let player of currentDungeonMap.players) {
-            player.drawIcon(mapContext, currentDungeonMap)
-        }
 
         if (!Client.isInChat()) {
             currentDungeonMap.dropdownXY = undefined

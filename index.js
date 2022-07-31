@@ -76,14 +76,28 @@ register("renderOverlay", () => {
             player.drawIcon(mapContext, currentDungeonMap)
         }
 
+        if (!Client.isInChat()) {
+            currentDungeonMap.dropdownXY = undefined
+        }
 
-        if (Client.isInChat()) {
+        if (Client.isInChat() || currentDungeonMap.cursorStoreXY) {
             //Putting checks and xy loading here so that we can draw tooltips in other guis in the future
             let cursorX = Client.getMouseX();
             let cursorY = Client.getMouseY();
             currentDungeonMap.drawRoomTooltip(mapContext, cursorX, cursorY);
         }
 
+    }
+})
+
+register("clicked", (x, y, button, isPress) => {
+    if (dungeonMapRenderContext && currentDungeonMap) {
+
+        let mapContext = renderContextManager.getRenderContextData(dungeonMapRenderContext)
+
+        if (Client.isInChat()) {
+            currentDungeonMap.roomGuiClicked(mapContext, x, y, button, isPress);
+        }
     }
 })
 

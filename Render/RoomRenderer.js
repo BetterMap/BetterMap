@@ -67,6 +67,10 @@ class RoomRenderer {
         if (context.tickStyle === 'secrets') return //Needs to be rendered in renderoverlay, see drawExtras()
 
         let location = room.components[0]
+        if (room.checkmarkState === -1) {
+            let [w, h] = context.getIconSize("failedRoom")
+            graphics.drawImage(context.getImage("failedRoom"), context.roomGap / 2 + context.blockSize * location.arrayX + context.roomSize / 2 - w / 2, context.roomGap / 2 + context.blockSize * location.arrayY + context.roomSize / 2 - h / 2, w, h, null)
+        }
         if (room.checkmarkState === 1) {
             let [w, h] = context.getIconSize("questionMark")
             graphics.drawImage(context.getImage("questionMark"), context.roomGap / 2 + context.blockSize * location.arrayX + context.roomSize / 2 - w / 2, context.roomGap / 2 + context.blockSize * location.arrayY + context.roomSize / 2 - h / 2, w, h, null)

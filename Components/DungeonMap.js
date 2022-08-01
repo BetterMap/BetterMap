@@ -493,15 +493,16 @@ class DungeonMap {
                     }
                 }
                 //red X
-                //Apparanatly puzzles dont show crosses when failed anymore
-                // if (bytes[(mapX + this.widthRoomImageMap / 2) + (mapY + this.widthRoomImageMap / 2) * 128] === 18) { 
-                //     let position = new Position(0, 0, this)
-                //     position.mapX = mapX
-                //     position.mapY = mapY
-                //     let currRoom = this.rooms.get(position.worldX + "," + position.worldY)
-                //     currRoom.checkmarkState = Room.FAILED
-                //     this.markChanged()
-                // }
+                if (bytes[(mapX + this.widthRoomImageMap / 2) + (mapY + this.widthRoomImageMap / 2) * 128] === 18) {
+                    let position = new Position(0, 0, this)
+                    position.mapX = mapX
+                    position.mapY = mapY
+                    let currRoom = this.rooms.get(position.arrayX + "," + position.arrayY)
+                    if (currRoom.checkmarkState !== Room.FAILED && currRoom.type !== Room.BLOOD) {
+                        currRoom.checkmarkState = Room.FAILED
+                        this.markChanged()
+                    }
+                }
 
                 //Check for doors
 

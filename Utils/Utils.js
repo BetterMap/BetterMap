@@ -1,4 +1,5 @@
 import { m } from "../../mappings/mappings"
+import PogObject from "../../PogData";
 
 /**
  * @param {Number} id id of the line that should be changed 
@@ -68,4 +69,61 @@ export function renderLore(x, y, lore) {
         if (i === 0) i2 += 2
         i2 += 10
     })
+}
+
+/**
+ * Maps a set of real coords (x and z) to 0-5, the same as the room components.
+ * @param {Number[]} realCoords - The real coords in the world ranging from -200 to -10. 
+ * @returns 
+ */
+export const convertToRoomCoords = ([x, y]) => {
+    return [
+        MathLib.map(x, -200, -10, 0, 5),
+        MathLib.map(y, -200, -10, 0, 5)
+    ]
+}
+
+export let bmData = new PogObject("BetterMap", {
+    "map": {
+        "scale": 1,
+        "x": 0,
+        "y": 0,
+        "headScale": 8,
+        "checkmarkScale": 1
+    }
+}, "Data/data.json")
+
+
+/**
+ * Renders text perfectly centered on the screen both horizontally and vertically. Supports color codes
+ * or optionally, pass in a Java Color to force the text to render that color.
+ * @param {String|String[]} string - The text to be rendered. If an array of strings is passed, each item will be rendered on a new line. Overrides splitWords.
+ * @param {Number} x - Left/Right on the screen.
+ * @param {Number} y - Up/Down on the screen.
+ * @param {Number} scale - Scale the text to make it larger/smaller.
+ * @param {Boolean} splitWords - Split the string at each space and render on a new line.
+ * @param {Color} forceColor - Force the text to be a certain Java Color.
+ * @returns 
+ */
+ export const renderCenteredString = (string, x, y, scale, splitWords=false, javaColor=null) => {
+    if (!string || !x || !y) return
+    Renderer.retainTransforms(true)
+    string = Array.isArray(string) ? string : splitWords ? string.split(" ") : [string]
+    let vertOffset = string.length*7 + (2*(string.length-1))
+    let [r, g, b, a] = []
+    if (javaColor) {
+        r = javaColor.getRed()
+        g = javaColor.getGreen()
+        b = javaColor.getBlue()
+        a = javaColor.getAlpha()
+    }
+    Renderer.translate(x, y)
+    Renderer.scale(scale, scale)
+    Renderer.translate(0, -vertOffset/2)
+    // Render each line
+    for (let i = 0; i < string.length; i++) {
+        if (javaColor) Renderer.colorize(r, g, b, a)
+        Renderer.drawStringWithShadow(string[i], -Renderer.getStringWidth(string[i])/2, (i*7 + (2*i)))
+    }
+    Renderer.retainTransforms(false)
 }

@@ -37,6 +37,10 @@ class DungeonRoomStaticData {
         })
     }
 
+    reloadData() {
+        this.fullRoomData = JSON.parse(FileLib.read("BetterMap", "Data/roomdata.json"))
+    }
+
     /**
      * 
      * @param {String} id the room id
@@ -44,6 +48,18 @@ class DungeonRoomStaticData {
      */
     getDataFromId(id) {
         return this.fullRoomData[this.idMap.get(id)]
+    }
+
+    /**
+     * 
+     * @param {String} name the room id
+     * @returns {DungeonData}
+     */
+    getRoomIdsFromName(name) {
+        if (!name) return;
+        for (let room of this.fullRoomData) {
+            if ('name' in room && room.name.toLowerCase().includes(name.toLowerCase()) && room.id) return room.id;
+        }
     }
 }
 

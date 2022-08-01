@@ -93,16 +93,15 @@ class DataLoader {
         if (World.isLoaded() && TabList.getNames()) {
             TabList.getNames().forEach(n => {
                 n = ChatLib.removeFormatting(n)
-                if (n.includes(": ")) {
-                    if (n.includes('Secrets Found')) {
-                        if (n.includes('%')) {
-                            this.stats["Secrets Found%"] = n.split(": ")[1]
-                        } else {
-                            this.stats["Secrets Found"] = n.split(": ")[1]
-                        }
+                if (!n.includes(": ")) return
+                if (n.includes('Secrets Found')) {
+                    if (n.includes('%')) {
+                        this.stats["Secrets Found%"] = n.split(": ")[1]
                     } else {
-                        this.stats[n.split(": ")[0].trim()] = n.split(": ")[1].trim()
+                        this.stats["Secrets Found"] = n.split(": ")[1]
                     }
+                } else {
+                    this.stats[n.split(": ")[0].trim()] = n.split(": ")[1].trim()
                 }
             })
         }

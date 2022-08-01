@@ -5,11 +5,11 @@ class Door {
      * @param {Room} type 
      * @param {Position} position 
      */
-    constructor(type, position, horisontal) {
+    constructor(type, position, horizontal) {
         this.type = type//same as room type
         this.position = position
 
-        this.horisontal = horisontal
+        this.horizontal = horizontal
     }
 }
 

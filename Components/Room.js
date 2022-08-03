@@ -57,7 +57,8 @@ class Room {
         //room data from the room id
         this.data = undefined
 
-        this._roomId = roomId
+        this._roomId = undefined
+        this.roomId = roomId
     }
 
     addComponents(newComponents) {

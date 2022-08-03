@@ -221,6 +221,7 @@ class SettingGui {
         this.addSidebarElement(new DropDown().setOptions(options).setSelectedOption(this.defaultSettings[setting] ?? defau).addEvent(new SoopyContentChangeEvent().setHandler((val, prev, cancelFun) => {
             this.changed(setting, val)
         })), 0.5, 0.4, 0.075)
+
         this.addSidebarElement(new SoopyTextElement().setText("§0" + label).setMaxTextScale(2), 0.1, 0.4)
     }
 
@@ -235,6 +236,7 @@ class SettingGui {
         this.addSidebarElement(new Toggle().setValue(this.defaultSettings[setting] ?? defau).addEvent(new SoopyContentChangeEvent().setHandler((val, prev, cancelFun) => {
             this.changed(setting, val)
         })), 0.6, 0.2, 0.05)
+
         this.addSidebarElement(new SoopyTextElement().setText("§0" + label).setMaxTextScale(2), 0.1, 0.4)
     }
 
@@ -252,18 +254,22 @@ class SettingGui {
             this.changed(setting, Math.round(val))
             numberT.setText(Math.round(val).toString())
         }))
+
         let numberT = new NumberTextBox().setText((this.defaultSettings[setting] ?? defau).toString())
+
         numberT.isNumber = (val) => {
             if (val.includes(".")) return false
             val = "" + val; //coerce num to be a string
             return !isNaN(val) && !isNaN(parseInt(val));
         }
+
         numberT.text.addEvent(new SoopyContentChangeEvent().setHandler((val, prev, cancelFun) => {
             if (!val) return
 
             this.changed(setting, parseInt(val))
             slider.setValue(parseInt(val))
         }))
+
         this.addSidebarElement(slider, 0.5, 0.2, 0.05)
         this.addSidebarElement(numberT, 0.75, 0.1, 0.05)
         this.addSidebarElement(new SoopyTextElement().setText("§0" + label).setMaxTextScale(2), 0.1, 0.4)

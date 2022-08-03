@@ -20,6 +20,6 @@ for (let data of global.betterMapDungeonMap.doors.entries()) {
     console.log(`}`)
 }
 
-//TODO: players need custom thing cus skin cant be loaded from tab
+//TODO: players need custom thing cus skin cant be loaded from tab in settings menu
 
 console.log(`return dungeon;`)

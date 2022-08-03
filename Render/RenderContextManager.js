@@ -29,20 +29,20 @@ class RenderContextManager {
      * Updates the current render context with the values from the PogData object.
      */
     updateCurrentRenderContext() {
-        let context = this.renderContexts[this.currentRenderContextId+1]
+        let context = this.renderContexts[this.currentRenderContextId + 1]
         if (!context) return
-        
+
         context.posX = bmData.map.x
         context.posY = bmData.map.y
-        context.size = 150*bmData.map.scale
+        context.size = 150 * bmData.map.scale
         context.headScale = bmData.map.headScale
     }
 
-    createRenderContext(x, y, size, headScale = 8) {
+    createRenderContext(settings) {
         this.lastContext++;
         let contextId = this.lastContext;
 
-        let newContext = new RenderContext(x, y, size, headScale);
+        let newContext = new RenderContext(settings);
 
         this.renderContexts[contextId] = newContext;
 

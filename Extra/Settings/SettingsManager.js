@@ -15,7 +15,7 @@ class SettingsManager {
     constructor(renderContextManager, mapRenderer) {
         this.renderContextManager = renderContextManager
 
-        this.currentSettings = JSON.parse(FileLib.read("soopyaddonsdata", "bettermapsettings.json") || "{}") || {}
+        this.currentSettings = RenderContext.addMissing(JSON.parse(FileLib.read("soopyaddonsdata", "bettermapsettings.json") || "{}") || {})
 
         /**
          * @type {Map<RenderContext, Object>}

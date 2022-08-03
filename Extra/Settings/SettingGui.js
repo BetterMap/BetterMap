@@ -107,6 +107,14 @@ class SettingGui {
         this.addSlider("Head Scale", "headScale", this.defaultSettings.headScale || 8, 2, 15)
         this.addSlider("Icon Scale", "iconScale", this.defaultSettings.iconScale || 8, 2, 15)
 
+        this.addSidebarElement()//gap
+
+        this.addDropdown("Score info under map style", {
+            "none": "None",
+            "legalmap": "LegalMap",
+            "simplified": "Simplified"
+        }, "scoreInfoUnderMap", this.defaultSettings.scoreInfoUnderMap)
+
 
         //END OF SETTINGS
 

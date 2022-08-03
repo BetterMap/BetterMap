@@ -76,12 +76,12 @@ class MapRenderer {
             renderLibs.stopScizzor()
 
             //score info under map
-            //TODO: add toggle
+            //TODO: actually change based on the setting
 
             let scoreInfoHeight = 10 * size / 100
             Renderer.drawRect(Renderer.color(0, 0, 0, 150), x, y + size, size, scoreInfoHeight)
 
-            let scoreInfo = dungeonMap.getScore() //TODO: better display text
+            let scoreInfo = dungeonMap.getScore()
             renderLibs.drawStringCenteredFull(scoreInfo.total, x + size / 4, y + size + scoreInfoHeight / 2, size / 100)
 
             renderLibs.drawStringCenteredFull(scoreInfo.mimic.toString(), x + size / 4 * 3, y + size + scoreInfoHeight / 2, size / 100)

@@ -252,7 +252,15 @@ class SettingGui {
             this.changed(setting, Math.round(val))
             numberT.setText(Math.round(val).toString())
         }))
-        let numberT = new NumberTextBox().setText((this.defaultSettings[setting] ?? defau).toString()).addEvent(new SoopyContentChangeEvent().setHandler((val, prev, cancelFun) => {
+        let numberT = new NumberTextBox().setText((this.defaultSettings[setting] ?? defau).toString())
+        numberT.isNumber = (val) => {
+            if (val.includes(".")) return false
+            val = "" + val; //coerce num to be a string
+            return !isNaN(val) && !isNaN(parseInt(val));
+        }
+        numberT.text.addEvent(new SoopyContentChangeEvent().setHandler((val, prev, cancelFun) => {
+            if (!val) return
+
             this.changed(setting, parseInt(val))
             slider.setValue(parseInt(val))
         }))

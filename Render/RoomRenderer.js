@@ -64,7 +64,7 @@ class RoomRenderer {
 
         if (room.type === Room.SPAWN) return //Dont render tick on spawn room
 
-        if (context.tickStyle === 'secrets') return //Needs to be rendered in renderoverlay, see drawExtras()
+        if (context.tickStyle === 'secrets' || (context.puzzleNames !== "none" && room.type === Room.PUZZLE)) return //Needs to be rendered in renderoverlay, see drawExtras()
 
         let location = room.components[0]
         if (room.checkmarkState === -1) {
@@ -95,7 +95,7 @@ class RoomRenderer {
      * @param {Room} room 
      */
     drawExtras(context, room, dungeon) {
-        if (context.tickStyle === 'secrets') {
+        if (context.tickStyle === 'secrets' && (context.puzzleNames === "none" || room.type !== Room.PUZZLE)) {
 
             if (room.type === Room.SPAWN || room.type === Room.FAIRY) return
 
@@ -107,7 +107,7 @@ class RoomRenderer {
             x = context.posX + x * context.size + context.borderWidth
             y = context.posY + y * context.size + context.borderWidth
 
-            let scale = context.size / 200
+            let scale = context.size / 200 * context.iconScale / 8
 
             if (room.maxSecrets === 10) x += 12 * scale
 
@@ -148,7 +148,55 @@ class RoomRenderer {
             renderLibs.drawStringCenteredShadow(textColored, x, y - 4.5 * scale, scale)
         }
 
-        //TODO: draw puzzle names/icons here as per setting
+        if (context.puzzleNames !== "none" && room.type === Room.PUZZLE) {
+            let location = room.components[0]
+
+            let x = (context.roomGap / 2 + context.blockSize * location.arrayX + context.roomSize / 2 + context.borderWidth + context.paddingLeft) / context.getImageSize(dungeon.floor)
+            let y = (context.roomGap / 2 + context.blockSize * location.arrayY + context.roomSize / 2 + context.borderWidth + context.paddingTop) / context.getImageSize(dungeon.floor)
+
+            x = context.posX + x * context.size + context.borderWidth
+            y = context.posY + y * context.size + context.borderWidth
+
+            let scale = context.size / 300 * context.iconScale / 8
+
+            //TODO: show icon instead of text if thats the setting
+
+            let text = room.data?.name?.split(" ") || ["???"]
+
+            let textColor = ""
+            switch (room.checkmarkState) {
+                case Room.CLEARED:
+                    textColor = "&f"
+                    break;
+                case Room.COMPLETED:
+                    textColor = "&a"
+                    break;
+                case Room.FAILED:
+                    textColor + "&4"
+                    break;
+                default:
+                    textColor = "&7"
+                    break;
+            }
+
+            let i = 0
+            for (let line of text) {
+                let ly = y + 9 * scale * (i - text.length / 2)
+
+                Renderer.translate(0, 0, 100)
+                renderLibs.drawStringCenteredShadow("&0" + line, x + scale, ly, scale)
+                Renderer.translate(0, 0, 100)
+                renderLibs.drawStringCenteredShadow("&0" + line, x - scale, ly, scale)
+                Renderer.translate(0, 0, 100)
+                renderLibs.drawStringCenteredShadow("&0" + line, x, ly + scale, scale)
+                Renderer.translate(0, 0, 100)
+                renderLibs.drawStringCenteredShadow("&0" + line, x, ly - scale, scale)
+                Renderer.translate(0, 0, 100)
+                renderLibs.drawStringCenteredShadow(textColor + line, x, ly, scale)
+
+                i++
+            }
+        }
     }
 
     /**

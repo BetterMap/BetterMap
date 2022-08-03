@@ -8,6 +8,7 @@ import RenderContext from "../../Render/RenderContext"
 import SoopyTextElement from "../../../guimanager/GuiElement/SoopyTextElement"
 import DropDown from "../../../guimanager/GuiElement/Dropdown"
 import Toggle from "../../../guimanager/GuiElement/Toggle"
+import Slider from "../../../guimanager/GuiElement/Slider"
 import SoopyContentChangeEvent from "../../../guimanager/EventListener/SoopyContentChangeEvent"
 import ButtonWithArrow from "../../../guimanager/GuiElement/ButtonWithArrow"
 import SoopyMarkdownElement from "../../../guimanager/GuiElement/SoopyMarkdownElement"
@@ -16,6 +17,7 @@ import SoopyMouseClickEvent from "../../../guimanager/EventListener/SoopyMouseCl
 import SoopyNumber from "../../../guimanager/Classes/SoopyNumber"
 import SoopyOpenGuiEvent from "../../../guimanager/EventListener/SoopyOpenGuiEvent"
 import { fetch } from "../../Utils/networkUtils"
+import NumberTextBox from "../../../guimanager/GuiElement/NumberTextBox"
 
 class SettingGui {
     /**
@@ -101,6 +103,9 @@ class SettingGui {
             "left": "Left of map",
             "right": "Right of map"
         }, "currentRoomInfo", this.defaultSettings.currentRoomInfo)
+
+        this.addSlider("Head Scale", "headScale", this.defaultSettings.headScale || 8, 2, 15)
+        this.addSlider("Icon Scale", "iconScale", this.defaultSettings.iconScale || 8, 2, 15)
 
 
         //END OF SETTINGS
@@ -201,8 +206,8 @@ class SettingGui {
      * 
      * @param {String} label The text to go to the left of the dropdown
      * @param {Object} options {key:value} where key = setting internal value and value = render text
-     * @param {*} setting internal name of the setting to control
-     * @param {*} defau Default value
+     * @param {String} setting internal name of the setting to control
+     * @param {String} defau Default value
      */
     addDropdown(label, options, setting, defau) {
         this.addSidebarElement(new DropDown().setOptions(options).setSelectedOption(this.defaultSettings[setting] ?? defau).addEvent(new SoopyContentChangeEvent().setHandler((val, prev, cancelFun) => {
@@ -215,13 +220,36 @@ class SettingGui {
     /**
      * 
      * @param {String} label The text to go to the left of the dropdown
-     * @param {*} setting internal name of the setting to control
-     * @param {*} defau Default value
+     * @param {String} setting internal name of the setting to control
+     * @param {Boolean} defau Default value
      */
     addToggle(label, setting, defau) {
         this.addSidebarElement(new Toggle().setValue(this.defaultSettings[setting] ?? defau).addEvent(new SoopyContentChangeEvent().setHandler((val, prev, cancelFun) => {
             this.changed(setting, val)
         })), 0.6, 0.2, 0.05)
+        this.addSidebarElement(new SoopyTextElement().setText("§0" + label).setMaxTextScale(2), 0.1, 0.4)
+    }
+
+
+    /**
+     * 
+     * @param {String} label The text to go to the left of the slider
+     * @param {String} setting internal name of the setting to control
+     * @param {Number} defau Default value
+     * @param {Number} min Minimum value
+     * @param {Number} max Maximum value
+     */
+    addSlider(label, setting, defau, min, max) {
+        let slider = new Slider().setValue(this.defaultSettings[setting] ?? defau).setMin(min).setMax(max).addEvent(new SoopyContentChangeEvent().setHandler((val, prev, cancelFun) => {
+            this.changed(setting, Math.round(val))
+            numberT.setText(Math.round(val).toString())
+        }))
+        let numberT = new NumberTextBox().setText((this.defaultSettings[setting] ?? defau).toString()).addEvent(new SoopyContentChangeEvent().setHandler((val, prev, cancelFun) => {
+            this.changed(setting, parseInt(val))
+            slider.setValue(parseInt(val))
+        }))
+        this.addSidebarElement(slider, 0.5, 0.2, 0.05)
+        this.addSidebarElement(numberT, 0.75, 0.1, 0.05)
         this.addSidebarElement(new SoopyTextElement().setText("§0" + label).setMaxTextScale(2), 0.1, 0.4)
     }
 

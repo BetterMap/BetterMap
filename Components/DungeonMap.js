@@ -493,15 +493,16 @@ class DungeonMap {
                     }
                 }
                 //red X
-                //Apparanatly puzzles dont show crosses when failed anymore
-                // if (bytes[(mapX + this.widthRoomImageMap / 2) + (mapY + this.widthRoomImageMap / 2) * 128] === 18) { 
-                //     let position = new Position(0, 0, this)
-                //     position.mapX = mapX
-                //     position.mapY = mapY
-                //     let currRoom = this.rooms.get(position.worldX + "," + position.worldY)
-                //     currRoom.checkmarkState = Room.FAILED
-                //     this.markChanged()
-                // }
+                if (bytes[(mapX + this.widthRoomImageMap / 2) + (mapY + this.widthRoomImageMap / 2) * 128] === 18) {
+                    let position = new Position(0, 0, this)
+                    position.mapX = mapX
+                    position.mapY = mapY
+                    let currRoom = this.rooms.get(position.arrayX + "," + position.arrayY)
+                    if (currRoom.checkmarkState !== Room.FAILED && currRoom.type !== Room.BLOOD) {
+                        currRoom.checkmarkState = Room.FAILED
+                        this.markChanged()
+                    }
+                }
 
                 //Check for doors
 
@@ -899,6 +900,9 @@ class DungeonMap {
 
         let worldX = (((cursorX - x - context.borderWidth) / context.size * context.getImageSize(this.floor) - context.paddingLeft - context.roomSize / 2 - context.roomGap / 2) / context.blockSize + 0.5) * 32 - 200
         let worldY = (((cursorY - y - context.borderWidth) / context.size * context.getImageSize(this.floor) - context.paddingTop - context.roomSize / 2 - context.roomGap / 2) / context.blockSize + 0.5) * 32 - 200
+
+        if (((worldX + 200) / 32) < 0) return
+        if (((worldY + 200) / 32) < 0) return
 
         let coordsX = ~~((worldX + 200) / 32)
         let coordsY = ~~((worldY + 200) / 32)

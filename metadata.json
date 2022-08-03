@@ -11,6 +11,7 @@
     "soopyApis",
     "guimanager",
     "soopyAddonsData",
-    "renderLib"
+    "renderLib",
+    "pogData"
   ]
 }

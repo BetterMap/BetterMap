@@ -1004,8 +1004,8 @@ class DungeonMap {
         if (!roomId) return
         this.identifiedRoomIds.add(roomId);
 
-        let coordsX = ~~((worldX + 200) / 32)
-        let coordsY = ~~((worldY + 200) / 32)
+        let coordsX = ~~((x + 200) / 32)
+        let coordsY = ~~((y + 200) / 32)
 
         let locstr = coordsX + "," + coordsY
 

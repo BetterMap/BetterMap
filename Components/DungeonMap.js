@@ -598,7 +598,7 @@ class DungeonMap {
         });
         let puzzleCount = 0
         this.roomsArr.forEach((room) => {
-            if (room.type === Room.PUZZLE)
+            if (room.type === Room.PUZZLE && !room.checkmarkState === Room.ADJACENT)
                 puzzleCount++;
         })
         if (puzzleNamesList.length <= this.identifiedPuzzleCount) {
@@ -926,7 +926,9 @@ class DungeonMap {
             this.roomXY = currRoom
             this.lastChange = Date.now() //add delay between checking for rooms if switch room
         }
-
+        if (Date.now() - this.lastChange > 1000) { } else {
+            ChatLib.chat("NO")
+        }
         return Date.now() - this.lastChange > 1000
     }
 
@@ -1002,6 +1004,7 @@ class DungeonMap {
     }
     setRoom(x, y, rotation, roomId, locallyFound) {
         if (!roomId) return
+        if (this.identifiedRoomIds.has(roomId)) return
         this.identifiedRoomIds.add(roomId);
 
         let coordsX = ~~((x + 200) / 32)

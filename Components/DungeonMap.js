@@ -57,6 +57,11 @@ class DungeonMap {
         this.players = []
         this.playersNameToId = {}
 
+        this.cachedScore = {
+            time: 0,
+            data: undefined
+        }
+
         this.mimicKilled = false;
         this.firstDeath = false
         this.firstDeathHadSpirit = false
@@ -626,7 +631,10 @@ class DungeonMap {
         this.identifiedPuzzleCount = puzzleNamesList.length;
     }
 
-    getScore() { //TODO: cache this so it doesent re-calculate every frame
+    getScore() {
+        if (Date.now() - this.cachedScore.time < 500) {
+            return this.cachedScore.data
+        }
         let exploration = 0;
         let time = 100; //TODO:  Figure out how to actually do this one
         let skill = 0;
@@ -675,14 +683,19 @@ class DungeonMap {
             bonus += 10
         }
 
-        return {
-            "skill": skill,
-            "exploration": exploration,
-            "time": time,
-            "bonus": bonus,
-            "total": skill + exploration + time + bonus,
-            "mimic": this.mimicKilled
+        this.cachedScore = {
+            time: Date.now(),
+            data: {
+                "skill": skill,
+                "exploration": exploration,
+                "time": time,
+                "bonus": bonus,
+                "total": skill + exploration + time + bonus,
+                "mimic": this.mimicKilled
+            }
         }
+
+        return this.cachedScore.data
     }
 
     /**

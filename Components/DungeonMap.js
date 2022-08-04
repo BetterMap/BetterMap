@@ -622,7 +622,7 @@ class DungeonMap {
                     if (!puzzleName) continue;
                     let ids = DungeonRoomData.getRoomIdsFromName(puzzleName)
                     room.roomId = ids[0];
-                    this.identifiedRoomIds.addAll(ids);
+                    this.identifiedRoomIds.addAll(...ids);
                 } else if (room.type == Room.PUZZLE) {
                     puzzleNamesList.shift();
                 }

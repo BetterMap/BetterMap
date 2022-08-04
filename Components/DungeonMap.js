@@ -598,7 +598,7 @@ class DungeonMap {
         });
         let puzzleCount = 0
         this.roomsArr.forEach((room) => {
-            if (room.type === Room.PUZZLE && !room.checkmarkState === Room.ADJACENT)
+            if (room.type === Room.PUZZLE && room.checkmarkState !== Room.ADJACENT)
                 puzzleCount++;
         })
         if (puzzleNamesList.length <= this.identifiedPuzzleCount) {

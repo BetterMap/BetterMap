@@ -718,9 +718,9 @@ class DungeonMap {
 
                 if (latestProfile[1]) {
                     this.firstDeathHadSpirit = true
-                    ChatLib.chat(messagePrefix + username + " has spirit pet!")
+                    ChatLib.chat(MESSAGE_PREFIX + username + " has spirit pet!")
                 } else {
-                    ChatLib.chat(messagePrefix + username + " does not have spirit pet!")
+                    ChatLib.chat(MESSAGE_PREFIX + username + " does not have spirit pet!")
                 }
             })
         } else {
@@ -729,9 +729,9 @@ class DungeonMap {
 
                 if (data.data.profiles[data2.data.stats.currentProfileId].members[uuid].pets.some(pet => pet.type === "SPIRIT" && pet.tier === "LEGENDARY")) {
                     this.firstDeathHadSpirit = true
-                    ChatLib.chat(messagePrefix + username + " has spirit pet!")
+                    ChatLib.chat(MESSAGE_PREFIX + username + " has spirit pet!")
                 } else {
-                    ChatLib.chat(messagePrefix + username + " does not have spirit pet!")
+                    ChatLib.chat(MESSAGE_PREFIX + username + " does not have spirit pet!")
                 }
             })
         }
@@ -1004,7 +1004,10 @@ class DungeonMap {
         if (!roomId) return
         this.identifiedRoomIds.add(roomId);
 
-        let locstr = x + "," + y
+        let coordsX = ~~((worldX + 200) / 32)
+        let coordsY = ~~((worldY + 200) / 32)
+
+        let locstr = coordsX + "," + coordsY
 
         let roomData = DungeonRoomData.getDataFromId(roomId)
         let type = Room.NORMAL

@@ -1,5 +1,4 @@
 import { m } from "../../mappings/mappings"
-import PogObject from "../../PogData";
 
 /**
  * @param {Number} id id of the line that should be changed 
@@ -82,16 +81,6 @@ export const convertToRoomCoords = ([x, y]) => {
         MathLib.map(y, -200, -10, 0, 5)
     ]
 }
-
-export let bmData = new PogObject("BetterMap", {
-    "map": {
-        "scale": 1,
-        "x": 0,
-        "y": 0,
-        "headScale": 8,
-        "checkmarkScale": 1
-    }
-}, "Data/data.json")
 
 
 /**

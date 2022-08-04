@@ -926,9 +926,6 @@ class DungeonMap {
             this.roomXY = currRoom
             this.lastChange = Date.now() //add delay between checking for rooms if switch room
         }
-        if (Date.now() - this.lastChange > 1000) { } else {
-            ChatLib.chat("NO")
-        }
         return Date.now() - this.lastChange > 1000
     }
 

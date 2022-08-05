@@ -28,7 +28,7 @@ CurrentSettings.settings = settingsManager.currentSettings
 
 
 register("step", () => {
-    if (DataLoader.isInDungeon && DataLoader.dungeonFloor) {
+    if (DataLoader.isInDungeon && DataLoader.dungeonFloor || currentDungeonMap?.getCurrentRoomId() === "30,225") {
         if (!currentDungeonMap) { //entered dungeon, create map data
             currentDungeonMap = new DungeonMap(DataLoader.dungeonFloor, deadPlayers)
             global.betterMapDungeonMap = currentDungeonMap

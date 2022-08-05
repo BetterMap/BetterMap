@@ -10,6 +10,7 @@ import betterMapServer from "./socketConnection"
 import SettingsManager from "./Extra/Settings/SettingsManager"
 import RenderLib from "../RenderLib/index"
 import DungeonRoomData from "./Data/DungeonRoomData.js"
+import CurrentSettings from "./Extra/Settings/CurrentSettings"
 
 /// <reference lib="es2015" />
 
@@ -22,6 +23,7 @@ let mapRenderer = new MapRenderer();
 
 let settingsManager = new SettingsManager(renderContextManager, mapRenderer)
 let dungeonMapRenderContext = settingsManager.createRenderContext();
+CurrentSettings.settings = settingsManager.currentSettings
 
 
 

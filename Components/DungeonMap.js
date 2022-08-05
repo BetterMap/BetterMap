@@ -948,6 +948,7 @@ class DungeonMap {
     updateFromWorld() {
         let roomid = this.getCurrentRoomId()
         if (!roomid) return //no roomid eg inbetween 2 rooms
+        if (!this.getCurrentRoomData()) return
 
         let x = Math.floor((Player.getX() + 8) / 32) * 32 - 9 //top left of current 1x1 that players in
         let y = Math.floor((Player.getZ() + 8) / 32) * 32 - 9

@@ -94,11 +94,11 @@ export const convertToRoomCoords = ([x, y]) => {
  * @param {Color} forceColor - Force the text to be a certain Java Color.
  * @returns 
  */
- export const renderCenteredString = (string, x, y, scale, splitWords=false, javaColor=null) => {
+export const renderCenteredString = (string, x, y, scale, splitWords = false, javaColor = null) => {
     if (!string || !x || !y) return
     Renderer.retainTransforms(true)
     string = Array.isArray(string) ? string : splitWords ? string.split(" ") : [string]
-    let vertOffset = string.length*7 + (2*(string.length-1))
+    let vertOffset = string.length * 7 + (2 * (string.length - 1))
     let [r, g, b, a] = []
     if (javaColor) {
         r = javaColor.getRed()
@@ -108,11 +108,79 @@ export const convertToRoomCoords = ([x, y]) => {
     }
     Renderer.translate(x, y)
     Renderer.scale(scale, scale)
-    Renderer.translate(0, -vertOffset/2)
+    Renderer.translate(0, -vertOffset / 2)
     // Render each line
     for (let i = 0; i < string.length; i++) {
         if (javaColor) Renderer.colorize(r, g, b, a)
-        Renderer.drawStringWithShadow(string[i], -Renderer.getStringWidth(string[i])/2, (i*7 + (2*i)))
+        Renderer.drawStringWithShadow(string[i], -Renderer.getStringWidth(string[i]) / 2, (i * 7 + (2 * i)))
     }
     Renderer.retainTransforms(false)
+}
+
+/**
+ * A function to draw a bunch of lines with particles
+ * 
+ * Should be ran at 5fps step trigger for optimum results
+ * @param {Array<[Number,Number,Number]>} locations in the form of an array of positions, where each pos is [x, y, z]
+ * @param {String} particle The name of the particle to spawn
+ */
+export function drawLineMultipleParticles(locations, particle = "FLAME") {
+    let lastLoc = undefined
+    locations.forEach(loc => {
+        if (!lastLoc) {
+            lastLoc = loc
+            return
+        }
+
+        drawLineParticles(lastLoc, loc, particle)
+        lastLoc = loc
+    })
+}
+
+/**
+ * A function to draw a line with particles
+ * 
+ * Should be ran at 5fps step trigger for optimum results
+ * @param {[Number,Number,Number]} loc1 The starting position
+ * @param {[Number,Number,Number]} loc2 The ending position
+ * @param {String} particle The name of the particle to spawn
+ */
+export function drawLineParticles(loc1, loc2, particle = "FLAME") {
+    let distance = Math.hypot(...loc1.map((a, i) => a - loc2[i]))
+    let maxPoints = Math.ceil(distance * 1)
+    for (let i = 0; i < maxPoints; i++) {
+        let actualI = i + Math.random()
+        let a = actualI / maxPoints
+        let loc = [loc1[0] * a + loc2[0] * (1 - a) - 0.5, loc1[1] * a + loc2[1] * (1 - a) + 0.1, loc1[2] * a + loc2[2] * (1 - a) - 0.5]
+
+        let a2 = (actualI + 0.02) / maxPoints
+        let loc3 = [loc1[0] * a2 + loc2[0] * (1 - a2) - 0.5, loc1[1] * a2 + loc2[1] * (1 - a2) + 0.1, loc1[2] * a2 + loc2[2] * (1 - a2) - 0.5]
+        loc3 = loc3.map((a, i) => loc[i] - a)
+
+        spawnParticleAtLocation(loc, loc3, particle)
+    }
+}
+
+/**
+ * A function to spawn a particle at a location
+ * @param {[Number,Number,Number]} loc The position of the particle
+ * @param {[Number,Number,Number]} velo The velocity of the particle
+ * @param {String} particle The name of the particle to spawn
+ */
+export function spawnParticleAtLocation(loc, velo, particle) {
+    let particleType = EnumParticleTypes.valueOf(particle);
+    let idField = particleType.getClass().getDeclaredField('field_179372_R');
+    idField.setAccessible(true);
+    let id = idField.get(particleType);
+
+    Client.getMinecraft().field_71438_f.func_174974_b(
+        id,   // particleID
+        true, // shouldIgnoreRange
+        loc[0],  // x
+        loc[1],  // y
+        loc[2],      // z
+        velo[0],      // speedX
+        velo[1],      // speedY
+        velo[2],      // speedZ
+    );
 }

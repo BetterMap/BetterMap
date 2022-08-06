@@ -107,7 +107,7 @@ class RoomRenderer {
             x = context.posX + x * context.size + context.borderWidth
             y = context.posY + y * context.size + context.borderWidth
 
-            let scale = context.size / 200 * context.iconScale / 8
+            let scale = context.size / 175 * context.iconScale / 8
 
             if (room.maxSecrets === 10) x += 12 * scale
 
@@ -157,7 +157,7 @@ class RoomRenderer {
             x = context.posX + x * context.size + context.borderWidth
             y = context.posY + y * context.size + context.borderWidth
 
-            let scale = context.size / 300 * context.iconScale / 8
+            let scale = context.size / 250 * context.iconScale / 8
 
             //TODO: show icon instead of text if thats the setting
 

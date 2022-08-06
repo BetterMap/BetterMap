@@ -25,8 +25,8 @@ class RenderContext {
         this.image = null;
         this.imageLastUpdate = 0;
 
-        this.paddingTop = 24;
-        this.paddingLeft = 24;
+        this.paddingTop = 0;
+        this.paddingLeft = 0;
 
         this.borderWidth = 2;
 

@@ -111,7 +111,7 @@ class DungeonMap {
             }))
 
             this.triggers.push(register("chat", (info) => {
-                let player = ChatLib.removeFormatting(info.split(" ")[0])
+                let player = ChatLib.removeFormatting(info).split(" ")[0]
 
                 this.scanFirstDeathForSpiritPet(player)
             }).setChatCriteria("&r&c ☠ ${info} and became a ghost&r&7.&r"))
@@ -712,6 +712,7 @@ class DungeonMap {
     scanFirstDeathForSpiritPet(username) {
         if (this.firstDeath) return
         this.firstDeath = true
+
         if (!this.nameToUuid[username.toLowerCase()]) return
         let uuid = this.nameToUuid[username.toLowerCase()]?.replace(/-/g, "")
 
@@ -731,20 +732,28 @@ class DungeonMap {
 
                 if (latestProfile[1]) {
                     this.firstDeathHadSpirit = true
-                    ChatLib.chat(MESSAGE_PREFIX + username + " has spirit pet!")
+                    if (username === "You") {
+                        ChatLib.chat(MESSAGE_PREFIX + username + " have a spirit pet!")
+                    } else {
+                        ChatLib.chat(MESSAGE_PREFIX + username + " has a spirit pet!")
+                    }
                 } else {
-                    ChatLib.chat(MESSAGE_PREFIX + username + " does not have spirit pet!")
+                    ChatLib.chat(MESSAGE_PREFIX + username + " does not have a spirit pet!")
                 }
             })
         } else {
             fetch(`http://soopy.dev/api/v2/player_skyblock/${uuid}`).json(data => {
                 if (!data.success) return
 
-                if (data.data.profiles[data2.data.stats.currentProfileId].members[uuid].pets.some(pet => pet.type === "SPIRIT" && pet.tier === "LEGENDARY")) {
+                if (data.data.profiles[data.data.stats.currentProfileId].members[uuid].pets.some(pet => pet.type === "SPIRIT" && pet.tier === "LEGENDARY")) {
                     this.firstDeathHadSpirit = true
-                    ChatLib.chat(MESSAGE_PREFIX + username + " has spirit pet!")
+                    if (username === "You") {
+                        ChatLib.chat(MESSAGE_PREFIX + username + " have a spirit pet!")
+                    } else {
+                        ChatLib.chat(MESSAGE_PREFIX + username + " has a spirit pet!")
+                    }
                 } else {
-                    ChatLib.chat(MESSAGE_PREFIX + username + " does not have spirit pet!")
+                    ChatLib.chat(MESSAGE_PREFIX + username + " does not have a spirit pet!")
                 }
             })
         }

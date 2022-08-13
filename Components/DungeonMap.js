@@ -127,6 +127,7 @@ class DungeonMap {
                 p.setXAnimate(data.x)
                 p.setYAnimate(data.z)
                 p.setRotateAnimate(data.yaw)
+                p.locallyUpdated = Date.now()
                 break;
             case "roomSecrets":
                 let currentRoom = this.rooms.get(data.x + ',' + data.y);
@@ -234,17 +235,21 @@ class DungeonMap {
             if (!this.players[i]) {
                 this.players[i] = new MapPlayer(thePlayer[0], this, thePlayer[1])
             }
+            this.players[i].networkPlayerInfo = thePlayer[0]
             this.playersNameToId[thePlayer[1]] = i
         }
+    }
 
-
+    syncPlayersThruSocket() {
         World.getAllPlayers().forEach(player => {
+            if (!this.playersNameToId[ChatLib.removeFormatting(player.getName()).trim()]) return
             let p = this.players[this.playersNameToId[ChatLib.removeFormatting(player.getName()).trim()]]
             if (!p) return
 
             p.setX(player.getX())
             p.setY(player.getZ())
             p.setRotate(player.getYaw() + 180)
+            p.locallyUpdated = Date.now()
             this.nameToUuid[player.getName().toLowerCase()] = player.getUUID().toString()
 
             this.sendSocketData({
@@ -269,6 +274,7 @@ class DungeonMap {
             p.setX(player.getX())
             p.setY(player.getZ())
             p.setRotate(player.getYaw() + 180)
+            p.locallyUpdated = Date.now()
         })
     }
 
@@ -285,23 +291,25 @@ class DungeonMap {
             if (i > this.players.length) {
                 return
             }
-            while (!this.players[i] || this.deadPlayers.has(this.players[i].username?.toLowerCase())) {
+            while (!this.players[i] || this.deadPlayers.has(this.players[i].username.toLowerCase())) {
                 i++
                 if (i > this.players.length) {
                     return
                 }
             }
 
-            let iconX = MathLib.map(vec4b.func_176112_b() - this.dungeonTopLeft[0] * 2, 0, 256, 0, 138)
-            let iconY = MathLib.map(vec4b.func_176113_c() - this.dungeonTopLeft[1] * 2, 0, 256, 0, 138)
-            let x = iconX / (128 / 6) * 32 - 96
-            let y = iconY / (128 / 6) * 32 - 96
-            let rot = vec4b.func_176111_d()
-            rot = rot * 360 / 16 + 180
+            if (Date.now() - this.players[i].locallyUpdated > 1500) {
+                let iconX = MathLib.map(vec4b.func_176112_b() - this.dungeonTopLeft[0] * 2, 0, 256, 0, 138)
+                let iconY = MathLib.map(vec4b.func_176113_c() - this.dungeonTopLeft[1] * 2, 0, 256, 0, 138)
+                let x = iconX / (128 / 6) * 32 - 96
+                let y = iconY / (128 / 6) * 32 - 96
+                let rot = vec4b.func_176111_d()
+                rot = rot * 360 / 16 + 180
 
-            this.players[i].setRotateAnimate(rot)
-            this.players[i].setXAnimate(x)
-            this.players[i].setYAnimate(y)
+                this.players[i].setRotateAnimate(rot)
+                this.players[i].setXAnimate(x)
+                this.players[i].setYAnimate(y)
+            }
 
             i++
         });

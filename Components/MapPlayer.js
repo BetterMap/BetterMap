@@ -18,6 +18,13 @@ class MapPlayer {
 
         this.yaw = 0
         this.username = username
+
+        this.locallyUpdated = 0
+
+        this.secretsCollected = 0 //TODO: these
+        this.minRooms = 0
+        this.maxRooms = 0
+        this.roomsData = []
     }
 
     setX(x) {

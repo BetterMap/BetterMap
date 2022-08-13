@@ -64,6 +64,11 @@ register("step", () => {
     currentDungeonMap.updatePlayers()
     currentDungeonMap.identifyCurrentRoom();
 }).setFps(1)
+register("step", () => {
+    if (!currentDungeonMap)
+        return;
+    currentDungeonMap.syncPlayersThruSocket()
+}).setFps(3)
 
 betterMapServer.datacallback = (data) => {
     if (currentDungeonMap) {

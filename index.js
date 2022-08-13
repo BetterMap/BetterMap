@@ -11,6 +11,7 @@ import SettingsManager from "./Extra/Settings/SettingsManager"
 import RenderLib from "../RenderLib/index"
 import DungeonRoomData from "./Data/DungeonRoomData.js"
 import CurrentSettings from "./Extra/Settings/CurrentSettings"
+require("./Extra/Events/SecretTracker.js")
 
 /// <reference lib="es2015" />
 

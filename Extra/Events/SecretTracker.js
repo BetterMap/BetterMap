@@ -1,16 +1,19 @@
+import { m } from "../../../mappings/mappings"
 import { registerForge } from "../../Utils/forgeEvents"
 import EventManager from "./EventManager"
 
 let tempItemIdLocs = new Map()
 let collectedLocations = new Set()
 
-registerForge(net.minecraftforge.event.entity.EntityJoinWorldEvent, undefined, (e) => {
-    if (event.entity instanceof EntityItem) {
-        let e = new Entity(event.entity)
-        let pos = [e.getX(), e.getY(), e.getZ()]
+registerForge(net.minecraftforge.event.entity.EntityJoinWorldEvent, undefined, (event) => {
+    try {
+        if (event.entity instanceof EntityItem) {
+            let e = new Entity(event.entity)
+            let pos = [e.getX(), e.getY(), e.getZ()]
 
-        tempItemIdLocs.set(event.entity[m.getEntityId.Entity](), pos)
-    }
+            tempItemIdLocs.set(event.entity[m.getEntityId.Entity](), pos)
+        }
+    } catch (e) { }
 })
 
 register("soundPlay", (pos, name, volume, pitch, categoryName, event) => {
@@ -20,7 +23,6 @@ register("soundPlay", (pos, name, volume, pitch, categoryName, event) => {
         EventManager.triggerEvent(EventManager.EVENT_ETHERWARP, loc[0], loc[1], loc[2])
     }
     if (name === "random.explode" && pitch !== 1) { //tnt OR MIGHT BE spirit scepter
-        this.addRecordingPoint("tnts", loc)
         EventManager.triggerEvent(EventManager.EVENT_SUPERBOOM, loc[0], loc[1], loc[2])
     }
     if (name === "mob.bat.death") {
@@ -72,6 +74,7 @@ register("playerInteract", (action, position, event) => {
 
 register("packetReceived", (packet) => {
     let pos = this.tempItemIdLocs.get(packet[m.getCollectedItemEntityID]())
-
+    if (!pos) return
+    //TODO: only trigger on secret iten
     EventManager.triggerEvent(EventManager.EVENT_SECRETCOLLECT, "item", pos[0], pos[1], pos[2])
 }).setPacketClasses([net.minecraft.network.play.server.S0DPacketCollectItem])

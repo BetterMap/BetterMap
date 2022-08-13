@@ -11,8 +11,13 @@ class EventManager {
     }
 
     triggerEvent(type, ...data) {
-        for (let event of this.handlers.get(type)) {
-            event(...data)
+        console.log(type)
+        try {
+            for (let event of (this.handlers.get(type) || [])) {
+                event(...data)
+            }
+        } catch (e) {
+            console.error(e)
         }
     }
 

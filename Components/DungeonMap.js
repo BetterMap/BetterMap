@@ -285,7 +285,7 @@ class DungeonMap {
             if (i > this.players.length) {
                 return
             }
-            while (!this.players[i] || this.deadPlayers.has(this.players[i].username)) {
+            while (!this.players[i] || this.deadPlayers.has(this.players[i].username?.toLowerCase())) {
                 i++
                 if (i > this.players.length) {
                     return

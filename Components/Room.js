@@ -59,6 +59,8 @@ class Room {
 
         this._roomId = undefined
         this.roomId = roomId
+
+        this.roomEvents = []
     }
 
     addComponents(newComponents) {

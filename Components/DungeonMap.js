@@ -211,7 +211,7 @@ class DungeonMap {
         for (let p of pl) {
             if (!p[m.getDisplayName.NetworkPlayerInfo]()) continue
             let line = p[m.getDisplayName.NetworkPlayerInfo]()[m.getUnformattedText]().trim().replace("♲ ", "") //TODO: Remove bingo symbol and support yt/admin rank
-            if (line.endsWith(")") && line.includes(" (") && line.split(" (").length === 2 && line.split(" (")[0].split(" ").length === 1 && line.split(" (")[1].length > 5) {
+            if (line.endsWith(")") && line.includes(" (") && line.split(" (").length === 2 && line.split(" (")[0].split(" ").length === 1 && line.split(" (")[1].length > 3) {
                 //this is a tab list line for a player
                 let name = line.split(" ")[0]
 
@@ -1135,6 +1135,9 @@ class DungeonMap {
 
         this.roomsArr.add(room)
         room.components.forEach(c => {
+            if (this.rooms.get(c.arrayX + "," + c.arrayY) && this.rooms.get(c.arrayX + "," + c.arrayY) !== room) {
+                this.roomsArr.delete(this.rooms.get(c.arrayX + "," + c.arrayY))
+            }
             this.rooms.set(c.arrayX + "," + c.arrayY, room)
         })
         this.markChanged()

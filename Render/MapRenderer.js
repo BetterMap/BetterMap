@@ -71,6 +71,7 @@ class MapRenderer {
             //render heads
             renderLibs.scizzor(x + renderContext.borderWidth, y + renderContext.borderWidth, size - 2 * renderContext.borderWidth, size - renderContext.borderWidth)
             for (let player of dungeonMap.players) {
+                if (dungeonMap.deadPlayers.has(player.username.toLowerCase())) continue
                 player.drawIcon(renderContext, dungeonMap)
             }
             renderLibs.stopScizzor()

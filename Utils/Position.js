@@ -1,14 +1,29 @@
+import SoopyNumber from "../../guimanager/Classes/SoopyNumber"
+
 class Position {
     constructor(worldX, worldY, dungeonMap) {
-        this.worldX = worldX
-        this.worldY = worldY
-
+        this.worldXRaw = new SoopyNumber(worldX) //Using the number wrapper so theres easy support for animations
+        this.worldYRaw = new SoopyNumber(worldY) //See usage in MapPlayer.js
 
         this.dungeonMap = dungeonMap
     }
 
     equals(otherPosition) {
         return this.worldX === otherPosition.worldX && this.worldY === otherPosition.worldY
+    }
+
+    get worldX() {
+        return this.worldXRaw.get()
+    }
+    get worldY() {
+        return this.worldYRaw.get()
+    }
+
+    set worldX(val) {
+        this.worldXRaw.set(val, 0)
+    }
+    set worldY(val) {
+        this.worldYRaw.set(val, 0)
     }
 
     get mapX() {

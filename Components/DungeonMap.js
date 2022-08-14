@@ -124,9 +124,9 @@ class DungeonMap {
                 let p = this.players[this.playersNameToId[data.username]]
                 if (!p) return
 
-                p.setXAnimate(data.x)
-                p.setYAnimate(data.z)
-                p.setRotateAnimate(data.yaw)
+                p.setXAnimate(data.x, 350)
+                p.setYAnimate(data.z, 350)
+                p.setRotateAnimate(data.yaw, 350)
                 p.locallyUpdated = Date.now()
                 break;
             case "roomSecrets":

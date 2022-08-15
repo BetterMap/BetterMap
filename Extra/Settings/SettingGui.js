@@ -79,7 +79,7 @@ class SettingGui {
         })), 0.3, 0.4, 0.075)
 
         this.addSidebarElement() //adds 2 gaps (button from above diddnt get one added automatically + seperating setting areas)
-        this.addSidebarElement()
+        this.addCategory("Style Settings")
 
         this.addDropdown("Tick Style", {
             "default": "Legal Map",
@@ -98,16 +98,10 @@ class SettingGui {
 
         this.addToggle("Player names when holding leaps", "playerNames", this.defaultSettings.playerNames)
 
-        this.addDropdown("Current room info next to map", {
-            "none": "None",
-            "left": "Left of map",
-            "right": "Right of map"
-        }, "currentRoomInfo", this.defaultSettings.currentRoomInfo)
-
         this.addSlider("Head Scale", "headScale", this.defaultSettings.headScale || 8, 2, 15)
         this.addSlider("Icon Scale", "iconScale", this.defaultSettings.iconScale || 8, 2, 15)
 
-        this.addSidebarElement()//gap
+        this.addCategory("Secret info Settings")
 
         this.addDropdown("Score info under map style", {
             "none": "None",
@@ -115,6 +109,13 @@ class SettingGui {
             "simplified": "Simplified"
         }, "scoreInfoUnderMap", this.defaultSettings.scoreInfoUnderMap)
 
+        this.addCategory("Other Settings")
+
+        this.addDropdown("Current room info next to map", {
+            "none": "None",
+            "left": "Left of map",
+            "right": "Right of map"
+        }, "currentRoomInfo", this.defaultSettings.currentRoomInfo)
 
         //END OF SETTINGS
 
@@ -273,6 +274,16 @@ class SettingGui {
         this.addSidebarElement(slider, 0.5, 0.2, 0.05)
         this.addSidebarElement(numberT, 0.75, 0.1, 0.05)
         this.addSidebarElement(new SoopyTextElement().setText("§0" + label).setMaxTextScale(2), 0.1, 0.4)
+    }
+
+    /**
+     * 
+     * @param {String} label The text/name of the category
+     */
+    addCategory(label) {
+        let elm = new SoopyTextElement().setText("§7" + label).setMaxTextScale(2)
+        this.addSidebarElement(elm, 0.1, 0.8, 0.06)
+        elm.location.location.y.set(this.y - 0.1 + 0.04)
     }
 
 

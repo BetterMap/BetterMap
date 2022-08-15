@@ -15,6 +15,10 @@ class RenderContextManager {
         this.renderContexts = []
     }
 
+    /**
+     * @param {Number} contextId 
+     * @returns {RenderContext}
+     */
     getRenderContextData(contextId) {
         return this.renderContexts[contextId];
     }

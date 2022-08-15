@@ -24,7 +24,7 @@ let mapRenderer = new MapRenderer();
 
 let settingsManager = new SettingsManager(renderContextManager, mapRenderer)
 let dungeonMapRenderContext = settingsManager.createRenderContext();
-CurrentSettings.settings = settingsManager.currentSettings
+CurrentSettings.renderContext = renderContextManager.getRenderContextData(dungeonMapRenderContext)
 
 
 

@@ -2,21 +2,30 @@ import RenderContext from "../../Render/RenderContext"
 
 class CurrentSettings {
 
-    #_settings;
+    #_renderContext;
 
     constructor() {
         /**@type {import("../../Render/RenderContext").ContextSettings} */
-        this.#_settings = undefined
+        this.#_renderContext = undefined
     }
 
     /**@returns {import("../../Render/RenderContext").ContextSettings} */
     get settings() {
-        return this.#_settings || RenderContext.addMissing({})
+        return this.#_renderContext?.settings || RenderContext.addMissing({})
     }
 
-    set settings(sett) {
-        this.#_settings = sett
+    /**
+     * @param {import("../../Render/RenderContext").RenderContext} sett
+     */
+    set renderContext(sett) {
+        this.#_renderContext = sett
     }
 }
 
-export default new CurrentSettings()
+if (!global.betterMapCurrentSettings) {
+    global.betterMapCurrentSettings = new CurrentSettings()
+}
+/**@type {CurrentSettings} */
+let settings = global.betterMapCurrentSettings
+
+export default settings

@@ -1,5 +1,6 @@
 import { m } from "../../mappings/mappings.js"
 import DungeonRoomData from "../Data/DungeonRoomData.js"
+import CurrentSettings from "../Extra/Settings/CurrentSettings.js"
 
 class Room {
 
@@ -204,14 +205,14 @@ class Room {
         if (this.roomId) { //TODO: COLORS!
             roomLore.push(this.data?.name || '???')
             roomLore.push("&8" + (this.roomId || ""))
-            roomLore.push('&9Rotation: ' + (this.rotation || 'NONE'));
+            if (CurrentSettings.settings.devInfo) roomLore.push('&9Rotation: ' + (this.rotation || 'NONE'));
             if (this.data && this.data?.soul) roomLore.push("&dFAIRY SOUL!")
             if (this.maxSecrets) roomLore.push("Secrets: " + this.currentSecrets + ' / ' + this.maxSecrets)
             if (this.data?.crypts !== undefined && (this.type === Room.NORMAL || this.type === Room.MINIBOSS)) roomLore.push("Crypts: " + this.data.crypts)
             if (this.type === Room.NORMAL) roomLore.push("Spiders: " + (this.data?.spiders ? "Yes" : "No"))
         } else {
             roomLore.push('Unknown room!')
-            roomLore.push('&9Rotation: ' + (this.rotation || 'NONE'));
+            if (CurrentSettings.settings.devInfo) roomLore.push('&9Rotation: ' + (this.rotation || 'NONE'));
         }
 
         return roomLore

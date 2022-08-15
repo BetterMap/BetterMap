@@ -12,6 +12,7 @@
  * @property {Boolean} playerNames - Wether to show player names when holding spirit leaps
  * @property {"none"|"left"|"right"} currentRoomInfo - Render current room hover info on side of map
  * @property {"none"|"legalmap"|"simplified"} scoreInfoUnderMap - Render current room hover info on side of map
+ * @property {Boolean} devInfo - Wether to show def info in various places in the map
  */
 
 class RenderContext {
@@ -77,6 +78,10 @@ class RenderContext {
 
     get scoreInfoUnderMap() {
         return this.settings.scoreInfoUnderMap
+    }
+
+    get devInfo() {
+        return this.settings.devInfo
     }
 
     get colorMap() {
@@ -165,7 +170,21 @@ class RenderContext {
         this.settings = RenderContext.addMissing(settings)
     }
 
-    static addMissing({ mapStyle = "legalmap", posX = 0, posY = 0, size = 100, headScale = 8, iconScale = 8, tickStyle = "default", puzzleNames = "none", headBorder = false, playerNames = true, currentRoomInfo = "none", scoreInfoUnderMap = "simplified" }) {
+    static addMissing({
+        mapStyle = "legalmap",
+        posX = 0,
+        posY = 0,
+        size = 100,
+        headScale = 8,
+        iconScale = 8,
+        tickStyle = "default",
+        puzzleNames = "none",
+        headBorder = false,
+        playerNames = true,
+        currentRoomInfo = "none",
+        scoreInfoUnderMap = "simplified",
+        devInfo = false
+    }) {
         return {
             mapStyle,
             posX,
@@ -178,7 +197,8 @@ class RenderContext {
             headBorder,
             playerNames,
             currentRoomInfo,
-            scoreInfoUnderMap
+            scoreInfoUnderMap,
+            devInfo
         }
     }
 

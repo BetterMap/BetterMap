@@ -125,11 +125,19 @@ register("worldLoad", () => {
 register("chat", (info) => {
     let player = ChatLib.removeFormatting(info.split(" ")[0])
 
+    if (player === "you") {
+        player = Player.getName().toLowerCase()
+    }
+
     deadPlayers.add(player.toLowerCase())
 }).setChatCriteria("&r&c ☠ ${info} and became a ghost&r&7.&r")
 
 register("chat", (info) => {
     let player = ChatLib.removeFormatting(info.split(" ")[0])
+
+    if (player === "you") {
+        player = Player.getName().toLowerCase()
+    }
 
     deadPlayers.delete(player.toLowerCase())
 }).setChatCriteria("&r&a ❣ &r${info} was revived${*}!&r")

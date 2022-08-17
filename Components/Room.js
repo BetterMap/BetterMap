@@ -80,6 +80,7 @@ class Room {
 
     findRotation() {
         if (this.type === Room.FAIRY) return 1;
+
         var minX = -1, maxX = -1, minY = -1, maxY = -1;
         this.components.forEach((c) => {
             if (minX < 0 || c.arrayX < minX)
@@ -227,7 +228,7 @@ class Room {
         let dx = x - this.minX
         let dy = y;
         let dz = z - this.minY;
-        ChatLib.chat('relative coords ' + dx + '/' + dy + '/' + dz);
+
         //rotate opposite direction
         switch (this.rotation) {
             case 2:

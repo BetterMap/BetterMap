@@ -116,7 +116,6 @@ class MapRenderer {
             if (renderContext.image) {
                 try {
                     renderContext.image.destroy()
-                    throw new Error()
                 } catch (_) {
                     //if u dont have ct 2.1.5+
                     if (memoryLeakAlert && Date.now() - lastMemoryLeakAlertTime > 30000) {

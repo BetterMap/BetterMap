@@ -1,3 +1,5 @@
+import { timeNumber } from "../Utils/Utils"
+
 export let RoomEvents = {
     CHECKMARK_STATE_CHANGE: 0,
     PLAYER_ENTER: 1,
@@ -7,16 +9,16 @@ export let RoomEvents = {
 
 let eventData = [
     (room, timestamp, fromState, toState) => {//CHECKMARK_STATE_CHANGE
-        return "CHECKMARK CHANGE: " + room.checkmarkStateToName(fromState) + " -> " + room.checkmarkStateToName(toState)
+        return timeNumber(Date.now() - timestamp) + " CHECKMARK CHANGE: " + room.checkmarkStateToName(fromState) + " -> " + room.checkmarkStateToName(toState)
     },
     (room, timestamp, player) => {//PLAYER_ENTER
-        return "ENTER: " + player
+        return timeNumber(Date.now() - timestamp) + " ENTER: " + player
     },
     (room, timestamp, player) => {//PLAYER_EXIT
-        return "EXIT: " + player
+        return timeNumber(Date.now() - timestamp) + " EXIT: " + player
     },
     (room, timestamp, from, to) => {//SECRET_COUNT_CHANGE
-        return "SECRET CHANGE: " + from + " -> " + to
+        return timeNumber(Date.now() - timestamp) + " SECRET CHANGE: " + from + " -> " + to
     }
 ]
 

@@ -42,20 +42,36 @@ class SettingGui {
         this.gui.element.addChild(this.mainSidebar)
 
         this.changelogData = undefined
+        this.generateChangelog()
         this.mainpage = new SoopyGuiElement().setLocation(0, 0, 1, 1).setScrollable(true)
         this.changelog = new SoopyGuiElement().setLocation(1, 0, 1, 1).setScrollable(true)
+        this.howToUse = new SoopyGuiElement().setLocation(-1, 0, 1, 1).setScrollable(true)
 
         this.mainSidebar.addChild(this.mainpage)
         this.mainSidebar.addChild(this.changelog)
+        this.mainSidebar.addChild(this.howToUse)
+
+        this.y = 0.05
 
         this.mainpage.addChild(new ButtonWithArrow().setText("§0Changelog").setLocation(0.7, 0, 0.3, 0.05).addEvent(new SoopyMouseClickEvent().setHandler(() => {
+            this.howToUse.location.location.x.set(-2, 250)
             this.mainpage.location.location.x.set(-1, 250)
             this.changelog.location.location.x.set(0, 250)
         })))
+        this.mainpage.addChild(new ButtonWithArrow().setText("§0How To Use").setLocation(0, 0, 0.3, 0.05).setDirectionRight(false).addEvent(new SoopyMouseClickEvent().setHandler(() => {
+            this.howToUse.location.location.x.set(0, 250)
+            this.mainpage.location.location.x.set(1, 250)
+            this.changelog.location.location.x.set(2, 250)
+        })))
 
-        this.generateChangelog()
+        this.howToUse.addChild(new ButtonWithArrow().setText("§0Settings").setLocation(0.7, 0, 0.3, 0.05).addEvent(new SoopyMouseClickEvent().setHandler(() => {
+            this.howToUse.location.location.x.set(-1, 250)
+            this.mainpage.location.location.x.set(0, 250)
+            this.changelog.location.location.x.set(1, 250)
+        })))
 
-        this.y = 0.05
+        this.howToUse.addChild(new SoopyTextElement().setText("§0How To Use").setMaxTextScale(3).setLocation(0.1, 0.05, 0.8, 0.1))
+        this.howToUse.addChild(new SoopyMarkdownElement().setText(FileLib.read("BetterMap", "Extra/Settings/HowToUse.md")).setLocation(0.1, 0.2, 0.8, 0))
 
         //TITLE
         this.addSidebarElement(new SoopyTextElement().setText("§0BetterMap Settings").setMaxTextScale(3))
@@ -139,8 +155,9 @@ class SettingGui {
 
             this.updateChangelogtext()
 
-            this.mainpage.location.location.x.set(0)
-            this.changelog.location.location.x.set(1)
+            this.howToUse.location.location.x.set(-1, 0)
+            this.mainpage.location.location.x.set(0, 0)
+            this.changelog.location.location.x.set(1, 0)
         }))
 
         this.gui.element.addEvent(new SoopyRenderEvent().setHandler(() => {
@@ -181,6 +198,7 @@ class SettingGui {
         //back button
 
         this.changelog.addChild(new ButtonWithArrow().setText("§0Settings").setDirectionRight(false).setLocation(0, 0, 0.3, 0.05).addEvent(new SoopyMouseClickEvent().setHandler(() => {
+            this.howToUse.location.location.x.set(-1, 250)
             this.mainpage.location.location.x.set(0, 250)
             this.changelog.location.location.x.set(1, 250)
         })))

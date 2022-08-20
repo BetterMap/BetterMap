@@ -24,7 +24,7 @@ class SettingsManager {
 
         this.fakeDungeon = this.createFakeDungeon()
 
-        this.settingRenderContext = this.createRenderContext()
+        this.settingRenderContext = this.createRenderContext({ currentRoomInfo: "none" })
 
         this.settingsGui = new SettingGui(this.currentSettings, this.fakeDungeon, this.renderContextManager.getRenderContextData(this.settingRenderContext), mapRenderer)
 
@@ -58,6 +58,7 @@ class SettingsManager {
     /**
      * Creates a render context from the users currrent settings
      * Also adds the render context to a local list to get the settings modified if a setting is changed in the settings menu
+     * @param {import("../../Render/RenderContext").ContextSettings} settingOverrides
      * @returns {Number}
      */
     createRenderContext(settingOverrides = {}) {

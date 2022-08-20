@@ -184,3 +184,11 @@ export function spawnParticleAtLocation(loc, velo, particle) {
         velo[2],      // speedZ
     );
 }
+
+export function firstLetterCapital(string) {
+    return string.substr(0, 1).toUpperCase() + string.substr(1)
+}
+
+export function firstLetterWordCapital(string) {
+    return string.split(" ").map(firstLetterCapital).join(" ")
+}

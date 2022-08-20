@@ -1,6 +1,8 @@
 import { m } from "../../mappings/mappings.js"
 import DungeonRoomData from "../Data/DungeonRoomData.js"
 import CurrentSettings from "../Extra/Settings/CurrentSettings.js"
+import { firstLetterCapital } from "../Utils/Utils.js"
+import { createEvent, RoomEvents, toDisplayString } from "./RoomEvent.js"
 
 class Room {
 
@@ -32,6 +34,7 @@ class Room {
          * @type {Array<Door>}
          */
         this.adjacentDoors = []
+        this.roomEvents = []
 
         this.type = type
         this.components = components
@@ -49,10 +52,10 @@ class Room {
          * 3 -> white tick
          * 4 -> green tick
          */
-        this.checkmarkState = 0
+        this._checkmarkState = 0
 
         this.maxSecrets = undefined
-        this.currentSecrets = undefined
+        this._currentSecrets = undefined
 
 
         //room data from the room id
@@ -60,8 +63,28 @@ class Room {
 
         this._roomId = undefined
         this.roomId = roomId
+    }
 
-        this.roomEvents = []
+    set checkmarkState(val) {
+        if (this.checkmarkState !== val) {
+            this.addEvent(RoomEvents.CHECKMARK_STATE_CHANGE, this.checkmarkState, val)
+        }
+        this._checkmarkState = val
+    }
+
+    get checkmarkState() {
+        return this._checkmarkState
+    }
+
+    set currentSecrets(val) {
+        if ((this.currentSecrets || 0) !== (val || 0)) {
+            this.addEvent(RoomEvents.SECRET_COUNT_CHANGE, (this.currentSecrets || 0) + "/" + (this.maxSecrets || "???"), (val || 0) + "/" + (this.maxSecrets || "???"))
+        }
+        this._currentSecrets = val
+    }
+
+    get currentSecrets() {
+        return this._currentSecrets
     }
 
     addComponents(newComponents) {
@@ -182,9 +205,19 @@ class Room {
         this.data = DungeonRoomData.getDataFromId(value.trim())
 
         if (this.data) {
+            let oldMax = this.maxSecrets
+
             this.maxSecrets = this.data.secrets
             this.currentSecrets = this.currentSecrets || 0
+
+            if (this.maxSecrets !== oldMax) {
+                this.addEvent(RoomEvents.SECRET_COUNT_CHANGE, (this.currentSecrets || 0) + "/" + (oldMax || "???"), (this.currentSecrets || 0) + "/" + this.maxSecrets)
+            }
         }
+    }
+
+    addEvent(event, ...args) {
+        this.roomEvents.push(createEvent(event, ...args))
     }
 
     setType(type) {
@@ -214,6 +247,13 @@ class Room {
         } else {
             roomLore.push('Unknown room!')
             if (CurrentSettings.settings.devInfo) roomLore.push('&9Rotation: ' + (this.rotation || 'NONE'));
+        }
+
+        if (CurrentSettings.settings.devInfo) {
+            roomLore.push("--------------")
+            for (let event of this.roomEvents) {
+                roomLore.push(toDisplayString(this, event))
+            }
         }
 
         return roomLore
@@ -258,6 +298,18 @@ class Room {
         }
     }
 
+    checkmarkStateToName(state) {
+        return firstLetterCapital(checkmarkStateName.get(state).toLowerCase())
+    }
 }
+
+let checkmarkStateName = new Map()
+
+checkmarkStateName.set(Room.FAILED, "FAILED")
+checkmarkStateName.set(Room.UNOPENED, "UNOPENED")
+checkmarkStateName.set(Room.ADJACENT, "ADJACENT")
+checkmarkStateName.set(Room.OPENED, "OPENED")
+checkmarkStateName.set(Room.CLEARED, "CLEARED")
+checkmarkStateName.set(Room.COMPLETED, "COMPLETED")
 
 export default Room

@@ -42,7 +42,6 @@ class SettingGui {
         this.gui.element.addChild(this.mainSidebar)
 
         this.changelogData = undefined
-        this.generateChangelog()
         this.mainpage = new SoopyGuiElement().setLocation(0, 0, 1, 1).setScrollable(true)
         this.changelog = new SoopyGuiElement().setLocation(1, 0, 1, 1).setScrollable(true)
         this.howToUse = new SoopyGuiElement().setLocation(-1, 0, 1, 1).setScrollable(true)
@@ -180,13 +179,49 @@ class SettingGui {
         this.gui._renderBackground = () => {
             Renderer.drawRect(Renderer.color(0, 0, 0, this.backgroundOpacity.get()), 0, 0, Renderer.screen.getWidth(), Renderer.screen.getHeight())
         }
+        this.generateChangelog()
     }
 
     generateChangelog() {
-        fetch("http://soopy.dev/api/bettermap/changelog.json").json((data) => {
-            this.changelogData = data.changelog
-            this.updateChangelogtext()
+        let data = FileLib.read("BetterMap", "Extra/Settings/Changelog.md")
+
+        let lines = data.split("\n");
+
+        let currData = {
+            version: "",
+            description: ""
+        }
+
+        let changelog = []
+
+        lines.forEach(line => {
+            if (line.startsWith("@ver ")) {
+                if (currData.version) {
+                    currData.description = currData.description.trim();
+
+                    changelog.push(currData);
+
+                    if (changelog.length > 100) changelog.shift()
+
+                    currData = {
+                        version: "",
+                        description: ""
+                    }
+                }
+                currData.version = line.substring(5);
+            } else {
+                currData.description += line + "\n";
+            }
         })
+
+        currData.description = currData.description.trim();
+
+        changelog.push(currData);
+        if (changelog.length > 100) changelog.shift()
+
+        changelog.reverse()
+        this.changelogData = changelog
+        this.updateChangelogtext()
     }
 
     updateChangelogtext() {

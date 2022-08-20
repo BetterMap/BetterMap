@@ -6,13 +6,11 @@ import Room from "./Room.js"
 import { getScoreboardInfo, getTabListInfo, getRequiredSecrets } from "../Utils/Score"
 import Door from "./Door.js"
 import DungeonRoomData from "../Data/DungeonRoomData.js"
-import { renderLore } from "../Utils/Utils.js"
+import { MESSAGE_PREFIX, renderLore } from "../Utils/Utils.js"
 import socketConnection from "../socketConnection.js"
 import DataLoader from "../Utils/DataLoader.js"
 import { fetch } from "../Utils/networkUtils.js"
 import renderLibs from "../../guimanager/renderLibs.js"
-
-const MESSAGE_PREFIX = "&6[BetterMap]&7 "
 
 let PlayerComparator = Java.type("net.minecraft.client.gui.GuiPlayerTabOverlay").PlayerComparator
 let c = PlayerComparator.class.getDeclaredConstructor()

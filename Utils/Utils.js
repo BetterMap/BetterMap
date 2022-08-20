@@ -334,3 +334,5 @@ export function addNotation(type, value, joiner = "") {
 
     return returnVal;
 }
+
+export const MESSAGE_PREFIX = "&6[BetterMap]&7 "

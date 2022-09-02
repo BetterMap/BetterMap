@@ -172,7 +172,7 @@ class RoomRenderer {
                     textColor = "&a"
                     break;
                 case Room.FAILED:
-                    textColor + "&4"
+                    textColor = "&4"
                     break;
                 default:
                     textColor = "&7"

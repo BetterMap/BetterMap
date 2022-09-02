@@ -42,18 +42,21 @@ register("step", () => {
     }
 
     if (currentDungeonMap) {
-        let mapData
-        try {
-            let item = Player.getInventory().getStackInSlot(8)
-            mapData = item.getItem()[m.getMapData](item.getItemStack(), World.getWorld())
-        } catch (error) {
+        if (Player.getX() < 0 && Player.getZ() < 0) { //Ensuring they are not in boss room
+            let mapData
+            try {
+                let item = Player.getInventory().getStackInSlot(8)
+                mapData = item.getItem()[m.getMapData](item.getItemStack(), World.getWorld())
+            } catch (error) {
+            }
+
+            if (mapData) {
+                currentDungeonMap.updateFromMap(mapData)
+            } else {
+                currentDungeonMap.updateFromWorld();
+            }
         }
 
-        if (mapData) {
-            currentDungeonMap.updateFromMap(mapData)
-        } else {
-            currentDungeonMap.updateFromWorld();
-        }
         currentDungeonMap.updatePuzzles();
     }
 }).setFps(5)

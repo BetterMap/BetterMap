@@ -332,7 +332,9 @@ class DungeonMap {
                     if (bytes[x + y * 128] === 30
                         && bytes[x + 1 + y * 128] === 30
                         && bytes[x + 2 + y * 128] === 30
-                        && bytes[x + 3 + y * 128] === 30) {
+                        && bytes[x + 3 + y * 128] === 30
+                        && bytes[x + 5 + y * 128] === 30
+                        && bytes[x + 10 + y * 128] === 30) {
                         roomX = x
                         roomY = y
                         while (bytes[(roomX - 1) + roomY * 128] === 30) {

@@ -11,6 +11,7 @@ import socketConnection from "../socketConnection.js"
 import DataLoader from "../Utils/DataLoader.js"
 import { fetch } from "../Utils/networkUtils.js"
 import renderLibs from "../../guimanager/renderLibs.js"
+import settings from "../Extra/Settings/CurrentSettings.js"
 
 let PlayerComparator = Java.type("net.minecraft.client.gui.GuiPlayerTabOverlay").PlayerComparator
 let c = PlayerComparator.class.getDeclaredConstructor()
@@ -685,8 +686,8 @@ class DungeonMap {
         if (this.floor >= 6 && this.mimicKilled)
             bonus += 2;
 
-        let paul = DataLoader.currentMayorPerks.has("EZPZ")
-        //TODO: Add toggle to check add +10 score anyway, cause of jerry mayor
+        let paul = DataLoader.currentMayorPerks.has("EZPZ") || settings.settings.forcePaul
+
         if (paul) {
             bonus += 10
         }

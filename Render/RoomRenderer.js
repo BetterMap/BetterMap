@@ -127,7 +127,7 @@ class RoomRenderer {
                     textColored = "&a" + text
                     break;
                 case Room.FAILED:
-                    textColored = "&4" + text
+                    textColored = "&c" + text
                     break;
                 case Room.OPENED:
                 default:
@@ -172,7 +172,7 @@ class RoomRenderer {
                     textColor = "&a"
                     break;
                 case Room.FAILED:
-                    textColor + "&4"
+                    textColor = "&c"
                     break;
                 default:
                     textColor = "&7"

@@ -24,7 +24,7 @@ let mapRenderer = new MapRenderer();
 
 let settingsManager = new SettingsManager(renderContextManager, mapRenderer)
 let dungeonMapRenderContext = settingsManager.createRenderContext();
-CurrentSettings.settings = settingsManager.currentSettings
+CurrentSettings.renderContext = renderContextManager.getRenderContextData(dungeonMapRenderContext)
 
 
 
@@ -42,18 +42,21 @@ register("step", () => {
     }
 
     if (currentDungeonMap) {
-        let mapData
-        try {
-            let item = Player.getInventory().getStackInSlot(8)
-            mapData = item.getItem()[m.getMapData](item.getItemStack(), World.getWorld())
-        } catch (error) {
+        if (Player.getX() < 0 && Player.getZ() < 0) { //Ensuring they are not in boss room
+            let mapData
+            try {
+                let item = Player.getInventory().getStackInSlot(8)
+                mapData = item.getItem()[m.getMapData](item.getItemStack(), World.getWorld())
+            } catch (error) {
+            }
+
+            if (mapData) {
+                currentDungeonMap.updateFromMap(mapData)
+            } else {
+                currentDungeonMap.updateFromWorld();
+            }
         }
 
-        if (mapData) {
-            currentDungeonMap.updateFromMap(mapData)
-        } else {
-            currentDungeonMap.updateFromWorld();
-        }
         currentDungeonMap.updatePuzzles();
     }
 }).setFps(5)
@@ -125,11 +128,19 @@ register("worldLoad", () => {
 register("chat", (info) => {
     let player = ChatLib.removeFormatting(info.split(" ")[0])
 
+    if (player === "you") {
+        player = Player.getName().toLowerCase()
+    }
+
     deadPlayers.add(player.toLowerCase())
 }).setChatCriteria("&r&c ☠ ${info} and became a ghost&r&7.&r")
 
 register("chat", (info) => {
     let player = ChatLib.removeFormatting(info.split(" ")[0])
+
+    if (player === "you") {
+        player = Player.getName().toLowerCase()
+    }
 
     deadPlayers.delete(player.toLowerCase())
 }).setChatCriteria("&r&a ❣ &r${info} was revived${*}!&r")

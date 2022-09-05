@@ -6,13 +6,12 @@ import Room from "./Room.js"
 import { getScoreboardInfo, getTabListInfo, getRequiredSecrets } from "../Utils/Score"
 import Door from "./Door.js"
 import DungeonRoomData from "../Data/DungeonRoomData.js"
-import { renderLore } from "../Utils/Utils.js"
+import { MESSAGE_PREFIX, renderLore } from "../Utils/Utils.js"
 import socketConnection from "../socketConnection.js"
 import DataLoader from "../Utils/DataLoader.js"
 import { fetch } from "../Utils/networkUtils.js"
 import renderLibs from "../../guimanager/renderLibs.js"
-
-const MESSAGE_PREFIX = "&6[BetterMap]&7 "
+import settings from "../Extra/Settings/CurrentSettings.js"
 
 let PlayerComparator = Java.type("net.minecraft.client.gui.GuiPlayerTabOverlay").PlayerComparator
 let c = PlayerComparator.class.getDeclaredConstructor()
@@ -124,9 +123,9 @@ class DungeonMap {
                 let p = this.players[this.playersNameToId[data.username]]
                 if (!p) return
 
-                p.setXAnimate(data.x)
-                p.setYAnimate(data.z)
-                p.setRotateAnimate(data.yaw)
+                p.setXAnimate(data.x, 350)
+                p.setYAnimate(data.z, 350)
+                p.setRotateAnimate(data.yaw, 350)
                 p.locallyUpdated = Date.now()
                 break;
             case "roomSecrets":
@@ -334,7 +333,9 @@ class DungeonMap {
                     if (bytes[x + y * 128] === 30
                         && bytes[x + 1 + y * 128] === 30
                         && bytes[x + 2 + y * 128] === 30
-                        && bytes[x + 3 + y * 128] === 30) {
+                        && bytes[x + 3 + y * 128] === 30
+                        && bytes[x + 5 + y * 128] === 30
+                        && bytes[x + 10 + y * 128] === 30) {
                         roomX = x
                         roomY = y
                         while (bytes[(roomX - 1) + roomY * 128] === 30) {
@@ -685,8 +686,8 @@ class DungeonMap {
         if (this.floor >= 6 && this.mimicKilled)
             bonus += 2;
 
-        let paul = DataLoader.currentMayorPerks.has("EZPZ")
-        //TODO: Add toggle to check add +10 score anyway, cause of jerry mayor
+        let paul = DataLoader.currentMayorPerks.has("EZPZ") || settings.settings.forcePaul
+
         if (paul) {
             bonus += 10
         }

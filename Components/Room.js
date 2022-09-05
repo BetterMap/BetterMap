@@ -1,5 +1,8 @@
 import { m } from "../../mappings/mappings.js"
 import DungeonRoomData from "../Data/DungeonRoomData.js"
+import CurrentSettings from "../Extra/Settings/CurrentSettings.js"
+import { firstLetterCapital } from "../Utils/Utils.js"
+import { createEvent, RoomEvents, toDisplayString } from "./RoomEvent.js"
 
 class Room {
 
@@ -31,6 +34,7 @@ class Room {
          * @type {Array<Door>}
          */
         this.adjacentDoors = []
+        this.roomEvents = []
 
         this.type = type
         this.components = components
@@ -48,10 +52,10 @@ class Room {
          * 3 -> white tick
          * 4 -> green tick
          */
-        this.checkmarkState = 0
+        this._checkmarkState = 0
 
         this.maxSecrets = undefined
-        this.currentSecrets = undefined
+        this._currentSecrets = undefined
 
 
         //room data from the room id
@@ -59,8 +63,28 @@ class Room {
 
         this._roomId = undefined
         this.roomId = roomId
+    }
 
-        this.roomEvents = []
+    set checkmarkState(val) {
+        if (this.checkmarkState !== val) {
+            this.addEvent(RoomEvents.CHECKMARK_STATE_CHANGE, this.checkmarkState, val)
+        }
+        this._checkmarkState = val
+    }
+
+    get checkmarkState() {
+        return this._checkmarkState
+    }
+
+    set currentSecrets(val) {
+        if ((this.currentSecrets || 0) !== (val || 0)) {
+            this.addEvent(RoomEvents.SECRET_COUNT_CHANGE, (this.currentSecrets || 0) + "/" + (this.maxSecrets || "???"), (val || 0) + "/" + (this.maxSecrets || "???"))
+        }
+        this._currentSecrets = val
+    }
+
+    get currentSecrets() {
+        return this._currentSecrets
     }
 
     addComponents(newComponents) {
@@ -79,6 +103,7 @@ class Room {
 
     findRotation() {
         if (this.type === Room.FAIRY) return 1;
+
         var minX = -1, maxX = -1, minY = -1, maxY = -1;
         this.components.forEach((c) => {
             if (minX < 0 || c.arrayX < minX)
@@ -180,9 +205,19 @@ class Room {
         this.data = DungeonRoomData.getDataFromId(value.trim())
 
         if (this.data) {
+            let oldMax = this.maxSecrets
+
             this.maxSecrets = this.data.secrets
             this.currentSecrets = this.currentSecrets || 0
+
+            if (this.maxSecrets !== oldMax) {
+                this.addEvent(RoomEvents.SECRET_COUNT_CHANGE, (this.currentSecrets || 0) + "/" + (oldMax || "???"), (this.currentSecrets || 0) + "/" + this.maxSecrets)
+            }
         }
+    }
+
+    addEvent(event, ...args) {
+        this.roomEvents.push(createEvent(event, ...args))
     }
 
     setType(type) {
@@ -204,14 +239,21 @@ class Room {
         if (this.roomId) { //TODO: COLORS!
             roomLore.push(this.data?.name || '???')
             roomLore.push("&8" + (this.roomId || ""))
-            roomLore.push('&9Rotation: ' + (this.rotation || 'NONE'));
+            if (CurrentSettings.settings.devInfo) roomLore.push('&9Rotation: ' + (this.rotation || 'NONE'));
             if (this.data && this.data?.soul) roomLore.push("&dFAIRY SOUL!")
             if (this.maxSecrets) roomLore.push("Secrets: " + this.currentSecrets + ' / ' + this.maxSecrets)
             if (this.data?.crypts !== undefined && (this.type === Room.NORMAL || this.type === Room.MINIBOSS)) roomLore.push("Crypts: " + this.data.crypts)
             if (this.type === Room.NORMAL) roomLore.push("Spiders: " + (this.data?.spiders ? "Yes" : "No"))
         } else {
             roomLore.push('Unknown room!')
-            roomLore.push('&9Rotation: ' + (this.rotation || 'NONE'));
+            if (CurrentSettings.settings.devInfo) roomLore.push('&9Rotation: ' + (this.rotation || 'NONE'));
+        }
+
+        if (CurrentSettings.settings.devInfo) {
+            roomLore.push("--------------")
+            for (let event of this.roomEvents) {
+                roomLore.push(toDisplayString(this, event))
+            }
         }
 
         return roomLore
@@ -226,7 +268,7 @@ class Room {
         let dx = x - this.minX
         let dy = y;
         let dz = z - this.minY;
-        ChatLib.chat('relative coords ' + dx + '/' + dy + '/' + dz);
+
         //rotate opposite direction
         switch (this.rotation) {
             case 2:
@@ -256,6 +298,18 @@ class Room {
         }
     }
 
+    checkmarkStateToName(state) {
+        return firstLetterCapital(checkmarkStateName.get(state).toLowerCase())
+    }
 }
+
+let checkmarkStateName = new Map()
+
+checkmarkStateName.set(Room.FAILED, "FAILED")
+checkmarkStateName.set(Room.UNOPENED, "UNOPENED")
+checkmarkStateName.set(Room.ADJACENT, "ADJACENT")
+checkmarkStateName.set(Room.OPENED, "OPENED")
+checkmarkStateName.set(Room.CLEARED, "CLEARED")
+checkmarkStateName.set(Room.COMPLETED, "COMPLETED")
 
 export default Room

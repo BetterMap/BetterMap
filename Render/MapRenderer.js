@@ -7,7 +7,7 @@ import DoorRenderer from "./DoorRenderer"
 import renderLibs from "../../guimanager/renderLibs"
 import DungeonMap from "../Components/DungeonMap"
 import RenderContext from "./RenderContext"
-import { renderLore } from "../Utils/Utils"
+import { MESSAGE_PREFIX, renderLore } from "../Utils/Utils"
 
 class MapRenderer {
     constructor() {
@@ -71,6 +71,7 @@ class MapRenderer {
             //render heads
             renderLibs.scizzor(x + renderContext.borderWidth, y + renderContext.borderWidth, size - 2 * renderContext.borderWidth, size - renderContext.borderWidth)
             for (let player of dungeonMap.players) {
+                if (dungeonMap.deadPlayers.has(player.username.toLowerCase())) continue
                 player.drawIcon(renderContext, dungeonMap)
             }
             renderLibs.stopScizzor()
@@ -115,7 +116,17 @@ class MapRenderer {
             if (renderContext.image) {
                 try {
                     renderContext.image.destroy()
-                } catch (_) { }//if u dont have modified ct version
+                } catch (_) {
+                    //if u dont have ct 2.1.5+
+                    if (memoryLeakAlert && Date.now() - lastMemoryLeakAlertTime > 30000) {
+                        new TextComponent(MESSAGE_PREFIX + "Your version of chattriggers is under v2.1.5, on this version there is a memory leak due to creating map images. Please update soon. &8[OK ILL GET TO IT]")
+                            .setHover("show_text", "Click to not show message untill next game launch")
+                            .setClick("run_command", "/bettermapdontannoymeaboutoldctversion")
+                            .chat()
+
+                        lastMemoryLeakAlertTime = Date.now()
+                    }
+                }
             }
             renderContext.image = new Image(this.createMapImage(dungeonMap, renderContext));
 
@@ -126,3 +137,12 @@ class MapRenderer {
 }
 
 export default MapRenderer
+
+let memoryLeakAlert = true
+let lastMemoryLeakAlertTime = 0
+
+register("command", () => {
+    ChatLib.chat(MESSAGE_PREFIX + "Ok! You wont get this alert until next game launch.")
+
+    memoryLeakAlert = false
+}).setName("bettermapdontannoymeaboutoldctversion")

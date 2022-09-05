@@ -184,3 +184,155 @@ export function spawnParticleAtLocation(loc, velo, particle) {
         velo[2],      // speedZ
     );
 }
+
+export function firstLetterCapital(string) {
+    return string.substr(0, 1).toUpperCase() + string.substr(1)
+}
+
+export function firstLetterWordCapital(string) {
+    return string.split(" ").map(firstLetterCapital).join(" ")
+}
+
+/**
+ * Returns time since the given timestamp, showing only 1 unit
+ * Same as Skyblock bank
+ * @param {*} date 
+ * @returns 
+ */
+export function timeSince(date) {
+    if (typeof date !== 'object') {
+        date = new Date(date);
+    }
+
+    var seconds = Math.floor((new Date() - date) / 1000);
+    var intervalType;
+
+    var interval = Math.floor(seconds / 31536000);
+    interval = Math.floor(seconds / 86400);
+    if (interval >= 1) {
+        intervalType = 'd';
+    } else {
+        interval = Math.floor(seconds / 3600);
+        if (interval >= 1) {
+            intervalType = "h";
+        } else {
+            interval = Math.floor(seconds / 60);
+            if (interval >= 1) {
+                intervalType = "m";
+            } else {
+                interval = seconds;
+                intervalType = "s";
+            }
+        }
+    }
+
+    return interval + '' + intervalType;
+}
+/**
+ * Returns the time since a given timestamp
+ * in h and mins if time > 30mins ago
+ * in mins and secs if time < 30 mins ago
+ */
+export function timeSince2(date) {
+    let time = Date.now() - date
+
+    if (time > 30 * 60000) {
+        return timeNumber2(time)
+    }
+    return timeNumber(time)
+}
+/**
+ * Returns the time since a given timestamp
+ * in m and s
+ */
+export function timeNumber(time) {
+    let mins = Math.floor(time / 1000 / 60)
+    let secs = Math.floor(time / 1000) % 60
+
+    if (mins === 0) return secs + "s"
+    return `${mins}m ${secs}s`
+}
+/**
+ * Returns the time since a given timestamp
+ * in h and m
+ */
+export function timeNumber2(time) {
+    let hours = Math.floor(time / 1000 / 60 / 60)
+    let mins = Math.floor(time / 1000 / 60) % 60
+
+    if (hours === 0) return mins + "m"
+    return `${hours}h ${mins}m`
+}
+
+/**
+ * Adds commas to the number, ready for display
+ * @param {Number} x 
+ */
+export function numberWithCommas(x) {
+    if (x === undefined) { return "" }
+    var parts = x.toString().split(".");
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    return parts.join(".");
+}
+/**
+ * Adds a notation to the input'd number
+ * shortScale: 1.25 Million
+ * oneLetters: 1.25 M
+ * commas: 1,250,000
+ * 
+ * joiner is the joiner between a number and the notation scale
+ * eg a joiner of "|" would result in
+ * 1.25| M
+ * usefull if you want the notation to eg be gray while the number is white
+ * in that case joiner: "&7"
+ * 1.25&7 M
+ * 
+ * @param {"shortScale"|"oneLetters"|"commas"} type The notation type
+ * @param {Number} value The number
+ * @param {String=""} joiner A joiner between the number and the notation
+ * @returns 
+ */
+export function addNotation(type, value, joiner = "") {
+    let returnVal = value;
+    let notList = [];
+    if (type === "shortScale") {
+        //notation type
+        //do notation stuff here
+        notList = [
+            " Thousand",
+            " Million",
+            " Billion",
+            " Trillion",
+            " Quadrillion",
+            " Quintillion"
+        ];
+    }
+
+    if (type === "oneLetters") {
+        notList = [" K", " M", " B", " T"];
+    }
+
+    let checkNum = 1000;
+
+    if (type !== "none" && type !== "commas") {
+        let notValue = notList[notList.length - 1];
+        for (let u = notList.length; u >= 1; u--) {
+            notValue = notList.shift();
+            for (let o = 3; o >= 1; o--) {
+                if (value >= checkNum) {
+                    returnVal = value / (checkNum / 100);
+                    returnVal = Math.floor(returnVal);
+                    returnVal = (returnVal / Math.pow(10, o)) * 10;
+                    returnVal = +returnVal.toFixed(o - 1) + joiner + notValue;
+                }
+                checkNum *= 10;
+            }
+        }
+    } else {
+        returnVal = this.numberWithCommas(value.toFixed(0));
+    }
+
+    return returnVal;
+}
+
+export const MESSAGE_PREFIX = "&6[BetterMap]&7 "

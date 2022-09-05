@@ -1,3 +1,4 @@
+import SoopyNumber from "../../guimanager/Classes/SoopyNumber.js"
 import { f, m } from "../../mappings/mappings.js"
 import RenderContext from "../Render/RenderContext.js"
 import Position from "../Utils/Position.js"
@@ -15,16 +16,25 @@ class MapPlayer {
         this.dungeonMap = dungeonMap
 
         this.location = new Position(0, 0, dungeonMap)
+        this.location.worldXRaw.setAnimMode("linea")
+        this.location.worldYRaw.setAnimMode("linea")
 
-        this.yaw = 0
+        this.yaw = new SoopyNumber(0)
+        this.yaw.setAnimMode("sin_out")
         this.username = username
 
         this.locallyUpdated = 0
 
-        this.secretsCollected = 0 //TODO: these
+        this.startedRunSecrets = 0
+        this.currentSecrets = 0
+
         this.minRooms = 0
         this.maxRooms = 0
         this.roomsData = []
+    }
+
+    get secretsCollected() {
+        return this.currentSecrets - this.startedRunSecrets
     }
 
     setX(x) {
@@ -34,16 +44,24 @@ class MapPlayer {
         this.location.worldY = y
     }
     setRotate(yaw) {
-        this.yaw = yaw
+        this.yaw.set(yaw, 0)
     }
-    setXAnimate(x) { //TODO: make these actually animate
-        this.location.worldX = x
+    setXAnimate(x, time = 1000) {
+        this.location.worldXRaw.set(x, time)
     }
-    setYAnimate(y) {
-        this.location.worldY = y
+    setYAnimate(y, time = 1000) {
+        this.location.worldYRaw.set(y, time)
     }
-    setRotateAnimate(yaw) {
-        this.yaw = yaw
+    setRotateAnimate(yaw, time = 1000) {
+        let dist = yaw - this.yaw.get()
+        if (dist > 180) {
+            this.yaw.set(this.yaw.get() + 360, 0)
+        }
+        if (dist < -180) {
+            this.yaw.set(this.yaw.get() - 360, 0)
+        }
+
+        this.yaw.set(yaw, time)
     }
 
     /**
@@ -71,7 +89,7 @@ class MapPlayer {
         Renderer.retainTransforms(true)
         Renderer.translate(x2, y2, 50)
         // Renderer.translate(x + (this.location.worldX + 256 - 32) * size / 256, y + (this.location.worldY + 256 - 32) * size / 256, 50)
-        Renderer.rotate(this.yaw)
+        Renderer.rotate(this.yaw.get())
 
         if (renderContext.headBorder) Renderer.drawRect(Renderer.BLACK, -rw / 2 - 1, -rh / 2 - 1, rw + 2, rh + 2)
 

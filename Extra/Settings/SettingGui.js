@@ -10,6 +10,7 @@ import DropDown from "../../../guimanager/GuiElement/Dropdown"
 import Toggle from "../../../guimanager/GuiElement/Toggle"
 import Slider from "../../../guimanager/GuiElement/Slider"
 import SoopyContentChangeEvent from "../../../guimanager/EventListener/SoopyContentChangeEvent"
+import TextWithArrow from "../../../guimanager/GuiElement/TextWithArrow"
 import ButtonWithArrow from "../../../guimanager/GuiElement/ButtonWithArrow"
 import SoopyMarkdownElement from "../../../guimanager/GuiElement/SoopyMarkdownElement"
 import LocationGui from "./LocationEditGui"
@@ -44,18 +45,33 @@ class SettingGui {
         this.changelogData = undefined
         this.mainpage = new SoopyGuiElement().setLocation(0, 0, 1, 1).setScrollable(true)
         this.changelog = new SoopyGuiElement().setLocation(1, 0, 1, 1).setScrollable(true)
+        this.howToUse = new SoopyGuiElement().setLocation(-1, 0, 1, 1).setScrollable(true)
 
         this.mainSidebar.addChild(this.mainpage)
         this.mainSidebar.addChild(this.changelog)
+        this.mainSidebar.addChild(this.howToUse)
 
-        this.mainpage.addChild(new ButtonWithArrow().setText("§0Changelog").setLocation(0.7, 0, 0.3, 0.05).addEvent(new SoopyMouseClickEvent().setHandler(() => {
+        this.y = 0.05
+
+        this.mainpage.addChild(new TextWithArrow().setText("§0Changelog").setLocation(0.675, 0, 0.3, 0.05).addEvent(new SoopyMouseClickEvent().setHandler(() => {
+            this.howToUse.location.location.x.set(-2, 250)
             this.mainpage.location.location.x.set(-1, 250)
             this.changelog.location.location.x.set(0, 250)
         })))
+        this.mainpage.addChild(new TextWithArrow().setText("§0How To Use").setLocation(0.025, 0, 0.3, 0.05).setDirectionRight(false).addEvent(new SoopyMouseClickEvent().setHandler(() => {
+            this.howToUse.location.location.x.set(0, 250)
+            this.mainpage.location.location.x.set(1, 250)
+            this.changelog.location.location.x.set(2, 250)
+        })))
 
-        this.generateChangelog()
+        this.howToUse.addChild(new TextWithArrow().setText("§0Settings").setLocation(0.675, 0, 0.3, 0.05).addEvent(new SoopyMouseClickEvent().setHandler(() => {
+            this.howToUse.location.location.x.set(-1, 250)
+            this.mainpage.location.location.x.set(0, 250)
+            this.changelog.location.location.x.set(1, 250)
+        })))
 
-        this.y = 0.05
+        this.howToUse.addChild(new SoopyTextElement().setText("§0How To Use").setMaxTextScale(3).setLocation(0.1, 0.05, 0.8, 0.1))
+        this.howToUse.addChild(new SoopyMarkdownElement().setText(FileLib.read("BetterMap", "Extra/Settings/HowToUse.md")).setLocation(0.1, 0.2, 0.8, 0))
 
         //TITLE
         this.addSidebarElement(new SoopyTextElement().setText("§0BetterMap Settings").setMaxTextScale(3))
@@ -79,7 +95,7 @@ class SettingGui {
         })), 0.3, 0.4, 0.075)
 
         this.addSidebarElement() //adds 2 gaps (button from above diddnt get one added automatically + seperating setting areas)
-        this.addSidebarElement()
+        this.addCategory("Style Settings")
 
         this.addDropdown("Tick Style", {
             "default": "Legal Map",
@@ -98,16 +114,10 @@ class SettingGui {
 
         this.addToggle("Player names when holding leaps", "playerNames", this.defaultSettings.playerNames)
 
-        this.addDropdown("Current room info next to map", {
-            "none": "None",
-            "left": "Left of map",
-            "right": "Right of map"
-        }, "currentRoomInfo", this.defaultSettings.currentRoomInfo)
-
         this.addSlider("Head Scale", "headScale", this.defaultSettings.headScale || 8, 2, 15)
         this.addSlider("Icon Scale", "iconScale", this.defaultSettings.iconScale || 8, 2, 15)
 
-        this.addSidebarElement()//gap
+        this.addCategory("Secret info Settings")
 
         this.addDropdown("Score info under map style", {
             "none": "None",
@@ -115,6 +125,17 @@ class SettingGui {
             "simplified": "Simplified"
         }, "scoreInfoUnderMap", this.defaultSettings.scoreInfoUnderMap)
 
+        this.addCategory("Other Settings")
+
+        this.addDropdown("Current room info next to map", {
+            "none": "None",
+            "left": "Left of map",
+            "right": "Right of map"
+        }, "currentRoomInfo", this.defaultSettings.currentRoomInfo)
+
+        this.addToggle("Force paul +10 score", "forcePaul", this.defaultSettings.forcePaul)
+
+        this.addToggle("Show dev info", "devInfo", this.defaultSettings.devInfo)
 
         //END OF SETTINGS
 
@@ -136,8 +157,9 @@ class SettingGui {
 
             this.updateChangelogtext()
 
-            this.mainpage.location.location.x.set(0)
-            this.changelog.location.location.x.set(1)
+            this.howToUse.location.location.x.set(-1, 0)
+            this.mainpage.location.location.x.set(0, 0)
+            this.changelog.location.location.x.set(1, 0)
         }))
 
         this.gui.element.addEvent(new SoopyRenderEvent().setHandler(() => {
@@ -160,13 +182,49 @@ class SettingGui {
         this.gui._renderBackground = () => {
             Renderer.drawRect(Renderer.color(0, 0, 0, this.backgroundOpacity.get()), 0, 0, Renderer.screen.getWidth(), Renderer.screen.getHeight())
         }
+        this.generateChangelog()
     }
 
     generateChangelog() {
-        fetch("http://soopy.dev/api/bettermap/changelog.json").json((data) => {
-            this.changelogData = data.changelog
-            this.updateChangelogtext()
+        let data = FileLib.read("BetterMap", "Extra/Settings/Changelog.md")
+
+        let lines = data.split("\n");
+
+        let currData = {
+            version: "",
+            description: ""
+        }
+
+        let changelog = []
+
+        lines.forEach(line => {
+            if (line.startsWith("@ver ")) {
+                if (currData.version) {
+                    currData.description = currData.description.trim();
+
+                    changelog.push(currData);
+
+                    if (changelog.length > 100) changelog.shift()
+
+                    currData = {
+                        version: "",
+                        description: ""
+                    }
+                }
+                currData.version = line.substring(5);
+            } else {
+                currData.description += line + "\n";
+            }
         })
+
+        currData.description = currData.description.trim();
+
+        changelog.push(currData);
+        if (changelog.length > 100) changelog.shift()
+
+        changelog.reverse()
+        this.changelogData = changelog
+        this.updateChangelogtext()
     }
 
     updateChangelogtext() {
@@ -177,7 +235,8 @@ class SettingGui {
 
         //back button
 
-        this.changelog.addChild(new ButtonWithArrow().setText("§0Settings").setDirectionRight(false).setLocation(0, 0, 0.3, 0.05).addEvent(new SoopyMouseClickEvent().setHandler(() => {
+        this.changelog.addChild(new TextWithArrow().setText("§0Settings").setDirectionRight(false).setLocation(0.025, 0, 0.3, 0.05).addEvent(new SoopyMouseClickEvent().setHandler(() => {
+            this.howToUse.location.location.x.set(-1, 250)
             this.mainpage.location.location.x.set(0, 250)
             this.changelog.location.location.x.set(1, 250)
         })))
@@ -220,9 +279,9 @@ class SettingGui {
     addDropdown(label, options, setting, defau) {
         this.addSidebarElement(new DropDown().setOptions(options).setSelectedOption(this.defaultSettings[setting] ?? defau).addEvent(new SoopyContentChangeEvent().setHandler((val, prev, cancelFun) => {
             this.changed(setting, val)
-        })), 0.5, 0.4, 0.075)
+        })), 0.55, 0.35, 0.075)
 
-        this.addSidebarElement(new SoopyTextElement().setText("§0" + label).setMaxTextScale(2), 0.1, 0.4)
+        this.addSidebarElement(new SoopyTextElement().setText("§0" + label).setMaxTextScale(2), 0.1, 0.35)
     }
 
 
@@ -235,9 +294,9 @@ class SettingGui {
     addToggle(label, setting, defau) {
         this.addSidebarElement(new Toggle().setValue(this.defaultSettings[setting] ?? defau).addEvent(new SoopyContentChangeEvent().setHandler((val, prev, cancelFun) => {
             this.changed(setting, val)
-        })), 0.6, 0.2, 0.05)
+        })), 0.625, 0.2, 0.05)
 
-        this.addSidebarElement(new SoopyTextElement().setText("§0" + label).setMaxTextScale(2), 0.1, 0.4)
+        this.addSidebarElement(new SoopyTextElement().setText("§0" + label).setMaxTextScale(2), 0.1, 0.35)
     }
 
 
@@ -270,9 +329,19 @@ class SettingGui {
             slider.setValue(parseInt(val))
         }))
 
-        this.addSidebarElement(slider, 0.5, 0.2, 0.05)
-        this.addSidebarElement(numberT, 0.75, 0.1, 0.05)
-        this.addSidebarElement(new SoopyTextElement().setText("§0" + label).setMaxTextScale(2), 0.1, 0.4)
+        this.addSidebarElement(slider, 0.55, 0.2, 0.05)
+        this.addSidebarElement(numberT, 0.8, 0.1, 0.05)
+        this.addSidebarElement(new SoopyTextElement().setText("§0" + label).setMaxTextScale(2), 0.1, 0.35)
+    }
+
+    /**
+     * 
+     * @param {String} label The text/name of the category
+     */
+    addCategory(label) {
+        let elm = new SoopyTextElement().setText("§7" + label).setMaxTextScale(2)
+        this.addSidebarElement(elm, 0.1, 0.8, 0.06)
+        elm.location.location.y.set(this.y - 0.1 + 0.04)
     }
 
 

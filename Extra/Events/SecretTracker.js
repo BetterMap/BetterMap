@@ -1,19 +1,20 @@
 import { m } from "../../../mappings/mappings"
 import { registerForge } from "../../Utils/forgeEvents"
 import EventManager from "./EventManager"
+const EntityItem = Java.type("net.minecraft.entity.item.EntityItem")
 
 let tempItemIdLocs = new Map()
 let collectedLocations = new Set()
 
-registerForge(net.minecraftforge.event.entity.EntityJoinWorldEvent, undefined, (event) => {
-    try {
-        if (event.entity instanceof EntityItem) {
-            let e = new Entity(event.entity)
-            let pos = [e.getX(), e.getY(), e.getZ()]
+//TODO: add a check that all of these events only trigger when inside dungeons
 
-            tempItemIdLocs.set(event.entity[m.getEntityId.Entity](), pos)
-        }
-    } catch (e) { }
+registerForge(net.minecraftforge.event.entity.EntityJoinWorldEvent, undefined, (event) => {
+    if (event.entity instanceof EntityItem) {
+        let e = new Entity(event.entity)
+        let pos = [e.getX(), e.getY(), e.getZ()]
+
+        tempItemIdLocs.set(event.entity[m.getEntityId.Entity](), pos)
+    }
 })
 
 register("soundPlay", (pos, name, volume, pitch, categoryName, event) => {

@@ -119,7 +119,7 @@ class MapRenderer {
                 } catch (_) {
                     //if u dont have ct 2.1.5+
                     if (memoryLeakAlert && Date.now() - lastMemoryLeakAlertTime > 30000) {
-                        new TextComponent(MESSAGE_PREFIX + "Your version of chattriggers is under v2.1.5, on this version there is a memory leak due to creating map images. Please update soon. &8[OK ILL GET TO IT]")
+                        new TextComponent(MESSAGE_PREFIX + "Your version of chattriggers is under v2.1.5, on these versions there is a memory leak due to creating map images. Please update soon. &8[OK ILL GET TO IT]")
                             .setHover("show_text", "Click to not show message untill next game launch")
                             .setClick("run_command", "/bettermapdontannoymeaboutoldctversion")
                             .chat()

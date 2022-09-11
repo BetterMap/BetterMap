@@ -67,7 +67,7 @@ class MapPlayer {
     /**
      * @param {RenderContext} renderContext 
      */
-    drawIcon(renderContext, dungeon) {
+    drawIcon(renderContext, dungeon, overrideX, overrideY) {
         let { x, y, size, headScale } = renderContext.getMapDimensions()
 
         if (!dungeon) return
@@ -83,8 +83,8 @@ class MapPlayer {
         let x2 = (renderContext.roomGap / 2 + renderContext.blockSize * arrayX + renderContext.roomSize / 2 + renderContext.paddingLeft) / renderContext.getImageSize(dungeon.floor)
         let y2 = (renderContext.roomGap / 2 + renderContext.blockSize * arrayY + renderContext.roomSize / 2 + renderContext.paddingTop) / renderContext.getImageSize(dungeon.floor)
 
-        x2 = x + x2 * renderContext.size + renderContext.borderWidth
-        y2 = y + y2 * renderContext.size + renderContext.borderWidth
+        x2 = overrideX || x + x2 * renderContext.size + renderContext.borderWidth
+        y2 = overrideY || y + y2 * renderContext.size + renderContext.borderWidth
 
         Renderer.retainTransforms(true)
         Renderer.translate(x2, y2, 50)

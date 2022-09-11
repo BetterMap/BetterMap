@@ -2,6 +2,7 @@ import SoopyOpenGuiEvent from "../../../guimanager/EventListener/SoopyOpenGuiEve
 import Door from "../../Components/Door";
 import DungeonMap from "../../Components/DungeonMap";
 import Room from "../../Components/Room";
+import MapRenderer from "../../Render/MapRenderer";
 import RenderContext from "../../Render/RenderContext";
 import RenderContextManager from "../../Render/RenderContextManager";
 import Position from "../../Utils/Position";
@@ -12,7 +13,7 @@ class SettingsManager {
     /**
      * @param {RenderContextManager} renderContextManager 
      */
-    constructor(renderContextManager, mapRenderer) {
+    constructor(renderContextManager) {
         this.renderContextManager = renderContextManager
 
         this.currentSettings = RenderContext.addMissing(JSON.parse(FileLib.read("soopyaddonsdata", "bettermapsettings.json") || "{}") || {})
@@ -21,6 +22,9 @@ class SettingsManager {
          * @type {Map<RenderContext, Object>}
          */
         this.renderContexts = new Map()
+
+        let mapRenderer = new MapRenderer()
+        mapRenderer.tabs = [mapRenderer.tabs[0]]
 
         this.fakeDungeon = this.createFakeDungeon()
 

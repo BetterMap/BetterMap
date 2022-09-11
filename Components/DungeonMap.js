@@ -86,6 +86,8 @@ class DungeonMap {
         this.identifiedRoomIds = new Set();
         this.identifiedPuzzleCount = 0;
 
+        this.dungeonFinished = false
+
         let mimicDeadMessages = ["$SKYTILS-DUNGEON-SCORE-MIMIC$", "Mimic Killed!", "Mimic Dead!", "Mimic dead!"]
 
         this.triggers = []
@@ -95,6 +97,9 @@ class DungeonMap {
                     if (msg.includes(dmsg)) this.mimicKilled = true
                 })
             }).setChatCriteria("&r&9Party &8> ${msg}"))
+            this.triggers.push(register("chat", (msg) => {
+                this.dungeonFinished = true
+            }).setChatCriteria("${*}             &r&cThe Catacombs &r&8- &r&eFloor ${*} Stats${*}"))
 
             this.triggers.push(register("entityDeath", (entity) => {
                 if (entity.getClassName() !== "EntityZombie") return

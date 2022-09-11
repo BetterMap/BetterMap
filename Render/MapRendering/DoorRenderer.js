@@ -1,6 +1,6 @@
-import Door from "../Components/Door"
-import Room from "../Components/Room"
-import RenderContext from "./RenderContext"
+import Door from "../../Components/Door"
+import Room from "../../Components/Room"
+import RenderContext from "../RenderContext"
 
 class DoorRenderer {
 

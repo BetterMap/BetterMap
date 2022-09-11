@@ -22,7 +22,7 @@ let deadPlayers = new Set()
 let renderContextManager = new RenderContextManager();
 let mapRenderer = new MapRenderer();
 
-let settingsManager = new SettingsManager(renderContextManager, mapRenderer)
+let settingsManager = new SettingsManager(renderContextManager)
 let dungeonMapRenderContext = settingsManager.createRenderContext();
 CurrentSettings.renderContext = renderContextManager.getRenderContextData(dungeonMapRenderContext)
 
@@ -32,6 +32,7 @@ register("step", () => {
     if (DataLoader.isInDungeon && DataLoader.dungeonFloor || currentDungeonMap?.getCurrentRoomId() === "30,225") {
         if (!currentDungeonMap) { //entered dungeon, create map data
             currentDungeonMap = new DungeonMap(DataLoader.dungeonFloor, deadPlayers)
+            mapRenderer = new MapRenderer();
             global.betterMapDungeonMap = currentDungeonMap
         }
     } else {
@@ -84,19 +85,22 @@ register("renderOverlay", () => {
 
         let mapContext = renderContextManager.getRenderContextData(dungeonMapRenderContext)
         currentDungeonMap.updatePlayersFast()
-        mapRenderer.draw(mapContext, currentDungeonMap)
+
+
+        let cursorX = -1
+        let cursorY = -1
+
+        if (Client.isInChat() || currentDungeonMap.cursorStoreXY) {
+            //Putting checks and xy loading here so that we can draw tooltips in other guis in the future
+            cursorX = Client.getMouseX();
+            cursorY = Client.getMouseY();
+        }
+
+        mapRenderer.draw(mapContext, currentDungeonMap, cursorX, cursorY)
 
         if (!Client.isInChat()) {
             currentDungeonMap.dropdownXY = undefined
         }
-
-        if (Client.isInChat() || currentDungeonMap.cursorStoreXY) {
-            //Putting checks and xy loading here so that we can draw tooltips in other guis in the future
-            let cursorX = Client.getMouseX();
-            let cursorY = Client.getMouseY();
-            currentDungeonMap.drawRoomTooltip(mapContext, cursorX, cursorY);
-        }
-
     }
 })
 
@@ -106,7 +110,7 @@ register("clicked", (x, y, button, isPress) => {
         let mapContext = renderContextManager.getRenderContextData(dungeonMapRenderContext)
 
         if (Client.isInChat()) {
-            currentDungeonMap.roomGuiClicked(mapContext, x, y, button, isPress);
+            mapRenderer.clicked(mapContext, currentDungeonMap, x, y, button, isPress)
         }
     }
 })

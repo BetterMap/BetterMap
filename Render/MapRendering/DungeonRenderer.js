@@ -1,0 +1,111 @@
+const BufferedImage = Java.type("java.awt.image.BufferedImage")
+
+import RoomRenderer from "./RoomRenderer"
+import DoorRenderer from "./DoorRenderer"
+import renderLibs from "../../../guimanager/renderLibs"
+import DungeonMap from "../../Components/DungeonMap"
+import RenderContext from "./../RenderContext"
+import { MESSAGE_PREFIX } from "../../Utils/Utils"
+import MapTab from "../MapTab"
+
+class DungeonRenderer extends MapTab {
+    constructor(mapRenderer) {
+        super("Dungeon", mapRenderer)
+
+        this.roomRenderer = new RoomRenderer();
+        this.doorRenderer = new DoorRenderer();
+    }
+
+    /**
+     * 
+     * @param {DungeonMap} dungeon 
+     * @param {RenderContext} renderContext 
+     * @returns 
+     */
+    createMapImage(dungeon, renderContext) {
+        let image = new BufferedImage(renderContext.getImageSize(dungeon.floor), renderContext.getImageSize(dungeon.floor), BufferedImage.TYPE_INT_ARGB);
+
+        let graphics = image.createGraphics();
+
+        //shift border + padding so less math involved
+        graphics.translate(renderContext.paddingLeft + renderContext.borderWidth, renderContext.paddingTop + renderContext.borderWidth);
+
+        //render all doors
+        //rendering before rooms that way rooms cover it as there is 1 specific situation where early dungeon will put a room in the middle of an L shape
+        for (let door of dungeon.doors.values()) {
+            this.doorRenderer.drawDoor(renderContext, graphics, door);
+        }
+        //render all rooms
+        for (let room of dungeon.roomsArr) {
+            this.roomRenderer.drawRoom(renderContext, graphics, room);
+        }
+
+        graphics.dispose();
+        return image;
+    }
+
+    /**
+     * @param {RenderContext} renderContext 
+     * @param {DungeonMap} dungeonMap 
+     * @param {Number} mouseX
+     * @param {Number} mouseY
+     */
+    draw(renderContext, dungeonMap, mouseX, mouseY) {
+        if (!renderContext) return
+
+        if (renderContext.image) {
+            let { x, y, size } = renderContext.getMapDimensions()
+
+            renderContext.image.draw(x + renderContext.borderWidth, y + renderContext.borderWidth, size, size - renderContext.borderWidth)
+
+            for (let room of dungeonMap.roomsArr) {
+                this.roomRenderer.drawExtras(renderContext, room, dungeonMap)
+            }
+
+            //render heads
+            renderLibs.scizzor(x + renderContext.borderWidth, y + renderContext.borderWidth, size - 2 * renderContext.borderWidth, size - renderContext.borderWidth)
+            for (let player of dungeonMap.players) {
+                if (dungeonMap.deadPlayers.has(player.username.toLowerCase())) continue
+                player.drawIcon(renderContext, dungeonMap)
+            }
+            renderLibs.stopScizzor()
+        }
+
+        if (!renderContext.image
+            || (renderContext.imageLastUpdate < dungeonMap.lastChanged)) {
+            //create image if not cached or cache outdated
+            if (renderContext.image) {
+                try {
+                    renderContext.image.destroy()
+                } catch (_) {
+                    //if u dont have ct 2.1.5+
+                    if (memoryLeakAlert && Date.now() - lastMemoryLeakAlertTime > 30000) {
+                        new TextComponent(MESSAGE_PREFIX + "Your version of chattriggers is under v2.1.5, on these versions there is a memory leak due to creating map images. Please update soon. &8[OK ILL GET TO IT]")
+                            .setHover("show_text", "Click to not show message untill next game launch")
+                            .setClick("run_command", "/bettermapdontannoymeaboutoldctversion")
+                            .chat()
+
+                        lastMemoryLeakAlertTime = Date.now()
+                    }
+                }
+            }
+            renderContext.image = new Image(this.createMapImage(dungeonMap, renderContext));
+
+            renderContext.imageLastUpdate = Date.now()
+        }
+
+        dungeonMap.drawRoomTooltip(renderContext, mouseX, mouseY)
+    }
+
+}
+
+export default DungeonRenderer
+
+let memoryLeakAlert = true
+let lastMemoryLeakAlertTime = 0
+
+register("command", () => {
+    ChatLib.chat(MESSAGE_PREFIX + "Ok! You wont get this alert until next game launch.")
+
+    memoryLeakAlert = false
+}).setName("bettermapdontannoymeaboutoldctversion")

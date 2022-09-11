@@ -1,148 +1,134 @@
-const BufferedImage = Java.type("java.awt.image.BufferedImage")
-
-import { m } from "../../mappings/mappings"
-
-import RoomRenderer from "./RoomRenderer"
-import DoorRenderer from "./DoorRenderer"
 import renderLibs from "../../guimanager/renderLibs"
 import DungeonMap from "../Components/DungeonMap"
-import RenderContext from "./RenderContext"
-import { MESSAGE_PREFIX, renderLore } from "../Utils/Utils"
+import { renderLore } from "../Utils/Utils"
+import BossMapRenderer from "./BossMapRendering/BossMapRenderer"
+import DungeonRenderer from "./MapRendering/DungeonRenderer"
+import MapTab from "./MapTab"
+import ScoreMapRenderer from "./ScoreRendering/ScoreMapRenderer"
 
 class MapRenderer {
     constructor() {
-        this.roomRenderer = new RoomRenderer();
-        this.doorRenderer = new DoorRenderer();
-    }
-
-    /**
-     * 
-     * @param {DungeonMap} dungeon 
-     * @param {RenderContext} renderContext 
-     * @returns 
-     */
-    createMapImage(dungeon, renderContext) {
-        let image = new BufferedImage(renderContext.getImageSize(dungeon.floor), renderContext.getImageSize(dungeon.floor), BufferedImage.TYPE_INT_ARGB);
-
-        let graphics = image.createGraphics();
-
-        //shift border + padding so less math involved
-        graphics.translate(renderContext.paddingLeft + renderContext.borderWidth, renderContext.paddingTop + renderContext.borderWidth);
-
-        //render all doors
-        //rendering before rooms that way rooms cover it as there is 1 specific situation where early dungeon will put a room in the middle of an L shape
-        for (let door of dungeon.doors.values()) {
-            this.doorRenderer.drawDoor(renderContext, graphics, door);
-        }
-        //render all rooms
-        for (let room of dungeon.roomsArr) {
-            this.roomRenderer.drawRoom(renderContext, graphics, room);
-        }
-
-        graphics.dispose();
-        return image;
+        /**@type {Array<MapTab>} */
+        this.tabs = [new DungeonRenderer(this), new BossMapRenderer(this), new ScoreMapRenderer(this)]
+        this.selectedTabIndex = 0
     }
 
     /**
      * @param {RenderContext} renderContext 
      * @param {DungeonMap} dungeonMap 
+     * @param {Number} mouseX
+     * @param {Number} mouseY
      */
-    draw(renderContext, dungeonMap) {
+    draw(renderContext, dungeonMap, mouseX, mouseY) {
         if (!renderContext) return
 
-        if (renderContext.image) {
-            let { x, y, size } = renderContext.getMapDimensions()
+        let { x, y, size } = renderContext.getMapDimensions()
 
-            Renderer.drawRect(Renderer.color(0, 0, 0, 100), x, y, size, size)//background
+        let tabXOff = 0
+        let tabI = 0
+        for (let tab of this.tabs) {
+            let tabW = Renderer.getStringWidth(tab.tabName) / 2 * size / 100 * 1.5
+            let tabH = tab.getRenderHeight(renderContext, dungeonMap) * 5 * size / 100 * 1.5
+            let maxTabH = 5 * size / 100 * 1.5
 
-            renderContext.image.draw(x + renderContext.borderWidth, y + renderContext.borderWidth, size, size)
+            renderLibs.scizzorFast(x + tabXOff, y - tabH, tabW, tabH)
 
-            for (let room of dungeonMap.roomsArr) {
-                this.roomRenderer.drawExtras(renderContext, room, dungeonMap)
-            }
+            Renderer.drawRect(Renderer.color(0, 0, 0, 100), x + tabXOff, y - maxTabH, tabW, maxTabH)//background
+            Renderer.drawRect(Renderer.color(0, 0, 0, 255), x + tabXOff, y - tabH, tabW, renderContext.borderWidth)//background
+            Renderer.drawRect(Renderer.color(0, 0, 0, 255), x + tabXOff, y - maxTabH, renderContext.borderWidth, maxTabH)//background
+            Renderer.drawRect(Renderer.color(0, 0, 0, 255), x + tabXOff + tabW - renderContext.borderWidth, y - maxTabH, renderContext.borderWidth, maxTabH)//background
 
-            Renderer.drawRect(Renderer.color(0, 0, 0), x, y, size, renderContext.borderWidth) //border
-            Renderer.drawRect(Renderer.color(0, 0, 0), x, y, renderContext.borderWidth, size)
-            Renderer.drawRect(Renderer.color(0, 0, 0), x + size - renderContext.borderWidth, y, renderContext.borderWidth, size)
+            let hovered = (mouseX >= x + tabXOff && mouseX <= x + tabXOff + tabW
+                && mouseY >= y - maxTabH && mouseY <= y)
 
-            //dont render bottom line if scoreinfo rendering
-            //Renderer.drawRect(Renderer.color(0, 0, 0), x, y + size - this.borderWidth, size, this.borderWidth)
+            let textScale = size / 250 * 1.5
+            renderLibs.drawStringCentered("&0" + tab.tabName, x + tabXOff + tabW / 2 + textScale, y - maxTabH + size / 100 * 1.5, textScale)
+            renderLibs.drawStringCentered("&0" + tab.tabName, x + tabXOff + tabW / 2 - textScale, y - maxTabH + size / 100 * 1.5, textScale)
+            renderLibs.drawStringCentered("&0" + tab.tabName, x + tabXOff + tabW / 2, y - maxTabH + size / 100 * 2 + textScale, textScale)
+            renderLibs.drawStringCentered("&0" + tab.tabName, x + tabXOff + tabW / 2, y - maxTabH + size / 100 * 2 - textScale, textScale)
+            renderLibs.drawStringCentered((hovered || tabI === this.selectedTabIndex ? "&f" : "&7") + tab.tabName, x + tabXOff + tabW / 2, y - maxTabH + size / 100 * 1.5, textScale)
 
-            //render heads
-            renderLibs.scizzor(x + renderContext.borderWidth, y + renderContext.borderWidth, size - 2 * renderContext.borderWidth, size - renderContext.borderWidth)
-            for (let player of dungeonMap.players) {
-                if (dungeonMap.deadPlayers.has(player.username.toLowerCase())) continue
-                player.drawIcon(renderContext, dungeonMap)
-            }
             renderLibs.stopScizzor()
-
-            //score info under map
-            //TODO: actually change based on the setting
-
-            let scoreInfoHeight = 10 * size / 100
-            Renderer.drawRect(Renderer.color(0, 0, 0, 150), x, y + size, size, scoreInfoHeight)
-
-            let scoreInfo = dungeonMap.getScore()
-            renderLibs.drawStringCenteredFull(scoreInfo.total, x + size / 4, y + size + scoreInfoHeight / 2, size / 100)
-
-            renderLibs.drawStringCenteredFull(scoreInfo.mimic.toString(), x + size / 4 * 3, y + size + scoreInfoHeight / 2, size / 100)
-
-
-            Renderer.drawRect(Renderer.color(0, 0, 0), x, y + size, renderContext.borderWidth, scoreInfoHeight) //border of score info
-            Renderer.drawRect(Renderer.color(0, 0, 0), x + size - renderContext.borderWidth, y + size, renderContext.borderWidth, scoreInfoHeight)
-            Renderer.drawRect(Renderer.color(0, 0, 0), x, y + size + scoreInfoHeight, size, renderContext.borderWidth)
-
-            if (renderContext.currentRoomInfo !== "none") {
-                let roomInfo = dungeonMap.getPlayerRoom()?.getLore()
-
-                if (roomInfo) {
-                    let rx
-                    let maxLoreWidth = roomInfo.reduce((cum, c) => Math.max(cum, Renderer.getStringWidth(ChatLib.removeFormatting(c))), 0)
-
-                    if (renderContext.currentRoomInfo === "left") {
-                        rx = x - maxLoreWidth - 8
-                    } else {
-                        rx = x + size
-                    }
-
-                    renderLore(rx - 12 + 4, y + 12 + 4, roomInfo)
-                }
-            }
+            tabXOff += tabW + size / 100 * 1.5
+            tabI++
         }
 
-        if (!renderContext.image
-            || (renderContext.imageLastUpdate < dungeonMap.lastChanged)) {
-            //create image if not cached or cache outdated
-            if (renderContext.image) {
-                try {
-                    renderContext.image.destroy()
-                } catch (_) {
-                    //if u dont have ct 2.1.5+
-                    if (memoryLeakAlert && Date.now() - lastMemoryLeakAlertTime > 30000) {
-                        new TextComponent(MESSAGE_PREFIX + "Your version of chattriggers is under v2.1.5, on these versions there is a memory leak due to creating map images. Please update soon. &8[OK ILL GET TO IT]")
-                            .setHover("show_text", "Click to not show message untill next game launch")
-                            .setClick("run_command", "/bettermapdontannoymeaboutoldctversion")
-                            .chat()
+        Renderer.drawRect(Renderer.color(0, 0, 0, 100), x, y, size, size)//background
 
-                        lastMemoryLeakAlertTime = Date.now()
-                    }
+        this.tabs[this.selectedTabIndex].draw(renderContext, dungeonMap, mouseX, mouseY)
+
+        Renderer.drawRect(Renderer.color(0, 0, 0), x, y, size, renderContext.borderWidth) //border
+        Renderer.drawRect(Renderer.color(0, 0, 0), x, y, renderContext.borderWidth, size)
+        Renderer.drawRect(Renderer.color(0, 0, 0), x + size - renderContext.borderWidth, y, renderContext.borderWidth, size)
+
+        //dont render bottom line if scoreinfo rendering
+        //Renderer.drawRect(Renderer.color(0, 0, 0), x, y + size - this.borderWidth, size, this.borderWidth)
+
+        //score info under map
+        //TODO: actually change based on the setting
+
+        let scoreInfoHeight = 10 * size / 100
+        Renderer.drawRect(Renderer.color(0, 0, 0, 150), x, y + size, size, scoreInfoHeight)
+
+        let scoreInfo = dungeonMap.getScore()
+        renderLibs.drawStringCenteredFull(scoreInfo.total, x + size / 4, y + size + scoreInfoHeight / 2, size / 100)
+
+        renderLibs.drawStringCenteredFull(scoreInfo.mimic.toString(), x + size / 4 * 3, y + size + scoreInfoHeight / 2, size / 100)
+
+
+        Renderer.drawRect(Renderer.color(0, 0, 0), x, y + size, renderContext.borderWidth, scoreInfoHeight) //border of score info
+        Renderer.drawRect(Renderer.color(0, 0, 0), x + size - renderContext.borderWidth, y + size, renderContext.borderWidth, scoreInfoHeight)
+        Renderer.drawRect(Renderer.color(0, 0, 0), x, y + size + scoreInfoHeight, size, renderContext.borderWidth)
+
+        if (renderContext.currentRoomInfo !== "none") {
+            let roomInfo = dungeonMap.getPlayerRoom()?.getLore()
+
+            if (roomInfo) {
+                let rx
+                let maxLoreWidth = roomInfo.reduce((cum, c) => Math.max(cum, Renderer.getStringWidth(ChatLib.removeFormatting(c))), 0)
+
+                if (renderContext.currentRoomInfo === "left") {
+                    rx = x - maxLoreWidth - 8
+                } else {
+                    rx = x + size
                 }
-            }
-            renderContext.image = new Image(this.createMapImage(dungeonMap, renderContext));
 
-            renderContext.imageLastUpdate = Date.now()
+                renderLore(rx - 12 + 4, y + 12 + 4, roomInfo)
+            }
         }
     }
 
+    /**
+     * @param {RenderContext} renderContext 
+     * @param {DungeonMap} dungeonMap 
+     * @param {Number} mouseX
+     * @param {Number} mouseY
+     * @param {Number} button The mouse button clicked
+     * @param {Boolean} isPress Wether its a press or a release
+     */
+    clicked(renderContext, dungeonMap, mouseX, mouseY, button, isPress) {
+        dungeonMap.roomGuiClicked(renderContext, mouseX, mouseY, button, isPress);
+
+        if (!isPress) return
+
+        let { x, y, size } = renderContext.getMapDimensions()
+
+        let tabXOff = 0
+        let tabI = 0
+        for (let tab of this.tabs) {
+            let tabW = Renderer.getStringWidth(tab.tabName) / 2 * size / 100 * 1.5
+            let maxTabH = 5 * size / 100 * 1.5
+
+            if (mouseX >= x + tabXOff && mouseX <= x + tabXOff + tabW
+                && mouseY >= y - maxTabH && mouseY <= y
+                && tab.shouldShowTab(renderContext, dungeonMap)) {
+                this.selectedTabIndex = tabI
+            }
+
+            tabXOff += tabW + size / 100 * 1.5
+            tabI++
+        }
+    }
 }
 
 export default MapRenderer
-
-let memoryLeakAlert = true
-let lastMemoryLeakAlertTime = 0
-
-register("command", () => {
-    ChatLib.chat(MESSAGE_PREFIX + "Ok! You wont get this alert until next game launch.")
-
-    memoryLeakAlert = false
-}).setName("bettermapdontannoymeaboutoldctversion")

@@ -34,9 +34,7 @@ class SettingGui {
         this.gui.setOpenCommand("bettermap")
 
         this.gui.element.addChild(new SoopyGuiElement().addEvent(new SoopyRenderEvent().setHandler((mouseX, mouseY) => {
-            mapRenderer.draw(renderContext, fakeDungeon)
-
-            fakeDungeon.drawRoomTooltip(renderContext, mouseX, mouseY)
+            mapRenderer.draw(renderContext, fakeDungeon, mouseX, mouseY)
         })))
 
         this.mainSidebar = new SoopyBoxElement().setLocation(0, 0, 0.5, 1)

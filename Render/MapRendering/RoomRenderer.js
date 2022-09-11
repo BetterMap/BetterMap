@@ -1,7 +1,7 @@
 
-import renderLibs from "../../guimanager/renderLibs.js"
-import Room from "../Components/Room.js"
-import RenderContext from "./RenderContext.js"
+import renderLibs from "../../../guimanager/renderLibs.js"
+import Room from "../../Components/Room.js"
+import RenderContext from "./../RenderContext.js"
 
 class RoomRenderer {
 

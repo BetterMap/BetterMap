@@ -75,19 +75,7 @@ class DungeonRenderer extends MapTab {
             || (renderContext.imageLastUpdate < dungeonMap.lastChanged)) {
             //create image if not cached or cache outdated
             if (renderContext.image) {
-                try {
-                    renderContext.image.destroy()
-                } catch (_) {
-                    //if u dont have ct 2.1.5+
-                    if (memoryLeakAlert && Date.now() - lastMemoryLeakAlertTime > 30000) {
-                        new TextComponent(MESSAGE_PREFIX + "Your version of chattriggers is under v2.1.5, on these versions there is a memory leak due to creating map images. Please update soon. &8[OK ILL GET TO IT]")
-                            .setHover("show_text", "Click to not show message untill next game launch")
-                            .setClick("run_command", "/bettermapdontannoymeaboutoldctversion")
-                            .chat()
-
-                        lastMemoryLeakAlertTime = Date.now()
-                    }
-                }
+                renderContext.image.destroy()
             }
             renderContext.image = new Image(this.createMapImage(dungeonMap, renderContext));
 
@@ -100,12 +88,3 @@ class DungeonRenderer extends MapTab {
 }
 
 export default DungeonRenderer
-
-let memoryLeakAlert = true
-let lastMemoryLeakAlertTime = 0
-
-register("command", () => {
-    ChatLib.chat(MESSAGE_PREFIX + "Ok! You wont get this alert until next game launch.")
-
-    memoryLeakAlert = false
-}).setName("bettermapdontannoymeaboutoldctversion")

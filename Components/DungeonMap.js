@@ -1318,7 +1318,6 @@ class DungeonMap {
 
     getBlockIdAt(x, y, z) {
         if (this.setAirLocs?.has(x + "," + z)) {
-            ChatLib.chat("asdikgjhkldfjhg")
             return 0
         }
 

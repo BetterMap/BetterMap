@@ -30,7 +30,7 @@ class ScoreMapRenderer extends MapTab {
 
         GlStateManager.func_179094_E(); //GlStateManager.push()
         Renderer.translate(x + renderContext.borderWidth, y + renderContext.borderWidth, 1)
-        GlStateManager.func_179152_a(size / 128 - renderContext.borderWidth, size / 128 - renderContext.borderWidth, 1); //GlStateManager.scale()
+        GlStateManager.func_179152_a((size - 2 * renderContext.borderWidth) / 128, (size - 2 * renderContext.borderWidth) / 128, 1); //GlStateManager.scale()
         GlStateManager.func_179131_c(1.0, 1.0, 1.0, 1.0); // GlStateManager.color()
         Client.getMinecraft().field_71460_t.func_147701_i().func_148250_a(mapData, true);
         GlStateManager.func_179121_F(); //GlStateManager.pop()

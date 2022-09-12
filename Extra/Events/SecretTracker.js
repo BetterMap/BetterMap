@@ -27,7 +27,7 @@ register("soundPlay", (pos, name, volume, pitch, categoryName, event) => {
         EventManager.triggerEvent(EventManager.EVENT_SUPERBOOM, loc[0], loc[1], loc[2])
     }
     if (name === "mob.bat.death") {
-        //TODO: detect bat spawn location thru entity spawn world event
+        // TODO: detect bat spawn location thru entity spawn world event
         EventManager.triggerEvent(EventManager.EVENT_SECRETCOLLECT, "bat", loc[0], loc[1], loc[2])
     }
     if (nameSplitted[0] === "dig") { //mining block
@@ -76,6 +76,6 @@ register("playerInteract", (action, position, event) => {
 register("packetReceived", (packet) => {
     let pos = this.tempItemIdLocs.get(packet[m.getCollectedItemEntityID]())
     if (!pos) return
-    //TODO: only trigger on secret iten
+    // TODO: only trigger on secret iten
     EventManager.triggerEvent(EventManager.EVENT_SECRETCOLLECT, "item", pos[0], pos[1], pos[2])
 }).setPacketClasses([net.minecraft.network.play.server.S0DPacketCollectItem])

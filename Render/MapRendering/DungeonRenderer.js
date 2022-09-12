@@ -26,17 +26,18 @@ class DungeonRenderer extends MapTab {
 
         let graphics = image.createGraphics();
 
-        //shift border + padding so less math involved
+        // Shift border + padding so less math involved
         graphics.translate(renderContext.paddingLeft + renderContext.borderWidth, renderContext.paddingTop + renderContext.borderWidth);
 
-        //render all doors
-        //rendering before rooms that way rooms cover it as there is 1 specific situation where early dungeon will put a room in the middle of an L shape
+        // Render all doors
+        // Rendering before rooms that way rooms cover it as there is 1 specific situation where early dungeon will put a room in the middle of an L shape
         for (let door of dungeon.doors.values()) {
             this.doorRenderer.drawDoor(renderContext, graphics, door);
         }
-        //render all rooms
+        // Render all rooms and draw checkmarks
         for (let room of dungeon.roomsArr) {
             this.roomRenderer.drawRoom(renderContext, graphics, room);
+            this.roomRenderer.drawCheckmark(renderContext, graphics, room);
         }
 
         graphics.dispose();
@@ -61,7 +62,7 @@ class DungeonRenderer extends MapTab {
                 this.roomRenderer.drawExtras(renderContext, room, dungeonMap)
             }
 
-            //render heads
+            // Render heads
             renderLibs.scizzor(x + renderContext.borderWidth, y + renderContext.borderWidth, size - 2 * renderContext.borderWidth, size - renderContext.borderWidth)
             for (let player of dungeonMap.players) {
                 if (dungeonMap.deadPlayers.has(player.username.toLowerCase())) continue
@@ -72,10 +73,8 @@ class DungeonRenderer extends MapTab {
 
         if (!renderContext.image
             || (renderContext.imageLastUpdate < dungeonMap.lastChanged)) {
-            //create image if not cached or cache outdated
-            if (renderContext.image) {
-                renderContext.image.destroy()
-            }
+            // Create image if not cached or cache outdated
+            if (renderContext.image) renderContext.image.destroy()
             renderContext.image = new Image(this.createMapImage(dungeonMap, renderContext));
 
             renderContext.imageLastUpdate = Date.now()

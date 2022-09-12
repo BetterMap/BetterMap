@@ -42,15 +42,15 @@ class MapTab {
 
             if (!this.lastShouldShow && newShow) {
 
-                //Tab now avalible
-                //Switch to this tab
+                // Tab now avalible
+                // Switch to this tab
 
                 this.mapRenderer.selectedTabIndex = this.mapRenderer.tabs.findIndex(a => a === this)
 
             } else if (this.lastShouldShow && !newShow) {
 
-                //Tab no longer avalible
-                //Switch to tab index before first disabled tab
+                // Tab no longer avalible
+                // Switch to tab index before first disabled tab
 
                 this.mapRenderer.selectedTabIndex = Math.max(0, this.mapRenderer.tabs.findIndex(a => !a.shouldShowTab(renderContext, dungeonMap)) - 1)
             }

@@ -35,7 +35,7 @@ class BossMapRenderer extends MapTab {
             this.currentBossImage.image.draw(x + renderContext.borderWidth, y + renderContext.borderWidth, size - renderContext.borderWidth * 2, size - renderContext.borderWidth)
         }
 
-        //render heads
+        // Render heads
         renderLibs.scizzor(x + renderContext.borderWidth, y + renderContext.borderWidth, size - 2 * renderContext.borderWidth, size - renderContext.borderWidth)
         for (let player of dungeonMap.players) {
             if (dungeonMap.deadPlayers.has(player.username.toLowerCase())) continue

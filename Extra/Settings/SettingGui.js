@@ -71,7 +71,7 @@ class SettingGui {
         this.howToUse.addChild(new SoopyTextElement().setText("§0How To Use").setMaxTextScale(3).setLocation(0.1, 0.05, 0.8, 0.1))
         this.howToUse.addChild(new SoopyMarkdownElement().setText(FileLib.read("BetterMap", "Extra/Settings/HowToUse.md")).setLocation(0.1, 0.2, 0.8, 0))
 
-        //TITLE
+        // TITLE
         this.addSidebarElement(new SoopyTextElement().setText("§0BetterMap Settings").setMaxTextScale(3))
 
         this.addDropdown("Map Style", {
@@ -81,7 +81,7 @@ class SettingGui {
         }, "mapStyle", "legalmap")
 
 
-        //location edit gui
+        // Location edit gui
         let editLocationGui = new LocationGui(this.defaultSettings.posX ?? 0, this.defaultSettings.posY ?? 0, (this.defaultSettings.size ?? 150) / 100, () => this.gui.open()).onChange(val => {
             this.changed("posX", val.x)
             this.changed("posY", val.y)
@@ -135,9 +135,9 @@ class SettingGui {
 
         this.addToggle("Show dev info", "devInfo", this.defaultSettings.devInfo)
 
-        //END OF SETTINGS
+        // END OF SETTINGS
 
-        //ANIMATIONS!!!!
+        // ANIMATIONS!!!!
         this.lastOpen = 0
         this.mapRenderX = new SoopyNumber(Renderer.screen.getWidth())
         this.gui.element.addEvent(new SoopyOpenGuiEvent().setHandler(() => {
@@ -228,10 +228,10 @@ class SettingGui {
     updateChangelogtext() {
         this.changelog.clearChildren()
 
-        //title
+        // Title
         this.changelog.addChild(new SoopyTextElement().setText("§0BetterMap Changelog").setMaxTextScale(3).setLocation(0.1, 0.05, 0.8, 0.1))
 
-        //back button
+        // Back button
 
         this.changelog.addChild(new TextWithArrow().setText("§0Settings").setDirectionRight(false).setLocation(0.025, 0, 0.3, 0.05).addEvent(new SoopyMouseClickEvent().setHandler(() => {
             this.howToUse.location.location.x.set(-1, 250)

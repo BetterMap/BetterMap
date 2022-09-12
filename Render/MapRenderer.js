@@ -34,11 +34,11 @@ class MapRenderer {
         Renderer.drawRect(Renderer.color(0, 0, 0), x, y, renderContext.borderWidth, size)
         Renderer.drawRect(Renderer.color(0, 0, 0), x + size - renderContext.borderWidth, y, renderContext.borderWidth, size)
 
-        //dont render bottom line if scoreinfo rendering
-        //Renderer.drawRect(Renderer.color(0, 0, 0), x, y + size - this.borderWidth, size, this.borderWidth)
+        // Dont render bottom line if scoreinfo rendering
+        // Renderer.drawRect(Renderer.color(0, 0, 0), x, y + size - this.borderWidth, size, this.borderWidth)
 
-        //score info under map
-        //TODO: actually change based on the setting
+        // Score info under map
+        // TODO: actually change based on the setting
 
         let scoreInfoHeight = 10 * size / 100
         Renderer.drawRect(Renderer.color(0, 0, 0, 150), x, y + size, size, scoreInfoHeight)

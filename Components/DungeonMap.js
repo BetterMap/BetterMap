@@ -72,17 +72,17 @@ class DungeonMap {
         this.cursorStoreXY = undefined
         this.dropdownXY = undefined
 
-        //load from world datra
+        // Load from world datra
 
         this.lastRoomId = undefined
         this.lastChange = 0
         this.roomXY = "0,0"
         this.lastXY = undefined
 
-        //simulate changing bloccks to air to fix green room not having air border around it
+        // Simulate changing bloccks to air to fix green room not having air border around it
         this.setAirLocs = new Set()
 
-        //rooms that were already identified
+        // Rooms that were already identified
         this.identifiedRoomIds = new Set();
         this.identifiedPuzzleCount = 0;
 
@@ -217,7 +217,7 @@ class DungeonMap {
             if (!p[m.getDisplayName.NetworkPlayerInfo]()) continue
             let line = p[m.getDisplayName.NetworkPlayerInfo]()[m.getUnformattedText]().trim().replace("♲ ", "") //TODO: Remove bingo symbol and support yt/admin rank
             if (line.endsWith(")") && line.includes(" (") && line.split(" (").length === 2 && line.split(" (")[0].split(" ").length === 1 && line.split(" (")[1].length > 3) {
-                //this is a tab list line for a player
+                // This is a tab list line for a player
                 let name = line.split(" ")[0]
 
                 if (name === Player.getName()) { //move the current player to end of list
@@ -401,7 +401,7 @@ class DungeonMap {
                 let pixelColor = bytes[(mapX) + (mapY) * 128]
                 if (pixelColor === 0) continue
                 if (r1x1sM.has(pixelColor)) {
-                    //special room at that location
+                    // Special room at that location
                     let position = new Position(0, 0, this)
                     position.mapX = mapX
                     position.mapY = mapY
@@ -425,14 +425,14 @@ class DungeonMap {
                     }
                 }
                 if (pixelColor === 63) {
-                    //normal room at that location
+                    // Normal room at that location
                     let position = new Position(0, 0, this)
                     position.mapX = mapX
                     position.mapY = mapY
                     let currRoom = this.rooms.get(x + "," + y)
 
-                    //current rooms to the left and above, incase a merge needs to happen
-                    //will be undefined if no merge needs to happen
+                    // Current rooms to the left and above, incase a merge needs to happen
+                    // Will be undefined if no merge needs to happen
                     let currRoomLeft = bytes[(mapX - 1) + (mapY) * 128] === 63 ? this.rooms.get((x - 1) + "," + y) : undefined
                     let currRoomTop = bytes[(mapX) + (mapY - 1) * 128] === 63 ? this.rooms.get(x + "," + (y - 1)) : undefined
                     let currRoomTopRight = bytes[(mapX + this.fullRoomScaleMap - 1) + (mapY) * 128] === 63 && bytes[(mapX + this.fullRoomScaleMap) + (mapY - 1) * 128] === 63 ? this.rooms.get((x + 1) + "," + (y - 1)) : undefined
@@ -488,9 +488,9 @@ class DungeonMap {
                     }
                 }
 
-                //check for checkmark
+                // Check for checkmark
 
-                //White tick
+                // White tick
                 if (bytes[(mapX + this.widthRoomImageMap / 2) + (mapY + this.widthRoomImageMap / 2) * 128] === 34) {
                     let position = new Position(0, 0, this)
                     position.mapX = mapX
@@ -501,7 +501,7 @@ class DungeonMap {
                         this.markChanged()
                     }
                 }
-                //Green tick
+                // Green tick
                 if (bytes[(mapX + this.widthRoomImageMap / 2) + (mapY + this.widthRoomImageMap / 2) * 128] === 30) {
                     let position = new Position(0, 0, this)
                     position.mapX = mapX
@@ -513,7 +513,7 @@ class DungeonMap {
                         this.markChanged()
                     }
                 }
-                //red X
+                // Red X
                 if (bytes[(mapX + this.widthRoomImageMap / 2) + (mapY + this.widthRoomImageMap / 2) * 128] === 18) {
                     let position = new Position(0, 0, this)
                     position.mapX = mapX
@@ -525,7 +525,7 @@ class DungeonMap {
                     }
                 }
 
-                //Check for doors
+                // Check for doors
 
                 if (bytes[(mapX + this.widthRoomImageMap / 2) + (mapY - 1) * 128] !== 0 //door above room
                     && bytes[(mapX) + (mapY - 1) * 128] === 0) {
@@ -548,13 +548,13 @@ class DungeonMap {
                     position.worldY = Math.round(position.worldY)
 
                     if (!this.doors.get(position.arrayX + "," + position.arrayY)) {
-                        //door not in map, add new door
+                        // Door not in map, add new door
                         let door = new Door(type, position, false)
                         this.doors.set(position.arrayX + "," + position.arrayY, door)
                         this.addDoorToAdjacentRooms(door);
 
                     } else {
-                        //door already there
+                        // Door already there
                         if (this.doors.get(position.arrayX + "," + position.arrayY).type !== type) {
                             this.doors.get(position.arrayX + "," + position.arrayY).type = type
                             this.markChanged()
@@ -583,13 +583,13 @@ class DungeonMap {
                     position.worldY = Math.round(position.worldY)
 
                     if (!this.doors.get(position.arrayX + "," + position.arrayY)) {
-                        //door not in map, add new door
+                        // Door not in map, add new door
                         let door = new Door(type, position, true)
                         this.doors.set(position.arrayX + "," + position.arrayY, door);
                         this.addDoorToAdjacentRooms(door);
 
                     } else {
-                        //door already there
+                        // Door already there
                         if (this.doors.get(position.arrayX + "," + position.arrayY).type !== type) {
                             this.doors.get(position.arrayX + "," + position.arrayY).type = type
                             this.markChanged()
@@ -657,7 +657,7 @@ class DungeonMap {
         let skill = 0;
         let bonus = 0;
 
-        //If floor is enterance the floor integer entered should be 0
+        // If floor is enterance the floor integer entered should be 0
         let requiredSecrets = getRequiredSecrets(parseInt(this.floor[this.floor.length - 1]) || 0, this.floor[0] === "M");
         let roomCompletion = getScoreboardInfo();
         let [secrets, crypts, deaths, unfinshedPuzzles, completedRoomsTab] = getTabListInfo();
@@ -667,29 +667,29 @@ class DungeonMap {
                 completedRooms++;
         }
 
-        //if map data is incomplete, it's worth using the higher number
+        // If map data is incomplete, it's worth using the higher number
         completedRooms = Math.max(completedRooms, completedRoomsTab);
 
-        //estimate total room count based of the cleared percentage and the tab info. If nothing is cleared, assume 36 rooms
+        // Estimate total room count based of the cleared percentage and the tab info. If nothing is cleared, assume 36 rooms
         totalRoomEstimate = roomCompletion ? Math.round(completedRoomsTab / roomCompletion * 100) : 36;
 
-        //exploration
+        // Exploration
         exploration += Math.min(40, ~~(secrets / requiredSecrets * 40));
         exploration += Math.min(60, ~~(completedRooms / totalRoomEstimate * 60));
 
-        //time
-        //NOPE
+        // Time
+        // NOPE
 
-        //skill
+        // Skill
         skill += ~~(completedRooms / totalRoomEstimate * 80) - unfinshedPuzzles * 10;
         skill -= deaths * 2;
         if (this.firstDeathHadSpirit) skill += 1
 
-        //cant physically drop below 20 score, no matter what
+        // Cant physically drop below 20 score, no matter what
         skill = Math.max(0, skill);
         skill += 20;
 
-        //bonus
+        // Bonus
         bonus += Math.min(5, crypts);
         if (this.floor >= 6 && this.mimicKilled)
             bonus += 2;
@@ -880,7 +880,7 @@ class DungeonMap {
         const borderPixels = 27 / 256 * size;
         if (cursorX < x + borderPixels || cursorY < y + borderPixels || cursorX > x + size - borderPixels || cursorY > y + size - borderPixels) return;
 
-        //Mouse somewhere on map
+        // Mouse somewhere on map
 
         let worldX = (((cursorX - x - context.borderWidth) / context.size * context.getImageSize(this.floor) - context.paddingLeft - context.roomSize / 2 - context.roomGap / 2) / context.blockSize + 0.5) * 32 - 200
         let worldY = (((cursorY - y - context.borderWidth) / context.size * context.getImageSize(this.floor) - context.paddingTop - context.roomSize / 2 - context.roomGap / 2) / context.blockSize + 0.5) * 32 - 200
@@ -935,7 +935,7 @@ class DungeonMap {
 
         if (cursorX < x || cursorY < y || cursorX > x + size || cursorY > y + size) return;
 
-        //Mouse somewhere on map
+        // Mouse somewhere on map
 
         let worldX = (((cursorX - x - context.borderWidth) / context.size * context.getImageSize(this.floor) - context.paddingLeft - context.roomSize / 2 - context.roomGap / 2) / context.blockSize + 0.5) * 32 - 200
         let worldY = (((cursorY - y - context.borderWidth) / context.size * context.getImageSize(this.floor) - context.paddingTop - context.roomSize / 2 - context.roomGap / 2) / context.blockSize + 0.5) * 32 - 200
@@ -991,7 +991,7 @@ class DungeonMap {
 
                 let rotation = roomWorldData.width > roomWorldData.height ? 0 : 1
 
-                //L shape rooms only rooms that 'need' rotation all others can be 0 -> horizontal or 1-> verticle
+                // L shape rooms only rooms that 'need' rotation all others can be 0 -> horizontal or 1-> verticle
 
                 if (this.getCurrentRoomData().shape === "L") rotation = roomWorldData.rotation
                 if (this.getCurrentRoomData().type === "spawn") {
@@ -1024,7 +1024,7 @@ class DungeonMap {
         if (this.lastXY !== x + "," + y) {
             this.lastXY = x + "," + y
 
-            //checking for doors on all sides of room
+            // Checking for doors on all sides of room
             if (this.getBlockAt(x + 16, 73, y) !== 0) {
                 this.setDoor(x + 16, y, 0, true)
             }
@@ -1185,7 +1185,7 @@ class DungeonMap {
 
         if (ishorizontal) {
             {
-                //add Room.UNKNOWN to the right if needed
+                // Add Room.UNKNOWN to the right if needed
 
                 let x2 = Math.floor((x + 15 + 8) / 32) * 32 - 8
                 let y2 = Math.floor((y + 8) / 32) * 32 - 8
@@ -1201,7 +1201,7 @@ class DungeonMap {
                 }
             }
             {
-                //add Room.UNKNOWN to the left if needed
+                // Add Room.UNKNOWN to the left if needed
 
                 let x2 = Math.floor((x - 15 + 8) / 32) * 32 - 8
                 let y2 = Math.floor((y + 8) / 32) * 32 - 8
@@ -1218,7 +1218,7 @@ class DungeonMap {
             }
         } else {
             {
-                //add Room.UNKNOWN to the top if needed
+                // Add Room.UNKNOWN to the top if needed
 
                 let x2 = Math.floor((x + 8) / 32) * 32 - 8
                 let y2 = Math.floor((y + 15 + 8) / 32) * 32 - 8
@@ -1234,7 +1234,7 @@ class DungeonMap {
                 }
             }
             {
-                //add Room.UNKNOWN to the bottom if needed
+                // Add Room.UNKNOWN to the bottom if needed
 
                 let x2 = Math.floor((x + 8) / 32) * 32 - 8
                 let y2 = Math.floor((y - 15 + 8) / 32) * 32 - 8

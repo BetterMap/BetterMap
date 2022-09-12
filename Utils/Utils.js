@@ -296,8 +296,8 @@ export function addNotation(type, value, joiner = "") {
     let returnVal = value;
     let notList = [];
     if (type === "shortScale") {
-        //notation type
-        //do notation stuff here
+        // Notation type
+        // Do notation stuff here
         notList = [
             " Thousand",
             " Million",

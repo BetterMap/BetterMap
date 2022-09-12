@@ -40,7 +40,7 @@ const registerForge = (e, priority = EventPriority.NORMAL, cb) => {
   const obj = Type.getType(java.lang.Object.class).internalName
 
   cw.visit(Opcodes.V1_8, Opcodes.ACC_PUBLIC, name, null, obj, null)
-  //cw.visitInnerClass("net/minecraftforge/event/entity/player/PlayerEvent$BreakSpeed","net/minecraftforge/event/entity/player/PlayerEvent","BreakSpeed",ACC_PUBLIC+ACC_STATIC);
+  // Cw.visitInnerClass("net/minecraftforge/event/entity/player/PlayerEvent$BreakSpeed","net/minecraftforge/event/entity/player/PlayerEvent","BreakSpeed",ACC_PUBLIC+ACC_STATIC);
   {
     cw.visitField(Opcodes.ACC_PRIVATE + Opcodes.ACC_FINAL, "callback", L(consumer), L(consumer + "<" + L(event) + ">"), null).visitEnd()
   }

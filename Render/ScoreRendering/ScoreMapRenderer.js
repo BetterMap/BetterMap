@@ -24,7 +24,7 @@ class ScoreMapRenderer extends MapTab {
 
         if (!mapData) return
 
-        //Render map directly from hotbar
+        // Render map directly from hotbar
 
         let { x, y, size } = renderContext.getMapDimensions()
 

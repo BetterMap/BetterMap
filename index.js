@@ -90,7 +90,7 @@ register("renderOverlay", () => {
         let cursorY = -1
 
         if (Client.isInChat() || currentDungeonMap.cursorStoreXY) {
-            //Putting checks and xy loading here so that we can draw tooltips in other guis in the future
+            // Putting checks and xy loading here so that we can draw tooltips in other guis in the future
             cursorX = Client.getMouseX();
             cursorY = Client.getMouseY();
         }

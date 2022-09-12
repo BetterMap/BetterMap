@@ -32,7 +32,6 @@ register("step", () => {
     if (DataLoader.isInDungeon && DataLoader.dungeonFloor || currentDungeonMap?.getCurrentRoomId() === "30,225") {
         if (!currentDungeonMap) { //entered dungeon, create map data
             currentDungeonMap = new DungeonMap(DataLoader.dungeonFloor, deadPlayers)
-            mapRenderer = new MapRenderer();
             global.betterMapDungeonMap = currentDungeonMap
         }
     } else {

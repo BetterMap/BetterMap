@@ -1,4 +1,4 @@
-if (!global.networkUtilsThingSoopy) {
+if (!global.networkUtilsThingSoopy) { //If soopyv2 is running it should just use the functions already loaded
 
     let jURL = Java.type("java.net.URL")
     let jStandardCharsets = Java.type("java.nio.charset.StandardCharsets")

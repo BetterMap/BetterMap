@@ -23,11 +23,11 @@ class RenderContextManager {
         return this.renderContexts[contextId];
     }
 
-
-    getCurrentRenderContext() {
-        return this.getRenderContextData(this.currentRenderContextId)
-    }
-
+    /**
+     * Creates a render context with the given settings
+     * @param {*} settings 
+     * @returns 
+     */
     createRenderContext(settings) {
         this.lastContext++;
         let contextId = this.lastContext;

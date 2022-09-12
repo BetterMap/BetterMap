@@ -20,14 +20,14 @@ class MapTab {
      * @param {Number} mouseX
      * @param {Number} mouseY
      */
-    draw(renderContext, dungeonMap, mouseX, mouseY) { }
+    draw(renderContext, dungeonMap, mouseX, mouseY) { } //This function should be overridden all the time, but adding it for tab completion
 
     /**
      * @param {RenderContext} renderContext 
      * @param {DungeonMap} dungeonMap 
      */
     shouldShowTab(renderContext, dungeonMap) {
-        return true
+        return true //Default to showing tab always unless overridden
     }
 
     /**
@@ -41,12 +41,24 @@ class MapTab {
             let newShow = this.shouldShowTab(renderContext, dungeonMap)
 
             if (!this.lastShouldShow && newShow) {
+
+                //Tab now avalible
+                //Switch to this tab
+
                 this.mapRenderer.selectedTabIndex = this.mapRenderer.tabs.findIndex(a => a === this)
+
+            } else if (this.lastShouldShow && !newShow) {
+
+                //Tab no longer avalible
+                //Switch to tab index before first disabled tab
+
+                this.mapRenderer.selectedTabIndex = Math.max(0, this.mapRenderer.tabs.findIndex(a => !a.shouldShowTab(renderContext, dungeonMap)) - 1)
             }
 
             this.lastShouldShow = newShow
 
             this.renderHeight.set(this.lastShouldShow ? 1 : 0, 500)
+
             this.lastUpdatedShouldShow = Date.now()
         }
 

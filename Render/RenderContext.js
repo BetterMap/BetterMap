@@ -94,9 +94,9 @@ class RenderContext {
             case "legalmap":
                 return LegalMapColorMap
             case "hypixelmap":
-                return SoopyMapColorMap
+                return HypixelColorMap
             case "teniosmap":
-                return SoopyMapColorMap //TODO: this color map
+                return HypixelColorMap //TODO: this color map
         }
     }
 
@@ -137,15 +137,25 @@ class RenderContext {
         }
     }
 
+    /**
+     * Gets the images to render ontop of the map, eg checkmarks
+     * @param {String} type 
+     * @returns {Image} The image to render
+     */
     getImage(type) {
         switch (this.tickStyle) {
             case "default":
                 return LegalMapTicks.get(type)
             case "hypixel":
-                return HypixelTicks.get(type)
+                return HypixelTicksOld.get(type)
         }
     }
 
+    /**
+     * Gets the width and height of different icons
+     * @param {String} type 
+     * @returns {[Number, Number]}
+     */
     getIconSize(type) {
         switch (this.tickStyle) {
             case "default":
@@ -209,6 +219,10 @@ class RenderContext {
         }
     }
 
+    /**
+     * Mark this image as needing a re-render
+     * Will be re-rendered on the next game frame
+     */
     markReRender() {
         this.imageLastUpdate = 0
     }
@@ -217,6 +231,9 @@ class RenderContext {
         this.onDestroys.push(callback)
     }
 
+    /**
+     * Prepairs this render context for garbage collection, eg clearing cached map image from memory
+     */
     destroy() {
         this.image?.getTexture()?.[m.deleteGlTexture]()
         this.image = undefined
@@ -224,6 +241,10 @@ class RenderContext {
         this.onDestroys.forEach(fun => fun())
     }
 
+    /**
+     * A shortcut for getting the context's settings commonly used for rendering
+     * @returns {{x:Number, y:Number, size:Number, headScale:Number}}
+     */
     getMapDimensions() {
         return {
             x: this.posX,
@@ -245,23 +266,23 @@ let roomHash = {
     BLOOD: 5,
     UNKNOWN: 6,
     TRAP: 7,
-    BLACK: 8, //only for rendering wither doors
+    BLACK: 8, //for rendering wither doors
     NORMAL_CONNECTION: 9 //for rendering connections between normal rooms
 }
 
 const Color = Java.type("java.awt.Color")
 
-const SoopyMapColorMap = new Map()
-SoopyMapColorMap.set(roomHash.SPAWN, new Color(Renderer.color(0, 124, 0, 255)))
-SoopyMapColorMap.set(roomHash.NORMAL, new Color(Renderer.color(114, 67, 27, 255)))
-SoopyMapColorMap.set(roomHash.NORMAL_CONNECTION, new Color(Renderer.color(114, 67, 27, 255)))
-SoopyMapColorMap.set(roomHash.PUZZLE, new Color(Renderer.color(178, 76, 216, 255)))
-SoopyMapColorMap.set(roomHash.MINIBOSS, new Color(Renderer.color(229, 229, 51, 255)))
-SoopyMapColorMap.set(roomHash.FAIRY, new Color(Renderer.color(242, 127, 165, 255)))
-SoopyMapColorMap.set(roomHash.BLOOD, new Color(Renderer.color(255, 0, 0, 255)))
-SoopyMapColorMap.set(roomHash.TRAP, new Color(Renderer.color(216, 127, 51, 255)))
-SoopyMapColorMap.set(roomHash.UNKNOWN, new Color(Renderer.color(65, 65, 65, 255)))
-SoopyMapColorMap.set(roomHash.BLACK, new Color(Renderer.color(0, 0, 0, 255)))
+const HypixelColorMap = new Map()
+HypixelColorMap.set(roomHash.SPAWN, new Color(Renderer.color(0, 124, 0, 255)))
+HypixelColorMap.set(roomHash.NORMAL, new Color(Renderer.color(114, 67, 27, 255)))
+HypixelColorMap.set(roomHash.NORMAL_CONNECTION, new Color(Renderer.color(114, 67, 27, 255)))
+HypixelColorMap.set(roomHash.PUZZLE, new Color(Renderer.color(178, 76, 216, 255)))
+HypixelColorMap.set(roomHash.MINIBOSS, new Color(Renderer.color(229, 229, 51, 255)))
+HypixelColorMap.set(roomHash.FAIRY, new Color(Renderer.color(242, 127, 165, 255)))
+HypixelColorMap.set(roomHash.BLOOD, new Color(Renderer.color(255, 0, 0, 255)))
+HypixelColorMap.set(roomHash.TRAP, new Color(Renderer.color(216, 127, 51, 255)))
+HypixelColorMap.set(roomHash.UNKNOWN, new Color(Renderer.color(65, 65, 65, 255)))
+HypixelColorMap.set(roomHash.BLACK, new Color(Renderer.color(0, 0, 0, 255)))
 
 
 const LegalMapColorMap = new Map()
@@ -276,11 +297,11 @@ LegalMapColorMap.set(roomHash.TRAP, new Color(Renderer.color(216, 127, 51, 255))
 LegalMapColorMap.set(roomHash.UNKNOWN, new Color(Renderer.color(65, 65, 65, 255)))
 LegalMapColorMap.set(roomHash.BLACK, new Color(Renderer.color(0, 0, 0, 255)))
 
-const HypixelTicks = new Map()
-HypixelTicks.set("greenCheck", new Image("greenCheckVanilla.png", "https://i.imgur.com/h2WM1LO.png").image)
-HypixelTicks.set("whiteCheck", new Image("whiteCheckVanilla.png", "https://i.imgur.com/hwEAcnI.png").image)
-HypixelTicks.set("failedRoom", new Image("failedRoomVanilla.png", "https://i.imgur.com/WqW69z3.png").image)
-HypixelTicks.set("questionMark", new Image("questionMarkVanilla.png", "https://i.imgur.com/1jyxH9I.png").image)
+const HypixelTicksOld = new Map()
+HypixelTicksOld.set("greenCheck", new Image("greenCheckVanilla.png", "https://i.imgur.com/h2WM1LO.png").image)
+HypixelTicksOld.set("whiteCheck", new Image("whiteCheckVanilla.png", "https://i.imgur.com/hwEAcnI.png").image)
+HypixelTicksOld.set("failedRoom", new Image("failedRoomVanilla.png", "https://i.imgur.com/WqW69z3.png").image)
+HypixelTicksOld.set("questionMark", new Image("questionMarkVanilla.png", "https://i.imgur.com/1jyxH9I.png").image)
 
 const LegalMapTicks = new Map()
 LegalMapTicks.set("greenCheck", new Image("BloomMapGreenCheck.png", "https://i.imgur.com/GQfTfmp.png").image)

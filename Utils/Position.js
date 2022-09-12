@@ -1,5 +1,11 @@
 import SoopyNumber from "../../guimanager/Classes/SoopyNumber"
 
+/**
+ * A utility class for storing locations of things
+ * Includes builtin support for converting between locations in the world and render locations on map ect
+ * Also has animation support
+ * @class
+ */
 class Position {
     constructor(worldX, worldY, dungeonMap) {
         this.worldXRaw = new SoopyNumber(worldX) //Using the number wrapper so theres easy support for animations

@@ -14,7 +14,8 @@ class ScoreMapRenderer extends MapTab {
      * @param {Number} mouseY
      */
     draw(renderContext, dungeonMap, mouseX, mouseY) {
-        let mapData
+
+        let mapData //Get map data from hotbar
         try {
             let item = Player.getInventory().getStackInSlot(8)
             mapData = item.getItem()[m.getMapData](item.getItemStack(), World.getWorld()); // ItemStack.getItem().getMapData()
@@ -22,6 +23,9 @@ class ScoreMapRenderer extends MapTab {
         }
 
         if (!mapData) return
+
+        //Render map directly from hotbar
+
         let { x, y, size } = renderContext.getMapDimensions()
 
         GlStateManager.func_179094_E(); //GlStateManager.push()

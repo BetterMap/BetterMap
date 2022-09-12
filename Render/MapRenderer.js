@@ -24,34 +24,7 @@ class MapRenderer {
 
         let { x, y, size } = renderContext.getMapDimensions()
 
-        let tabXOff = 0
-        let tabI = 0
-        for (let tab of this.tabs) {
-            let tabW = Renderer.getStringWidth(tab.tabName) / 2 * size / 100 * 1.5
-            let tabH = tab.getRenderHeight(renderContext, dungeonMap) * 5 * size / 100 * 1.5
-            let maxTabH = 5 * size / 100 * 1.5
-
-            renderLibs.scizzorFast(x + tabXOff, y - tabH, tabW, tabH)
-
-            Renderer.drawRect(Renderer.color(0, 0, 0, 100), x + tabXOff, y - maxTabH, tabW, maxTabH)//background
-            Renderer.drawRect(Renderer.color(0, 0, 0, 255), x + tabXOff, y - tabH, tabW, renderContext.borderWidth)//background
-            Renderer.drawRect(Renderer.color(0, 0, 0, 255), x + tabXOff, y - maxTabH, renderContext.borderWidth, maxTabH)//background
-            Renderer.drawRect(Renderer.color(0, 0, 0, 255), x + tabXOff + tabW - renderContext.borderWidth, y - maxTabH, renderContext.borderWidth, maxTabH)//background
-
-            let hovered = (mouseX >= x + tabXOff && mouseX <= x + tabXOff + tabW
-                && mouseY >= y - maxTabH && mouseY <= y)
-
-            let textScale = size / 250 * 1.5
-            renderLibs.drawStringCentered("&0" + tab.tabName, x + tabXOff + tabW / 2 + textScale, y - maxTabH + size / 100 * 1.5, textScale)
-            renderLibs.drawStringCentered("&0" + tab.tabName, x + tabXOff + tabW / 2 - textScale, y - maxTabH + size / 100 * 1.5, textScale)
-            renderLibs.drawStringCentered("&0" + tab.tabName, x + tabXOff + tabW / 2, y - maxTabH + size / 100 * 2 + textScale, textScale)
-            renderLibs.drawStringCentered("&0" + tab.tabName, x + tabXOff + tabW / 2, y - maxTabH + size / 100 * 2 - textScale, textScale)
-            renderLibs.drawStringCentered((hovered || tabI === this.selectedTabIndex ? "&f" : "&7") + tab.tabName, x + tabXOff + tabW / 2, y - maxTabH + size / 100 * 1.5, textScale)
-
-            renderLibs.stopScizzor()
-            tabXOff += tabW + size / 100 * 1.5
-            tabI++
-        }
+        this.drawTabs(renderContext, dungeonMap, mouseX, mouseY)
 
         Renderer.drawRect(Renderer.color(0, 0, 0, 100), x, y, size, size)//background
 
@@ -71,9 +44,9 @@ class MapRenderer {
         Renderer.drawRect(Renderer.color(0, 0, 0, 150), x, y + size, size, scoreInfoHeight)
 
         let scoreInfo = dungeonMap.getScore()
-        renderLibs.drawStringCenteredFull(scoreInfo.total, x + size / 4, y + size + scoreInfoHeight / 2, size / 100)
+        renderLibs.drawStringCenteredFull("&f" + scoreInfo.total, x + size / 4, y + size + scoreInfoHeight / 2, size / 100)
 
-        renderLibs.drawStringCenteredFull(scoreInfo.mimic.toString(), x + size / 4 * 3, y + size + scoreInfoHeight / 2, size / 100)
+        renderLibs.drawStringCenteredFull("&7Mimic " + (scoreInfo.mimic.toString() ? "&a✔" : "&c✕"), x + size / 4 * 3, y + size + scoreInfoHeight / 2, size / 100)
 
 
         Renderer.drawRect(Renderer.color(0, 0, 0), x, y + size, renderContext.borderWidth, scoreInfoHeight) //border of score info
@@ -95,6 +68,46 @@ class MapRenderer {
 
                 renderLore(rx - 12 + 4, y + 12 + 4, roomInfo)
             }
+        }
+    }
+
+    /**
+     * Draws the tabs on the map
+     * @param {RenderContext} renderContext 
+     * @param {DungeonMap} dungeonMap 
+     * @param {Number} mouseX
+     * @param {Number} mouseY
+     */
+    drawTabs(renderContext, dungeonMap, mouseX, mouseY) {
+        let { x, y, size } = renderContext.getMapDimensions()
+
+        let tabXOff = 0
+        let tabI = 0
+        for (let tab of this.tabs) {
+            let tabW = Renderer.getStringWidth(tab.tabName) / 2 * size / 100 * 1.5
+            let tabH = tab.getRenderHeight(renderContext, dungeonMap) * 5 * size / 100 * 1.5
+            let maxTabH = 5 * size / 100 * 1.5
+
+            renderLibs.scizzorFast(x + tabXOff, y - tabH, tabW, tabH)
+
+            Renderer.drawRect(Renderer.color(0, 0, 0, 100), x + tabXOff, y - maxTabH, tabW, maxTabH) //background
+            Renderer.drawRect(Renderer.color(0, 0, 0, 255), x + tabXOff, y - tabH, tabW, renderContext.borderWidth) //background
+            Renderer.drawRect(Renderer.color(0, 0, 0, 255), x + tabXOff, y - maxTabH, renderContext.borderWidth, maxTabH) //background
+            Renderer.drawRect(Renderer.color(0, 0, 0, 255), x + tabXOff + tabW - renderContext.borderWidth, y - maxTabH, renderContext.borderWidth, maxTabH) //background
+
+            let hovered = (mouseX >= x + tabXOff && mouseX <= x + tabXOff + tabW
+                && mouseY >= y - maxTabH && mouseY <= y)
+
+            let textScale = size / 250 * 1.5
+            renderLibs.drawStringCentered("&0" + tab.tabName, x + tabXOff + tabW / 2 + textScale, y - maxTabH + size / 100 * 1.5, textScale)
+            renderLibs.drawStringCentered("&0" + tab.tabName, x + tabXOff + tabW / 2 - textScale, y - maxTabH + size / 100 * 1.5, textScale)
+            renderLibs.drawStringCentered("&0" + tab.tabName, x + tabXOff + tabW / 2, y - maxTabH + size / 100 * 2 + textScale, textScale)
+            renderLibs.drawStringCentered("&0" + tab.tabName, x + tabXOff + tabW / 2, y - maxTabH + size / 100 * 2 - textScale, textScale)
+            renderLibs.drawStringCentered((hovered || tabI === this.selectedTabIndex ? "&f" : "&7") + tab.tabName, x + tabXOff + tabW / 2, y - maxTabH + size / 100 * 1.5, textScale)
+
+            renderLibs.stopScizzor()
+            tabXOff += tabW + size / 100 * 1.5
+            tabI++
         }
     }
 

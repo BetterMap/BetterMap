@@ -156,7 +156,6 @@ class DungeonMap {
                 if (!currentRoom2 || currentRoom2.roomId || currentRoom2.type === Room.UNKNOWN) return; //current room not loaded yet, or already loaded id
 
                 currentRoom2.roomId = data.roomId;
-                this.identifiedRoomIds.add(data.roomId);
 
                 this.markChanged() //re-render map incase of a room-id specific texturing
                 break;
@@ -646,9 +645,10 @@ class DungeonMap {
     }
 
     getScore() {
-        if (Date.now() - this.cachedScore.time < 500) {
+        if (Date.now() - this.cachedScore.time < 500) { //Update score calculations every 500ms
             return this.cachedScore.data
         }
+
         let exploration = 0;
         let time = 100; //TODO:  Figure out how to actually do this one
         let skill = 0;
@@ -1038,8 +1038,10 @@ class DungeonMap {
     }
     setRoom(x, y, rotation, roomId, locallyFound) {
         if (!roomId) return
-        if (this.identifiedRoomIds.has(roomId)) return
-        this.identifiedRoomIds.add(roomId);
+        if (locallyFound) {
+            if (this.identifiedRoomIds.has(roomId)) return
+            this.identifiedRoomIds.add(roomId);
+        }
 
         let coordsX = ~~((x + 200) / 32)
         let coordsY = ~~((y + 200) / 32)
@@ -1135,10 +1137,11 @@ class DungeonMap {
             room.rotation = room.findRotation();
             room.roomId = roomId
             room.checkmarkState = 1
-            this.roomsArr.add(room)
             room.components.forEach(c => {
+                this.roomsArr.delete(this.rooms.get(c.arrayX + "," + c.arrayY))
                 this.rooms.set(c.arrayX + "," + c.arrayY, room)
             })
+            this.roomsArr.add(room)
             this.markChanged()
             return
         }
@@ -1147,13 +1150,11 @@ class DungeonMap {
 
         room.checkmarkState = 1
 
-        this.roomsArr.add(room)
         room.components.forEach(c => {
-            if (this.rooms.get(c.arrayX + "," + c.arrayY) && this.rooms.get(c.arrayX + "," + c.arrayY) !== room) {
-                this.roomsArr.delete(this.rooms.get(c.arrayX + "," + c.arrayY))
-            }
+            this.roomsArr.delete(this.rooms.get(c.arrayX + "," + c.arrayY))
             this.rooms.set(c.arrayX + "," + c.arrayY, room)
         })
+        this.roomsArr.add(room)
         this.markChanged()
 
         if (locallyFound) {
@@ -1316,7 +1317,10 @@ class DungeonMap {
     }
 
     getBlockIdAt(x, y, z) {
-        if (this.setAirLocs?.has(x + "," + z)) return 0
+        if (this.setAirLocs?.has(x + "," + z)) {
+            ChatLib.chat("asdikgjhkldfjhg")
+            return 0
+        }
 
         return World.getBlockStateAt(new BlockPos(x, y, z)).getBlockId()
     }

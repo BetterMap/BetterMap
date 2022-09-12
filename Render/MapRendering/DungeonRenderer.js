@@ -5,7 +5,6 @@ import DoorRenderer from "./DoorRenderer"
 import renderLibs from "../../../guimanager/renderLibs"
 import DungeonMap from "../../Components/DungeonMap"
 import RenderContext from "./../RenderContext"
-import { MESSAGE_PREFIX } from "../../Utils/Utils"
 import MapTab from "../MapTab"
 
 class DungeonRenderer extends MapTab {

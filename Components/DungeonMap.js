@@ -100,6 +100,7 @@ class DungeonMap {
             this.triggers.push(register("chat", (msg) => {
                 this.dungeonFinished = true
             }).setChatCriteria("${*}             &r&cThe Catacombs &r&8- &r&eFloor ${*} Stats${*}"))
+            //&r&r&r                     &r&cThe Catacombs &r&8- &r&eFloor I Stats&r
 
             this.triggers.push(register("entityDeath", (entity) => {
                 if (entity.getClassName() !== "EntityZombie") return
@@ -324,6 +325,8 @@ class DungeonMap {
      * @returns 
      */
     updateFromMap(mapData) {
+        if (this.dungeonFinished) return
+
         this.loadPlayersFromDecoration(mapData[f.mapDecorations])
 
         let bytes = mapData[f.colors.MapData]
@@ -516,7 +519,7 @@ class DungeonMap {
                     position.mapX = mapX
                     position.mapY = mapY
                     let currRoom = this.rooms.get(position.arrayX + "," + position.arrayY)
-                    if (currRoom.checkmarkState !== Room.FAILED && currRoom.type !== Room.BLOOD) {
+                    if (currRoom && currRoom.checkmarkState !== Room.FAILED && currRoom.type !== Room.BLOOD) {
                         currRoom.checkmarkState = Room.FAILED
                         this.markChanged()
                     }
@@ -1318,7 +1321,6 @@ class DungeonMap {
 
     getBlockIdAt(x, y, z) {
         if (this.setAirLocs?.has(x + "," + z)) {
-            ChatLib.chat("asdikgjhkldfjhg")
             return 0
         }
 

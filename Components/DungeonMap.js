@@ -166,6 +166,14 @@ class DungeonMap {
         }
     }
 
+    regenRooms() {
+        this.doors.clear()
+        this.rooms.clear()
+        this.roomsArr.clear()
+        this.lastRoomId = undefined
+        this.identifiedRoomIds.clear()
+    }
+
     addDoorToAdjacentRooms(door) {
         if (door.horizontal) {
             let left = door.position.arrayX - 1;

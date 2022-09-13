@@ -148,6 +148,10 @@ register("chat", (info) => {
     deadPlayers.delete(player.toLowerCase())
 }).setChatCriteria("&r&a ❣ &r${info} was revived${*}!&r")
 
+register('command', () => {
+    currentDungeonMap.regenRooms()
+}).setName('reloadmap', true);
+
 let showSecretWaypoints = false;
 register("renderWorld", () => {
     if (!showSecretWaypoints) return;

@@ -166,6 +166,14 @@ class DungeonMap {
         }
     }
 
+    regenRooms() {
+        this.doors.clear()
+        this.rooms.clear()
+        this.roomsArr.clear()
+        this.lastRoomId = undefined
+        this.identifiedRoomIds.clear()
+    }
+
     addDoorToAdjacentRooms(door) {
         if (door.horizontal) {
             let left = door.position.arrayX - 1;
@@ -755,7 +763,11 @@ class DungeonMap {
                         ChatLib.chat(MESSAGE_PREFIX + username + " has a spirit pet!")
                     }
                 } else {
-                    ChatLib.chat(MESSAGE_PREFIX + username + " does not have a spirit pet!")
+                    if (username === "You") {
+                        ChatLib.chat(MESSAGE_PREFIX + username + " dont have a spirit pet!")
+                    } else {
+                        ChatLib.chat(MESSAGE_PREFIX + username + " does not have a spirit pet!")
+                    }
                 }
             })
         } else {
@@ -770,7 +782,11 @@ class DungeonMap {
                         ChatLib.chat(MESSAGE_PREFIX + username + " has a spirit pet!")
                     }
                 } else {
-                    ChatLib.chat(MESSAGE_PREFIX + username + " does not have a spirit pet!")
+                    if (username === "You") {
+                        ChatLib.chat(MESSAGE_PREFIX + username + " dont have a spirit pet!")
+                    } else {
+                        ChatLib.chat(MESSAGE_PREFIX + username + " does not have a spirit pet!")
+                    }
                 }
             })
         }
@@ -999,20 +1015,20 @@ class DungeonMap {
                     roomWorldData.y = y + 1
 
                     this.setAirLocs.add((x - 1) + "," + (y - 1))
-                    this.setAirLocs.add((x - 1 + 1) + "," + (y - 1))
-                    this.setAirLocs.add((x - 1) + "," + (y - 1 + 1))
+                    this.setAirLocs.add((x) + "," + (y - 1))
+                    this.setAirLocs.add((x - 1) + "," + (y))
 
-                    this.setAirLocs.add((x - 1 + 32) + "," + (y - 1))
-                    this.setAirLocs.add((x - 1 + 32 - 1) + "," + (y - 1 + 32))
-                    this.setAirLocs.add((x - 1 + 32) + "," + (y - 1 - 1))
+                    this.setAirLocs.add((x + 32) + "," + (y - 1))
+                    this.setAirLocs.add((x + 32 - 1) + "," + (y - 1))
+                    this.setAirLocs.add((x + 32) + "," + (y))
 
+                    this.setAirLocs.add((x - 1) + "," + (y + 32))
                     this.setAirLocs.add((x - 1) + "," + (y - 1 + 32))
-                    this.setAirLocs.add((x - 1 - 1 + 1) + "," + (y - 1 + 32))
-                    this.setAirLocs.add((x) + "," + (y - 1 + 1 + 32))
+                    this.setAirLocs.add((x) + "," + (y + 32))
 
-                    this.setAirLocs.add((x - 1 + 32) + "," + (y - 1 + 32))
-                    this.setAirLocs.add((x - 1 + 32 + 1) + "," + (y - 1 + 32))
-                    this.setAirLocs.add((x - 1 + 32) + "," + (y - 1 + 1 + 32))
+                    this.setAirLocs.add((x + 32) + "," + (y + 32))
+                    this.setAirLocs.add((x + 32 - 1) + "," + (y + 32))
+                    this.setAirLocs.add((x + 32) + "," + (y - 1 + 32))
                 }
 
                 this.setRoom(roomWorldData.x, roomWorldData.y, rotation, roomid, true)

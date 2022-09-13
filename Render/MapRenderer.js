@@ -22,6 +22,8 @@ class MapRenderer {
     draw(renderContext, dungeonMap, mouseX, mouseY) {
         if (!renderContext) return
 
+        if (renderContext.hideInMap && (Player.getX() > 0 || Player.getZ() > 0)) return;
+
         let { x, y, size } = renderContext.getMapDimensions()
 
         this.drawTabs(renderContext, dungeonMap, mouseX, mouseY)
@@ -38,20 +40,22 @@ class MapRenderer {
         // Renderer.drawRect(Renderer.color(0, 0, 0), x, y + size - this.borderWidth, size, this.borderWidth)
 
         // Score info under map
-        // TODO: actually change based on the setting
+        if (renderContext.scoreInfoUnderMap === "legalmap") {
+            let scoreInfoHeight = 10 * size / 100
+            Renderer.drawRect(Renderer.color(0, 0, 0, 150), x, y + size, size, scoreInfoHeight)
 
-        let scoreInfoHeight = 10 * size / 100
-        Renderer.drawRect(Renderer.color(0, 0, 0, 150), x, y + size, size, scoreInfoHeight)
+            let scoreInfo = dungeonMap.getScore()
+            renderLibs.drawStringCenteredFull("&f" + scoreInfo.total, x + size / 4, y + size + scoreInfoHeight / 2, size / 100)
 
-        let scoreInfo = dungeonMap.getScore()
-        renderLibs.drawStringCenteredFull("&f" + scoreInfo.total, x + size / 4, y + size + scoreInfoHeight / 2, size / 100)
-
-        renderLibs.drawStringCenteredFull("&7Mimic " + (scoreInfo.mimic ? "&a✔" : "&c✕"), x + size / 4 * 3, y + size + scoreInfoHeight / 2, size / 100)
+            renderLibs.drawStringCenteredFull("&7Mimic " + (scoreInfo.mimic ? "&a✔" : "&c✕"), x + size / 4 * 3, y + size + scoreInfoHeight / 2, size / 100)
 
 
-        Renderer.drawRect(Renderer.color(0, 0, 0), x, y + size, renderContext.borderWidth, scoreInfoHeight) //border of score info
-        Renderer.drawRect(Renderer.color(0, 0, 0), x + size - renderContext.borderWidth, y + size, renderContext.borderWidth, scoreInfoHeight)
-        Renderer.drawRect(Renderer.color(0, 0, 0), x, y + size + scoreInfoHeight, size, renderContext.borderWidth)
+            Renderer.drawRect(Renderer.color(0, 0, 0), x, y + size, renderContext.borderWidth, scoreInfoHeight) //border of score info
+            Renderer.drawRect(Renderer.color(0, 0, 0), x + size - renderContext.borderWidth, y + size, renderContext.borderWidth, scoreInfoHeight)
+            Renderer.drawRect(Renderer.color(0, 0, 0), x, y + size + scoreInfoHeight, size, renderContext.borderWidth)
+        } else {
+            Renderer.drawRect(Renderer.color(0, 0, 0), x, y + size, size, renderContext.borderWidth)
+        }
 
         if (renderContext.currentRoomInfo !== "none") {
             let roomInfo = dungeonMap.getPlayerRoom()?.getLore()

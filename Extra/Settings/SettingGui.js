@@ -125,6 +125,8 @@ class SettingGui {
 
         this.addCategory("Other Settings")
 
+        this.addToggle("Hide map in Boss", "hideInBoss", this.defaultSettings.hideInBoss)
+
         this.addDropdown("Current room info next to map", {
             "none": "None",
             "left": "Left of map",

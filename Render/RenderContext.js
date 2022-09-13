@@ -11,7 +11,8 @@
  * @property {Boolean} headBorder - Wether to put a black border around heads on the map
  * @property {Boolean} playerNames - Wether to show player names when holding spirit leaps
  * @property {"none"|"left"|"right"} currentRoomInfo - Render current room hover info on side of map
- * @property {"none"|"legalmap"|"simplified"} scoreInfoUnderMap - Render current room hover info on side of map
+ * @property {Boolean} hideInBoss - Hide the map in boss entirely 
+ * @property {"none"|"legalmap"|"simplified"} scoreInfoUnderMap - Render score info under the map
  * @property {Boolean} forcePaul - Wether to force enable the +10 score for paul (eg if jerry mayor)
  * @property {Boolean} devInfo - Wether to show def info in various places in the map
  */
@@ -79,6 +80,10 @@ class RenderContext {
 
     get scoreInfoUnderMap() {
         return this.settings.scoreInfoUnderMap
+    }
+
+    get hideInBoss(){
+        return this.settings.hideInBoss
     }
 
     get forcePaul() {
@@ -198,6 +203,7 @@ class RenderContext {
         playerNames = true,
         currentRoomInfo = "none",
         scoreInfoUnderMap = "simplified",
+        hideInBoss = false,
         forcePaul = false,
         devInfo = false
     }) {
@@ -214,6 +220,7 @@ class RenderContext {
             playerNames,
             currentRoomInfo,
             scoreInfoUnderMap,
+            hideInBoss,
             forcePaul,
             devInfo
         }

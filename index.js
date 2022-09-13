@@ -79,10 +79,6 @@ betterMapServer.datacallback = (data) => {
     }
 }
 
-register('command',()=>{
-    console.log(JSON.stringify(CurrentSettings.settings));
-}).setName('testSettings')
-
 register("renderOverlay", () => {
     if (dungeonMapRenderContext && currentDungeonMap) {
 

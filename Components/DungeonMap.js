@@ -755,7 +755,11 @@ class DungeonMap {
                         ChatLib.chat(MESSAGE_PREFIX + username + " has a spirit pet!")
                     }
                 } else {
-                    ChatLib.chat(MESSAGE_PREFIX + username + " does not have a spirit pet!")
+                    if (username === "You") {
+                        ChatLib.chat(MESSAGE_PREFIX + username + " dont have a spirit pet!")
+                    } else {
+                        ChatLib.chat(MESSAGE_PREFIX + username + " does not have a spirit pet!")
+                    }
                 }
             })
         } else {
@@ -770,7 +774,11 @@ class DungeonMap {
                         ChatLib.chat(MESSAGE_PREFIX + username + " has a spirit pet!")
                     }
                 } else {
-                    ChatLib.chat(MESSAGE_PREFIX + username + " does not have a spirit pet!")
+                    if (username === "You") {
+                        ChatLib.chat(MESSAGE_PREFIX + username + " dont have a spirit pet!")
+                    } else {
+                        ChatLib.chat(MESSAGE_PREFIX + username + " does not have a spirit pet!")
+                    }
                 }
             })
         }

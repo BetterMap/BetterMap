@@ -1007,20 +1007,20 @@ class DungeonMap {
                     roomWorldData.y = y + 1
 
                     this.setAirLocs.add((x - 1) + "," + (y - 1))
-                    this.setAirLocs.add((x - 1 + 1) + "," + (y - 1))
-                    this.setAirLocs.add((x - 1) + "," + (y - 1 + 1))
+                    this.setAirLocs.add((x) + "," + (y - 1))
+                    this.setAirLocs.add((x - 1) + "," + (y))
 
-                    this.setAirLocs.add((x - 1 + 32) + "," + (y - 1))
-                    this.setAirLocs.add((x - 1 + 32 - 1) + "," + (y - 1 + 32))
-                    this.setAirLocs.add((x - 1 + 32) + "," + (y - 1 - 1))
+                    this.setAirLocs.add((x + 32) + "," + (y - 1))
+                    this.setAirLocs.add((x + 32 - 1) + "," + (y - 1))
+                    this.setAirLocs.add((x + 32) + "," + (y))
 
+                    this.setAirLocs.add((x - 1) + "," + (y + 32))
                     this.setAirLocs.add((x - 1) + "," + (y - 1 + 32))
-                    this.setAirLocs.add((x - 1 - 1 + 1) + "," + (y - 1 + 32))
-                    this.setAirLocs.add((x) + "," + (y - 1 + 1 + 32))
+                    this.setAirLocs.add((x) + "," + (y + 32))
 
-                    this.setAirLocs.add((x - 1 + 32) + "," + (y - 1 + 32))
-                    this.setAirLocs.add((x - 1 + 32 + 1) + "," + (y - 1 + 32))
-                    this.setAirLocs.add((x - 1 + 32) + "," + (y - 1 + 1 + 32))
+                    this.setAirLocs.add((x + 32) + "," + (y + 32))
+                    this.setAirLocs.add((x + 32 - 1) + "," + (y + 32))
+                    this.setAirLocs.add((x + 32) + "," + (y - 1 + 32))
                 }
 
                 this.setRoom(roomWorldData.x, roomWorldData.y, rotation, roomid, true)

@@ -17,6 +17,7 @@
  * @property {Boolean} tabMimic - Show the mimic status in tab
  * @property {Boolean} hideInBoss - Hide the map in boss entirely 
  * @property {Boolean} forcePaul - Wether to force enable the +10 score for paul (eg if jerry mayor)
+ * @property {Boolean} sendMimicMessage - Wether to send a message in chat when mimic is killed
  * @property {Boolean} devInfo - Wether to show def info in various places in the map
  */
 
@@ -85,24 +86,28 @@ class RenderContext {
         return this.settings.scoreInfoUnderMap
     }
 
-    get hideInBoss(){
+    get hideInBoss() {
         return this.settings.hideInBoss
     }
 
-    get tabSecretCount(){
+    get tabSecretCount() {
         return this.settings.tabSecretCount
     }
-    
-    get tabCryptCount(){
+
+    get tabCryptCount() {
         return this.settings.tabCryptCount
     }
-    
-    get tabMimic(){
+
+    get tabMimic() {
         return this.settings.tabMimic
     }
 
     get forcePaul() {
         return this.settings.forcePaul
+    }
+
+    get sendMimicMessage() {
+        return this.settings.sendMimicMessage
     }
 
     get devInfo() {
@@ -223,6 +228,7 @@ class RenderContext {
         tabMimic = false,
         hideInBoss = false,
         forcePaul = false,
+        sendMimicMessage = false,
         devInfo = false
     }) {
         return {
@@ -238,11 +244,12 @@ class RenderContext {
             playerNames,
             currentRoomInfo,
             scoreInfoUnderMap,
-            tabCryptCount, 
+            tabCryptCount,
             tabSecretCount,
             tabMimic,
             hideInBoss,
             forcePaul,
+            sendMimicMessage,
             devInfo
         }
     }

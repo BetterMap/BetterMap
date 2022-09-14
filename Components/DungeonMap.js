@@ -106,10 +106,10 @@ class DungeonMap {
                 if (entity.getClassName() !== "EntityZombie") return
                 let e = entity.getEntity()
                 if (!e.func_70631_g_()) return // .isChild()
-                let armor = e.func_82169_q() // .getCurrentArmor()
+
                 // Check all armor slots, if they are all null then mimic is die!
-                if ([0, 1, 2, 3].every(a => !armor[a])) {
-                    ChatLib.chat("Mimic Kapow!")
+                if ([0, 1, 2, 3].every(a => !e.func_82169_q(a))) {
+                    ChatLib.chat("Mimic Kapow!")//TODO: setting
                     this.mimicKilled = true
                     this.sendSocketData({ type: "mimicKilled" })
                 }

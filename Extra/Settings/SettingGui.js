@@ -143,6 +143,8 @@ class SettingGui {
 
         this.addToggle("Force paul +10 score", "forcePaul", this.defaultSettings.forcePaul)
 
+        this.addToggle("Send mimic killed message", "sendMimicMessage", this.defaultSettings.sendMimicMessage)
+
         this.addToggle("Show dev info", "devInfo", this.defaultSettings.devInfo)
 
         // END OF SETTINGS

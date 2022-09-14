@@ -288,7 +288,7 @@ class DungeonMap {
             }
             if (!modifiedSecrets && displayName.includes('Secrets Found:') && !displayName.includes('%')) {
                 modifiedSecrets = true;
-                const totalSecretCount = this.roomsArr.reduce((prev, room) => prev + (room.maxSecrets || 0), 0);
+                const totalSecretCount = this.getScore().totalSecrets//this.roomsArr.reduce((prev, room) => prev + (room.maxSecrets || 0), 0);
                 if (displayName.includes('/' + totalSecretCount)) return;
                 var newTabLine;
                 if (displayName.includes('/')) {

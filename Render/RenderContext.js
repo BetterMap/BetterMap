@@ -11,8 +11,11 @@
  * @property {Boolean} headBorder - Wether to put a black border around heads on the map
  * @property {Boolean} playerNames - Wether to show player names when holding spirit leaps
  * @property {"none"|"left"|"right"} currentRoomInfo - Render current room hover info on side of map
- * @property {Boolean} hideInBoss - Hide the map in boss entirely 
  * @property {"none"|"legalmap"|"simplified"} scoreInfoUnderMap - Render score info under the map
+ * @property {Boolean} tabSecretCount - Show the estimated secret count in tab
+ * @property {Boolean} tabCryptCount - Show the current total crypt count for discovered rooms in tab 
+ * @property {Boolean} tabMimic - Show the mimic status in tab
+ * @property {Boolean} hideInBoss - Hide the map in boss entirely 
  * @property {Boolean} forcePaul - Wether to force enable the +10 score for paul (eg if jerry mayor)
  * @property {Boolean} devInfo - Wether to show def info in various places in the map
  */
@@ -84,6 +87,18 @@ class RenderContext {
 
     get hideInBoss(){
         return this.settings.hideInBoss
+    }
+
+    get tabSecretCount(){
+        return this.settings.tabSecretCount
+    }
+    
+    get tabCryptCount(){
+        return this.settings.tabCryptCount
+    }
+    
+    get tabMimic(){
+        return this.settings.tabMimic
     }
 
     get forcePaul() {
@@ -203,6 +218,9 @@ class RenderContext {
         playerNames = true,
         currentRoomInfo = "none",
         scoreInfoUnderMap = "simplified",
+        tabSecretCount = false,
+        tabCryptCount = false,
+        tabMimic = false,
         hideInBoss = false,
         forcePaul = false,
         devInfo = false
@@ -220,6 +238,9 @@ class RenderContext {
             playerNames,
             currentRoomInfo,
             scoreInfoUnderMap,
+            tabCryptCount, 
+            tabSecretCount,
+            tabMimic,
             hideInBoss,
             forcePaul,
             devInfo

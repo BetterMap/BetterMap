@@ -99,7 +99,7 @@ class DungeonMap {
             }).setChatCriteria("&r&9Party &8> ${msg}"))
             this.triggers.push(register("chat", (msg) => {
                 this.dungeonFinished = true
-            }).setChatCriteria("${*}             &r&cThe Catacombs &r&8- &r&eFloor ${*} Stats${*}"))
+            }).setChatCriteria('&r&cThe Catacombs &r&8- &r&eFloor ${*}').setContains())
             //&r&r&r                     &r&cThe Catacombs &r&8- &r&eFloor I Stats&r
 
             this.triggers.push(register("entityDeath", (entity) => {
@@ -250,6 +250,82 @@ class DungeonMap {
             this.players[i].networkPlayerInfo = thePlayer[0]
             this.playersNameToId[thePlayer[1]] = i
         }
+    }
+
+    /**
+     * updates info in tab
+     */
+    updateTabInfo() {
+        // ChatLib.chat(JSON.stringify(settings));
+        if (!settings.settings.tabCryptCount && !settings.settings.tabSecretCount && (!settings.settings.tabMimic || this.floor < 6)) return;
+        //we pretend it's already done if the settings are disabled
+        let modifiedCrypt = !settings.settings.tabCryptCount;
+        let modifiedSecrets = !settings.settings.tabSecretCount;
+        let modifiedMimic = !settings.settings.tabMimic || this.floor < 6;
+        const ChatComponentText = Java.type('net.minecraft.util.ChatComponentText');
+
+        let playerInfoList = Client.getMinecraft().field_71439_g.field_71174_a.func_175106_d();
+        playerInfoList.forEach((playerInfo) => {
+            if (playerInfo.func_178854_k() === null) return;
+            let displayName = playerInfo.func_178854_k().func_150254_d();
+            if (!modifiedMimic && displayName.includes('Mimic Dead:')) {
+                modifiedMimic = true;
+                if (displayName.includes('YES')) return;
+                if (!this.mimicKilled) return;
+                playerInfo.func_178859_a(new ChatComponentText('§r Mimic Dead: ' + (this.mimicKilled ? '§aYES§r' : '§cNO§r')))
+            }
+            if (!modifiedCrypt && displayName.includes('Crypts:')) {
+                modifiedCrypt = true;
+                const totalCryptCount = this.roomsArr.reduce((prev, room) => prev + (room.data?.crypts || 0), 0);
+                if (displayName.includes('/' + totalCryptCount)) return;
+                var newTabLine;
+                if (displayName.includes('/')) {
+                    newTabLine = displayName.split('/')[0] + '§6/' + totalCryptCount;
+                } else {
+                    newTabLine = displayName + '§6/' + totalCryptCount;
+                }
+                playerInfo.func_178859_a(new ChatComponentText(newTabLine));
+            }
+            if (!modifiedSecrets && displayName.includes('Secrets Found:') && !displayName.includes('%')) {
+                modifiedSecrets = true;
+                const totalSecretCount = this.roomsArr.reduce((prev, room) => prev + (room.maxSecrets || 0), 0);
+                if (displayName.includes('/' + totalSecretCount)) return;
+                var newTabLine;
+                if (displayName.includes('/')) {
+                    newTabLine = displayName.split('/')[0] + '§b/' + totalSecretCount;
+                } else {
+                    newTabLine = displayName + '§b/' + totalSecretCount;
+                }
+                playerInfo.func_178859_a(new ChatComponentText(newTabLine));
+            }
+        })
+
+        //mimic isnt even in tab yet
+        if (!modifiedMimic) {
+            let tabInfoList = ['§r Mimic Dead: §cNO'];
+            this.addLinesToTabList(tabInfoList, 'Crypt');
+        }
+    }
+
+    addLinesToTabList = (lines, startCriteria) => {
+        const ChatComponentText = Java.type('net.minecraft.util.ChatComponentText');
+        let startToInject = false;
+        let playerInfoList = Client.getMinecraft().field_71439_g.field_71174_a.func_175106_d();
+        playerInfoList = [...playerInfoList].sort((first, second) => first.func_178845_a().getName().localeCompare(second.func_178845_a().getName()))
+        playerInfoList.forEach((playerInfo) => {
+            if (lines.length === 0) return;
+            if (playerInfo.func_178854_k() === null) return;
+            let displayName = playerInfo.func_178854_k().func_150254_d();
+            if (!displayName) return;
+            if (displayName.includes(startCriteria)) {
+                startToInject = true;
+                return;
+            }
+            if (startToInject) {
+                let nextLine = lines.pop();
+                playerInfo.func_178859_a(new ChatComponentText(nextLine));
+            }
+        })
     }
 
     syncPlayersThruSocket() {

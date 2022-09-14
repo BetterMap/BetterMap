@@ -123,6 +123,14 @@ class SettingGui {
             "simplified": "Simplified"
         }, "scoreInfoUnderMap", this.defaultSettings.scoreInfoUnderMap)
 
+        this.addCategory("Tab Info")
+
+        this.addToggle("Show current Secret total", "tabSecretCount", this.defaultSettings.tabSecretCount)
+
+        this.addToggle("Show current Crypt total", "tabCryptCount", this.defaultSettings.tabCryptCount)
+
+        this.addToggle("Show Mimic Status", "tabMimic", this.defaultSettings.tabMimic)
+
         this.addCategory("Other Settings")
 
         this.addToggle("Hide map in Boss", "hideInBoss", this.defaultSettings.hideInBoss)

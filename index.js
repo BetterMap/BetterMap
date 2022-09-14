@@ -58,6 +58,7 @@ register("step", () => {
         }
 
         currentDungeonMap.updatePuzzles();
+        currentDungeonMap.updateTabInfo();
     }
 }).setFps(5)
 

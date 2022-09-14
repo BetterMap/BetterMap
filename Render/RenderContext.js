@@ -9,7 +9,7 @@
  * @property {"hypixel"|"default"|"secrets"} tickStyle - Style of the ticks
  * @property {"none"|"text"|"icon"} puzzleNames - Render style of puzzle names
  * @property {Boolean} headBorder - Wether to put a black border around heads on the map
- * @property {Boolean} playerNames - Wether to show player names when holding spirit leaps
+ * @property {"never"|"leap"|"always"} playerNames - When to show player names on map
  * @property {"none"|"left"|"right"} currentRoomInfo - Render current room hover info on side of map
  * @property {"none"|"legalmap"|"simplified"} scoreInfoUnderMap - Render score info under the map
  * @property {Boolean} tabSecretCount - Show the estimated secret count in tab
@@ -215,7 +215,7 @@ class RenderContext {
         tickStyle = "default",
         puzzleNames = "none",
         headBorder = false,
-        playerNames = true,
+        playerNames = "leap",
         currentRoomInfo = "none",
         scoreInfoUnderMap = "simplified",
         tabSecretCount = false,

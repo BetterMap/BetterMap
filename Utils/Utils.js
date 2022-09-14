@@ -336,3 +336,14 @@ export function addNotation(type, value, joiner = "") {
 }
 
 export const MESSAGE_PREFIX = "&6[BetterMap]&7 "
+
+
+export function getSBID(item) {
+    return item?.getNBT()?.getCompoundTag("tag")?.getCompoundTag("ExtraAttributes")?.getString("id") || null
+}
+export function getSBUUID(item) {
+    return item?.getNBT()?.getCompoundTag("tag")?.getCompoundTag("ExtraAttributes")?.getString("uuid") || null
+}
+export function getSBEnchantfunction(item, enchant) {
+    return item?.getNBT()?.getCompoundTag("tag")?.getCompoundTag("ExtraAttributes")?.getCompoundTag("enchantments")?.getInteger(enchant) || null
+}

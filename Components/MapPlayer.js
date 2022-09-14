@@ -1,7 +1,9 @@
 import SoopyNumber from "../../guimanager/Classes/SoopyNumber.js"
+import renderLibs from "../../guimanager/renderLibs.js"
 import { f, m } from "../../mappings/mappings.js"
 import RenderContext from "../Render/RenderContext.js"
 import Position from "../Utils/Position.js"
+import { getSBID } from "../Utils/Utils.js"
 
 const DefaultVertexFormats = Java.type("net.minecraft.client.renderer.vertex.DefaultVertexFormats")
 const MCTessellator = Java.type("net.minecraft.client.renderer.Tessellator")
@@ -107,6 +109,30 @@ class MapPlayer {
         worldRenderer[m.pos](rx, ry, 0.0)[m.tex](8 / 64, 8 / 64)[m.endVertex]()
         tessellator[m.draw.Tessellator]()
         Renderer.retainTransforms(false)
+
+        let showNametag = renderContext.playerNames === "always"
+
+        if (renderContext.playerNames === "leap") {
+            let id = getSBID(Player.getHeldItem())
+
+            if (id === "SPIRIT_LEAP" || id === "INFINITE_SPIRIT_LEAP") showNametag = true
+        }
+
+        if (showNametag) {
+            Renderer.retainTransforms(true)
+
+            renderLibs.stopScizzor()
+            Renderer.translate(x2, y2, 101)
+            Renderer.scale(size / 150, size / 150)
+            renderLibs.drawStringCentered("&0" + this.username, 1, rh / (2 * size / 150), 1)
+            renderLibs.drawStringCentered("&0" + this.username, -1, rh / (2 * size / 150), 1)
+            renderLibs.drawStringCentered("&0" + this.username, 0, rh / (2 * size / 150) + 1, 1)
+            renderLibs.drawStringCentered("&0" + this.username, 0, rh / (2 * size / 150) - 1, 1)
+            renderLibs.drawStringCentered(this.username, 0, rh / (2 * size / 150), 1)
+            renderLibs.scizzorFast(...renderLibs.getCurrScizzor())
+
+            Renderer.retainTransforms(false)
+        }
 
         Tessellator.popMatrix()
         Tessellator.pushMatrix()

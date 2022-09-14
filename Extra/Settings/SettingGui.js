@@ -110,7 +110,11 @@ class SettingGui {
 
         this.addToggle("Border around heads", "headBorder", this.defaultSettings.headBorder)
 
-        this.addToggle("Player names when holding leaps", "playerNames", this.defaultSettings.playerNames)
+        this.addDropdown("Player names on map", {
+            "never": "Never",
+            "leap": "Holding Leaps",
+            "always": "Always"
+        }, "playerNames", this.defaultSettings.playerNames)
 
         this.addSlider("Head Scale", "headScale", this.defaultSettings.headScale || 8, 2, 15)
         this.addSlider("Icon Scale", "iconScale", this.defaultSettings.iconScale || 8, 2, 15)

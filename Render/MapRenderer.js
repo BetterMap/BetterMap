@@ -4,6 +4,7 @@ import { renderLore } from "../Utils/Utils"
 import BossMapRenderer from "./BossMapRendering/BossMapRenderer"
 import DungeonRenderer from "./MapRendering/DungeonRenderer"
 import MapTab from "./MapTab"
+import RenderContext from "./RenderContext"
 import ScoreMapRenderer from "./ScoreRendering/ScoreMapRenderer"
 
 class MapRenderer {
@@ -40,7 +41,7 @@ class MapRenderer {
         // Renderer.drawRect(Renderer.color(0, 0, 0), x, y + size - this.borderWidth, size, this.borderWidth)
 
         // Score info under map
-        if (renderContext.scoreInfoUnderMap === "legalmap") {
+        if (renderContext.scoreInfoUnderMap === "simplified") {
             let scoreInfoHeight = 10 * size / 100
             Renderer.drawRect(Renderer.color(0, 0, 0, 150), x, y + size, size, scoreInfoHeight)
 
@@ -49,6 +50,29 @@ class MapRenderer {
 
             renderLibs.drawStringCenteredFull("&7Mimic " + (scoreInfo.mimic ? "&a✔" : "&c✕"), x + size / 4 * 3, y + size + scoreInfoHeight / 2, size / 100)
 
+
+            Renderer.drawRect(Renderer.color(0, 0, 0), x, y + size, renderContext.borderWidth, scoreInfoHeight) //border of score info
+            Renderer.drawRect(Renderer.color(0, 0, 0), x + size - renderContext.borderWidth, y + size, renderContext.borderWidth, scoreInfoHeight)
+            Renderer.drawRect(Renderer.color(0, 0, 0), x, y + size + scoreInfoHeight, size, renderContext.borderWidth)
+        } else if (renderContext.scoreInfoUnderMap === "legalmap") {
+            let scoreInfoHeight = 20 * size / 200
+            Renderer.drawRect(Renderer.color(0, 0, 0, 150), x, y + size, size, scoreInfoHeight)
+
+            let scoreInfo = dungeonMap.getScore()
+
+            let dSecrets = "&7Secrets: " + (!scoreInfo.secretsFound ? "&b?" : `&b${scoreInfo.secretsFound}&8-&e${scoreInfo.totalSecrets - scoreInfo.secretsFound}&8-&c${scoreInfo.totalSecrets}`)
+            let dCrypts = "&7Crypts: " + (scoreInfo.crypts >= 5 ? `&a${scoreInfo.crypts}` : scoreInfo.crypts > 0 ? `&e${scoreInfo.crypts}` : `&c0`)
+            let dMimic = [6, 7].includes(dungeonMap.floorNumber) ? ("&7Mimic: " + (scoreInfo.mimic ? "&a✔" : "&c✘")) : ""
+
+            let minSecrets = "&7Min Secrets: " + (!scoreInfo.secretsFound ? "&b?" : scoreInfo.minSecrets > scoreInfo.secretsFound ? `&e${scoreInfo.minSecrets}` : `&a${scoreInfo.minSecrets}`)
+            let dDeaths = "&7Deaths: " + (scoreInfo.deathPenalty < 0 ? `&c${scoreInfo.deathPenalty}` : "&a0")
+            let dScore = "&7Score: " + (scoreInfo.total >= 300 ? `&a` : scoreInfo.total >= 270 ? `&e` : `&c`) + scoreInfo.total
+
+            let mapLine1 = `${dSecrets}    ${dCrypts}    ${dMimic}`.trim()
+            let mapLine2 = `${minSecrets}    ${dDeaths}    ${dScore}`.trim()
+
+            renderLibs.drawStringCenteredShadow(mapLine1, x + size / 2, y + size + 1, size / 220)
+            renderLibs.drawStringCenteredShadow(mapLine2, x + size / 2, y + size + 1 + 10 * size / 200, size / 220)
 
             Renderer.drawRect(Renderer.color(0, 0, 0), x, y + size, renderContext.borderWidth, scoreInfoHeight) //border of score info
             Renderer.drawRect(Renderer.color(0, 0, 0), x + size - renderContext.borderWidth, y + size, renderContext.borderWidth, scoreInfoHeight)

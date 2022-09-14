@@ -41,7 +41,7 @@ class DungeonMap {
         this.roomsArr = new Set()
 
         this.floor = floor //eg "M2" or "E" or "F7"
-        this.floorNumber = this.floor == "E" ? 0 : this.floor[this.floor.length - 1]
+        this.floorNumber = this.floor == "E" ? 0 : parseInt(this.floor[this.floor.length - 1])
 
         this.deadPlayers = deadPlayers
 
@@ -731,6 +731,10 @@ class DungeonMap {
         this.identifiedPuzzleCount = puzzleNamesList.length;
     }
 
+    /**
+     * 
+     * @returns {{"skill": Number,"exploration": Number,"time": Number,"bonus": Number,"total": Number,"mimic": Boolean,"secretsFound": Number, "crypts": Numbers, "deathPenalty": Number, "totalSecrets": Number, "minSecrets": Number}}
+     */
     getScore() {
         if (Date.now() - this.cachedScore.time < 500) { //Update score calculations every 500ms
             return this.cachedScore.data
@@ -744,7 +748,7 @@ class DungeonMap {
         // If floor is enterance the floor integer entered should be 0
         let requiredSecrets = getRequiredSecrets(parseInt(this.floor[this.floor.length - 1]) || 0, this.floor[0] === "M");
         let roomCompletion = getScoreboardInfo();
-        let [secrets, crypts, deaths, unfinshedPuzzles, completedRoomsTab] = getTabListInfo();
+        let [secrets, crypts, deaths, unfinshedPuzzles, completedRoomsTab, collectedSecrets] = getTabListInfo();
         let completedRooms = 0;
         for (let room of this.rooms.values()) {
             if (room.isCleared())
@@ -775,7 +779,7 @@ class DungeonMap {
 
         // Bonus
         bonus += Math.min(5, crypts);
-        if (this.floor >= 6 && this.mimicKilled)
+        if (this.floorNumber >= 6 && this.mimicKilled)
             bonus += 2;
 
         let paul = DataLoader.currentMayorPerks.has("EZPZ") || settings.settings.forcePaul
@@ -783,6 +787,12 @@ class DungeonMap {
         if (paul) {
             bonus += 10
         }
+
+        let totalSecrets = Math.round(collectedSecrets / (secrets / 100))
+
+        let deathPenalty = deaths * 2 - this.firstDeathHadSpirit //firstDeathHadSpirit gets coerced to number (0 or 1)
+
+        let minSecrets = Math.ceil(totalSecrets * requiredSecrets / 100 * ((40 - bonus + deathPenalty) / 40))
 
         this.cachedScore = {
             time: Date.now(),
@@ -792,7 +802,12 @@ class DungeonMap {
                 "time": time,
                 "bonus": bonus,
                 "total": skill + exploration + time + bonus,
-                "mimic": this.mimicKilled
+                "mimic": this.mimicKilled,
+                "secretsFound": collectedSecrets,
+                "crypts": crypts,
+                "deathPenalty": deathPenalty,
+                "totalSecrets": totalSecrets,
+                "minSecrets": minSecrets
             }
         }
 

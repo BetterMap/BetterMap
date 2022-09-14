@@ -24,11 +24,11 @@ class SettingsManager {
         this.renderContexts = new Map()
 
         let mapRenderer = new MapRenderer()
-        mapRenderer.tabs = [mapRenderer.tabs[0]]
+        mapRenderer.tabs = [mapRenderer.tabs[0]] //Only show the dungeon tab
 
         this.fakeDungeon = this.createFakeDungeon()
 
-        this.settingRenderContext = this.createRenderContext({ currentRoomInfo: "none" })
+        this.settingRenderContext = this.createRenderContext({ currentRoomInfo: "none", hideInBoss: false })
 
         this.settingsGui = new SettingGui(this.currentSettings, this.fakeDungeon, this.renderContextManager.getRenderContextData(this.settingRenderContext), mapRenderer)
 

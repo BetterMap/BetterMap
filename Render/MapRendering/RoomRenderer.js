@@ -29,11 +29,11 @@ class RoomRenderer {
             let x = component.arrayX
             let y = component.arrayY
             draw(x, y, roomSize, roomSize);
-            if (rc.some(a => a.arrayX == x+1 && a.arrayY == y)) draw(x+0.75, y, roomSize/3, roomSize) // Component to the right
-            if (rc.some(a => a.arrayX == x && a.arrayY == y+1)) draw(x, y+0.75, roomSize, roomSize/3) // Component above
+            if (rc.some(a => a.arrayX == x + 1 && a.arrayY == y)) draw(x + 0.75, y, roomSize / 3, roomSize) // Component to the right
+            if (rc.some(a => a.arrayX == x && a.arrayY == y + 1)) draw(x, y + 0.75, roomSize, roomSize / 3) // Component above
 
             // 2x2 Center
-            if (rc.length == 4 && new Set(rc.map(a => a.arrayX)).size == 2 && x == Math.min(...rc.map(a => a.arrayX)) && y == Math.min(...rc.map(a => a.arrayY))) draw(x+0.75, y+0.75, roomSize/3, roomSize/3)
+            if (rc.length == 4 && new Set(rc.map(a => a.arrayX)).size == 2 && x == Math.min(...rc.map(a => a.arrayX)) && y == Math.min(...rc.map(a => a.arrayY))) draw(x + 0.75, y + 0.75, roomSize / 3, roomSize / 3)
         }
     }
 
@@ -51,8 +51,8 @@ class RoomRenderer {
 
         const location = room.components[0]
 
-        const getX = (w) => (context.roomGap + context.roomSize - w)/2 + context.blockSize * location.arrayX
-        const getY = (h) => (context.roomGap + context.roomSize - h)/2 + context.blockSize * location.arrayY
+        const getX = (w) => (context.roomGap + context.roomSize - w) / 2 + context.blockSize * location.arrayX
+        const getY = (h) => (context.roomGap + context.roomSize - h) / 2 + context.blockSize * location.arrayY
 
         const drawCheckmark = (checkmark) => {
             const [w, h] = context.getIconSize(checkmark)
@@ -82,7 +82,7 @@ class RoomRenderer {
             let y = (context.roomGap / 2 + context.blockSize * location.arrayY + context.roomSize / 2 + context.borderWidth + context.paddingTop) / context.getImageSize(dungeon.floor)
 
             x = context.posX + x * context.size + context.borderWidth
-            y = context.posY + y * context.size + context.borderWidth
+            y = context.posY + y * (context.size - context.borderWidth) + context.borderWidth
 
             let scale = context.size / 175 * context.iconScale / 8
 
@@ -132,7 +132,7 @@ class RoomRenderer {
             let y = (context.roomGap / 2 + context.blockSize * location.arrayY + context.roomSize / 2 + context.borderWidth + context.paddingTop) / context.getImageSize(dungeon.floor)
 
             x = context.posX + x * context.size + context.borderWidth
-            y = context.posY + y * context.size + context.borderWidth
+            y = context.posY + y * (context.size - context.borderWidth) + context.borderWidth
 
             let scale = context.size / 250 * context.iconScale / 8
 

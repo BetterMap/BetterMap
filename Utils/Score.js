@@ -34,13 +34,18 @@ function getTabListInfo() {
     let puzzleCount = 0;
     let unfinishedPuzzles = 0;
     let completedRooms = 36;
+    let collectedSecrets = 0
 
     TabList.getNames().forEach((line) => {
         cleanedLine = ChatLib.removeFormatting(line).trim();
-        if (cleanedLine.includes('Secrets Found:') && cleanedLine.includes('%')) {
-            let secretString = cleanedLine.split(' ')[2]
-            secretString = secretString.substring(0, secretString.length - 1)
-            secrets = parseFloat(secretString);
+        if (cleanedLine.includes('Secrets Found:')) {
+            if (cleanedLine.includes('%')) {
+                let secretString = cleanedLine.split(' ')[2]
+                secretString = secretString.substring(0, secretString.length - 1)
+                secrets = parseFloat(secretString); //secrets percentage
+            } else {
+                collectedSecrets = parseInt(cleanedLine.split(' ')[2]) //secrets number
+            }
         } else if (cleanedLine.includes('Crypts:')) {
             let cryptString = cleanedLine.split(' ')[1]
             crypts = parseInt(cryptString)
@@ -69,7 +74,8 @@ function getTabListInfo() {
         crypts,
         deaths,
         unfinishedPuzzles,
-        completedRooms
+        completedRooms,
+        collectedSecrets
     ]
 }
 

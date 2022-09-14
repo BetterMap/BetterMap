@@ -99,7 +99,7 @@ class DungeonMap {
             }).setChatCriteria("&r&9Party &8> ${msg}"))
             this.triggers.push(register("chat", (msg) => {
                 this.dungeonFinished = true
-            }).setChatCriteria('&r&cThe Catacombs &r&8- &r&eFloor ${*}').setContains())
+            }).setChatCriteria('&r&cThe Catacombs &r&8- &r&eFloor').setContains())
             //&r&r&r                     &r&cThe Catacombs &r&8- &r&eFloor I Stats&r
 
             this.triggers.push(register("entityDeath", (entity) => {

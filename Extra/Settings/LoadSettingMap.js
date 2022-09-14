@@ -21,5 +21,6 @@ for (let data of global.betterMapDungeonMap.doors.entries()) {
 }
 
 //TODO: players need custom thing cus skin cant be loaded from tab in settings menu
+//Or maby just keep not showing players in the gui lol
 
 console.log(`return dungeon;`)

@@ -54,7 +54,7 @@ class MapRenderer {
         scoreInfoLore.push(`&fTotal Secrets: &c${scoreInfo.secretsFound ? scoreInfo.totalSecrets : "?"}`)
         scoreInfoLore.push(`&f`)
         scoreInfoLore.push(`&fCrypts: &a${scoreInfo.crypts}/${scoreInfo.totalCrypts}+`)
-        scoreInfoLore.push(`&fMimic: &a${scoreInfo.mimic ? "&a✔" : "&c✘"}`)
+        if ([6, 7].includes(dungeonMap.floorNumber)) scoreInfoLore.push(`&fMimic: &a${scoreInfo.mimic ? "&a✔" : "&c✘"}`)
         scoreInfoLore.push(`&f`)
         scoreInfoLore.push(`&fMin Secrets (s+): &a${scoreInfo.secretsFound ? scoreInfo.secretsFound : "?"}`)
         scoreInfoLore.push(`&fDeath penalty: &c${scoreInfo.deathPenalty}`)

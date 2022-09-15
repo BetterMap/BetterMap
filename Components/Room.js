@@ -337,8 +337,9 @@ class Room {
             roomLore.push('Unknown room!')
             if (CurrentSettings.settings.devInfo) roomLore.push('&9Rotation: ' + (this.rotation || 'NONE'));
         }
-        roomLore.push(`Shape: ${this.shape}`)
+
         if (CurrentSettings.settings.devInfo) {
+            roomLore.push(`Shape: ${this.shape}`)
             roomLore.push("--------------")
             for (let event of this.roomEvents) {
                 roomLore.push(toDisplayString(this, event))

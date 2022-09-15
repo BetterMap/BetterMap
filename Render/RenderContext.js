@@ -165,7 +165,7 @@ class RenderContext {
     getImage(type) {
         switch (this.tickStyle) {
             case "default":
-                return LegalMapTicks.get(type)
+                return NEUMapTicks.get(type)
             case "hypixel":
                 return HypixelTicksOld.get(type)
         }
@@ -331,8 +331,8 @@ HypixelTicksOld.set("whiteCheck", new Image("whiteCheckVanilla.png", "https://i.
 HypixelTicksOld.set("failedRoom", new Image("failedRoomVanilla.png", "https://i.imgur.com/WqW69z3.png").image)
 HypixelTicksOld.set("questionMark", new Image("questionMarkVanilla.png", "https://i.imgur.com/1jyxH9I.png").image)
 
-const LegalMapTicks = new Map()
-LegalMapTicks.set("greenCheck", new Image("BloomMapGreenCheck.png", "https://i.imgur.com/GQfTfmp.png").image)
-LegalMapTicks.set("whiteCheck", new Image("BloomMapWhiteCheck.png", "https://i.imgur.com/9cZ28bJ.png").image)
-LegalMapTicks.set("failedRoom", new Image("BloomMapFailedRoom.png", "https://i.imgur.com/qAb4O9H.png").image)
-LegalMapTicks.set("questionMark", new Image("BloomMapQuestionMark.png", "https://i.imgur.com/kp92Inw.png").image)
+const NEUMapTicks = new Map() //TODO: might need to make own textures for these
+NEUMapTicks.set("greenCheck", new Image("BloomMapGreenCheck.png", "https://i.imgur.com/GQfTfmp.png").image)
+NEUMapTicks.set("whiteCheck", new Image("BloomMapWhiteCheck.png", "https://i.imgur.com/9cZ28bJ.png").image)
+NEUMapTicks.set("failedRoom", new Image("BloomMapFailedRoom.png", "https://i.imgur.com/qAb4O9H.png").image)
+NEUMapTicks.set("questionMark", new Image("BloomMapQuestionMark.png", "https://i.imgur.com/kp92Inw.png").image)

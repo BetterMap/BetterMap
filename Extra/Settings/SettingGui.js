@@ -96,7 +96,7 @@ class SettingGui {
         this.addCategory("Style Settings")
 
         this.addDropdown("Tick Style", {
-            "default": "Legal Map",
+            "default": "NEU Map",
             "hypixel": "Hypixel",
             "secrets": "Secrets Found"
         }, "tickStyle", this.defaultSettings.tickStyle)

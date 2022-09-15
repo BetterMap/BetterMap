@@ -25,16 +25,19 @@ class Room {
 
     /**
      * Creates a room based on a type, components, and a room id
+     * @param {Any} dungeon 
      * @param {Number} type 
      * @param {Array<Position>} components 
      * @param {String} roomId 
      */
-    constructor(type, components, roomId) {
+    constructor(dungeon, type, components, roomId) {
         /**
          * @type {Array<Door>}
          */
         this.adjacentDoors = []
         this.roomEvents = []
+
+        this.dungeon = dungeon
 
         this.type = type
         this.components = components
@@ -69,6 +72,21 @@ class Room {
     set checkmarkState(val) {
         if (this.checkmarkState !== val) {
             this.addEvent(RoomEvents.CHECKMARK_STATE_CHANGE, this.checkmarkState, val)
+
+            if ((this._checkmarkState === Room.OPENED || this._checkmarkState === Room.UNOPENED)
+                && (val === Room.CLEARED || val === Room.COMPLETED)) {
+                let players = this.getPlayersInRoom()
+
+                players.forEach(p => {
+                    p.maxRooms++
+                    if (players.length === 1) {
+                        p.minRooms++
+                        p.roomsData.push([true, this])
+                    } else {
+                        p.roomsData.push([false, this])
+                    }
+                })
+            }
         }
         this._checkmarkState = val
     }
@@ -130,7 +148,7 @@ class Room {
 
         // Commented out stuff gets the room rotation differently to whatever soopy decided on for his rotations ):
         // Rotates the room the same way Hypixel does, getting the same result as if you were to scan the ceiling.
-        
+
         // let components = this.components.map(a => [a.arrayX, a.arrayY])
         // const x = this.components.map(a => a.arrayX)
         // const y = this.components.map(a => a.arrayY)
@@ -145,8 +163,8 @@ class Room {
         //     if (uniqueX == 1) return 1
         //     if (uniqueY == 1) return 3
         // }
-        
-        
+
+
         // // L rooms
         // if (this.shape == "L") {
         //     // Finds the component with two adjacent components. The corner of the L.
@@ -171,7 +189,7 @@ class Room {
         // }
 
         // -------------------------
-        
+
 
         let minX = -1, maxX = -1, minY = -1, maxY = -1;
         this.components.forEach((c) => {
@@ -301,6 +319,10 @@ class Room {
         return this.checkmarkState >= Room.CLEARED;
     }
 
+    getPlayersInRoom() {
+        return this.dungeon.players.filter(p => p.getRoom(this.dungeon) === this)
+    }
+
     getLore() {
         let roomLore = []
         if (this.roomId) { //TODO: COLORS!
@@ -309,7 +331,7 @@ class Room {
             if (CurrentSettings.settings.devInfo) roomLore.push('&9Rotation: ' + (this.rotation || 'NONE'));
             if (this.data && this.data?.soul) roomLore.push("&dFAIRY SOUL!")
             if (this.maxSecrets) roomLore.push("Secrets: " + this.currentSecrets + ' / ' + this.maxSecrets)
-            if (this.data?.crypts !== undefined && (this.type === Room.NORMAL || this.type === Room.MINIBOSS  || this.type === Room.TRAP)) roomLore.push("Crypts: " + this.data.crypts)
+            if (this.data?.crypts !== undefined && (this.type === Room.NORMAL || this.type === Room.MINIBOSS || this.type === Room.TRAP)) roomLore.push("Crypts: " + this.data.crypts)
             if (this.type === Room.NORMAL) roomLore.push("Spiders: " + (this.data?.spiders ? "Yes" : "No"))
         } else {
             roomLore.push('Unknown room!')

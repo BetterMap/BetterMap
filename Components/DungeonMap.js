@@ -6,7 +6,7 @@ import Room from "./Room.js"
 import { getScoreboardInfo, getTabListInfo, getRequiredSecrets } from "../Utils/Score"
 import Door from "./Door.js"
 import DungeonRoomData from "../Data/DungeonRoomData.js"
-import { MESSAGE_PREFIX, renderLore } from "../Utils/Utils.js"
+import { dungeonOffsetX, dungeonOffsetY, MESSAGE_PREFIX, renderLore } from "../Utils/Utils.js"
 import socketConnection from "../socketConnection.js"
 import DataLoader from "../Utils/DataLoader.js"
 import { fetch } from "../Utils/networkUtils.js"
@@ -17,9 +17,6 @@ let PlayerComparator = Java.type("net.minecraft.client.gui.GuiPlayerTabOverlay")
 let c = PlayerComparator.class.getDeclaredConstructor()
 c.setAccessible(true);
 let sorter = c.newInstance()
-
-const dungeonOffsetX = 200;
-const dungeonOffsetY = 200;
 
 class DungeonMap {
     constructor(floor, deadPlayers, registerEvents = true) {
@@ -491,7 +488,7 @@ class DungeonMap {
                     position.mapY = mapY
                     let currRoom = this.rooms.get(x + "," + y)
                     if (!currRoom) {
-                        let room = new Room(r1x1s[pixelColor], [position], undefined)
+                        let room = new Room(this, r1x1s[pixelColor], [position], undefined)
                         this.rooms.set(x + "," + y, room)
                         this.roomsArr.add(room)
                         room.checkmarkState = room.type === Room.UNKNOWN ? Room.ADJACENT : Room.OPENED
@@ -523,7 +520,7 @@ class DungeonMap {
 
                     if (!currRoom && !currRoomLeft && !currRoomTop && !currRoomTopRight) { //no room and no merge
 
-                        let room = new Room(Room.NORMAL, [position], undefined)
+                        let room = new Room(this, Room.NORMAL, [position], undefined)
 
                         this.rooms.set(x + "," + y, room)
                         this.roomsArr.add(room)
@@ -732,7 +729,6 @@ class DungeonMap {
     }
 
     /**
-     * 
      * @returns {{"skill": Number,"exploration": Number,"time": Number,"bonus": Number,"total": Number,"mimic": Boolean,"secretsFound": Number, "crypts": Numbers, "deathPenalty": Number, "totalSecrets": Number, "minSecrets": Number}}
      */
     getScore() {
@@ -1256,7 +1252,7 @@ class DungeonMap {
             return
         }
 
-        let room = new Room(type, components, roomId)
+        let room = new Room(this, type, components, roomId)
 
         room.checkmarkState = 1
 
@@ -1301,7 +1297,7 @@ class DungeonMap {
                 let mapCoordY = ~~((y2 + dungeonOffsetY) / 32);
 
                 if (!this.rooms.get(mapCoordX + "," + mapCoordY)) {
-                    let room = new Room(Room.UNKNOWN, [new Position(x2, y2)], undefined)
+                    let room = new Room(this, Room.UNKNOWN, [new Position(x2, y2)], undefined)
                     room.checkmarkState = 1 // 1 -> adjacent/not opened
                     this.rooms.set(mapCoordX + "," + mapCoordY, room)
                     this.roomsArr.add(room)
@@ -1317,7 +1313,7 @@ class DungeonMap {
                 let mapCoordY = ~~((y2 + dungeonOffsetY) / 32);
 
                 if (!this.rooms.get(mapCoordX + "," + mapCoordY)) {
-                    let room = new Room(Room.UNKNOWN, [new Position(x2, y2)], undefined)
+                    let room = new Room(this, Room.UNKNOWN, [new Position(x2, y2)], undefined)
                     room.checkmarkState = 1// 1 -> adjacent/not opened
                     this.rooms.set(mapCoordX + "," + mapCoordY, room)
                     this.roomsArr.add(room)
@@ -1334,7 +1330,7 @@ class DungeonMap {
                 let mapCoordY = ~~((y2 + dungeonOffsetY) / 32);
 
                 if (!this.rooms.get(mapCoordX + "," + mapCoordY)) {
-                    let room = new Room(Room.UNKNOWN, [new Position(x2, y2)], undefined)
+                    let room = new Room(this, Room.UNKNOWN, [new Position(x2, y2)], undefined)
                     room.checkmarkState = 1// 1 -> adjacent/not opened
                     this.rooms.set(mapCoordX + "," + mapCoordY, room)
                     this.roomsArr.add(room)
@@ -1350,7 +1346,7 @@ class DungeonMap {
                 let mapCoordY = ~~((y2 + dungeonOffsetY) / 32);
 
                 if (!this.rooms.get(mapCoordX + "," + mapCoordY)) {
-                    let room = new Room(Room.UNKNOWN, [new Position(x2, y2)], undefined)
+                    let room = new Room(this, Room.UNKNOWN, [new Position(x2, y2)], undefined)
                     room.checkmarkState = 1// 1 -> adjacent/not opened
                     this.rooms.set(mapCoordX + "," + mapCoordY, room)
                     this.roomsArr.add(room)

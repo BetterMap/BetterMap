@@ -3,7 +3,7 @@ import renderLibs from "../../guimanager/renderLibs.js"
 import { f, m } from "../../mappings/mappings.js"
 import RenderContext from "../Render/RenderContext.js"
 import Position from "../Utils/Position.js"
-import { getSBID } from "../Utils/Utils.js"
+import { dungeonOffsetX, dungeonOffsetY, getSBID } from "../Utils/Utils.js"
 
 const DefaultVertexFormats = Java.type("net.minecraft.client.renderer.vertex.DefaultVertexFormats")
 const MCTessellator = Java.type("net.minecraft.client.renderer.Tessellator")
@@ -64,6 +64,12 @@ class MapPlayer {
         }
 
         this.yaw.set(yaw, time)
+    }
+
+    getRoom(dungeon) {
+        let x = ~~((this.location.worldX + dungeonOffsetX) / 32);
+        let y = ~~((this.location.worldY + dungeonOffsetY) / 32);
+        return dungeon.rooms.get(x + ',' + y)
     }
 
     /**

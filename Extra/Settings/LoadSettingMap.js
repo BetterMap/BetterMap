@@ -3,7 +3,7 @@ console.log(`let dungeon = new DungeonMap("F7", new Set(), false);`)
 
 for (let room of global.betterMapDungeonMap.roomsArr) {
     console.log(`{`)
-    console.log(`   let r = new Room(${room.type}, [${room.components.map(a => "new Position(" + a.worldX + ", " + a.worldY + ")").join(",")}], ${JSON.stringify(room.roomId)});`)
+    console.log(`   let r = new Room(dungeon, ${room.type}, [${room.components.map(a => "new Position(" + a.worldX + ", " + a.worldY + ")").join(",")}], ${JSON.stringify(room.roomId)});`)
     console.log(`   r.currentSecrets = ${room.currentSecrets};`)
     console.log(`   r.checkmarkState = ${room.checkmarkState};`)
     console.log(`   dungeon.roomsArr.add(r);`)

@@ -347,3 +347,7 @@ export function getSBUUID(item) {
 export function getSBEnchantfunction(item, enchant) {
     return item?.getNBT()?.getCompoundTag("tag")?.getCompoundTag("ExtraAttributes")?.getCompoundTag("enchantments")?.getInteger(enchant) || null
 }
+
+
+export const dungeonOffsetX = 200;
+export const dungeonOffsetY = 200;

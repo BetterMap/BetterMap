@@ -86,7 +86,7 @@ class SettingsManager {
     createFakeDungeon() {
         let dungeon = new DungeonMap("F7", new Set(), false);
         {
-            let r = new Room(0, [new Position(-168, -200)], "102,66");
+            let r = new Room(dungeon, 0, [new Position(-168, -200)], "102,66");
             r.currentSecrets = 0
             r.checkmarkState = 4;
             dungeon.roomsArr.add(r);
@@ -95,7 +95,7 @@ class SettingsManager {
             });
         }
         {
-            let r = new Room(1, [new Position(-168, -168), new Position(-168, -136), new Position(-136, -136)], "1050,-524");
+            let r = new Room(dungeon, 1, [new Position(-168, -168), new Position(-168, -136), new Position(-136, -136)], "1050,-524");
             r.currentSecrets = 2
             r.checkmarkState = 3;
             dungeon.roomsArr.add(r);
@@ -104,7 +104,7 @@ class SettingsManager {
             });
         }
         {
-            let r = new Room(1, [new Position(-136, -104)], "498,-240");
+            let r = new Room(dungeon, 1, [new Position(-136, -104)], "498,-240");
             r.currentSecrets = 0
             r.checkmarkState = 3;
             dungeon.roomsArr.add(r);
@@ -113,7 +113,7 @@ class SettingsManager {
             });
         }
         {
-            let r = new Room(2, [new Position(-104, -136)], "-60,-600");
+            let r = new Room(dungeon, 2, [new Position(-104, -136)], "-60,-600");
             r.currentSecrets = 0
             r.checkmarkState = 4;
             dungeon.roomsArr.add(r);
@@ -122,7 +122,7 @@ class SettingsManager {
             });
         }
         {
-            let r = new Room(2, [new Position(-104, -104)], "-60,-456");
+            let r = new Room(dungeon, 2, [new Position(-104, -104)], "-60,-456");
             r.currentSecrets = 0
             r.checkmarkState = 2;
             dungeon.roomsArr.add(r);
@@ -131,7 +131,7 @@ class SettingsManager {
             });
         }
         {
-            let r = new Room(4, [new Position(-136, -72)], "462,-312");
+            let r = new Room(dungeon, 4, [new Position(-136, -72)], "462,-312");
             r.currentSecrets = 0
             r.checkmarkState = 4;
             dungeon.roomsArr.add(r);
@@ -140,7 +140,7 @@ class SettingsManager {
             });
         }
         {
-            let r = new Room(5, [new Position(-200, -72)], undefined);
+            let r = new Room(dungeon, 5, [new Position(-200, -72)], undefined);
             r.currentSecrets = undefined
             r.checkmarkState = 2;
             dungeon.roomsArr.add(r);
@@ -149,7 +149,7 @@ class SettingsManager {
             });
         }
         {
-            let r = new Room(1, [new Position(-200, -40), new Position(-168, -40), new Position(-136, -40)], "530,-420");
+            let r = new Room(dungeon, 1, [new Position(-200, -40), new Position(-168, -40), new Position(-136, -40)], "530,-420");
             r.currentSecrets = 0
             r.checkmarkState = 3;
             dungeon.roomsArr.add(r);
@@ -158,7 +158,7 @@ class SettingsManager {
             });
         }
         {
-            let r = new Room(1, [new Position(-136, -200), new Position(-104, -200), new Position(-136, -168), new Position(-104, -168)], "166,-592");
+            let r = new Room(dungeon, 1, [new Position(-136, -200), new Position(-104, -200), new Position(-136, -168), new Position(-104, -168)], "166,-592");
             r.currentSecrets = 1
             r.checkmarkState = 3;
             dungeon.roomsArr.add(r);
@@ -167,7 +167,7 @@ class SettingsManager {
             });
         }
         {
-            let r = new Room(1, [new Position(-72, -168)], "66,-276");
+            let r = new Room(dungeon, 1, [new Position(-72, -168)], "66,-276");
             r.currentSecrets = 1
             r.checkmarkState = 4;
             dungeon.roomsArr.add(r);
@@ -176,7 +176,7 @@ class SettingsManager {
             });
         }
         {
-            let r = new Room(2, [new Position(-72, -200)], "-96,-168");
+            let r = new Room(dungeon, 2, [new Position(-72, -200)], "-96,-168");
             r.currentSecrets = 0
             r.checkmarkState = 2;
             dungeon.roomsArr.add(r);
@@ -185,7 +185,7 @@ class SettingsManager {
             });
         }
         {
-            let r = new Room(1, [new Position(-40, -168)], "66,-240");
+            let r = new Room(dungeon, 1, [new Position(-40, -168)], "66,-240");
             r.currentSecrets = 0
             r.checkmarkState = 3;
             dungeon.roomsArr.add(r);
@@ -194,7 +194,7 @@ class SettingsManager {
             });
         }
         {
-            let r = new Room(2, [new Position(-40, -200)], "-60,-564");
+            let r = new Room(dungeon, 2, [new Position(-40, -200)], "-60,-564");
             r.currentSecrets = 0
             r.checkmarkState = 4;
             dungeon.roomsArr.add(r);
@@ -203,7 +203,7 @@ class SettingsManager {
             });
         }
         {
-            let r = new Room(1, [new Position(-72, -136), new Position(-40, -136)], "574,-384");
+            let r = new Room(dungeon, 1, [new Position(-72, -136), new Position(-40, -136)], "574,-384");
             r.currentSecrets = 3
             r.checkmarkState = 4;
             dungeon.roomsArr.add(r);
@@ -212,7 +212,7 @@ class SettingsManager {
             });
         }
         {
-            let r = new Room(1, [new Position(-72, -104), new Position(-72, -72), new Position(-104, -72)], "438,-524");
+            let r = new Room(dungeon, 1, [new Position(-72, -104), new Position(-72, -72), new Position(-104, -72)], "438,-524");
             r.currentSecrets = 0
             r.checkmarkState = 2;
             dungeon.roomsArr.add(r);
@@ -221,7 +221,7 @@ class SettingsManager {
             });
         }
         {
-            let r = new Room(1, [new Position(-40, -104), new Position(-40, -72), new Position(-40, -40)], "630,-420");
+            let r = new Room(dungeon, 1, [new Position(-40, -104), new Position(-40, -72), new Position(-40, -40)], "630,-420");
             r.currentSecrets = 0
             r.checkmarkState = 3;
             dungeon.roomsArr.add(r);
@@ -230,7 +230,7 @@ class SettingsManager {
             });
         }
         {
-            let r = new Room(6, [new Position(-104, -40)], undefined);
+            let r = new Room(dungeon, 6, [new Position(-104, -40)], undefined);
             r.currentSecrets = undefined
             r.checkmarkState = 1;
             dungeon.roomsArr.add(r);
@@ -239,7 +239,7 @@ class SettingsManager {
             });
         }
         {
-            let r = new Room(3, [new Position(-72, -40)], "174,66");
+            let r = new Room(dungeon, 3, [new Position(-72, -40)], "174,66");
             r.currentSecrets = 0
             r.checkmarkState = 4;
             dungeon.roomsArr.add(r);
@@ -248,7 +248,7 @@ class SettingsManager {
             });
         }
         {
-            let r = new Room(1, [new Position(-200, -200), new Position(-200, -168), new Position(-200, -136), new Position(-200, -104)], "30,-456");
+            let r = new Room(dungeon, 1, [new Position(-200, -200), new Position(-200, -168), new Position(-200, -136), new Position(-200, -104)], "30,-456");
             r.currentSecrets = 0
             r.checkmarkState = 3;
             dungeon.roomsArr.add(r);
@@ -257,7 +257,7 @@ class SettingsManager {
             });
         }
         {
-            let r = new Room(1, [new Position(-168, -104)], "174,-132");
+            let r = new Room(dungeon, 1, [new Position(-168, -104)], "174,-132");
             r.currentSecrets = 0
             r.checkmarkState = 3;
             dungeon.roomsArr.add(r);
@@ -266,7 +266,7 @@ class SettingsManager {
             });
         }
         {
-            let r = new Room(7, [new Position(-168, -72)], "-312,30");
+            let r = new Room(dungeon, 7, [new Position(-168, -72)], "-312,30");
             r.currentSecrets = 1
             r.checkmarkState = 3;
             dungeon.roomsArr.add(r);

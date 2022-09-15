@@ -3,6 +3,21 @@ import renderLibs from "../../../guimanager/renderLibs.js"
 import Room from "../../Components/Room.js"
 import RenderContext from "./../RenderContext.js"
 
+const barrier_block_item = new Item("minecraft:barrier")
+const puzzleItems = {
+    "Water Board": new Item("minecraft:water_bucket"),
+    "Higher Or Lower": new Item("minecraft:blaze_powder"),
+    "Quiz": new Item("minecraft:book"),
+    "Three Weirdos": new Item("minecraft:chest"),
+    "Tic Tac Toe": new Item("minecraft:shears"),
+    "Teleport Maze": new Item("minecraft:end_portal_frame"),
+    "Ice Fill": new Item("minecraft:ice"),
+    "Creeper Beams": new Item("minecraft:sea_lantern"),
+    "Bomb Defuse": new Item("minecraft:tnt"),
+    "Boulder": new Item("minecraft:planks"),
+    "Ice Path": new Item("minecraft:mob_spawner")
+}
+
 class RoomRenderer {
 
     constructor() {
@@ -138,40 +153,47 @@ class RoomRenderer {
 
             // TODO: show icon instead of text if thats the setting
 
-            let text = room.data?.name?.split(" ") || ["???"]
+            if(context.puzzleNames === "text"){
+                let text = room.data?.name?.split(" ") || ["???"]
 
-            let textColor = ""
-            switch (room.checkmarkState) {
-                case Room.CLEARED:
-                    textColor = "&f"
-                    break;
-                case Room.COMPLETED:
-                    textColor = "&a"
-                    break;
-                case Room.FAILED:
-                    textColor = "&c"
-                    break;
-                default:
-                    textColor = "&7"
-                    break;
+                let textColor = ""
+                switch (room.checkmarkState) {
+                    case Room.CLEARED:
+                        textColor = "&f"
+                        break;
+                    case Room.COMPLETED:
+                        textColor = "&a"
+                        break;
+                    case Room.FAILED:
+                        textColor = "&c"
+                        break;
+                    default:
+                        textColor = "&7"
+                        break;
+                }
+    
+                let i = 0
+                for (let line of text) {
+                    let ly = y + 9 * scale * (i - text.length / 2)
+    
+                    Renderer.translate(0, 0, 100)
+                    renderLibs.drawStringCenteredShadow("&0" + line, x + scale, ly, scale)
+                    Renderer.translate(0, 0, 100)
+                    renderLibs.drawStringCenteredShadow("&0" + line, x - scale, ly, scale)
+                    Renderer.translate(0, 0, 100)
+                    renderLibs.drawStringCenteredShadow("&0" + line, x, ly + scale, scale)
+                    Renderer.translate(0, 0, 100)
+                    renderLibs.drawStringCenteredShadow("&0" + line, x, ly - scale, scale)
+                    Renderer.translate(0, 0, 100)
+                    renderLibs.drawStringCenteredShadow(textColor + line, x, ly, scale)
+    
+                    i++
+                }
             }
+            if(context.puzzleNames === "icon"){
+                let icon = puzzleItems[room.data?.name] || barrier_block_item
 
-            let i = 0
-            for (let line of text) {
-                let ly = y + 9 * scale * (i - text.length / 2)
-
-                Renderer.translate(0, 0, 100)
-                renderLibs.drawStringCenteredShadow("&0" + line, x + scale, ly, scale)
-                Renderer.translate(0, 0, 100)
-                renderLibs.drawStringCenteredShadow("&0" + line, x - scale, ly, scale)
-                Renderer.translate(0, 0, 100)
-                renderLibs.drawStringCenteredShadow("&0" + line, x, ly + scale, scale)
-                Renderer.translate(0, 0, 100)
-                renderLibs.drawStringCenteredShadow("&0" + line, x, ly - scale, scale)
-                Renderer.translate(0, 0, 100)
-                renderLibs.drawStringCenteredShadow(textColor + line, x, ly, scale)
-
-                i++
+                icon.draw(x, y, scale)
             }
         }
     }

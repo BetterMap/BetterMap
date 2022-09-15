@@ -62,7 +62,10 @@ class RoomRenderer {
     drawCheckmark(context, graphics, room) {
         if (room.type === Room.SPAWN) return // Dont render tick on spawn room
 
-        if (context.tickStyle === 'secrets' || (context.puzzleNames !== "none" && room.type === Room.PUZZLE)) return // Needs to be rendered in renderoverlay, see drawExtras()
+        if (context.tickStyle === 'secrets') return // Needs to be rendered in renderoverlay, see drawExtras()
+        if (room.type === Room.PUZZLE && context.puzzleNames === "text") return
+        if (room.type === Room.PUZZLE && context.puzzleNames === "icon"
+            && (room.checkmarkState === Room.UNOPENED || room.checkmarkState === Room.OPENED)) return
 
         const location = room.components[0]
 
@@ -151,9 +154,7 @@ class RoomRenderer {
 
             let scale = context.size / 250 * context.iconScale / 8
 
-            // TODO: show icon instead of text if thats the setting
-
-            if(context.puzzleNames === "text"){
+            if (context.puzzleNames === "text") {
                 let text = room.data?.name?.split(" ") || ["???"]
 
                 let textColor = ""
@@ -171,11 +172,11 @@ class RoomRenderer {
                         textColor = "&7"
                         break;
                 }
-    
+
                 let i = 0
                 for (let line of text) {
                     let ly = y + 9 * scale * (i - text.length / 2)
-    
+
                     Renderer.translate(0, 0, 100)
                     renderLibs.drawStringCenteredShadow("&0" + line, x + scale, ly, scale)
                     Renderer.translate(0, 0, 100)
@@ -186,14 +187,15 @@ class RoomRenderer {
                     renderLibs.drawStringCenteredShadow("&0" + line, x, ly - scale, scale)
                     Renderer.translate(0, 0, 100)
                     renderLibs.drawStringCenteredShadow(textColor + line, x, ly, scale)
-    
+
                     i++
                 }
             }
-            if(context.puzzleNames === "icon"){
+            if (context.puzzleNames === "icon" && (room.checkmarkState === Room.UNOPENED || room.checkmarkState === Room.OPENED)) {
                 let icon = puzzleItems[room.data?.name] || barrier_block_item
 
-                icon.draw(x, y, scale)
+                let iconScale = scale * 1.75
+                icon.draw(x - 8 * iconScale, y - 8 * iconScale, iconScale)
             }
         }
     }

@@ -729,7 +729,7 @@ class DungeonMap {
     }
 
     /**
-     * @returns {{"skill": Number,"exploration": Number,"time": Number,"bonus": Number,"total": Number,"mimic": Boolean,"secretsFound": Number, "crypts": Numbers, "deathPenalty": Number, "totalSecrets": Number, "minSecrets": Number}}
+     * @returns {{"skill": Number,"exploration": Number,"time": Number,"bonus": Number,"total": Number,"mimic": Boolean,"secretsFound": Number, "crypts": Numbers, "deathPenalty": Number, "totalSecrets": Number, "minSecrets": Number, "totalCrypts": Number}}
      */
     getScore() {
         if (Date.now() - this.cachedScore.time < 500) { //Update score calculations every 500ms
@@ -784,6 +784,8 @@ class DungeonMap {
             bonus += 10
         }
 
+        let totalCryptCount = this.roomsArr.reduce((prev, room) => prev + (room.data?.crypts || 0), 0);
+
         let totalSecrets = Math.round(collectedSecrets / (secrets / 100))
 
         let deathPenalty = deaths * 2 - this.firstDeathHadSpirit //firstDeathHadSpirit gets coerced to number (0 or 1)
@@ -803,7 +805,8 @@ class DungeonMap {
                 "crypts": crypts,
                 "deathPenalty": deathPenalty,
                 "totalSecrets": totalSecrets,
-                "minSecrets": minSecrets
+                "minSecrets": minSecrets,
+                "totalCrypts": totalCryptCount
             }
         }
 

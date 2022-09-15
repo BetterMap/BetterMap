@@ -41,11 +41,28 @@ class MapRenderer {
         // Renderer.drawRect(Renderer.color(0, 0, 0), x, y + size - this.borderWidth, size, this.borderWidth)
 
         // Score info under map
+        let scoreInfo = dungeonMap.getScore()
+        let scoreInfoLore = []
+
+        scoreInfoLore.push(`&fTotal score: &b${scoreInfo.total}`)
+        scoreInfoLore.push(`&fSkill score: &a${scoreInfo.skill}`)
+        scoreInfoLore.push(`&fExploration score: &a${scoreInfo.exploration}`)
+        scoreInfoLore.push(`&fBonus score: &a${scoreInfo.bonus}`)
+        scoreInfoLore.push(`&f`)
+        scoreInfoLore.push(`&fSecrets Found: &b${scoreInfo.secretsFound}`)
+        scoreInfoLore.push(`&fSecrets Left: &e${scoreInfo.secretsFound ? scoreInfo.totalSecrets - scoreInfo.secretsFound : "?"}`)
+        scoreInfoLore.push(`&fTotal Secrets: &c${scoreInfo.secretsFound ? scoreInfo.totalSecrets : "?"}`)
+        scoreInfoLore.push(`&f`)
+        scoreInfoLore.push(`&fCrypts: &a${scoreInfo.crypts}/${scoreInfo.totalCrypts}+`)
+        scoreInfoLore.push(`&fMimic: &a${scoreInfo.mimic ? "&a✔" : "&c✘"}`)
+        scoreInfoLore.push(`&f`)
+        scoreInfoLore.push(`&fMin Secrets (s+): &a${scoreInfo.secretsFound ? scoreInfo.secretsFound : "?"}`)
+        scoreInfoLore.push(`&fDeath penalty: &c${scoreInfo.deathPenalty}`)
+
         if (renderContext.scoreInfoUnderMap === "simplified") {
             let scoreInfoHeight = 10 * size / 100
             Renderer.drawRect(Renderer.color(0, 0, 0, 150), x, y + size, size, scoreInfoHeight)
 
-            let scoreInfo = dungeonMap.getScore()
             renderLibs.drawStringCenteredFull("&f" + scoreInfo.total, x + size / 4, y + size + scoreInfoHeight / 2, size / 100)
 
             renderLibs.drawStringCenteredFull("&7Mimic " + (scoreInfo.mimic ? "&a✔" : "&c✕"), x + size / 4 * 3, y + size + scoreInfoHeight / 2, size / 100)
@@ -54,11 +71,15 @@ class MapRenderer {
             Renderer.drawRect(Renderer.color(0, 0, 0), x, y + size, renderContext.borderWidth, scoreInfoHeight) //border of score info
             Renderer.drawRect(Renderer.color(0, 0, 0), x + size - renderContext.borderWidth, y + size, renderContext.borderWidth, scoreInfoHeight)
             Renderer.drawRect(Renderer.color(0, 0, 0), x, y + size + scoreInfoHeight, size, renderContext.borderWidth)
+
+            if (mouseX >= x && mouseX <= x + size
+                && mouseY >= y + size && mouseY <= y + size + scoreInfoHeight) {
+
+                renderLore(mouseX, mouseY, scoreInfoLore)
+            }
         } else if (renderContext.scoreInfoUnderMap === "legalmap") {
             let scoreInfoHeight = 20 * size / 200
             Renderer.drawRect(Renderer.color(0, 0, 0, 150), x, y + size, size, scoreInfoHeight)
-
-            let scoreInfo = dungeonMap.getScore()
 
             let dSecrets = "&7Secrets: " + (!scoreInfo.secretsFound ? "&b?" : `&b${scoreInfo.secretsFound}&8-&e${scoreInfo.totalSecrets - scoreInfo.secretsFound}&8-&c${scoreInfo.totalSecrets}`)
             let dCrypts = "&7Crypts: " + (scoreInfo.crypts >= 5 ? `&a${scoreInfo.crypts}` : scoreInfo.crypts > 0 ? `&e${scoreInfo.crypts}` : `&c0`)
@@ -77,6 +98,12 @@ class MapRenderer {
             Renderer.drawRect(Renderer.color(0, 0, 0), x, y + size, renderContext.borderWidth, scoreInfoHeight) //border of score info
             Renderer.drawRect(Renderer.color(0, 0, 0), x + size - renderContext.borderWidth, y + size, renderContext.borderWidth, scoreInfoHeight)
             Renderer.drawRect(Renderer.color(0, 0, 0), x, y + size + scoreInfoHeight, size, renderContext.borderWidth)
+
+            if (mouseX >= x && mouseX <= x + size
+                && mouseY >= y + size && mouseY <= y + size + scoreInfoHeight) {
+
+                renderLore(mouseX, mouseY, scoreInfoLore)
+            }
         } else {
             Renderer.drawRect(Renderer.color(0, 0, 0), x, y + size, size, renderContext.borderWidth)
         }

@@ -16,6 +16,7 @@
  * @property {Boolean} tabCryptCount - Show the current total crypt count for discovered rooms in tab 
  * @property {Boolean} tabMimic - Show the mimic status in tab
  * @property {Boolean} hideInBoss - Hide the map in boss entirely 
+ * @property {Boolean} showTabs - Show tabs at the top of the map 
  * @property {Boolean} forcePaul - Wether to force enable the +10 score for paul (eg if jerry mayor)
  * @property {Boolean} devInfo - Wether to show def info in various places in the map
  */
@@ -87,6 +88,10 @@ class RenderContext {
 
     get hideInBoss() {
         return this.settings.hideInBoss
+    }
+
+    get showTabs() {
+        return this.settings.showTabs
     }
 
     get tabSecretCount() {
@@ -222,6 +227,7 @@ class RenderContext {
         tabCryptCount = false,
         tabMimic = false,
         hideInBoss = false,
+        showTabs = true,
         forcePaul = false,
         devInfo = false
     }) {
@@ -242,6 +248,7 @@ class RenderContext {
             tabSecretCount,
             tabMimic,
             hideInBoss,
+            showTabs,
             forcePaul,
             devInfo
         }

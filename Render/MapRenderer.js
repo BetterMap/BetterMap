@@ -27,7 +27,7 @@ class MapRenderer {
 
         let { x, y, size } = renderContext.getMapDimensions()
 
-        this.drawTabs(renderContext, dungeonMap, mouseX, mouseY)
+        if (renderContext.showTabs) this.drawTabs(renderContext, dungeonMap, mouseX, mouseY)
 
         Renderer.drawRect(Renderer.color(0, 0, 0, 100), x, y, size, size)//background
 

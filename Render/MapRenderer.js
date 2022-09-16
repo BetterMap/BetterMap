@@ -178,6 +178,7 @@ class MapRenderer {
         dungeonMap.roomGuiClicked(renderContext, mouseX, mouseY, button, isPress);
 
         if (!isPress) return
+        if (!renderContext.showTabs) return
 
         let { x, y, size } = renderContext.getMapDimensions()
 

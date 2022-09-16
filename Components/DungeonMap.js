@@ -254,11 +254,11 @@ class DungeonMap {
      */
     updateTabInfo() {
         // ChatLib.chat(JSON.stringify(settings));
-        if (!settings.settings.tabCryptCount && !settings.settings.tabSecretCount && (!settings.settings.tabMimic || this.floor < 6)) return;
+        if (!settings.settings.tabCryptCount && !settings.settings.tabSecretCount && (!settings.settings.tabMimic || this.floorNumber < 6)) return;
         //we pretend it's already done if the settings are disabled
         let modifiedCrypt = !settings.settings.tabCryptCount;
         let modifiedSecrets = !settings.settings.tabSecretCount;
-        let modifiedMimic = !settings.settings.tabMimic || this.floor < 6;
+        let modifiedMimic = !settings.settings.tabMimic || this.floorNumber < 6;
         const ChatComponentText = Java.type('net.minecraft.util.ChatComponentText');
 
         let playerInfoList = Client.getMinecraft().field_71439_g.field_71174_a.func_175106_d();

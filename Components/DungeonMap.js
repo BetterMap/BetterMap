@@ -96,8 +96,14 @@ class DungeonMap {
             }).setChatCriteria("&r&9Party &8> ${msg}"))
             this.triggers.push(register("chat", (msg) => {
                 this.dungeonFinished = true
-            }).setChatCriteria('&r&cThe Catacombs &r&8- &r&eFloor').setContains())
+
+                // ChatLib.chat(MESSAGE_PREFIX + "Cleared room counts:")
+                // this.players.forEach(p => {
+                //     ChatLib.chat(`${p.username}: ${p.minRooms}-${p.maxRooms}`)
+                // })
+            }).setChatCriteria('&r&c${*}e Catacombs &r&8- &r&eFloor').setContains())
             //&r&r&r                     &r&cThe Catacombs &r&8- &r&eFloor I Stats&r
+            //&r&r&r               &r&cMaster Mode Catacombs &r&8- &r&eFloor III Stats&r
 
             this.triggers.push(register("entityDeath", (entity) => {
                 if (entity.getClassName() !== "EntityZombie") return
@@ -220,7 +226,8 @@ class DungeonMap {
         let thePlayer = undefined
         for (let p of pl) {
             if (!p[m.getDisplayName.NetworkPlayerInfo]()) continue
-            let line = p[m.getDisplayName.NetworkPlayerInfo]()[m.getUnformattedText]().trim().replace("♲ ", "") //TODO: Remove bingo symbol and support yt/admin rank
+            let line = p[m.getDisplayName.NetworkPlayerInfo]()[m.getUnformattedText]().trim().replace("♲ ", "") //TODO: Remove bingo symbol
+            line.replace(/\[[A-Z]+?\] /, "") //support yt/admin rank
             if (line.endsWith(")") && line.includes(" (") && line.split(" (").length === 2 && line.split(" (")[0].split(" ").length === 1 && line.split(" (")[1].length > 3) {
                 // This is a tab list line for a player
                 let name = line.split(" ")[0]

@@ -227,7 +227,7 @@ class DungeonMap {
         for (let p of pl) {
             if (!p[m.getDisplayName.NetworkPlayerInfo]()) continue
             let line = p[m.getDisplayName.NetworkPlayerInfo]()[m.getUnformattedText]().trim().replace("♲ ", "") //TODO: Remove bingo symbol
-            line.replace(/\[[A-Z]+?\] /, "") //support yt/admin rank
+            line = line.replace(/\[[A-Z]+?\] /, "") //support yt/admin rank
             if (line.endsWith(")") && line.includes(" (") && line.split(" (").length === 2 && line.split(" (")[0].split(" ").length === 1 && line.split(" (")[1].length > 3) {
                 // This is a tab list line for a player
                 let name = line.split(" ")[0]

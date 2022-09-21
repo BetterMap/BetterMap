@@ -70,6 +70,10 @@ class DataLoader {
         this.area = undefined
         this.areaFine = undefined
 
+        this.isInDungeon = false
+        this.dungeonFloor = undefined
+
+
         fetch("http://soopy.dev/api/v2/mayor").json(data => {
             if (!data.success) return
             this.mayorData = data.data
@@ -109,11 +113,8 @@ class DataLoader {
         if (this.stats["Dungeon"]) {
             this.stats["Area"] = this.stats["Dungeon"]
             this.isInDungeon = true
-        } else {
-            this.isInDungeon = false
         }
 
-        this.dungeonFloor = undefined
         Scoreboard.getLines().forEach(line => {
             let name = ChatLib.removeFormatting(line.getName()).replace(/[^A-z0-9 \:\(\)\.]/g, "")
             if (this.isInDungeon) {

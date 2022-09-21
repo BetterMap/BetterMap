@@ -32,6 +32,7 @@ class MapPlayer {
 
         this.minRooms = 0
         this.maxRooms = 0
+        /**@type {[MapPlayer[], import("./Room").default][]} */
         this.roomsData = []
     }
 

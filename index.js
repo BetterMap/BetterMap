@@ -1,5 +1,6 @@
 
 /// <reference types="../CTAutocomplete" />
+/// <reference lib="es2015" />
 
 import { m } from "../mappings/mappings"
 import DungeonMap from "./Components/DungeonMap"
@@ -12,8 +13,6 @@ import RenderLib from "../RenderLib/index"
 import DungeonRoomData from "./Data/DungeonRoomData.js"
 import CurrentSettings from "./Extra/Settings/CurrentSettings"
 require("./Extra/Events/SecretTracker.js")
-
-/// <reference lib="es2015" />
 
 /**@type {DungeonMap} */
 let currentDungeonMap = undefined

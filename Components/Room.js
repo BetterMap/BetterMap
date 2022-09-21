@@ -74,17 +74,16 @@ class Room {
             this.addEvent(RoomEvents.CHECKMARK_STATE_CHANGE, this.checkmarkState, val)
 
             if ((this._checkmarkState === Room.OPENED || this._checkmarkState === Room.UNOPENED)
-                && (val === Room.CLEARED || val === Room.COMPLETED)) {
+                && (val === Room.CLEARED || val === Room.COMPLETED)
+                && this.type !== Room.FAIRY && this.type !== Room.SPAWN) {
                 let players = this.getPlayersInRoom()
 
                 players.forEach(p => {
                     p.maxRooms++
                     if (players.length === 1) {
                         p.minRooms++
-                        p.roomsData.push([true, this])
-                    } else {
-                        p.roomsData.push([false, this])
                     }
+                    p.roomsData.push([players, this])
                 })
             }
         }
@@ -388,8 +387,28 @@ class Room {
         }
     }
 
-    checkmarkStateToName(state) {
+    checkmarkStateToName(state = this.checkmarkState) {
+        return Room.checkmarkStateToName(state)
+    }
+
+    static checkmarkStateToName(state) {
         return firstLetterCapital(checkmarkStateName.get(state).toLowerCase())
+    }
+
+    typeToName(type = this.type) {
+        return Room.typeToName(type)
+    }
+
+    static typeToName(type) {
+        return firstLetterCapital(typeName.get(type).toLowerCase())
+    }
+
+    typeToColor(type = this.type) {
+        return Room.typeToColor(type)
+    }
+
+    static typeToColor(type) {
+        return typeColor.get(type)
     }
 }
 
@@ -401,5 +420,27 @@ checkmarkStateName.set(Room.ADJACENT, "ADJACENT")
 checkmarkStateName.set(Room.OPENED, "OPENED")
 checkmarkStateName.set(Room.CLEARED, "CLEARED")
 checkmarkStateName.set(Room.COMPLETED, "COMPLETED")
+
+let typeName = new Map()
+typeName.set(Room.SPAWN, "SPAWN")
+typeName.set(Room.NORMAL, "NORMAL")
+typeName.set(Room.PUZZLE, "PUZZLE")
+typeName.set(Room.MINIBOSS, "MINIBOSS")
+typeName.set(Room.FAIRY, "FAIRY")
+typeName.set(Room.BLOOD, "BLOOD")
+typeName.set(Room.UNKNOWN, "UNKNOWN")
+typeName.set(Room.TRAP, "TRAP")
+typeName.set(Room.BLACK, "BLACK")
+
+let typeColor = new Map()
+typeColor.set(Room.SPAWN, "a")
+typeColor.set(Room.NORMAL, "7")
+typeColor.set(Room.PUZZLE, "d")
+typeColor.set(Room.MINIBOSS, "e")
+typeColor.set(Room.FAIRY, "d")
+typeColor.set(Room.BLOOD, "c")
+typeColor.set(Room.UNKNOWN, "f")
+typeColor.set(Room.TRAP, "6")
+typeColor.set(Room.BLACK, "0")
 
 export default Room

@@ -94,16 +94,36 @@ class DungeonMap {
                     if (msg.includes(dmsg)) this.mimicKilled = true
                 })
             }).setChatCriteria("&r&9Party &8> ${msg}"))
-            this.triggers.push(register("chat", (msg) => {
+            this.triggers.push(register("chat", (end, e) => {
+                if (end.includes("Stats")) return
+
                 this.dungeonFinished = true
 
-                // ChatLib.chat(MESSAGE_PREFIX + "Cleared room counts:")
-                // this.players.forEach(p => {
-                //     ChatLib.chat(`${p.username}: ${p.minRooms}-${p.maxRooms}`)
-                // })
-            }).setChatCriteria('&r&c${*}e Catacombs &r&8- &r&eFloor').setContains())
+                ChatLib.chat(MESSAGE_PREFIX + "Cleared room counts:")
+                this.players.forEach(p => {
+                    let m = new Message()
+                    m.addTextComponent(new TextComponent(MESSAGE_PREFIX + "&3" + p.username + "&7 cleared "))
+
+                    let roomLore = ""
+                    p.roomsData.forEach(([players, room]) => {
+                        let name = room.data?.name ?? room.shape
+                        let type = room.typeToName()
+                        let color = room.typeToColor()
+
+                        let stackStr = players.length === 1 ? "" : " Stacked with " + players.filter(pl => pl !== p).map(p => p.username).join(", ")
+
+                        roomLore += `&${color}${name} (${type})${stackStr}\n`
+                    })
+
+                    m.addTextComponent(new TextComponent("&6" + p.minRooms + "-" + p.maxRooms).setHover("show_text", roomLore.trim()))
+                    m.addTextComponent(new TextComponent("&7 rooms and got &6" + p.secretsCollected + "&7 secrets"))
+
+                    m.chat()
+                })
+            }).setChatCriteria('&r&c${*}e Catacombs &r&8- &r&eFloor${end}').setContains())
             //&r&r&r                     &r&cThe Catacombs &r&8- &r&eFloor I Stats&r
             //&r&r&r               &r&cMaster Mode Catacombs &r&8- &r&eFloor III Stats&r
+            //&r&r&r                         &r&cThe Catacombs &r&8- &r&eFloor V&r
 
             this.triggers.push(register("entityDeath", (entity) => {
                 if (entity.getClassName() !== "EntityZombie") return

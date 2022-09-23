@@ -888,7 +888,7 @@ class DungeonMap {
                 }
             })
         } else {
-            fetch(`http://soopy.dev/api/v2/player_skyblock/${uuid}`).json(data => {
+            fetch(`https://soopy.dev/api/v2/player_skyblock/${uuid}`).json(data => {
                 if (!data.success) return
 
                 if (data.data.profiles[data.data.stats.currentProfileId].members[uuid].pets.some(pet => pet.type === "SPIRIT" && pet.tier === "LEGENDARY")) {

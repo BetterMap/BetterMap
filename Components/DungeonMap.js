@@ -1058,15 +1058,16 @@ class DungeonMap {
         let { x, y, size } = context.getMapDimensions();
 
         if (this.dropdownXY) {
+            let width = 125
             Renderer.retainTransforms(true)
             Renderer.translate(0, 0, 100)
-            Renderer.drawRect(Renderer.color(0, 0, 0), this.dropdownXY[0], this.dropdownXY[1], 75, 25 * dungeonMapButtons.length)
+            Renderer.drawRect(Renderer.color(0, 0, 0), this.dropdownXY[0], this.dropdownXY[1], width, 25 * dungeonMapButtons.length)
 
             dungeonMapButtons.forEach(([name, callback], index) => {
 
                 let bx = this.dropdownXY[0] + 1
                 let by = this.dropdownXY[1] + 25 * index + 1
-                let bw = 73
+                let bw = width - 2
                 let bh = 23
 
                 let hovered = cursorX >= bx && cursorX <= bx + bw && cursorY >= by && cursorY <= by + bh

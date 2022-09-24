@@ -12,7 +12,7 @@ import DataLoader from "../Utils/DataLoader.js"
 import { fetch } from "../Utils/networkUtils.js"
 import renderLibs from "../../guimanager/renderLibs.js"
 import settings from "../Extra/Settings/CurrentSettings.js"
-import { RoomEvents } from "./RoomEvent.js"
+import { RoomEvents, toDisplayString } from "./RoomEvent.js"
 
 let PlayerComparator = Java.type("net.minecraft.client.gui.GuiPlayerTabOverlay").PlayerComparator
 let c = PlayerComparator.class.getDeclaredConstructor()
@@ -1556,9 +1556,13 @@ export default DungeonMap
 
 
 let dungeonMapButtons = [
-    ["Test button 1", (dungeonMap, clickedRoom) => { ChatLib.chat("You clicked the test button 1") }],
-    ["Test button 2", (dungeonMap, clickedRoom) => { ChatLib.chat("You clicked the test button 2") }],
-    ["Test button 3", (dungeonMap, clickedRoom) => { ChatLib.chat("You clicked the test button 3") }],
-    ["Test button 4", (dungeonMap, clickedRoom) => { ChatLib.chat("You clicked the test button 4") }],
-    ["Test button 5", (dungeonMap, clickedRoom) => { ChatLib.chat("You clicked the test button 5") }],
+    ["Show RoomInfo In Chat", (dungeonMap, clickedRoom) => {
+        clickedRoom.getLore().forEach(l => ChatLib.chat(l))
+    }],
+    ["Show RoomEvents In Chat", (dungeonMap, clickedRoom) => {
+        for (let event of clickedRoom.roomEvents) {
+            ChatLib.chat(toDisplayString(clickedRoom, event))
+        }
+    }],
+    ["Navigate", (dungeonMap, clickedRoom) => { ChatLib.chat("NAVIGATION NOT ADDED YET D:") }]
 ]

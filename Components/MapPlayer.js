@@ -21,6 +21,9 @@ class MapPlayer {
         this.location.worldXRaw.setAnimMode("linea")
         this.location.worldYRaw.setAnimMode("linea")
 
+        /**@type {import("./Room").default} */
+        this.currentRoomCache = undefined //to track player enter/exit events
+
         this.yaw = new SoopyNumber(0)
         this.yaw.setAnimMode("sin_out")
         this.username = username

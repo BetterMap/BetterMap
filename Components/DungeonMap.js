@@ -12,6 +12,7 @@ import DataLoader from "../Utils/DataLoader.js"
 import { fetch } from "../Utils/networkUtils.js"
 import renderLibs from "../../guimanager/renderLibs.js"
 import settings from "../Extra/Settings/CurrentSettings.js"
+import { RoomEvents } from "./RoomEvent.js"
 
 let PlayerComparator = Java.type("net.minecraft.client.gui.GuiPlayerTabOverlay").PlayerComparator
 let c = PlayerComparator.class.getDeclaredConstructor()
@@ -273,6 +274,20 @@ class DungeonMap {
             }
             this.players[i].networkPlayerInfo = thePlayer[0]
             this.playersNameToId[thePlayer[1]] = i
+        }
+
+        for (let player of this.players) {
+            let room = player.getRoom(this);
+            if (player.currentRoomCache !== room) {
+
+                if (player.currentRoomCache) {
+                    player.currentRoomCache.addEvent(RoomEvents.PLAYER_EXIT, player)
+                }
+
+                player.currentRoomCache = room
+
+                room.addEvent(RoomEvents.PLAYER_ENTER, player)
+            }
         }
     }
 

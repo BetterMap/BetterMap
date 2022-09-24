@@ -12,10 +12,10 @@ let eventData = [
         return timeNumber(Date.now() - timestamp) + " CHECKMARK CHANGE: " + room.checkmarkStateToName(fromState) + " -> " + room.checkmarkStateToName(toState)
     },
     (room, timestamp, player) => {//PLAYER_ENTER
-        return timeNumber(Date.now() - timestamp) + " ENTER: " + player
+        return timeNumber(Date.now() - timestamp) + " ENTER: " + player.username
     },
     (room, timestamp, player) => {//PLAYER_EXIT
-        return timeNumber(Date.now() - timestamp) + " EXIT: " + player
+        return timeNumber(Date.now() - timestamp) + " EXIT: " + player.username
     },
     (room, timestamp, from, to) => {//SECRET_COUNT_CHANGE
         return timeNumber(Date.now() - timestamp) + " SECRET CHANGE: " + from + " -> " + to

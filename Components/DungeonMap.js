@@ -1558,12 +1558,16 @@ export default DungeonMap
 
 let dungeonMapButtons = [
     ["Show RoomInfo In Chat", (dungeonMap, clickedRoom) => {
+        ChatLib.chat("&c" + ChatLib.getChatBreak("-"))
         clickedRoom.getLore().forEach(l => ChatLib.chat(l))
+        ChatLib.chat("&c" + ChatLib.getChatBreak("-"))
     }],
     ["Show RoomEvents In Chat", (dungeonMap, clickedRoom) => {
+        ChatLib.chat("&c" + ChatLib.getChatBreak("-"))
         for (let event of clickedRoom.roomEvents) {
             ChatLib.chat(toDisplayString(clickedRoom, event))
         }
+        ChatLib.chat("&c" + ChatLib.getChatBreak("-"))
     }],
     ["Navigate", (dungeonMap, clickedRoom) => { ChatLib.chat("NAVIGATION NOT ADDED YET D:") }]
 ]

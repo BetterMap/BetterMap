@@ -80,6 +80,9 @@ class DungeonMap {
         // Simulate changing bloccks to air to fix green room not having air border around it
         this.setAirLocs = new Set()
 
+        //Set of xyz locations of collected secrets
+        this.collectedSecrets = new Set()
+
         // Rooms that were already identified
         this.identifiedRoomIds = new Set();
         this.identifiedPuzzleCount = 0;
@@ -226,6 +229,7 @@ class DungeonMap {
     destroy() {
         this.rooms.clear()
         this.roomsArr.clear()
+        this.collectedSecrets.clear()
         this.triggers.forEach(a => a.unregister())
         this.triggers = []
     }
@@ -286,7 +290,7 @@ class DungeonMap {
 
                 player.currentRoomCache = room
 
-                room.addEvent(RoomEvents.PLAYER_ENTER, player)
+                room?.addEvent(RoomEvents.PLAYER_ENTER, player)
             }
         }
     }
@@ -1550,6 +1554,12 @@ class DungeonMap {
         if (!y) y = this.getRoofAt(x, z)
 
         return World.getBlockStateAt(new BlockPos(x, y, z)).getBlockId()
+    }
+
+    onSecretCollect(type, x, y, z) {
+        this.collectedSecrets.add(`${x},${y},${z}`)
+        //TODO: for itemdrops snap to nearest if distance < 5
+        //TODO: for bats snap to nearest
     }
 }
 

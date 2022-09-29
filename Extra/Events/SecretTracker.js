@@ -43,7 +43,7 @@ register("worldLoad", () => {
 register("playerInteract", (action, position, event) => {
     if (action.toString() !== "RIGHT_CLICK_BLOCK") return
 
-    let pos = [Player.lookingAt().getX() + 0.5, Player.lookingAt().getY(), Player.lookingAt().getZ() + 0.5]
+    let pos = [Player.lookingAt().getX(), Player.lookingAt().getY(), Player.lookingAt().getZ()]
 
     let id = Player.lookingAt().getType().getID()
 

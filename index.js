@@ -9,9 +9,9 @@ import RenderContextManager from "./Render/RenderContextManager"
 import DataLoader from "./Utils/DataLoader"
 import betterMapServer from "./socketConnection"
 import SettingsManager from "./Extra/Settings/SettingsManager"
-import RenderLib from "../RenderLib/index"
 import DungeonRoomData from "./Data/DungeonRoomData.js"
 import CurrentSettings from "./Extra/Settings/CurrentSettings"
+import eventManager from "./Extra/Events/EventManager"
 require("./Extra/Events/SecretTracker.js")
 
 /**@type {DungeonMap} */
@@ -78,6 +78,10 @@ betterMapServer.datacallback = (data) => {
         currentDungeonMap.socketData(data)
     }
 }
+
+eventManager.onSecretCollect((type, x, y, z) => {
+    if (currentDungeonMap) currentDungeonMap.onSecretCollect(type, x, y, z)
+})
 
 register("renderOverlay", () => {
     if (dungeonMapRenderContext && currentDungeonMap) {
@@ -152,33 +156,11 @@ register('command', () => {
     currentDungeonMap.regenRooms()
 }).setName('reloadmap', true);
 
-let showSecretWaypoints = false;
 register("renderWorld", () => {
-    if (!showSecretWaypoints) return;
     if (!currentDungeonMap) return;
     let curRoom = currentDungeonMap.getCurrentRoom();
     if (!curRoom) return;
-    if (!curRoom.data) return;
-    curRoom.data?.secret_coords?.chest?.forEach(([rx, ry, rz]) => {
-        let { x, y, z } = curRoom.toRoomCoords(rx, ry, rz);
-        RenderLib.drawEspBox(x + .5, y, z + .5, 1, 1, 1, 0, 0, 1, true);
-    });
-    curRoom.data?.secret_coords?.item?.forEach(([rx, ry, rz]) => {
-        let { x, y, z } = curRoom.toRoomCoords(rx, ry, rz);
-        RenderLib.drawEspBox(x + .5, y, z + .5, 1, 1, 0, 1, 0, 1, true);
-    });
-    curRoom.data?.secret_coords?.wither?.forEach(([rx, ry, rz]) => {
-        let { x, y, z } = curRoom.toRoomCoords(rx, ry, rz);
-        RenderLib.drawEspBox(x + .5, y, z + .5, 1, 1, 0, 0, 1, 1, true);
-    });
-    curRoom.data?.secret_coords?.bat?.forEach(([rx, ry, rz]) => {
-        let { x, y, z } = curRoom.toRoomCoords(rx, ry, rz);
-        RenderLib.drawEspBox(x + .5, y, z + .5, 1, 1, 1, 0, 1, 1, true);
-    });
-    curRoom.data?.secret_coords?.redstone_key?.forEach(([rx, ry, rz]) => {
-        let { x, y, z } = curRoom.toRoomCoords(rx, ry, rz);
-        RenderLib.drawEspBox(x + .5, y, z + .5, 1, 1, 1, 1, 0, 1, true);
-    });
+    curRoom.drawRoomSecrets()
 });
 
 register('command', () => {
@@ -321,7 +303,3 @@ register('command', () => {
     DungeonRoomData.reloadData();
     currentDungeonMap.getCurrentRoom().roomId = currentDungeonMap.getCurrentRoom().roomId;
 }).setName('reloadroomdata');
-
-register('command', () => {
-    showSecretWaypoints = !showSecretWaypoints;
-}).setName('showsecretwaypoints');

@@ -879,15 +879,15 @@ class DungeonMap {
             fetch(`https://api.hypixel.net/skyblock/profiles?key=${apiKey}&uuid=${uuid}`).json(data => {
                 if (!data.success) return
 
-                let latestProfile = [0, undefined]
+                let latestProfile = undefined
 
                 data.profiles.forEach(p => {
-                    if (p.members[uuid].last_save > latestProfile[0]) {
-                        latestProfile = [p.members[uuid].last_save, p.members[uuid].pets.some(pet => pet.type === "SPIRIT" && pet.tier === "LEGENDARY")]
+                    if (p.selected) {
+                        latestProfile = p.members[uuid].pets.some(pet => pet.type === "SPIRIT" && pet.tier === "LEGENDARY")
                     }
                 })
 
-                if (latestProfile[1]) {
+                if (latestProfile) {
                     this.firstDeathHadSpirit = true
                     if (username === "You") {
                         ChatLib.chat(MESSAGE_PREFIX + username + " have a spirit pet!")

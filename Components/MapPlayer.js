@@ -57,7 +57,7 @@ class MapPlayer {
     }
 
     updateCurrentSecrets() {
-        if (this.uuid) return
+        if (!this.uuid) return
 
         getPlayerSecrets(uuid, 0, secrets => {
             this.currentSecrets = secrets

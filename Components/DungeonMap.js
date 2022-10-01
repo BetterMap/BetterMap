@@ -134,7 +134,7 @@ class DungeonMap {
 
                 // Check all armor slots, if they are all null then mimic is die!
                 if ([0, 1, 2, 3].every(a => !e.func_82169_q(a))) {
-                    ChatLib.chat("Mimic Kapow!")
+                    // ChatLib.chat("Mimic Kapow!")
                     this.mimicKilled = true
                     this.sendSocketData({ type: "mimicKilled" })
                 }
@@ -264,6 +264,7 @@ class DungeonMap {
                 }
                 this.players[i].networkPlayerInfo = p
                 this.playersNameToId[name] = i
+                this.players[i].username = name //For some reason this is sometimes the players name when scoreboard is still loading in
 
                 i++
             }

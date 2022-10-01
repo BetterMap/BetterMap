@@ -1,9 +1,11 @@
 import SoopyNumber from "../../guimanager/Classes/SoopyNumber.js"
 import renderLibs from "../../guimanager/renderLibs.js"
 import { f, m } from "../../mappings/mappings.js"
+import settings from "../Extra/Settings/CurrentSettings.js"
 import RenderContext from "../Render/RenderContext.js"
 import Position from "../Utils/Position.js"
 import { dungeonOffsetX, dungeonOffsetY, getSBID } from "../Utils/Utils.js"
+import { fetch } from "../Utils/networkUtils.js"
 
 const DefaultVertexFormats = Java.type("net.minecraft.client.renderer.vertex.DefaultVertexFormats")
 const MCTessellator = Java.type("net.minecraft.client.renderer.Tessellator")
@@ -27,6 +29,7 @@ class MapPlayer {
         this.yaw = new SoopyNumber(0)
         this.yaw.setAnimMode("sin_out")
         this.username = username
+        this.uuid = undefined
 
         this.locallyUpdated = 0
 
@@ -37,6 +40,28 @@ class MapPlayer {
         this.maxRooms = 0
         /**@type {[MapPlayer[], import("./Room").default][]} */
         this.roomsData = []
+    }
+
+    checkUpdateUUID() {
+        if (this.uuid) return
+        //Check players in world to update uuid field
+
+        let player = World.getPlayerByName(this.username)
+        if (player) {
+            this.uuid = player.getUUID().toString()
+            getPlayerSecrets(this.uuid, 120000, secrets => {
+                this.startedRunSecrets = secrets
+                this.currentSecrets = secrets //So it doesent show negative numbers if error later
+            })
+        }
+    }
+
+    updateCurrentSecrets() {
+        if (this.uuid) return
+
+        getPlayerSecrets(uuid, 0, secrets => {
+            this.currentSecrets = secrets
+        })
     }
 
     get secretsCollected() {
@@ -150,3 +175,38 @@ class MapPlayer {
 }
 
 export default MapPlayer
+
+let secretsData = new Map()
+
+register("step", () => {
+    //Check if peoples data needs to be cleared from the map
+
+    secretsData.forEach(([timestamp], uuid) => {
+        if (Date.now() - timestamp > 5 * 60 * 1000) secretsData.delete(uuid)
+    })
+}).setDelay(10)
+
+/**
+ * Helper function to get the secrets for a player's uuid
+ * This exists so it can have a cache time (eg end of last runs data can be used for start of this run)
+ * 
+ * cacheMs maxes at 5mins
+ */
+function getPlayerSecrets(uuid, cacheMs, callback) {
+
+    if (secretsData.get(uuid)?.[0]?.timestamp > Date.now() - cacheMs) {
+        callback(secretsData.get(uuid)[1])
+        return
+    }
+
+    let apiKey = settings.settings.apiKey
+
+    if (!apiKey) return
+    fetch(`https://api.hypixel.net/player?key=${apiKey}&uuid=${uuid}`).json(data => {
+        let secrets = data?.player?.achievements?.skyblock_treasure_hunter || 0
+
+        secretsData.set(uuid, [Date.now(), secrets])
+
+        callback(secretsData.get(uuid)[1])
+    })
+}

@@ -101,26 +101,30 @@ class DungeonMap {
                 this.dungeonFinished = true
 
                 if (!settings.settings.clearedRoomInfo) return
-                ChatLib.chat(MESSAGE_PREFIX + "Cleared room counts:")
-                this.players.forEach(p => {
-                    let m = new Message()
-                    m.addTextComponent(new TextComponent(MESSAGE_PREFIX + "&3" + p.username + "&7 cleared "))
+                this.players.forEach(p => p.updateCurrentSecrets())
 
-                    let roomLore = ""
-                    p.roomsData.forEach(([players, room]) => {
-                        let name = room.data?.name ?? room.shape
-                        let type = room.typeToName()
-                        let color = room.typeToColor()
+                Client.scheduleTask(5 * 20, () => { //wait 5 seconds (5*20tps)
+                    ChatLib.chat(MESSAGE_PREFIX + "Cleared room counts:")
+                    this.players.forEach(p => {
+                        let m = new Message()
+                        m.addTextComponent(new TextComponent(MESSAGE_PREFIX + "&3" + p.username + "&7 cleared "))
 
-                        let stackStr = players.length === 1 ? "" : " Stacked with " + players.filter(pl => pl !== p).map(p => p.username).join(", ")
+                        let roomLore = ""
+                        p.roomsData.forEach(([players, room]) => {
+                            let name = room.data?.name ?? room.shape
+                            let type = room.typeToName()
+                            let color = room.typeToColor()
 
-                        roomLore += `&${color}${name} (${type})${stackStr}\n`
+                            let stackStr = players.length === 1 ? "" : " Stacked with " + players.filter(pl => pl !== p).map(p => p.username).join(", ")
+
+                            roomLore += `&${color}${name} (${type})${stackStr}\n`
+                        })
+
+                        m.addTextComponent(new TextComponent("&6" + p.minRooms + "-" + p.maxRooms).setHover("show_text", roomLore.trim()))
+                        m.addTextComponent(new TextComponent("&7 rooms and got &6" + p.secretsCollected + "&7 secrets"))
+
+                        m.chat()
                     })
-
-                    m.addTextComponent(new TextComponent("&6" + p.minRooms + "-" + p.maxRooms).setHover("show_text", roomLore.trim()))
-                    m.addTextComponent(new TextComponent("&7 rooms"/* and got &6" + p.secretsCollected + "&7 secrets"*/))
-
-                    m.chat()
                 })
             }).setChatCriteria('&r&c${*}e Catacombs &r&8- &r&eFloor${end}').setContains())
             //&r&r&r                     &r&cThe Catacombs &r&8- &r&eFloor I Stats&r
@@ -370,6 +374,8 @@ class DungeonMap {
     }
 
     syncPlayersThruSocket() {
+        this.players.forEach(p => p.checkUpdateUUID())
+
         World.getAllPlayers().forEach(player => {
             if (!this.playersNameToId[ChatLib.removeFormatting(player.getName()).trim()]) return
             let p = this.players[this.playersNameToId[ChatLib.removeFormatting(player.getName()).trim()]]
@@ -904,7 +910,7 @@ class DungeonMap {
                     }
                 }
             })
-        } else {
+        } else { //Works without api key, api key still recommended though for secrets tracking
             fetch(`https://soopy.dev/api/v2/player_skyblock/${uuid}`).json(data => {
                 if (!data.success) return
 

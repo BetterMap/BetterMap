@@ -155,7 +155,7 @@ class SettingGui {
 
 
         this.addSidebarElement(new ButtonWithArrow().setText("&0Load api key from other mods").addEvent(new SoopyMouseClickEvent().setHandler(() => {
-            findKey((key) => {
+            findKey(key => {
                 this.setApiKey(key)
             })
         })), 0.3, 0.4, 0.075)

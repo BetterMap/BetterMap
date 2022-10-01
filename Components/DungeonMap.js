@@ -875,7 +875,7 @@ class DungeonMap {
         if (!this.nameToUuid[username.toLowerCase()]) return
         let uuid = this.nameToUuid[username.toLowerCase()]?.replace(/-/g, "")
 
-        let apiKey = undefined//TODO: this
+        let apiKey = settings.settings.apiKey
 
         if (apiKey) {
             fetch(`https://api.hypixel.net/skyblock/profiles?key=${apiKey}&uuid=${uuid}`).json(data => {

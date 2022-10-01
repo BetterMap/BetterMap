@@ -19,6 +19,7 @@
  * @property {Boolean} showTabs - Show tabs at the top of the map 
  * @property {Boolean} forcePaul - Wether to force enable the +10 score for paul (eg if jerry mayor)
  * @property {Boolean} clearedRoomInfo - Show a summory of what rooms people cleared after run finishes
+ * @property {String} apiKey - The user's api key, or "" if unknown
  * @property {Boolean} devInfo - Wether to show def info in various places in the map
  */
 
@@ -113,6 +114,10 @@ class RenderContext {
 
     get clearedRoomInfo() {
         return this.settings.clearedRoomInfo
+    }
+
+    get apiKey() {
+        return this.settings.apiKey
     }
 
     get devInfo() {
@@ -235,6 +240,7 @@ class RenderContext {
         showTabs = true,
         forcePaul = false,
         clearedRoomInfo = true,
+        apiKey = "",
         devInfo = false
     }) {
         return {
@@ -257,6 +263,7 @@ class RenderContext {
             showTabs,
             forcePaul,
             clearedRoomInfo,
+            apiKey,
             devInfo
         }
     }

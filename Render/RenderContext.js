@@ -18,6 +18,7 @@
  * @property {Boolean} hideInBoss - Hide the map in boss entirely 
  * @property {Boolean} showTabs - Show tabs at the top of the map 
  * @property {Boolean} forcePaul - Wether to force enable the +10 score for paul (eg if jerry mayor)
+ * @property {Boolean} clearedRoomInfo - Show a summory of what rooms people cleared after run finishes
  * @property {Boolean} devInfo - Wether to show def info in various places in the map
  */
 
@@ -108,6 +109,10 @@ class RenderContext {
 
     get forcePaul() {
         return this.settings.forcePaul
+    }
+
+    get clearedRoomInfo() {
+        return this.settings.clearedRoomInfo
     }
 
     get devInfo() {
@@ -229,6 +234,7 @@ class RenderContext {
         hideInBoss = false,
         showTabs = true,
         forcePaul = false,
+        clearedRoomInfo = true,
         devInfo = false
     }) {
         return {
@@ -250,6 +256,7 @@ class RenderContext {
             hideInBoss,
             showTabs,
             forcePaul,
+            clearedRoomInfo,
             devInfo
         }
     }

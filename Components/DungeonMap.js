@@ -100,6 +100,7 @@ class DungeonMap {
 
                 this.dungeonFinished = true
 
+                if (!settings.settings.clearedRoomInfo) return
                 ChatLib.chat(MESSAGE_PREFIX + "Cleared room counts:")
                 this.players.forEach(p => {
                     let m = new Message()
@@ -117,7 +118,7 @@ class DungeonMap {
                     })
 
                     m.addTextComponent(new TextComponent("&6" + p.minRooms + "-" + p.maxRooms).setHover("show_text", roomLore.trim()))
-                    m.addTextComponent(new TextComponent("&7 rooms and got &6" + p.secretsCollected + "&7 secrets"))
+                    m.addTextComponent(new TextComponent("&7 rooms"/* and got &6" + p.secretsCollected + "&7 secrets"*/))
 
                     m.chat()
                 })

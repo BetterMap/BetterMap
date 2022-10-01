@@ -129,24 +129,25 @@ class SettingGui {
 
         this.addCategory("Tab Info")
 
-        this.addToggle("Show current Secret total", "tabSecretCount", this.defaultSettings.tabSecretCount)
+        this.addToggle("Show current Secret total", "tabSecretCount", this.defaultSettings.tabSecretCount).setLore(["Change the secrets found number in tab to also show total secrets in dungeon"])
 
-        this.addToggle("Show current Crypt total", "tabCryptCount", this.defaultSettings.tabCryptCount)
+        this.addToggle("Show current Crypt total", "tabCryptCount", this.defaultSettings.tabCryptCount).setLore(["Change the crypts found number in tab to also show total crypts in dungeon"])
 
-        this.addToggle("Show Mimic Status", "tabMimic", this.defaultSettings.tabMimic)
+        this.addToggle("Show Mimic Status", "tabMimic", this.defaultSettings.tabMimic).setLore(["Add a line to tab displaying wether the minic has been killed"])
 
         this.addCategory("Other Settings")
 
         this.addToggle("Hide map in Boss", "hideInBoss", this.defaultSettings.hideInBoss)
-        this.addToggle("Show tabs on map", "showTabs", this.defaultSettings.showTabs)
+        this.addToggle("Show tabs on map", "showTabs", this.defaultSettings.showTabs).setLore(["Shows tabs at the top of the map that can be clicked", "eg to look at the dungeon map when in boss"])
 
         this.addDropdown("Current room info next to map", {
             "none": "None",
             "left": "Left of map",
             "right": "Right of map"
-        }, "currentRoomInfo", this.defaultSettings.currentRoomInfo)
+        }, "currentRoomInfo", this.defaultSettings.currentRoomInfo).setLore(["Shows the same info that would be shown when hovering over a room"])
 
-        this.addToggle("Force paul +10 score", "forcePaul", this.defaultSettings.forcePaul)
+        this.addToggle("Force paul +10 score", "forcePaul", this.defaultSettings.forcePaul).setLore(["Paul score bonus will get auto-detected when paul is mayor", "But it wont be auto detected from jerry-paul"])
+        this.addToggle("Clear room breakdown", "clearedRoomInfo", this.defaultSettings.clearedRoomInfo).setLore(["Shows the cleared room count and specific rooms in chat when the dungeon ends"])
 
         this.addToggle("Show dev info", "devInfo", this.defaultSettings.devInfo)
 
@@ -294,7 +295,7 @@ class SettingGui {
             this.changed(setting, val)
         })), 0.55, 0.35, 0.075)
 
-        this.addSidebarElement(new SoopyTextElement().setText("§0" + label).setMaxTextScale(2), 0.1, 0.35)
+        return this.addSidebarElement(new SoopyTextElement().setText("§0" + label).setMaxTextScale(2), 0.1, 0.35)
     }
 
 
@@ -309,7 +310,7 @@ class SettingGui {
             this.changed(setting, val)
         })), 0.625, 0.2, 0.05)
 
-        this.addSidebarElement(new SoopyTextElement().setText("§0" + label).setMaxTextScale(2), 0.1, 0.35)
+        return this.addSidebarElement(new SoopyTextElement().setText("§0" + label).setMaxTextScale(2), 0.1, 0.35)
     }
 
 
@@ -344,7 +345,7 @@ class SettingGui {
 
         this.addSidebarElement(slider, 0.55, 0.2, 0.05)
         this.addSidebarElement(numberT, 0.8, 0.1, 0.05)
-        this.addSidebarElement(new SoopyTextElement().setText("§0" + label).setMaxTextScale(2), 0.1, 0.35)
+        return this.addSidebarElement(new SoopyTextElement().setText("§0" + label).setMaxTextScale(2), 0.1, 0.35)
     }
 
     /**
@@ -361,6 +362,7 @@ class SettingGui {
     addSidebarElement(elm = null, x = 0.1, width = 0.8, height = 0.1) {
         if (elm) this.mainpage.addChild(elm.setLocation(x, this.y + 0.05 - height / 2, width, height))
         if (x === 0.1) this.y += 0.1
+        return elm
     }
 }
 

@@ -286,7 +286,7 @@ class DungeonMap {
 
                 player.currentRoomCache = room
 
-                room.addEvent(RoomEvents.PLAYER_ENTER, player)
+                room?.addEvent(RoomEvents.PLAYER_ENTER, player)
             }
         }
     }

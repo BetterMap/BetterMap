@@ -227,6 +227,11 @@ class DungeonMap {
      * })
      */
     pingPlayer(username, callback) {
+        if (username === Player.getName()) {
+            callback(true) //Server doesent allow sending data to self
+            return
+        }
+
         let pingId = this.pingIds++
 
         this.pingIdFuncs.set(pingId, [Date.now(), callback])

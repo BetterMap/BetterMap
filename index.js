@@ -79,7 +79,7 @@ betterMapServer.datacallback = (data) => {
     }
 }
 
-register("command", (name) => {
+register("command", (name) => { //TODO: change this command to show somewhere instead of command
     if (currentDungeonMap) {
         currentDungeonMap.pingPlayer(name, (usingMap) => {
             if (usingMap) {

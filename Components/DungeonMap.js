@@ -84,6 +84,9 @@ class DungeonMap {
         this.identifiedRoomIds = new Set();
         this.identifiedPuzzleCount = 0;
 
+        // this.pingIds = 0
+        // this.pingIdFuncs = new Map()
+
         this.dungeonFinished = false
 
         let mimicDeadMessages = ["$SKYTILS-DUNGEON-SCORE-MIMIC$", "Mimic Killed!", "Mimic Dead!", "Mimic dead!"]
@@ -149,6 +152,15 @@ class DungeonMap {
 
                 this.scanFirstDeathForSpiritPet(player)
             }).setChatCriteria("&r&c ☠ ${info} and became a ghost&r&7.&r"))
+
+            // this.triggers.push(register("step", () => {
+            //     this.pingIdFuncs.forEach(([timestamp, callback], id) => {
+            //         if (Date.now() - timestamp < 5000) return
+
+            //         callback(false)
+            //         this.pingIdFuncs.delete(id)
+            //     })
+            // }).setFps(1))
         }
     }
 
@@ -192,8 +204,34 @@ class DungeonMap {
             case "mimicKilled":
                 this.mimicKilled = true
                 break;
+            case "ping":
+                socketConnection.sendDungeonData({ "data": { "type": "pingRespond", "from": Player.getName(), "id": data.id }, "players": [data.from] })
+                break
+            case "pingRespond":
+                this.pingIdFuncs.get(pingId)?.[1]?.(true)
+                break
         }
     }
+
+    /**
+     * NOTE: the callback function will be given a boolean representing wether the user is using bettermap
+     * 
+     * @example
+     * DungeonMap.pingPlayer("Soopyboo32", (usingMap) => {
+     *     if(usingMap){
+     *         ChatLib.chat("Soopyboo32 is using bettermap")
+     *     }else{
+     *         ChatLib.chat("Soopyboo32 is NOT using bettermap")
+     *     }
+     * })
+     */
+    // pingPlayer(username, callback) {
+    //     let pingId = this.pingIds++
+
+    //     this.pingIdFuncs.set(pingId, [Date.now(), callback])
+
+    //     socketConnection.sendDungeonData({ "data": { "type": "ping", "from": Player.getName(), "id": data.id }, "players": [username] })
+    // }
 
     regenRooms() {
         this.doors.clear()

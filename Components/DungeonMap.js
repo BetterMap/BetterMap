@@ -84,8 +84,8 @@ class DungeonMap {
         this.identifiedRoomIds = new Set();
         this.identifiedPuzzleCount = 0;
 
-        // this.pingIds = 0
-        // this.pingIdFuncs = new Map()
+        this.pingIds = 0
+        this.pingIdFuncs = new Map()
 
         this.dungeonFinished = false
 
@@ -153,14 +153,14 @@ class DungeonMap {
                 this.scanFirstDeathForSpiritPet(player)
             }).setChatCriteria("&r&c ☠ ${info} and became a ghost&r&7.&r"))
 
-            // this.triggers.push(register("step", () => {
-            //     this.pingIdFuncs.forEach(([timestamp, callback], id) => {
-            //         if (Date.now() - timestamp < 5000) return
+            this.triggers.push(register("step", () => {
+                this.pingIdFuncs.forEach(([timestamp, callback], id) => {
+                    if (Date.now() - timestamp < 5000) return
 
-            //         callback(false)
-            //         this.pingIdFuncs.delete(id)
-            //     })
-            // }).setFps(1))
+                    callback(false)
+                    this.pingIdFuncs.delete(id)
+                })
+            }).setFps(1))
         }
     }
 
@@ -208,7 +208,8 @@ class DungeonMap {
                 socketConnection.sendDungeonData({ "data": { "type": "pingRespond", "from": Player.getName(), "id": data.id }, "players": [data.from] })
                 break
             case "pingRespond":
-                this.pingIdFuncs.get(pingId)?.[1]?.(true)
+                if (this.pingIdFuncs.get(pingId))
+                    this.pingIdFuncs.get(pingId)[1](true)
                 break
         }
     }
@@ -225,13 +226,13 @@ class DungeonMap {
      *     }
      * })
      */
-    // pingPlayer(username, callback) {
-    //     let pingId = this.pingIds++
+    pingPlayer(username, callback) {
+        let pingId = this.pingIds++
 
-    //     this.pingIdFuncs.set(pingId, [Date.now(), callback])
+        this.pingIdFuncs.set(pingId, [Date.now(), callback])
 
-    //     socketConnection.sendDungeonData({ "data": { "type": "ping", "from": Player.getName(), "id": data.id }, "players": [username] })
-    // }
+        socketConnection.sendDungeonData({ "data": { "type": "ping", "from": Player.getName(), "id": data.id }, "players": [username] })
+    }
 
     regenRooms() {
         this.doors.clear()

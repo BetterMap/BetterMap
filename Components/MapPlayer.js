@@ -52,7 +52,6 @@ class MapPlayer {
             getPlayerSecrets(this.uuid, 120000, secrets => {
                 this.startedRunSecrets = secrets
                 this.currentSecrets = secrets //So it doesent show negative numbers if error later
-                ChatLib.chat(this.username + "'s secrets: " + secrets)
             })
         }
     }
@@ -62,7 +61,6 @@ class MapPlayer {
 
         getPlayerSecrets(this.uuid, 0, secrets => {
             this.currentSecrets = secrets
-            ChatLib.chat(this.username + "'s secrets: " + secrets + " (from " + this.startedRunSecrets + ")")
         })
     }
 

@@ -124,6 +124,7 @@ class MapPlayer {
         y2 = overrideY || y + y2 * renderContext.size + renderContext.borderWidth
 
         Renderer.retainTransforms(true)
+        Tessellator.pushMatrix()
         Renderer.translate(x2, y2, 50)
         // Renderer.translate(x + (this.location.worldX + 256 - 32) * size / 256, y + (this.location.worldY + 256 - 32) * size / 256, 50)
         Renderer.rotate(this.yaw.get())
@@ -143,6 +144,7 @@ class MapPlayer {
         worldRenderer[m.pos](rx + rw, ry, 0.0)[m.tex](16 / 64, 8 / 64)[m.endVertex]()
         worldRenderer[m.pos](rx, ry, 0.0)[m.tex](8 / 64, 8 / 64)[m.endVertex]()
         tessellator[m.draw.Tessellator]()
+        Tessellator.popMatrix()
         Renderer.retainTransforms(false)
 
         let showNametag = renderContext.playerNames === "always"
@@ -154,9 +156,11 @@ class MapPlayer {
         }
 
         if (showNametag) {
-            Renderer.retainTransforms(true)
-
             renderLibs.stopScizzor()
+
+            Renderer.retainTransforms(true)
+            Tessellator.pushMatrix()
+
             Renderer.translate(x2, y2, 101)
             Renderer.scale(size / 150, size / 150)
             renderLibs.drawStringCentered("&0" + this.username, 1, rh / (2 * size / 150), 1)
@@ -164,13 +168,14 @@ class MapPlayer {
             renderLibs.drawStringCentered("&0" + this.username, 0, rh / (2 * size / 150) + 1, 1)
             renderLibs.drawStringCentered("&0" + this.username, 0, rh / (2 * size / 150) - 1, 1)
             renderLibs.drawStringCentered(this.username, 0, rh / (2 * size / 150), 1)
-            renderLibs.scizzorFast(...renderLibs.getCurrScizzor())
 
+            Tessellator.popMatrix()
             Renderer.retainTransforms(false)
+
+            ChatLib.chat(renderLibs.getCurrScizzor().join(" | "))
+            renderLibs.scizzor(...renderLibs.getCurrScizzor())
         }
 
-        Tessellator.popMatrix()
-        Tessellator.pushMatrix()
     }
 }
 

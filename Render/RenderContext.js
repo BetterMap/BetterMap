@@ -217,7 +217,7 @@ class RenderContext {
             case "hypixel":
                 switch (type) {
                     case "questionMark":
-                        return [10 * this.iconScale / 8, 16 * this.iconScale / 8]
+                    // return [10 * this.iconScale / 8, 16 * this.iconScale / 8]
                     case "whiteCheck":
                     case "greenCheck":
                     case "failedRoom":

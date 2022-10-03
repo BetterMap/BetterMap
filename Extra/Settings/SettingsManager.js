@@ -196,7 +196,7 @@ class SettingsManager {
         {
             let r = new Room(dungeon, 2, [new Position(-40, -200)], "-60,-564");
             r.currentSecrets = 0
-            r.checkmarkState = 4;
+            r.checkmarkState = -1;
             dungeon.roomsArr.add(r);
             r.components.forEach(c => {
                 dungeon.rooms.set(c.arrayX + "," + c.arrayY, r);

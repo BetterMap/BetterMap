@@ -84,6 +84,14 @@ class SettingGui {
         }, "mapStyle", "legalmap")
 
 
+        this.addSidebarElement(new ButtonWithArrow().setText("&0Discord").addEvent(new SoopyMouseClickEvent().setHandler(() => {
+            java.awt.Desktop.getDesktop().browse(
+                new java.net.URI("https://discord.gg/dfSMq96RSN") //TODO: CHANGE FROM SOOPY DISCORD TO BETTERMAP DISCORD
+            );
+        })), 0.3, 0.4, 0.075)
+        this.addSidebarElement()
+
+
         // Location edit gui
         let editLocationGui = new LocationGui(this.defaultSettings.posX ?? 0, this.defaultSettings.posY ?? 0, (this.defaultSettings.size ?? 150) / 100, () => this.gui.open()).onChange(val => {
             this.changed("posX", val.x)
@@ -120,7 +128,7 @@ class SettingGui {
         }, "playerNames", this.defaultSettings.playerNames)
 
         this.addSlider("Head Scale", "headScale", this.defaultSettings.headScale || 8, 2, 15)
-        this.addSlider("Icon Scale", "iconScale", this.defaultSettings.iconScale || 8, 2, 15)
+        this.addSlider("Icon Scale", "iconScale", this.defaultSettings.iconScale || 10, 2, 15)
 
         this.addCategory("Secret info Settings")
 

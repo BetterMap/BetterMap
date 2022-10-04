@@ -136,7 +136,7 @@ class DungeonMap {
 
                 // Check all armor slots, if they are all null then mimic is die!
                 if ([0, 1, 2, 3].every(a => !e.func_82169_q(a))) {
-                    ChatLib.chat("Mimic Kapow!")
+                    // ChatLib.chat("Mimic Kapow!")
                     this.mimicKilled = true
                     this.sendSocketData({ type: "mimicKilled" })
                 }
@@ -189,6 +189,9 @@ class DungeonMap {
                 break;
             case "mimicKilled":
                 this.mimicKilled = true
+                break;
+            case "secretCollect":
+                this.collectedSecrets.add(data.location)
                 break;
         }
     }
@@ -1557,9 +1560,29 @@ class DungeonMap {
     }
 
     onSecretCollect(type, x, y, z) {
-        this.collectedSecrets.add(`${x},${y},${z}`)
         //TODO: for itemdrops snap to nearest if distance < 5
         //TODO: for bats snap to nearest
+
+        let currentRoom = this.getCurrentRoom()
+        if (type === "bat" && currentRoom.data) {
+            let closestD = Infinity
+            let closest = undefined
+
+            currentRoom.data.secret_coords?.bat?.forEach(([rx, ry, rz]) => {
+                let { x2, y2, z2 } = this.toRoomCoords(rx, ry, rz);
+
+                if (this.collectedSecrets.has(x2 + "," + y2 + "," + z2)) return
+                let distance = (x2 - x) ** 2 + (y2 - y) ** 2 + (z2 - z) ** 2
+                if (distance < closestD) {
+                    distance = closestD
+                    closest = x2 + "," + y2 + "," + z2
+                }
+                drawBoxAtBlock(x + 0.25, y + 0.25, z + 0.25, 0, 1, 0, 0.5, 0.5)
+            });
+        }
+
+        this.collectedSecrets.add(`${x},${y},${z}`)
+        this.sendSocketData({ type: "secretCollect", location: `${x},${y},${z}` })
     }
 }
 

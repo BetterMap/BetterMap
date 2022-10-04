@@ -86,7 +86,7 @@ class SettingGui {
 
         this.addSidebarElement(new ButtonWithArrow().setText("&0Discord").addEvent(new SoopyMouseClickEvent().setHandler(() => {
             java.awt.Desktop.getDesktop().browse(
-                new java.net.URI("https://discord.gg/dfSMq96RSN") //TODO: CHANGE FROM SOOPY DISCORD TO BETTERMAP DISCORD
+                new java.net.URI("https://discord.gg/Uq5YzpaMsr")
             );
         })), 0.3, 0.4, 0.075)
         this.addSidebarElement()
@@ -159,7 +159,7 @@ class SettingGui {
 
         this.addToggle("Force paul +10 score", "forcePaul", this.defaultSettings.forcePaul)[1].setLore(["Paul score bonus will get auto-detected when paul is mayor", "But it wont be auto detected from jerry-paul"])
 
-        this.addToggle("Clear room breakdown", "clearedRoomInfo", this.defaultSettings.clearedRoomInfo)[1].setLore(["Shows the cleared room count and specific rooms in chat when the dungeon ends"])
+        this.addToggle("Dungeon clear breakdown", "clearedRoomInfo", this.defaultSettings.clearedRoomInfo)[1].setLore(["Shows the cleared room count and specific rooms in chat when the dungeon ends"])
 
 
         this.addSidebarElement(new ButtonWithArrow().setText("&0Load api key from other mods").addEvent(new SoopyMouseClickEvent().setHandler(() => {

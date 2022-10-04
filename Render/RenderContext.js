@@ -205,24 +205,16 @@ class RenderContext {
     getIconSize(type) {
         switch (this.tickStyle) {
             case "default":
-                switch (type) {
-                    case "questionMark":
-                        return [16 * this.iconScale / 8, 16 * this.iconScale / 8]
-                    case "whiteCheck":
-                    case "greenCheck":
-                        return [16 * this.iconScale / 8, 16 * this.iconScale / 8]
-                    case "failedRoom":
-                        return [16 * this.iconScale / 8, 16 * this.iconScale / 8]
-                }
+                return [16 * this.iconScale / 8, 16 * this.iconScale / 8]
             case "hypixel":
                 switch (type) {
                     case "questionMark":
-                    // return [10 * this.iconScale / 8, 16 * this.iconScale / 8]
+                        return [10 * this.iconScale / 8, 16 * this.iconScale / 8]
                     case "whiteCheck":
                     case "greenCheck":
-                    case "failedRoom":
                         return [10 * this.iconScale / 8, 10 * this.iconScale / 8]
-                    // return [14 * this.iconScale / 8, 14 * this.iconScale / 8]
+                    case "failedRoom":
+                        return [14 * this.iconScale / 8, 14 * this.iconScale / 8]
                 }
         }
     }

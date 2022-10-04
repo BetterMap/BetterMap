@@ -35,6 +35,7 @@ class SettingGui {
         this.defaultSettings = defaultSettings
 
         this.gui.setOpenCommand("bettermap")
+        this.gui.setOpenCommand("bm")
 
         this.gui.element.addChild(new SoopyGuiElement().addEvent(new SoopyRenderEvent().setHandler((mouseX, mouseY) => {
             mapRenderer.draw(renderContext, fakeDungeon, mouseX, mouseY)

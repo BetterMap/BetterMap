@@ -19,8 +19,12 @@
  * @property {Boolean} showTabs - Show tabs at the top of the map 
  * @property {Boolean} showSecrets - Show waypoints for secrets in the dungeon
  * @property {Boolean} forcePaul - Wether to force enable the +10 score for paul (eg if jerry mayor)
+ * @property {Boolean} clearedRoomInfo - Show a summory of what rooms people cleared after run finishes
+ * @property {String} apiKey - The user's api key, or "" if unknown
  * @property {Boolean} devInfo - Wether to show def info in various places in the map
  */
+
+const BufferedImage = Java.type("java.awt.image.BufferedImage")
 
 class RenderContext {
 
@@ -114,6 +118,14 @@ class RenderContext {
     get showSecrets() {
         return this.settings.showSecrets
     }
+        
+    get clearedRoomInfo() {
+        return this.settings.clearedRoomInfo
+    }
+
+    get apiKey() {
+        return this.settings.apiKey
+    }
 
     get devInfo() {
         return this.settings.devInfo
@@ -175,7 +187,16 @@ class RenderContext {
     getImage(type) {
         switch (this.tickStyle) {
             case "default":
-                return NEUMapTicks.get(type)
+                if (this.iconScale < 8) return NEUMapTicks.get(type)
+
+                let size = this.getIconSize(type)
+                let scaledDownImage = new BufferedImage(Math.floor(size[0] / 2), Math.floor(size[1] / 2), BufferedImage.TYPE_INT_ARGB)
+                let graphics = scaledDownImage.createGraphics()
+
+                graphics.drawImage(NEUMapTicks.get(type), 0, 0, Math.floor(size[0] / 2), Math.floor(size[1] / 2), null)
+
+                graphics.dispose()
+                return scaledDownImage
             case "hypixel":
                 return HypixelTicksOld.get(type)
         }
@@ -189,15 +210,7 @@ class RenderContext {
     getIconSize(type) {
         switch (this.tickStyle) {
             case "default":
-                switch (type) {
-                    case "questionMark":
-                        return [16 * this.iconScale / 8, 16 * this.iconScale / 8]
-                    case "whiteCheck":
-                    case "greenCheck":
-                        return [16 * this.iconScale / 8, 16 * this.iconScale / 8]
-                    case "failedRoom":
-                        return [16 * this.iconScale / 8, 16 * this.iconScale / 8]
-                }
+                return [16 * this.iconScale / 8, 16 * this.iconScale / 8]
             case "hypixel":
                 switch (type) {
                     case "questionMark":
@@ -221,7 +234,7 @@ class RenderContext {
         posY = 0,
         size = 100,
         headScale = 8,
-        iconScale = 8,
+        iconScale = 10,
         tickStyle = "default",
         puzzleNames = "none",
         headBorder = false,
@@ -235,6 +248,8 @@ class RenderContext {
         showTabs = true,
         showSecrets = false,
         forcePaul = false,
+        clearedRoomInfo = true,
+        apiKey = "",
         devInfo = false
     }) {
         return {
@@ -257,6 +272,8 @@ class RenderContext {
             showTabs,
             showSecrets,
             forcePaul,
+            clearedRoomInfo,
+            apiKey,
             devInfo
         }
     }
@@ -345,8 +362,8 @@ HypixelTicksOld.set("whiteCheck", new Image("whiteCheckVanilla.png", "https://i.
 HypixelTicksOld.set("failedRoom", new Image("failedRoomVanilla.png", "https://i.imgur.com/WqW69z3.png").image)
 HypixelTicksOld.set("questionMark", new Image("questionMarkVanilla.png", "https://i.imgur.com/1jyxH9I.png").image)
 
-const NEUMapTicks = new Map() //TODO: might need to make own textures for these
-NEUMapTicks.set("greenCheck", new Image("BloomMapGreenCheck.png", "https://i.imgur.com/GQfTfmp.png").image)
-NEUMapTicks.set("whiteCheck", new Image("BloomMapWhiteCheck.png", "https://i.imgur.com/9cZ28bJ.png").image)
-NEUMapTicks.set("failedRoom", new Image("BloomMapFailedRoom.png", "https://i.imgur.com/qAb4O9H.png").image)
-NEUMapTicks.set("questionMark", new Image("BloomMapQuestionMark.png", "https://i.imgur.com/kp92Inw.png").image)
+const NEUMapTicks = new Map()
+NEUMapTicks.set("greenCheck", new Image("NEUMapGreenCheck.png", "https://i.imgur.com/vwiTAAf.png").image) //old: https://i.imgur.com/GQfTfmp.png
+NEUMapTicks.set("whiteCheck", new Image("NEUMapWhiteCheck.png", "https://i.imgur.com/YOUsTg8.png").image) //old: https://i.imgur.com/9cZ28bJ.png
+NEUMapTicks.set("failedRoom", new Image("NEUMapFailedRoom.png", "https://i.imgur.com/TM8LbGS.png").image) //old: https://i.imgur.com/YOUsTg8.png
+NEUMapTicks.set("questionMark", new Image("NEUMapQuestionMark.png", "https://i.imgur.com/CPBuhXu.png").image) //old: https://i.imgur.com/kp92Inw.png

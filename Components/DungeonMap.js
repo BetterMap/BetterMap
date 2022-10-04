@@ -87,6 +87,9 @@ class DungeonMap {
         this.identifiedRoomIds = new Set();
         this.identifiedPuzzleCount = 0;
 
+        this.pingIds = 0
+        this.pingIdFuncs = new Map()
+
         this.dungeonFinished = false
 
         let mimicDeadMessages = ["$SKYTILS-DUNGEON-SCORE-MIMIC$", "Mimic Killed!", "Mimic Dead!", "Mimic dead!"]
@@ -103,26 +106,31 @@ class DungeonMap {
 
                 this.dungeonFinished = true
 
-                ChatLib.chat(MESSAGE_PREFIX + "Cleared room counts:")
-                this.players.forEach(p => {
-                    let m = new Message()
-                    m.addTextComponent(new TextComponent(MESSAGE_PREFIX + "&3" + p.username + "&7 cleared "))
+                if (!settings.settings.clearedRoomInfo) return
+                this.players.forEach(p => p.updateCurrentSecrets())
 
-                    let roomLore = ""
-                    p.roomsData.forEach(([players, room]) => {
-                        let name = room.data?.name ?? room.shape
-                        let type = room.typeToName()
-                        let color = room.typeToColor()
+                Client.scheduleTask(5 * 20, () => { //wait 5 seconds (5*20tps)
+                    ChatLib.chat(MESSAGE_PREFIX + "Cleared room counts:")
+                    this.players.forEach(p => {
+                        let m = new Message()
+                        m.addTextComponent(new TextComponent(MESSAGE_PREFIX + "&3" + p.username + "&7 cleared "))
 
-                        let stackStr = players.length === 1 ? "" : " Stacked with " + players.filter(pl => pl !== p).map(p => p.username).join(", ")
+                        let roomLore = ""
+                        p.roomsData.forEach(([players, room]) => {
+                            let name = room.data?.name ?? room.shape
+                            let type = room.typeToName()
+                            let color = room.typeToColor()
 
-                        roomLore += `&${color}${name} (${type})${stackStr}\n`
+                            let stackStr = players.length === 1 ? "" : " Stacked with " + players.filter(pl => pl !== p).map(p => p.username).join(", ")
+
+                            roomLore += `&${color}${name} (${type})${stackStr}\n`
+                        })
+
+                        m.addTextComponent(new TextComponent("&6" + p.minRooms + "-" + p.maxRooms).setHover("show_text", roomLore.trim()))
+                        m.addTextComponent(new TextComponent("&7 rooms and got &6" + p.secretsCollected + "&7 secrets"))
+
+                        m.chat()
                     })
-
-                    m.addTextComponent(new TextComponent("&6" + p.minRooms + "-" + p.maxRooms).setHover("show_text", roomLore.trim()))
-                    m.addTextComponent(new TextComponent("&7 rooms and got &6" + p.secretsCollected + "&7 secrets"))
-
-                    m.chat()
                 })
             }).setChatCriteria('&r&c${*}e Catacombs &r&8- &r&eFloor${end}').setContains())
             //&r&r&r                     &r&cThe Catacombs &r&8- &r&eFloor I Stats&r
@@ -147,6 +155,15 @@ class DungeonMap {
 
                 this.scanFirstDeathForSpiritPet(player)
             }).setChatCriteria("&r&c ☠ ${info} and became a ghost&r&7.&r"))
+
+            this.triggers.push(register("step", () => {
+                this.pingIdFuncs.forEach(([timestamp, callback], id) => {
+                    if (Date.now() - timestamp < 5000) return
+
+                    callback(false)
+                    this.pingIdFuncs.delete(id)
+                })
+            }).setFps(1))
         }
     }
 
@@ -193,7 +210,39 @@ class DungeonMap {
             case "secretCollect":
                 this.collectedSecrets.add(data.location)
                 break;
+            case "ping":
+                socketConnection.sendDungeonData({ "data": { "type": "pingRespond", "from": Player.getName(), "id": data.id }, "players": [data.from] })
+                break
+            case "pingRespond":
+                if (this.pingIdFuncs.get(pingId))
+                    this.pingIdFuncs.get(pingId)[1](true)
+                break
         }
+    }
+
+    /**
+     * NOTE: the callback function will be given a boolean representing wether the user is using bettermap
+     * 
+     * @example
+     * DungeonMap.pingPlayer("Soopyboo32", (usingMap) => {
+     *     if(usingMap){
+     *         ChatLib.chat("Soopyboo32 is using bettermap")
+     *     }else{
+     *         ChatLib.chat("Soopyboo32 is NOT using bettermap")
+     *     }
+     * })
+     */
+    pingPlayer(username, callback) {
+        if (username === Player.getName()) {
+            callback(true) //Server doesent allow sending data to self
+            return
+        }
+
+        let pingId = this.pingIds++
+
+        this.pingIdFuncs.set(pingId, [Date.now(), callback])
+
+        socketConnection.sendDungeonData({ "data": { "type": "ping", "from": Player.getName(), "id": data.id }, "players": [username] })
     }
 
     regenRooms() {
@@ -254,7 +303,7 @@ class DungeonMap {
         let thePlayer = undefined
         for (let p of pl) {
             if (!p[m.getDisplayName.NetworkPlayerInfo]()) continue
-            let line = p[m.getDisplayName.NetworkPlayerInfo]()[m.getUnformattedText]().trim().replace("♲ ", "") //TODO: Remove bingo symbol
+            let line = p[m.getDisplayName.NetworkPlayerInfo]()[m.getUnformattedText]().trim().replace(/\[[0-9]+\] /g, "").replace(/[♲Ⓑ] /g, "")
             line = line.replace(/\[[A-Z]+?\] /, "") //support yt/admin rank
             if (line.endsWith(")") && line.includes(" (") && line.split(" (").length === 2 && line.split(" (")[0].split(" ").length === 1 && line.split(" (")[1].length > 3) {
                 // This is a tab list line for a player
@@ -270,6 +319,7 @@ class DungeonMap {
                 }
                 this.players[i].networkPlayerInfo = p
                 this.playersNameToId[name] = i
+                this.players[i].username = name //For some reason this is sometimes the players name when scoreboard is still loading in
 
                 i++
             }
@@ -375,6 +425,8 @@ class DungeonMap {
     }
 
     syncPlayersThruSocket() {
+        this.players.forEach(p => p.checkUpdateUUID())
+
         World.getAllPlayers().forEach(player => {
             if (!this.playersNameToId[ChatLib.removeFormatting(player.getName()).trim()]) return
             let p = this.players[this.playersNameToId[ChatLib.removeFormatting(player.getName()).trim()]]
@@ -880,21 +932,21 @@ class DungeonMap {
         if (!this.nameToUuid[username.toLowerCase()]) return
         let uuid = this.nameToUuid[username.toLowerCase()]?.replace(/-/g, "")
 
-        let apiKey = undefined//TODO: this
+        let apiKey = settings.settings.apiKey
 
         if (apiKey) {
             fetch(`https://api.hypixel.net/skyblock/profiles?key=${apiKey}&uuid=${uuid}`).json(data => {
                 if (!data.success) return
 
-                let latestProfile = [0, undefined]
+                let latestProfile = undefined
 
                 data.profiles.forEach(p => {
-                    if (p.members[uuid].last_save > latestProfile[0]) {
-                        latestProfile = [p.members[uuid].last_save, p.members[uuid].pets.some(pet => pet.type === "SPIRIT" && pet.tier === "LEGENDARY")]
+                    if (p.selected) {
+                        latestProfile = p.members[uuid].pets.some(pet => pet.type === "SPIRIT" && pet.tier === "LEGENDARY")
                     }
                 })
 
-                if (latestProfile[1]) {
+                if (latestProfile) {
                     this.firstDeathHadSpirit = true
                     if (username === "You") {
                         ChatLib.chat(MESSAGE_PREFIX + username + " have a spirit pet!")
@@ -909,7 +961,7 @@ class DungeonMap {
                     }
                 }
             })
-        } else {
+        } else { //Works without api key, api key still recommended though for secrets tracking
             fetch(`https://soopy.dev/api/v2/player_skyblock/${uuid}`).json(data => {
                 if (!data.success) return
 

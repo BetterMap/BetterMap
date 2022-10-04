@@ -82,6 +82,17 @@ betterMapServer.datacallback = (data) => {
 eventManager.onSecretCollect((type, x, y, z) => {
     if (currentDungeonMap) currentDungeonMap.onSecretCollect(type, x, y, z)
 })
+register("command", (name) => { //TODO: change this command to show somewhere instead of command
+    if (currentDungeonMap) {
+        currentDungeonMap.pingPlayer(name, (usingMap) => {
+            if (usingMap) {
+                ChatLib.chat(name + " is using bettermap")
+            } else {
+                ChatLib.chat(name + " is NOT using bettermap")
+            }
+        })
+    }
+}).setName("bping", true)
 
 register("renderOverlay", () => {
     if (dungeonMapRenderContext && currentDungeonMap) {

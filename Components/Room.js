@@ -326,7 +326,7 @@ class Room {
 
     getLore() {
         let roomLore = []
-        if (this.roomId) { //TODO: COLORS!
+        if (this.roomId) {
             roomLore.push(this.data?.name || '???')
             roomLore.push("&8" + (this.roomId || ""))
             if (CurrentSettings.settings.devInfo) roomLore.push('&9Rotation: ' + (this.rotation || 'NONE'));

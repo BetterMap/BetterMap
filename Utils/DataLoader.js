@@ -58,9 +58,6 @@ class DataLoader {
                 this.partyMembers.add(p.trim().split(" ").pop().trim())
             })
         })
-        register("command", () => {
-            ChatLib.chat([...this.partyMembers].join(" | "))
-        }).setName("pmembdebugmap", true)
     }
     registerChat(msg, fun) {
         return register("chat", fun.bind(this)).setChatCriteria(msg)

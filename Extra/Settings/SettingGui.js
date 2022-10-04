@@ -19,6 +19,9 @@ import SoopyNumber from "../../../guimanager/Classes/SoopyNumber"
 import SoopyOpenGuiEvent from "../../../guimanager/EventListener/SoopyOpenGuiEvent"
 import { fetch } from "../../Utils/networkUtils"
 import NumberTextBox from "../../../guimanager/GuiElement/NumberTextBox"
+import TextBox from "../../../guimanager/GuiElement/TextBox"
+import { MESSAGE_PREFIX } from "../../Utils/Utils"
+import Notification from "../../../guimanager/Notification"
 
 class SettingGui {
     /**
@@ -32,6 +35,7 @@ class SettingGui {
         this.defaultSettings = defaultSettings
 
         this.gui.setOpenCommand("bettermap")
+        this.gui.setOpenCommand("bm")
 
         this.gui.element.addChild(new SoopyGuiElement().addEvent(new SoopyRenderEvent().setHandler((mouseX, mouseY) => {
             mapRenderer.draw(renderContext, fakeDungeon, mouseX, mouseY)
@@ -76,9 +80,17 @@ class SettingGui {
 
         this.addDropdown("Map Style", {
             "legalmap": "Legal Map",
-            "hypixelmap": "Hypixel",
-            "teniosmap": "Tenios Map"
+            "hypixelmap": "Hypixel"//,
+            // "teniosmap": "Tenios Map"
         }, "mapStyle", "legalmap")
+
+
+        this.addSidebarElement(new ButtonWithArrow().setText("&0Discord").addEvent(new SoopyMouseClickEvent().setHandler(() => {
+            java.awt.Desktop.getDesktop().browse(
+                new java.net.URI("https://discord.gg/Uq5YzpaMsr")
+            );
+        })), 0.3, 0.4, 0.075)
+        this.addSidebarElement()
 
 
         // Location edit gui
@@ -117,7 +129,7 @@ class SettingGui {
         }, "playerNames", this.defaultSettings.playerNames)
 
         this.addSlider("Head Scale", "headScale", this.defaultSettings.headScale || 8, 2, 15)
-        this.addSlider("Icon Scale", "iconScale", this.defaultSettings.iconScale || 8, 2, 15)
+        this.addSlider("Icon Scale", "iconScale", this.defaultSettings.iconScale || 10, 2, 15)
 
         this.addCategory("Secret info Settings")
 
@@ -129,26 +141,39 @@ class SettingGui {
 
         this.addCategory("Tab Info")
 
-        this.addToggle("Show current Secret total", "tabSecretCount", this.defaultSettings.tabSecretCount)
+        this.addToggle("Show current Secret total", "tabSecretCount", this.defaultSettings.tabSecretCount)[1].setLore(["Change the secrets found number in tab to also show total secrets in dungeon"])
 
-        this.addToggle("Show current Crypt total", "tabCryptCount", this.defaultSettings.tabCryptCount)
+        this.addToggle("Show current Crypt total", "tabCryptCount", this.defaultSettings.tabCryptCount)[1].setLore(["Change the crypts found number in tab to also show total crypts in dungeon"])
 
-        this.addToggle("Show Mimic Status", "tabMimic", this.defaultSettings.tabMimic)
+        this.addToggle("Show Mimic Status", "tabMimic", this.defaultSettings.tabMimic)[1].setLore(["Add a line to tab displaying wether the minic has been killed"])
 
         this.addCategory("Other Settings")
 
         this.addToggle("Hide map in Boss", "hideInBoss", this.defaultSettings.hideInBoss)
-        this.addToggle("Show tabs on map", "showTabs", this.defaultSettings.showTabs)
+        this.addToggle("Show tabs on map", "showTabs", this.defaultSettings.showTabs)[1].setLore(["Shows tabs at the top of the map that can be clicked", "eg to look at the dungeon map when in boss"])
 
         this.addDropdown("Current room info next to map", {
             "none": "None",
             "left": "Left of map",
             "right": "Right of map"
-        }, "currentRoomInfo", this.defaultSettings.currentRoomInfo)
+        }, "currentRoomInfo", this.defaultSettings.currentRoomInfo)[1].setLore(["Shows the same info that would be shown when hovering over a room"])
+
+        this.addToggle("Force paul +10 score", "forcePaul", this.defaultSettings.forcePaul)[1].setLore(["Paul score bonus will get auto-detected when paul is mayor", "But it wont be auto detected from jerry-paul"])
+
+        this.addToggle("Dungeon clear breakdown", "clearedRoomInfo", this.defaultSettings.clearedRoomInfo)[1].setLore(["Shows the cleared room count and specific rooms in chat when the dungeon ends"])
+
 
         this.addToggle("Show secret waypoints (scuffed)", "showSecrets", this.defaultSettings.showSecrets)
 
         this.addToggle("Force paul +10 score", "forcePaul", this.defaultSettings.forcePaul)
+        this.addSidebarElement(new ButtonWithArrow().setText("&0Load api key from other mods").addEvent(new SoopyMouseClickEvent().setHandler(() => {
+            findKey(key => {
+                this.setApiKey(key)
+            })
+        })), 0.3, 0.4, 0.075)
+        this.addSidebarElement() //adds a gap because the button diddnt auto add one
+
+        this.apiKeySetting = this.addString("Api key", "apiKey", this.defaultSettings.apiKey)[0]
 
         this.addToggle("Show dev info", "devInfo", this.defaultSettings.devInfo)
 
@@ -197,7 +222,20 @@ class SettingGui {
         this.gui._renderBackground = () => {
             Renderer.drawRect(Renderer.color(0, 0, 0, this.backgroundOpacity.get()), 0, 0, Renderer.screen.getWidth(), Renderer.screen.getHeight())
         }
+
+        register("chat", (key, event) => { //Api key detection
+            ChatLib.chat(MESSAGE_PREFIX + "Copied api key!")
+
+            this.setApiKey(key)
+        }).setChatCriteria("&aYour new API key is &r&b${key}&r")
+
         this.generateChangelog()
+    }
+
+    setApiKey(key) {
+        this.apiKeySetting.setText(key)
+
+        this.changed("apiKey", key)
     }
 
     generateChangelog() {
@@ -292,11 +330,11 @@ class SettingGui {
      * @param {String} defau Default value
      */
     addDropdown(label, options, setting, defau) {
-        this.addSidebarElement(new DropDown().setOptions(options).setSelectedOption(this.defaultSettings[setting] ?? defau).addEvent(new SoopyContentChangeEvent().setHandler((val, prev, cancelFun) => {
+        let drop = this.addSidebarElement(new DropDown().setOptions(options).setSelectedOption(this.defaultSettings[setting] ?? defau).addEvent(new SoopyContentChangeEvent().setHandler((val, prev, cancelFun) => {
             this.changed(setting, val)
         })), 0.55, 0.35, 0.075)
 
-        this.addSidebarElement(new SoopyTextElement().setText("§0" + label).setMaxTextScale(2), 0.1, 0.35)
+        return [drop, this.addSidebarElement(new SoopyTextElement().setText("§0" + label).setMaxTextScale(2), 0.1, 0.35)]
     }
 
 
@@ -307,13 +345,25 @@ class SettingGui {
      * @param {Boolean} defau Default value
      */
     addToggle(label, setting, defau) {
-        this.addSidebarElement(new Toggle().setValue(this.defaultSettings[setting] ?? defau).addEvent(new SoopyContentChangeEvent().setHandler((val, prev, cancelFun) => {
+        let toggle = this.addSidebarElement(new Toggle().setValue(this.defaultSettings[setting] ?? defau).addEvent(new SoopyContentChangeEvent().setHandler((val, prev, cancelFun) => {
             this.changed(setting, val)
         })), 0.625, 0.2, 0.05)
 
-        this.addSidebarElement(new SoopyTextElement().setText("§0" + label).setMaxTextScale(2), 0.1, 0.35)
+        return [toggle, this.addSidebarElement(new SoopyTextElement().setText("§0" + label).setMaxTextScale(2), 0.1, 0.35)]
     }
 
+    /**
+     * @param {String} label The text to go to the left of the dropdown
+     * @param {String} setting internal name of the setting to control
+     * @param {String} defau Default value
+     */
+    addString(label, setting, defau) {
+        let textBox = this.addSidebarElement(new TextBox().setText(this.defaultSettings[setting] ?? defau).addEvent(new SoopyContentChangeEvent().setHandler((val, prev, cancelFun) => {
+            this.changed(setting, val)
+        })), 0.625, 0.2, 0.05)
+
+        return [textBox, this.addSidebarElement(new SoopyTextElement().setText("§0" + label).setMaxTextScale(2), 0.1, 0.35)]
+    }
 
     /**
      * 
@@ -346,8 +396,8 @@ class SettingGui {
 
         this.addSidebarElement(slider, 0.55, 0.2, 0.05)
         this.addSidebarElement(numberT, 0.8, 0.1, 0.05)
-        this.addSidebarElement(new SoopyTextElement().setText("§0" + label).setMaxTextScale(2), 0.1, 0.35)
-    }
+        return [[slider, numberT], this.addSidebarElement(new SoopyTextElement().setText("§0" + label).setMaxTextScale(2), 0.1, 0.35)]
+    } //Cinda scuffed its a different return type, but trying to keep atleast semi-consistant
 
     /**
      * 
@@ -357,13 +407,135 @@ class SettingGui {
         let elm = new SoopyTextElement().setText("§7" + label).setMaxTextScale(2)
         this.addSidebarElement(elm, 0.1, 0.8, 0.06)
         elm.location.location.y.set(this.y - 0.1 + 0.04)
+        return elm
     }
 
 
     addSidebarElement(elm = null, x = 0.1, width = 0.8, height = 0.1) {
         if (elm) this.mainpage.addChild(elm.setLocation(x, this.y + 0.05 - height / 2, width, height))
         if (x === 0.1) this.y += 0.1
+        return elm
     }
 }
 
 export default SettingGui
+
+
+function verifyApiKeySync(key) {
+    if (key) {
+        try {
+            var url = "https://api.hypixel.net/key?key=" + key
+            let data = fetch(url).json()
+
+            return !!data.success
+        } catch (e) {
+            return false
+        }
+    } else {
+        return false
+    }
+}
+
+const JavaString = Java.type("java.lang.String")
+const JavaLong = Java.type("java.lang.Long")
+const Files = Java.type("java.nio.file.Files")
+const Paths = Java.type("java.nio.file.Paths")
+/**
+ * NOTE: this will display a notification with key finding information
+ */
+function findKey(callback = () => { }) {
+    new Thread(() => {
+
+        //       NEU
+        try {
+            let testKey = JSON.parse(new JavaString(Files.readAllBytes(Paths.get("./config/notenoughupdates/configNew.json")))).apiKey.apiKey
+            if (testKey) {
+                if (verifyApiKeySync(testKey)) {
+                    new Notification("§aSuccess!", ["Found api key in NotEnoughUpdates!"])
+                    callback(testKey)
+                    return;
+                } else {
+                    console.log("[BETERMAP] Found invalid key in NotEnoughUpdates")
+                }
+            }
+        } catch (_) { }
+
+        //       SBE
+        try {
+            let testKey = JSON.parse(new JavaString(Files.readAllBytes(Paths.get("./config/SkyblockExtras.cfg")))).values.apiKey
+            if (testKey) {
+                if (verifyApiKeySync(testKey)) {
+                    new Notification("§aSuccess!", ["Found api key in SkyblockExtras!"])
+                    callback(testKey)
+                    return;
+                } else {
+                    console.log("[BETERMAP] Found invalid key in SkyblockExtras")
+                }
+            }
+        } catch (_) { }
+        //       SKYTILS
+        try {
+            let testKey2 = new JavaString(Files.readAllBytes(Paths.get("./config/skytils/config.toml")))
+            let testKey = undefined
+            testKey2.split("\n").forEach(line => {
+                if (line.startsWith("		hypixel_api_key = \"")) {
+                    testKey = line.split("\"")[1]
+                }
+            })
+            if (testKey) {
+                if (verifyApiKeySync(testKey)) {
+                    new Notification("§aSuccess!", ["Found api key in Skytils!"])
+                    callback(testKey)
+                    return;
+                } else {
+                    console.log("[BETERMAP] Found invalid key in Skytils")
+                }
+            }
+        } catch (_) { }
+
+        //       SOOPYADDONS DATA
+        try {
+            let testKey = FileLib.read("soopyAddonsData", "apikey.txt")
+            if (testKey) {
+                if (verifyApiKeySync(testKey)) {
+                    new Notification("§aSuccess!", ["Found api key in old soopyaddons version!"])
+                    callback(testKey)
+                    return;
+                } else {
+                    console.log("[BETERMAP] Found invalid key in soopyaddonsData")
+                }
+            }
+        } catch (_) { }
+
+        //       SOOPYV2
+        try {
+            let testKey = JSON.parse(FileLib.read("soopyAddonsData", "soopyaddonsbetafeaturesdata.json")).globalSettings.subSettings.api_key.value
+            if (testKey) {
+                if (verifyApiKeySync(testKey)) {
+                    new Notification("§aSuccess!", ["Found api key in old soopyaddons version!"])
+                    callback(testKey)
+                    return;
+                } else {
+                    console.log("[BETERMAP] Found invalid key in soopyaddonsData")
+                }
+            }
+        } catch (_) { }
+
+        //       HypixelApiKeyManager
+        try {
+            let testKey = JSON.parse(FileLib.read("HypixelApiKeyManager", "localdata.json")).key
+            if (testKey) {
+                if (verifyApiKeySync(testKey)) {
+                    new Notification("§aSuccess!", ["Found api key in HypixelApiKeyManager!"])
+                    callback(testKey)
+                    return;
+                } else {
+                    console.log("[BETERMAP] Found invalid key in HypixelApiKeyManager")
+                }
+            }
+        } catch (_) { }
+
+
+        new Notification("§cUnable to find api key", [])
+    }).start()
+}

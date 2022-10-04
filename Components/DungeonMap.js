@@ -1119,7 +1119,7 @@ class DungeonMap {
         if (this.dropdownXY) {
             let width = 125
             Renderer.retainTransforms(true)
-            Renderer.translate(0, 0, 100)
+            Renderer.translate(0, 0, 1000)
             Renderer.drawRect(Renderer.color(0, 0, 0), this.dropdownXY[0], this.dropdownXY[1], width, 25 * dungeonMapButtons.length)
 
             dungeonMapButtons.forEach(([name, callback], index) => {

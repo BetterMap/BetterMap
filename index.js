@@ -12,6 +12,7 @@ import SettingsManager from "./Extra/Settings/SettingsManager"
 import DungeonRoomData from "./Data/DungeonRoomData.js"
 import CurrentSettings from "./Extra/Settings/CurrentSettings"
 import eventManager from "./Extra/Events/EventManager"
+import { MESSAGE_PREFIX } from "./Utils/Utils"
 require("./Extra/Events/SecretTracker.js")
 
 /**@type {DungeonMap} */
@@ -86,11 +87,13 @@ register("command", (name) => { //TODO: change this command to show somewhere in
     if (currentDungeonMap) {
         currentDungeonMap.pingPlayer(name, (usingMap) => {
             if (usingMap) {
-                ChatLib.chat(name + " is using bettermap")
+                ChatLib.chat(MESSAGE_PREFIX + name + " is using bettermap")
             } else {
-                ChatLib.chat(name + " is NOT using bettermap")
+                ChatLib.chat(MESSAGE_PREFIX + name + " is NOT using bettermap (or issnt in a dungeon)")
             }
         })
+    } else {
+        ChatLib.chat(MESSAGE_PREFIX + "Both players must be in a dungeon to use this command")
     }
 }).setName("bping", true)
 

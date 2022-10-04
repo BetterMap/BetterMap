@@ -214,8 +214,10 @@ class DungeonMap {
                 socketConnection.sendDungeonData({ "data": { "type": "pingRespond", "from": Player.getName(), "id": data.id }, "players": [data.from] })
                 break
             case "pingRespond":
-                if (this.pingIdFuncs.get(pingId))
-                    this.pingIdFuncs.get(pingId)[1](true)
+                if (this.pingIdFuncs.get(data.id)) {
+                    this.pingIdFuncs.get(data.id)[1](true)
+                    this.pingIdFuncs.delete(data.id)
+                }
                 break
         }
     }
@@ -242,7 +244,7 @@ class DungeonMap {
 
         this.pingIdFuncs.set(pingId, [Date.now(), callback])
 
-        socketConnection.sendDungeonData({ "data": { "type": "ping", "from": Player.getName(), "id": data.id }, "players": [username] })
+        socketConnection.sendDungeonData({ "data": { "type": "ping", "from": Player.getName(), "id": pingId }, "players": [username] })
     }
 
     regenRooms() {

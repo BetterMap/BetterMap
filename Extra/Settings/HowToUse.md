@@ -1,5 +1,1 @@
-This is a markdown file
-
-with how to use info
-
-pog
+Im to lazy to write this rn, if someone wants to write it and dm it to me i can add.

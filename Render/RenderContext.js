@@ -17,6 +17,7 @@
  * @property {Boolean} tabMimic - Show the mimic status in tab
  * @property {Boolean} hideInBoss - Hide the map in boss entirely 
  * @property {Boolean} showTabs - Show tabs at the top of the map 
+ * @property {Boolean} showSecrets - Show waypoints for secrets in the dungeon
  * @property {Boolean} forcePaul - Wether to force enable the +10 score for paul (eg if jerry mayor)
  * @property {Boolean} clearedRoomInfo - Show a summory of what rooms people cleared after run finishes
  * @property {String} apiKey - The user's api key, or "" if unknown
@@ -114,6 +115,10 @@ class RenderContext {
         return this.settings.forcePaul
     }
 
+    get showSecrets() {
+        return this.settings.showSecrets
+    }
+        
     get clearedRoomInfo() {
         return this.settings.clearedRoomInfo
     }
@@ -241,6 +246,7 @@ class RenderContext {
         tabMimic = false,
         hideInBoss = false,
         showTabs = true,
+        showSecrets = false,
         forcePaul = false,
         clearedRoomInfo = true,
         apiKey = "",
@@ -264,6 +270,7 @@ class RenderContext {
             tabMimic,
             hideInBoss,
             showTabs,
+            showSecrets,
             forcePaul,
             clearedRoomInfo,
             apiKey,

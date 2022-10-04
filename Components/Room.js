@@ -1,6 +1,8 @@
 import { m } from "../../mappings/mappings.js"
 import DungeonRoomData from "../Data/DungeonRoomData.js"
+import settings from "../Extra/Settings/CurrentSettings.js"
 import CurrentSettings from "../Extra/Settings/CurrentSettings.js"
+import { drawBoxAtBlock } from "../Utils/renderUtils.js"
 import { firstLetterCapital } from "../Utils/Utils.js"
 import { createEvent, RoomEvents, toDisplayString } from "./RoomEvent.js"
 
@@ -385,6 +387,43 @@ class Room {
             default:
                 return { x: x, y: y, z: z };
         }
+    }
+
+    drawRoomSecrets() {
+        if (!settings.settings.showSecrets) return
+        if (!this.data) return
+        if (this.currentSecrets === this.maxSecrets) return //TODO: account for 3/1 room
+
+        this.data.secret_coords?.chest?.forEach(([rx, ry, rz]) => {
+            let { x, y, z } = this.toRoomCoords(rx, ry, rz);
+
+            if (this.dungeon.collectedSecrets.has(x + "," + y + "," + z)) return
+            drawBoxAtBlock(x, y, z, 0, 1, 0, 1, 1)
+        });
+        this.data.secret_coords?.item?.forEach(([rx, ry, rz]) => {
+            let { x, y, z } = this.toRoomCoords(rx, ry, rz);
+
+            if (this.dungeon.collectedSecrets.has(x + "," + y + "," + z)) return
+            drawBoxAtBlock(x + 0.25, y, z + 0.25, 0, 0, 1, 0.5, 0.5)
+        });
+        this.data.secret_coords?.wither?.forEach(([rx, ry, rz]) => {
+            let { x, y, z } = this.toRoomCoords(rx, ry, rz);
+
+            if (this.dungeon.collectedSecrets.has(x + "," + y + "," + z)) return
+            drawBoxAtBlock(x + 0.25, y, z + 0.25, 1, 0, 1, 0.5, 0.5)
+        });
+        this.data.secret_coords?.bat?.forEach(([rx, ry, rz]) => {
+            let { x, y, z } = this.toRoomCoords(rx, ry, rz);
+
+            if (this.dungeon.collectedSecrets.has(x + "," + y + "," + z)) return
+            drawBoxAtBlock(x + 0.25, y + 0.25, z + 0.25, 0, 1, 0, 0.5, 0.5)
+        });
+        this.data.secret_coords?.redstone_key?.forEach(([rx, ry, rz]) => {
+            let { x, y, z } = this.toRoomCoords(rx, ry, rz);
+
+            if (this.dungeon.collectedSecrets.has(x + "," + y + "," + z)) return
+            drawBoxAtBlock(x + 0.25, y, z + 0.25, 1, 0, 0, 0.5, 0.5)
+        });
     }
 
     checkmarkStateToName(state = this.checkmarkState) {

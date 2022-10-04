@@ -35,7 +35,7 @@ class EventManager {
      * @param {secretCallback} callback 
      */
     onSecretCollect(callback) {
-        this.addHandler(EventManager.EVENT_SECRETCOLLECT, callback)
+        this.addHandler(this.EVENT_SECRETCOLLECT, callback)
     }
 
     /**
@@ -54,7 +54,7 @@ class EventManager {
      * @param {secretStepCallback} callback 
      */
     onSecretStep(callback) {
-        this.addHandler(EventManager.EVENT_SECRETSTEP, callback)
+        this.addHandler(this.EVENT_SECRETSTEP, callback)
     }
 
     /**
@@ -71,7 +71,7 @@ class EventManager {
      * @param {etherwarpCallback} callback 
      */
     onEtherwarp(callback) {
-        this.addHandler(EventManager.EVENT_ETHERWARP, callback)
+        this.addHandler(this.EVENT_ETHERWARP, callback)
     }
 
     /**
@@ -89,7 +89,7 @@ class EventManager {
      * @param {superboomCallback} callback 
      */
     onSuperboom(callback) {
-        this.addHandler(EventManager.EVENT_SUPERBOOM, callback)
+        this.addHandler(this.EVENT_SUPERBOOM, callback)
     }
 
     /**
@@ -106,7 +106,7 @@ class EventManager {
      * @param {stonkCallback} callback 
      */
     onStonk(callback) {
-        this.addHandler(EventManager.EVENT_STONK, callback)
+        this.addHandler(this.EVENT_STONK, callback)
     }
 
     addHandler(type, callback) {

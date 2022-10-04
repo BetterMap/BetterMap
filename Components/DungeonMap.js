@@ -1560,29 +1560,40 @@ class DungeonMap {
     }
 
     onSecretCollect(type, x, y, z) {
-        //TODO: for itemdrops snap to nearest if distance < 5
-        //TODO: for bats snap to nearest
+        let loc = `${x},${y},${z}`
 
         let currentRoom = this.getCurrentRoom()
         if (type === "bat" && currentRoom.data) {
             let closestD = Infinity
-            let closest = undefined
 
             currentRoom.data.secret_coords?.bat?.forEach(([rx, ry, rz]) => {
-                let { x2, y2, z2 } = this.toRoomCoords(rx, ry, rz);
+                let { x2, y2, z2 } = currentRoom.toRoomCoords(rx, ry, rz);
 
                 if (this.collectedSecrets.has(x2 + "," + y2 + "," + z2)) return
                 let distance = (x2 - x) ** 2 + (y2 - y) ** 2 + (z2 - z) ** 2
                 if (distance < closestD) {
                     distance = closestD
-                    closest = x2 + "," + y2 + "," + z2
+                    loc = x2 + "," + y2 + "," + z2
                 }
-                drawBoxAtBlock(x + 0.25, y + 0.25, z + 0.25, 0, 1, 0, 0.5, 0.5)
+            });
+        }
+        if (type === "item" && currentRoom.data) {
+            let closestD = 25
+
+            currentRoom.data.secret_coords?.bat?.forEach(([rx, ry, rz]) => {
+                let { x2, y2, z2 } = currentRoom.toRoomCoords(rx, ry, rz);
+
+                if (this.collectedSecrets.has(x2 + "," + y2 + "," + z2)) return
+                let distance = (x2 - x) ** 2 + (y2 - y) ** 2 + (z2 - z) ** 2
+                if (distance < closestD) {
+                    distance = closestD
+                    loc = x2 + "," + y2 + "," + z2
+                }
             });
         }
 
-        this.collectedSecrets.add(`${x},${y},${z}`)
-        this.sendSocketData({ type: "secretCollect", location: `${x},${y},${z}` })
+        this.collectedSecrets.add(loc)
+        this.sendSocketData({ type: "secretCollect", location: loc })
     }
 }
 

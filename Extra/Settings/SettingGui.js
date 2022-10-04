@@ -80,8 +80,8 @@ class SettingGui {
 
         this.addDropdown("Map Style", {
             "legalmap": "Legal Map",
-            "hypixelmap": "Hypixel",
-            "teniosmap": "Tenios Map"
+            "hypixelmap": "Hypixel"//,
+            // "teniosmap": "Tenios Map"
         }, "mapStyle", "legalmap")
 
 

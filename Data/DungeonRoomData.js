@@ -1,3 +1,5 @@
+const { fetch } = require("../Utils/networkUtils.js")
+
 /**
  * @typedef {Object} SecretDetails
  * @property {Number} wither - Total wither essences in the room
@@ -34,6 +36,19 @@ class DungeonRoomStaticData {
                 this.idMap.set(id, i)
             })
             this.idMap.set(d.index, i)
+        })
+
+        fetch("https://soopy.dev/api/bettermap/roomdata").json(data => {
+            FileLib.write("BetterMap", "Data/roomdata.json", JSON.stringify(data))
+
+            this.fullRoomData = data
+            this.idMap = new Map()
+            this.fullRoomData.forEach((d, i) => {
+                d.id.forEach(id => {
+                    this.idMap.set(id, i)
+                })
+                this.idMap.set(d.index, i)
+            })
         })
     }
 

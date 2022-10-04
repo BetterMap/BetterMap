@@ -1,5 +1,6 @@
 import { m } from "../../mappings/mappings.js"
 import DungeonRoomData from "../Data/DungeonRoomData.js"
+import settings from "../Extra/Settings/CurrentSettings.js"
 import CurrentSettings from "../Extra/Settings/CurrentSettings.js"
 import { drawBoxAtBlock } from "../Utils/renderUtils.js"
 import { firstLetterCapital } from "../Utils/Utils.js"
@@ -389,6 +390,7 @@ class Room {
     }
 
     drawRoomSecrets() {
+        if (!settings.settings.showSecrets) return
         if (!this.data) return
         if (this.currentSecrets === this.maxSecrets) return //TODO: account for 3/1 room
 

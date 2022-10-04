@@ -146,6 +146,8 @@ class SettingGui {
             "right": "Right of map"
         }, "currentRoomInfo", this.defaultSettings.currentRoomInfo)
 
+        this.addToggle("Show secret waypoints (scuffed)", "showSecrets", this.defaultSettings.showSecrets)
+
         this.addToggle("Force paul +10 score", "forcePaul", this.defaultSettings.forcePaul)
 
         this.addToggle("Show dev info", "devInfo", this.defaultSettings.devInfo)

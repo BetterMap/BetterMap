@@ -1619,7 +1619,7 @@ class DungeonMap {
             let closestD = Infinity
 
             currentRoom.data.secret_coords?.bat?.forEach(([rx, ry, rz]) => {
-                let { x2, y2, z2 } = currentRoom.toRoomCoords(rx, ry, rz);
+                let { x: x2, y: y2, z: z2 } = currentRoom.toRoomCoords(rx, ry, rz);
 
                 if (this.collectedSecrets.has(x2 + "," + y2 + "," + z2)) return
                 let distance = (x2 - x) ** 2 + (y2 - y) ** 2 + (z2 - z) ** 2
@@ -1632,8 +1632,8 @@ class DungeonMap {
         if (type === "item" && currentRoom.data) {
             let closestD = 25
 
-            currentRoom.data.secret_coords?.bat?.forEach(([rx, ry, rz]) => {
-                let { x2, y2, z2 } = currentRoom.toRoomCoords(rx, ry, rz);
+            currentRoom.data.secret_coords?.item?.forEach(([rx, ry, rz]) => {
+                let { x: x2, y: y2, z: z2 } = currentRoom.toRoomCoords(rx, ry, rz);
 
                 if (this.collectedSecrets.has(x2 + "," + y2 + "," + z2)) return
                 let distance = (x2 - x) ** 2 + (y2 - y) ** 2 + (z2 - z) ** 2

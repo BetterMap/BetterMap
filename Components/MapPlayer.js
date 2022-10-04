@@ -172,7 +172,6 @@ class MapPlayer {
             Tessellator.popMatrix()
             Renderer.retainTransforms(false)
 
-            ChatLib.chat(renderLibs.getCurrScizzor().join(" | "))
             renderLibs.scizzor(...renderLibs.getCurrScizzor())
         }
 

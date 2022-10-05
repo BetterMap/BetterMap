@@ -116,7 +116,7 @@ class MapPlayer {
     drawAt(x, y, w, h, rotation = 0, border = true) {
         Tessellator.pushMatrix()
         Renderer.retainTransforms(true)
-        Renderer.translate(x - w / 2, y - h / 2, 50)
+        Renderer.translate(x + w / 2, y + h / 2, 50)
         // Renderer.translate(x + (this.location.worldX + 256 - 32) * size / 256, y + (this.location.worldY + 256 - 32) * size / 256, 50)
         Renderer.rotate(rotation)
 
@@ -147,11 +147,28 @@ class MapPlayer {
         Tessellator.popMatrix()
     }
 
+    getRenderLocation(renderContext, dungeon) {
+        let { x, y } = renderContext.getMapDimensions()
+
+        if (!dungeon) return
+
+        let arrayX = (this.location.worldX + 200) / 32 - 0.5
+        let arrayY = (this.location.worldY + 200) / 32 - 0.5
+
+        let x2 = (renderContext.roomGap / 2 + renderContext.blockSize * arrayX + renderContext.roomSize / 2 + renderContext.paddingLeft) / renderContext.getImageSize(dungeon.floor)
+        let y2 = (renderContext.roomGap / 2 + renderContext.blockSize * arrayY + renderContext.roomSize / 2 + renderContext.paddingTop) / renderContext.getImageSize(dungeon.floor)
+
+        x2 = x + x2 * renderContext.size + renderContext.borderWidth
+        y2 = y + y2 * renderContext.size + renderContext.borderWidth
+
+        return [x2, y2]
+    }
+
     /**
      * @param {RenderContext} renderContext 
      */
     drawIcon(renderContext, dungeon, overrideX, overrideY) {
-        let { x, y, size, headScale } = renderContext.getMapDimensions()
+        let { size, headScale } = renderContext.getMapDimensions()
 
         if (!dungeon) return
 
@@ -160,16 +177,11 @@ class MapPlayer {
         let rw = headScale * size / 100
         let rh = headScale * size / 100
 
-        let arrayX = (this.location.worldX + 200) / 32 - 0.5
-        let arrayY = (this.location.worldY + 200) / 32 - 0.5
+        let [x2, y2] = this.getRenderLocation(renderContext, dungeon)
+        x2 = overrideX || x2
+        y2 = overrideY || y2
 
-        let x2 = (renderContext.roomGap / 2 + renderContext.blockSize * arrayX + renderContext.roomSize / 2 + renderContext.paddingLeft) / renderContext.getImageSize(dungeon.floor)
-        let y2 = (renderContext.roomGap / 2 + renderContext.blockSize * arrayY + renderContext.roomSize / 2 + renderContext.paddingTop) / renderContext.getImageSize(dungeon.floor)
-
-        x2 = overrideX || x + x2 * renderContext.size + renderContext.borderWidth
-        y2 = overrideY || y + y2 * renderContext.size + renderContext.borderWidth
-
-        this.drawAt(x2 - rx, y2 - ry, rw, rh, this.yaw.get(), renderContext.headBorder)
+        this.drawAt(x2 + rx, y2 + ry, rw, rh, this.yaw.get(), renderContext.headBorder)
 
         let showNametag = renderContext.playerNames === "always"
 

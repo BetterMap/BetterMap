@@ -143,16 +143,13 @@ class soopyGuiMapRendererThing extends SoopyGuiElement {
             mapRenderer.draw(renderContextData, settings.currentDungeon, -1, -1)
         }))
         this.addEvent(new SoopyMouseClickEvent().setHandler((mouseX, mouseY) => {
-            return
-            let size2 = Math.min(Renderer.screen.getWidth() / 2, Renderer.screen.getHeight() / 2)
+            let mapSize = Math.min(Renderer.screen.getWidth() / 2, Renderer.screen.getHeight() / 2)
 
-            let [x, y, size, scale] = [Renderer.screen.getWidth() / 2 - size2 / 2, 2 * Renderer.screen.getHeight() / 3 - size2 / 3, size2, size2 / this.parentE.parent.IMAGE_SIZE]
+            if (mouseY < 2 * Renderer.screen.getHeight() / 3 - mapSize / 3) return
 
-            if (mouseY < y) return
+            let closestPlayer = this.getClosestPlayerTo(mouseX, mouseY)
 
-            let closestPlayer = this.getClosestPlayerTo(x, y, size, scale, mouseX, mouseY)
-
-            if (closestPlayer) {
+            if (closestPlayer && closestPlayer.username !== Player.getName()) {
                 if (Player.getContainer()?.getName() === "Spirit Leap") {
                     for (let i = 1; i < 9 * 3; i++) {
                         let item = Player.getContainer().getStackInSlot(i)
@@ -168,26 +165,22 @@ class soopyGuiMapRendererThing extends SoopyGuiElement {
         }))
     }
 
-    getClosestPlayerTo(x, y, size, scale, scanX, scanY) {
+    getClosestPlayerTo(x, y) {
+        let minDist = Infinity
+        let minP = undefined
+        settings.currentDungeon.players.forEach(p => {
+            let [x2, y2] = p.getRenderLocation(renderContextData, settings.currentDungeon)
 
-        let closest = null
-        let closestD = Infinity
-        Object.keys(this.parentE.parent.mapDataPlayers).forEach((uuid) => {
 
-            if (uuid === Player.getUUID()) return
+            let dist = (x - x2) ** 2 + (y - y2) ** 2
 
-            let renderX = this.parentE.parent.mapDataPlayers[uuid].x / this.parentE.parent.mapScale / 128 * size//*16/this.roomWidth
-            let renderY = this.parentE.parent.mapDataPlayers[uuid].y / this.parentE.parent.mapScale / 128 * size//*16/this.roomWidth
-
-            let distance = (renderX + x + this.parentE.parent.offset[0] / 128 * size - scanX) ** 2 + (renderY + y + this.parentE.parent.offset[1] / 128 * size - scanY) ** 2
-
-            if (distance < closestD) {
-                closestD = distance
-                closest = this.parentE.parent.mapDataPlayers[uuid]
+            if (dist < minDist) {
+                minDist = dist
+                minP = p
             }
         })
 
-        return closest
+        return minP
     }
 }
 

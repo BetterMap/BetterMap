@@ -123,6 +123,14 @@ class MapPlayer {
         worldRenderer[m.pos](w / 2, -h / 2, 0.0)[m.tex](16 / 64, 8 / 64)[m.endVertex]()
         worldRenderer[m.pos](-w / 2, -h / 2, 0.0)[m.tex](8 / 64, 8 / 64)[m.endVertex]()
         tessellator[m.draw.Tessellator]()
+
+        worldRenderer[m.begin](7, DefaultVertexFormats[f.POSITION_TEX])
+
+        worldRenderer[m.pos](-w / 2, h / 2, 0.0)[m.tex](40 / 64, 16 / 64)[m.endVertex]()
+        worldRenderer[m.pos](w / 2, h / 2, 0.0)[m.tex](48 / 64, 16 / 64)[m.endVertex]()
+        worldRenderer[m.pos](w / 2, -h / 2, 0.0)[m.tex](48 / 64, 8 / 64)[m.endVertex]()
+        worldRenderer[m.pos](-w / 2, -h / 2, 0.0)[m.tex](40 / 64, 8 / 64)[m.endVertex]()
+        tessellator[m.draw.Tessellator]()
         Renderer.retainTransforms(false)
         Tessellator.popMatrix()
     }

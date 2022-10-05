@@ -11,7 +11,7 @@ class BossMapRenderer extends MapTab {
         this.dungeonBossImages = {}
         new Thread(() => {
             let newImageData = {
-                "F1": [
+                "1": [
                     {
                         image: getBossImage("1IwaBgM"),
                         bounds: [[-65, 70, -3], [-19, 90, 45]],
@@ -20,7 +20,7 @@ class BossMapRenderer extends MapTab {
                         topLeftLocation: [-65, -3]
                     }
                 ],
-                "F2": [
+                "2": [
                     {
                         image: getBossImage("Hn1xSu3"),
                         bounds: [[-34, 100, -35], [18, 54, 15]],
@@ -30,7 +30,7 @@ class BossMapRenderer extends MapTab {
                     }
 
                 ],
-                "F3": [
+                "3": [
                     {
                         image: getBossImage("h52JPEI"),
                         bounds: [[-33, 118, -34], [35, 64, 37]],
@@ -40,7 +40,7 @@ class BossMapRenderer extends MapTab {
                     }
 
                 ],
-                "F4": [
+                "4": [
                     {
                         image: getBossImage("m0uqjFN"),
                         bounds: [[-37, 114, -37], [47, 53, 47]],
@@ -50,7 +50,7 @@ class BossMapRenderer extends MapTab {
                     }
 
                 ],
-                "F5": [
+                "5": [
                     {
                         image: getBossImage("dCcouUx"),
                         bounds: [[-35, 53, 2], [45, 112, 82]],
@@ -60,7 +60,7 @@ class BossMapRenderer extends MapTab {
                     }
 
                 ],
-                "F6": [
+                "6": [
                     {
                         image: getBossImage("C0iMHhB"),
                         bounds: [[-31, 51, -5], [13, 110, 94]],
@@ -69,7 +69,7 @@ class BossMapRenderer extends MapTab {
                         topLeftLocation: [-31, -5]
                     }
                 ],
-                "F7": [
+                "7": [
                     {
                         image: getBossImage("dbRNrEM"),
                         bounds: [[14, 161, 115], [42, 189, 153]],
@@ -161,7 +161,8 @@ class BossMapRenderer extends MapTab {
      * @param {DungeonMap} dungeonMap 
      */
     updateBossImage(renderContext, dungeonMap) {
-        if (this.dungeonBossImages[dungeonMap.floor]) this.dungeonBossImages[dungeonMap.floor].forEach(data => {
+        this.currentBossImage = null
+        if (this.dungeonBossImages[dungeonMap.floorNumber.toString()]) this.dungeonBossImages[dungeonMap.floorNumber.toString()].forEach(data => {
             if (data.bounds[0][0] <= Player.getX() && data.bounds[0][1] <= Player.getY() && data.bounds[0][2] <= Player.getZ() && data.bounds[1][0] >= Player.getX() && data.bounds[1][1] >= Player.getY() && data.bounds[1][2] >= Player.getZ()) {
                 this.currentBossImage = data
             }

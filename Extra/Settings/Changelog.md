@@ -13,3 +13,10 @@ First released version!
 ```diff
 + Fix bugs with boss images
 ```
+
+@ver v1.0.3
+```diff
++ Fix bug where secrets collected info would show your own stats for other players
++ Make enterance less buggy (heads still in incorrect location)
++ Copy over spirit leap overlay from soopyv2 (most people probs wont like the overlay)
+```

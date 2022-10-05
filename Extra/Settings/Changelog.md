@@ -37,3 +37,8 @@ First released version!
 ```diff
 + Fix map breaking when warped back into dungeon
 ```
+
+@ver v1.0.7
+```diff
++ Potentially fix ping spike issue (idk for certian if its even a thing but better safe than sorry lol)
+```

@@ -162,10 +162,8 @@ class SettingGui {
 
         this.addToggle("Dungeon clear breakdown", "clearedRoomInfo", this.defaultSettings.clearedRoomInfo)[1].setLore(["Shows the cleared room count and specific rooms in chat when the dungeon ends"])
 
-
         this.addToggle("Show secret waypoints (scuffed)", "showSecrets", this.defaultSettings.showSecrets)[1].setLore(["Syncs between bettermap users"])
 
-        this.addToggle("Force paul +10 score", "forcePaul", this.defaultSettings.forcePaul)
         this.addSidebarElement(new ButtonWithArrow().setText("&0Load api key from other mods").addEvent(new SoopyMouseClickEvent().setHandler(() => {
             findKey(key => {
                 this.setApiKey(key)

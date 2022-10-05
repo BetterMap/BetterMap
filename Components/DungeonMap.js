@@ -362,6 +362,8 @@ class DungeonMap {
         let modifiedMimic = !settings.settings.tabMimic || this.floorNumber < 6;
         const ChatComponentText = Java.type('net.minecraft.util.ChatComponentText');
 
+        if (!Client.getMinecraft().field_71439_g) return
+
         let playerInfoList = Client.getMinecraft().field_71439_g.field_71174_a.func_175106_d();
         playerInfoList.forEach((playerInfo) => {
             if (playerInfo.func_178854_k() === null) return;
@@ -408,6 +410,7 @@ class DungeonMap {
     addLinesToTabList = (lines, startCriteria) => {
         const ChatComponentText = Java.type('net.minecraft.util.ChatComponentText');
         let startToInject = false;
+        if (!Client.getMinecraft().field_71439_g) return
         let playerInfoList = Client.getMinecraft().field_71439_g.field_71174_a.func_175106_d();
         playerInfoList = [...playerInfoList].sort((first, second) => first.func_178845_a().getName().localeCompare(second.func_178845_a().getName()))
         playerInfoList.forEach((playerInfo) => {
@@ -554,7 +557,7 @@ class DungeonMap {
 
             if (this.floor[this.floor.length - 1] === "1" || this.floor === "E") {
                 roomX += this.fullRoomScaleMap
-                if(this.floor === "E")roomY += this.fullRoomScaleMap
+                if (this.floor === "E") roomY += this.fullRoomScaleMap
             }
             this.dungeonTopLeft = [roomX, roomY]
         }
@@ -789,7 +792,15 @@ class DungeonMap {
         let puzzleNamesList = [];
         let readingPuzzles = false
         if (!TabList) return;
-        TabList?.getNames()?.forEach((line) => {
+        if (!TabList.getNames()) return;
+        let names = []
+        try {
+            names = TabList.getNames() //sometimes this has a null pointer exception inside the function?
+        } catch (_) {
+            return
+        }
+        names.forEach((line) => {
+            if (!line) return
             line = ChatLib.removeFormatting(line).trim();
             if (line.includes('Puzzles:')) {
                 readingPuzzles = true;

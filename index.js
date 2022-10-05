@@ -170,7 +170,7 @@ register("chat", (info) => {
 }).setChatCriteria("&r&a ❣ &r${info} was revived${*}!&r")
 
 register('command', () => {
-    currentDungeonMap.regenRooms()
+    currentDungeonMap?.regenRooms()
 }).setName('reloadmap', true);
 
 register("renderWorld", () => {

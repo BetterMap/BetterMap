@@ -28,7 +28,7 @@ class MapPlayer {
 
         this.yaw = new SoopyNumber(0)
         this.yaw.setAnimMode("sin_out")
-        this.username = username
+        this._username = username
         this.uuid = undefined
 
         this.locallyUpdated = 0
@@ -40,6 +40,18 @@ class MapPlayer {
         this.maxRooms = 0
         /**@type {[MapPlayer[], import("./Room").default][]} */
         this.roomsData = []
+    }
+
+    get username() {
+        return this._username
+    }
+
+    set username(name) {
+        if (this._username === name) return
+
+        this._username = name
+        this.uuid = undefined
+        this.checkUpdateUUID()
     }
 
     checkUpdateUUID() {

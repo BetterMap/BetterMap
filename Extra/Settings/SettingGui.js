@@ -80,8 +80,8 @@ class SettingGui {
 
         this.addDropdown("Map Style", {
             "legalmap": "Legal Map",
-            "hypixelmap": "Hypixel"//,
-            // "teniosmap": "Tenios Map"
+            "hypixelmap": "Hypixel",
+            "teniosmap": "Tenios Map"
         }, "mapStyle", "legalmap")
 
 
@@ -110,7 +110,8 @@ class SettingGui {
         this.addDropdown("Tick Style", {
             "default": "NEU Map",
             "hypixel": "Hypixel",
-            "secrets": "Secrets Found"
+            "tenios": "tenios",
+            "secrets": "Secrets Found",
         }, "tickStyle", this.defaultSettings.tickStyle)
 
 

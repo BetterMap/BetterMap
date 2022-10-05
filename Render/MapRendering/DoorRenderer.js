@@ -28,9 +28,24 @@ class DoorRenderer {
         if (type === Room.NORMAL) {
             type = 9 //NORMAL_CONNECTION
         }
-
+        if (renderContext.mapStyle === 'teniosmap') {
+            type = teniosDoorMap[type];
+        }
         return renderContext.colorMap.get(type)
     }
 }
 
 export default DoorRenderer
+
+const teniosDoorMap = {
+    0: 'spawn',
+    1: 'mobs',
+    2: 'puzzle',
+    3: 'gold',
+    4: 'fairy',
+    5: 'blood',
+    6: 'unknown',
+    7: 'trap',
+    8: 'wither',
+    9: 'mobs'
+}

@@ -554,6 +554,7 @@ class DungeonMap {
 
             if (this.floor[this.floor.length - 1] === "1" || this.floor === "E") {
                 roomX += this.fullRoomScaleMap
+                if(this.floor === "E")roomY += this.fullRoomScaleMap
             }
             this.dungeonTopLeft = [roomX, roomY]
         }

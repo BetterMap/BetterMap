@@ -20,3 +20,8 @@ First released version!
 + Make enterance less buggy (heads still in incorrect location)
 + Copy over spirit leap overlay from soopyv2 (most people probs wont like the overlay)
 ```
+
+@ver v1.0.4
+```diff
++ Fix mod not loading (oops)
+```

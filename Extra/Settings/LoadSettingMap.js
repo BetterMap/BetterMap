@@ -1,6 +1,6 @@
 //Creating JSON code to create a dummy map
 console.log(`let dungeon = new DungeonMap("F7", new Set(), false);`)
-
+//NOTE: you need to add the global. back before running this
 for (let room of global.betterMapDungeonMap.roomsArr) {
     console.log(`{`)
     console.log(`   let r = new Room(dungeon, ${room.type}, [${room.components.map(a => "new Position(" + a.worldX + ", " + a.worldY + ")").join(",")}], ${JSON.stringify(room.roomId)});`)

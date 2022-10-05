@@ -21,23 +21,26 @@ let deadPlayers = new Set()
 
 let renderContextManager = new RenderContextManager();
 let mapRenderer = new MapRenderer();
+CurrentSettings.renderContextManager = renderContextManager
 
 let settingsManager = new SettingsManager(renderContextManager)
 let dungeonMapRenderContext = settingsManager.createRenderContext();
 CurrentSettings.renderContext = renderContextManager.getRenderContextData(dungeonMapRenderContext)
+CurrentSettings.settingsManager = settingsManager
 
-
+require("./Extra/LeapGui/leapGui.js")
 
 register("step", () => {
     if (DataLoader.isInDungeon && DataLoader.dungeonFloor || currentDungeonMap?.getCurrentRoomId() === "30,225") {
         if (!currentDungeonMap) { //entered dungeon, create map data
             currentDungeonMap = new DungeonMap(DataLoader.dungeonFloor, deadPlayers)
-            global.betterMapDungeonMap = currentDungeonMap
+            CurrentSettings.currentDungeon = currentDungeonMap
         }
     } else {
         if (currentDungeonMap) { //left dungeon, clear map data
             currentDungeonMap.destroy();
             currentDungeonMap = undefined
+            CurrentSettings.currentDungeon = undefined
         }
     }
 

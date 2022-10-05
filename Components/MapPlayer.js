@@ -28,7 +28,7 @@ class MapPlayer {
 
         this.yaw = new SoopyNumber(0)
         this.yaw.setAnimMode("sin_out")
-        this.username = username
+        this._username = username
         this.uuid = undefined
 
         this.locallyUpdated = 0
@@ -40,6 +40,18 @@ class MapPlayer {
         this.maxRooms = 0
         /**@type {[MapPlayer[], import("./Room").default][]} */
         this.roomsData = []
+    }
+
+    get username() {
+        return this._username
+    }
+
+    set username(name) {
+        if (this._username === name) return
+
+        this._username = name
+        this.uuid = undefined
+        this.checkUpdateUUID()
     }
 
     checkUpdateUUID() {
@@ -101,35 +113,14 @@ class MapPlayer {
         return dungeon.rooms.get(x + ',' + y)
     }
 
-    /**
-     * @param {RenderContext} renderContext 
-     */
-    drawIcon(renderContext, dungeon, overrideX, overrideY) {
-        let { x, y, size, headScale } = renderContext.getMapDimensions()
-
-        if (!dungeon) return
-
-        let rx = -headScale / 2 * size / 100 //offsetting to the left by half image width,
-        let ry = -headScale / 2 * size / 100 //image width = headscale* size /100 (size = map size eg 100px, dividing by 100 so its exactly headscale when mapsize is 100)
-        let rw = headScale * size / 100
-        let rh = headScale * size / 100
-
-        let arrayX = (this.location.worldX + 200) / 32 - 0.5
-        let arrayY = (this.location.worldY + 200) / 32 - 0.5
-
-        let x2 = (renderContext.roomGap / 2 + renderContext.blockSize * arrayX + renderContext.roomSize / 2 + renderContext.paddingLeft) / renderContext.getImageSize(dungeon.floor)
-        let y2 = (renderContext.roomGap / 2 + renderContext.blockSize * arrayY + renderContext.roomSize / 2 + renderContext.paddingTop) / renderContext.getImageSize(dungeon.floor)
-
-        x2 = overrideX || x + x2 * renderContext.size + renderContext.borderWidth
-        y2 = overrideY || y + y2 * renderContext.size + renderContext.borderWidth
-
-        Renderer.retainTransforms(true)
+    drawAt(x, y, w, h, rotation = 0, border = true) {
         Tessellator.pushMatrix()
-        Renderer.translate(x2, y2, 50)
+        Renderer.retainTransforms(true)
+        Renderer.translate(x + w / 2, y + h / 2, 50)
         // Renderer.translate(x + (this.location.worldX + 256 - 32) * size / 256, y + (this.location.worldY + 256 - 32) * size / 256, 50)
-        Renderer.rotate(this.yaw.get())
+        Renderer.rotate(rotation)
 
-        if (renderContext.headBorder) Renderer.drawRect(Renderer.BLACK, -rw / 2 - 1, -rh / 2 - 1, rw + 2, rh + 2)
+        if (border) Renderer.drawRect(Renderer.BLACK, -w / 2 - 1, -h / 2 - 1, w + 2, h + 2)
 
         GlStateManager[m.enableBlend]()
         Client.getMinecraft()[m.getTextureManager]()[m.bindTexture.TextureManager](this.networkPlayerInfo[m.getLocationSkin.NetworkPlayerInfo]())
@@ -139,13 +130,58 @@ class MapPlayer {
         let worldRenderer = tessellator[m.getWorldRenderer]()
         worldRenderer[m.begin](7, DefaultVertexFormats[f.POSITION_TEX])
 
-        worldRenderer[m.pos](rx, ry + rh, 0.0)[m.tex](8 / 64, 16 / 64)[m.endVertex]()
-        worldRenderer[m.pos](rx + rw, ry + rh, 0.0)[m.tex](16 / 64, 16 / 64)[m.endVertex]()
-        worldRenderer[m.pos](rx + rw, ry, 0.0)[m.tex](16 / 64, 8 / 64)[m.endVertex]()
-        worldRenderer[m.pos](rx, ry, 0.0)[m.tex](8 / 64, 8 / 64)[m.endVertex]()
+        worldRenderer[m.pos](-w / 2, h / 2, 0.0)[m.tex](8 / 64, 16 / 64)[m.endVertex]()
+        worldRenderer[m.pos](w / 2, h / 2, 0.0)[m.tex](16 / 64, 16 / 64)[m.endVertex]()
+        worldRenderer[m.pos](w / 2, -h / 2, 0.0)[m.tex](16 / 64, 8 / 64)[m.endVertex]()
+        worldRenderer[m.pos](-w / 2, -h / 2, 0.0)[m.tex](8 / 64, 8 / 64)[m.endVertex]()
         tessellator[m.draw.Tessellator]()
-        Tessellator.popMatrix()
+
+        worldRenderer[m.begin](7, DefaultVertexFormats[f.POSITION_TEX])
+
+        worldRenderer[m.pos](-w / 2, h / 2, 0.0)[m.tex](40 / 64, 16 / 64)[m.endVertex]()
+        worldRenderer[m.pos](w / 2, h / 2, 0.0)[m.tex](48 / 64, 16 / 64)[m.endVertex]()
+        worldRenderer[m.pos](w / 2, -h / 2, 0.0)[m.tex](48 / 64, 8 / 64)[m.endVertex]()
+        worldRenderer[m.pos](-w / 2, -h / 2, 0.0)[m.tex](40 / 64, 8 / 64)[m.endVertex]()
+        tessellator[m.draw.Tessellator]()
         Renderer.retainTransforms(false)
+        Tessellator.popMatrix()
+    }
+
+    getRenderLocation(renderContext, dungeon) {
+        let { x, y } = renderContext.getMapDimensions()
+
+        if (!dungeon) return
+
+        let arrayX = (this.location.worldX + 200) / 32 - 0.5
+        let arrayY = (this.location.worldY + 200) / 32 - 0.5
+
+        let x2 = (renderContext.roomGap / 2 + renderContext.blockSize * arrayX + renderContext.roomSize / 2 + renderContext.paddingLeft) / renderContext.getImageSize(dungeon.floor)
+        let y2 = (renderContext.roomGap / 2 + renderContext.blockSize * arrayY + renderContext.roomSize / 2 + renderContext.paddingTop) / renderContext.getImageSize(dungeon.floor)
+
+        x2 = x + x2 * renderContext.size + renderContext.borderWidth
+        y2 = y + y2 * renderContext.size + renderContext.borderWidth
+
+        return [x2, y2]
+    }
+
+    /**
+     * @param {RenderContext} renderContext 
+     */
+    drawIcon(renderContext, dungeon, overrideX, overrideY) {
+        let { size, headScale } = renderContext.getMapDimensions()
+
+        if (!dungeon) return
+
+        let rx = -headScale / 2 * size / 100 //offsetting to the left by half image width,
+        let ry = -headScale / 2 * size / 100 //image width = headscale* size /100 (size = map size eg 100px, dividing by 100 so its exactly headscale when mapsize is 100)
+        let rw = headScale * size / 100
+        let rh = headScale * size / 100
+
+        let [x2, y2] = this.getRenderLocation(renderContext, dungeon)
+        x2 = overrideX || x2
+        y2 = overrideY || y2
+
+        this.drawAt(x2 + rx, y2 + ry, rw, rh, this.yaw.get(), renderContext.headBorder)
 
         let showNametag = renderContext.playerNames === "always"
 

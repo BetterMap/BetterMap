@@ -19,6 +19,7 @@ First released version!
 + Fix bug where secrets collected info would show your own stats for other players
 + Make enterance less buggy (heads still in incorrect location)
 + Copy over spirit leap overlay from soopyv2 (most people probs wont like the overlay)
++ support second head layer (i think)
 ```
 
 @ver v1.0.4

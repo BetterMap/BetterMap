@@ -1,5 +1,4 @@
-@ver v0.0.1
-
+@ver v1.0.0
 First released version!
 ```diff
 + Everything

@@ -1,4 +1,6 @@
 const BufferedImage = Java.type("java.awt.image.BufferedImage")
+const Font = Java.type('java.awt.Font')
+let teniosFont = new Font('Dialog', Font.BOLD, 16);
 
 import RoomRenderer from "./RoomRenderer"
 import DoorRenderer from "./DoorRenderer"
@@ -25,6 +27,7 @@ class DungeonRenderer extends MapTab {
         let image = new BufferedImage(renderContext.getImageSize(dungeon.floor), renderContext.getImageSize(dungeon.floor), BufferedImage.TYPE_INT_ARGB);
 
         let graphics = image.createGraphics();
+        graphics.setFont(teniosFont);
 
         // Shift border + padding so less math involved
         graphics.translate(renderContext.paddingLeft + renderContext.borderWidth, renderContext.paddingTop + renderContext.borderWidth);

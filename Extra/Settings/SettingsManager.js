@@ -122,7 +122,7 @@ class SettingsManager {
             });
         }
         {
-            let r = new Room(dungeon, 2, [new Position(-104, -104)], "-60,-456");
+            let r = new Room(dungeon, 1, [new Position(-104, -104)], "246,-60");
             r.currentSecrets = 0
             r.checkmarkState = 2;
             dungeon.roomsArr.add(r);
@@ -221,7 +221,7 @@ class SettingsManager {
             });
         }
         {
-            let r = new Room(dungeon, 1, [new Position(-40, -104), new Position(-40, -72), new Position(-40, -40)], "630,-420");
+            let r = new Room(dungeon, 1, [new Position(-40, -104), new Position(-40, -72), new Position(-40, -40)]);
             r.currentSecrets = 0
             r.checkmarkState = 3;
             dungeon.roomsArr.add(r);
@@ -299,7 +299,7 @@ class SettingsManager {
             dungeon.doors.set("-124.80000305175781,-108.80000305175781", d);
         }
         {
-            let d = new Door(2, new Position(-108.80000305175781, -92.80000305175781), true);
+            let d = new Door(1, new Position(-108.80000305175781, -92.80000305175781), true);
             dungeon.doors.set("-108.80000305175781,-92.80000305175781", d);
         }
         {

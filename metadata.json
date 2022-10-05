@@ -5,7 +5,7 @@
   "entry": "index.js",
   "description": "Better Map !!!",
   "name": "BetterMap",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "requires": [
     "mappings",
     "soopyApis",

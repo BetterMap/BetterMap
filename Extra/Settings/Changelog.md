@@ -8,3 +8,8 @@ First released version!
 ```diff
 + Fix large lag issues due to ultra high res images
 ```
+
+@ver v1.0.2
+```diff
++ Fix bugs with boss images
+```

@@ -12,9 +12,9 @@ let renderContextData = settings.renderContextManager.getRenderContextData(rende
 
 let mapRenderer = new MapRenderer()
 let lastDoorOpener
-registerChat("&r&a${player}&r&a opened a &r&8&lWITHER &r&adoor!&r", (player) => {
+register("chat", (player) => {
     lastDoorOpener = ChatLib.removeFormatting(player)
-})
+}).setChatCriteria("&r&a${player}&r&a opened a &r&8&lWITHER &r&adoor!&r")
 
 register("step", () => {
     overlay.tick()

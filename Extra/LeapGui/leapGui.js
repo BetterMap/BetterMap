@@ -21,7 +21,7 @@ register("step", () => {
 }).setFps(10)
 
 register("guiOpened", (e) => {
-    overlay.guiOpened(e)
+    if (settings.settings.spiritLeapOverlay) overlay.guiOpened(e)
 })
 
 const ContainerChest = Java.type("net.minecraft.inventory.ContainerChest")

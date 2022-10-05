@@ -164,6 +164,8 @@ class SettingGui {
 
         this.addToggle("Show secret waypoints (scuffed)", "showSecrets", this.defaultSettings.showSecrets)[1].setLore(["Syncs between bettermap users"])
 
+        this.addToggle("Spirit leap overlay", "spiritLeapOverlay", this.defaultSettings.spiritLeapOverlay)[1].setLore(["You can click on player heads in overlay!"])
+
         this.addSidebarElement(new ButtonWithArrow().setText("&0Load api key from other mods").addEvent(new SoopyMouseClickEvent().setHandler(() => {
             findKey(key => {
                 this.setApiKey(key)

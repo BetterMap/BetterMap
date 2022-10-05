@@ -32,3 +32,8 @@ First released version!
 + Fix some errors
 + Change spider label to ceiling spider
 ```
+
+@ver v1.0.6
+```diff
++ Fix map breaking when warped back into dungeon
+```

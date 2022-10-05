@@ -792,7 +792,6 @@ class DungeonMap {
         let puzzleNamesList = [];
         let readingPuzzles = false
         if (!TabList) return;
-        if (!TabList.getNames()) return;
         let names = []
         try {
             names = TabList.getNames() //sometimes this has a null pointer exception inside the function?

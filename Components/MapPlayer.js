@@ -101,6 +101,32 @@ class MapPlayer {
         return dungeon.rooms.get(x + ',' + y)
     }
 
+    drawAt(x, y, w, h, rotation = 0, border = true) {
+        Tessellator.pushMatrix()
+        Renderer.retainTransforms(true)
+        Renderer.translate(x - w / 2, y - h / 2, 50)
+        // Renderer.translate(x + (this.location.worldX + 256 - 32) * size / 256, y + (this.location.worldY + 256 - 32) * size / 256, 50)
+        Renderer.rotate(rotation)
+
+        if (border) Renderer.drawRect(Renderer.BLACK, -w / 2 - 1, -h / 2 - 1, w + 2, h + 2)
+
+        GlStateManager[m.enableBlend]()
+        Client.getMinecraft()[m.getTextureManager]()[m.bindTexture.TextureManager](this.networkPlayerInfo[m.getLocationSkin.NetworkPlayerInfo]())
+        GlStateManager[m.enableTexture2D]()
+
+        let tessellator = MCTessellator[m.getInstance.Tessellator]()
+        let worldRenderer = tessellator[m.getWorldRenderer]()
+        worldRenderer[m.begin](7, DefaultVertexFormats[f.POSITION_TEX])
+
+        worldRenderer[m.pos](-w / 2, h / 2, 0.0)[m.tex](8 / 64, 16 / 64)[m.endVertex]()
+        worldRenderer[m.pos](w / 2, h / 2, 0.0)[m.tex](16 / 64, 16 / 64)[m.endVertex]()
+        worldRenderer[m.pos](w / 2, -h / 2, 0.0)[m.tex](16 / 64, 8 / 64)[m.endVertex]()
+        worldRenderer[m.pos](-w / 2, -h / 2, 0.0)[m.tex](8 / 64, 8 / 64)[m.endVertex]()
+        tessellator[m.draw.Tessellator]()
+        Renderer.retainTransforms(false)
+        Tessellator.popMatrix()
+    }
+
     /**
      * @param {RenderContext} renderContext 
      */
@@ -123,29 +149,7 @@ class MapPlayer {
         x2 = overrideX || x + x2 * renderContext.size + renderContext.borderWidth
         y2 = overrideY || y + y2 * renderContext.size + renderContext.borderWidth
 
-        Renderer.retainTransforms(true)
-        Tessellator.pushMatrix()
-        Renderer.translate(x2, y2, 50)
-        // Renderer.translate(x + (this.location.worldX + 256 - 32) * size / 256, y + (this.location.worldY + 256 - 32) * size / 256, 50)
-        Renderer.rotate(this.yaw.get())
-
-        if (renderContext.headBorder) Renderer.drawRect(Renderer.BLACK, -rw / 2 - 1, -rh / 2 - 1, rw + 2, rh + 2)
-
-        GlStateManager[m.enableBlend]()
-        Client.getMinecraft()[m.getTextureManager]()[m.bindTexture.TextureManager](this.networkPlayerInfo[m.getLocationSkin.NetworkPlayerInfo]())
-        GlStateManager[m.enableTexture2D]()
-
-        let tessellator = MCTessellator[m.getInstance.Tessellator]()
-        let worldRenderer = tessellator[m.getWorldRenderer]()
-        worldRenderer[m.begin](7, DefaultVertexFormats[f.POSITION_TEX])
-
-        worldRenderer[m.pos](rx, ry + rh, 0.0)[m.tex](8 / 64, 16 / 64)[m.endVertex]()
-        worldRenderer[m.pos](rx + rw, ry + rh, 0.0)[m.tex](16 / 64, 16 / 64)[m.endVertex]()
-        worldRenderer[m.pos](rx + rw, ry, 0.0)[m.tex](16 / 64, 8 / 64)[m.endVertex]()
-        worldRenderer[m.pos](rx, ry, 0.0)[m.tex](8 / 64, 8 / 64)[m.endVertex]()
-        tessellator[m.draw.Tessellator]()
-        Tessellator.popMatrix()
-        Renderer.retainTransforms(false)
+        this.drawAt(x2 - rx, y2 - ry, rw, rh, this.yaw.get(), renderContext.headBorder)
 
         let showNametag = renderContext.playerNames === "always"
 

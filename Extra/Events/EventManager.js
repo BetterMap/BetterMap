@@ -16,7 +16,7 @@ class EventManager {
                 event(...data)
             }
         } catch (e) {
-            console.error(e)
+            console.error(JSON.stringify(e, undefined, true))
         }
     }
 

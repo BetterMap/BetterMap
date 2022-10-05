@@ -12,7 +12,7 @@ let renderContextData = settings.renderContextManager.getRenderContextData(rende
 
 let mapRenderer = new MapRenderer()
 let lastDoorOpener
-this.registerChat("&r&a${player}&r&a opened a &r&8&lWITHER &r&adoor!&r", (player) => {
+registerChat("&r&a${player}&r&a opened a &r&8&lWITHER &r&adoor!&r", (player) => {
     lastDoorOpener = ChatLib.removeFormatting(player)
 })
 

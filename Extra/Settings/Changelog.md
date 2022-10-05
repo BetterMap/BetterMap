@@ -26,3 +26,9 @@ First released version!
 ```diff
 + Fix mod not loading (oops)
 ```
+
+@ver v1.0.5
+```diff
++ Fix some errors
++ Change spider label to ceiling spider
+```

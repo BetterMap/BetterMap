@@ -385,11 +385,7 @@ class SettingGui {
 
         let numberT0 = new NumberTextBox().setText((this.defaultSettings[setting][0] ?? defau).toString())
 
-        numberT0.isNumber = (val) => {
-            if (val.includes(".")) return false
-            val = "" + val; //coerce num to be a string
-            return !isNaN(val) && !isNaN(parseInt(val));
-        }
+        numberT0.isNumber = isNumber
 
         numberT0.text.addEvent(new SoopyContentChangeEvent().setHandler((val, prev, cancelFun) => {
             if (!val) return
@@ -408,11 +404,7 @@ class SettingGui {
 
         let numberT1 = new NumberTextBox().setText((this.defaultSettings[setting][1] ?? defau).toString())
 
-        numberT1.isNumber = (val) => {
-            if (val.includes(".")) return false
-            val = "" + val; //coerce num to be a string
-            return !isNaN(val) && !isNaN(parseInt(val));
-        }
+        numberT1.isNumber = isNumber
 
         numberT1.text.addEvent(new SoopyContentChangeEvent().setHandler((val, prev, cancelFun) => {
             if (!val) return
@@ -432,11 +424,7 @@ class SettingGui {
 
         let numberT2 = new NumberTextBox().setText((this.defaultSettings[setting][2] ?? defau).toString())
 
-        numberT2.isNumber = (val) => {
-            if (val.includes(".")) return false
-            val = "" + val; //coerce num to be a string
-            return !isNaN(val) && !isNaN(parseInt(val));
-        }
+        numberT2.isNumber = isNumber
 
         numberT2.text.addEvent(new SoopyContentChangeEvent().setHandler((val, prev, cancelFun) => {
             if (!val) return
@@ -456,11 +444,7 @@ class SettingGui {
 
         let numberT3 = new NumberTextBox().setText((this.defaultSettings[setting][3] ?? defau).toString())
 
-        numberT3.isNumber = (val) => {
-            if (val.includes(".")) return false
-            val = "" + val; //coerce num to be a string
-            return !isNaN(val) && !isNaN(parseInt(val));
-        }
+        numberT3.isNumber = isNumber
 
         numberT3.text.addEvent(new SoopyContentChangeEvent().setHandler((val, prev, cancelFun) => {
             if (!val) return
@@ -656,4 +640,10 @@ function findKey(callback = () => { }) {
 
         new Notification("§cUnable to find api key", [])
     }).start()
+}
+
+function isNumber(val) {
+    if (val.includes(".")) return false
+    val = "" + val; //coerce num to be a string
+    return !isNaN(val) && !isNaN(parseInt(val));
 }

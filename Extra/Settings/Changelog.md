@@ -42,3 +42,8 @@ First released version!
 ```diff
 + Potentially fix ping spike issue (idk for certian if its even a thing but better safe than sorry lol)
 ```
+
+@ver v1.0.8
+```diff
++ Added color custumization to the map background, borders, and extra info section.
+```

@@ -131,6 +131,10 @@ class SettingGui {
         this.addSlider("Head Scale", "headScale", this.defaultSettings.headScale || 8, 2, 15)
         this.addSlider("Icon Scale", "iconScale", this.defaultSettings.iconScale || 10, 2, 15)
 
+        this.addColorSelector("Border Color", "borderColor", this.defaultSettings.borderColor)
+        this.addColorSelector("Map Color", "mapBackgroundColor", this.defaultSettings.mapBackgroundColor)
+        this.addColorSelector("Extra Info Color", "extraInfoBackroundColor", this.defaultSettings.extraInfoBackroundColor)
+
         this.addCategory("Secret info Settings")
 
         this.addDropdown("Score info under map style", {
@@ -146,12 +150,6 @@ class SettingGui {
         this.addToggle("Show current Crypt total", "tabCryptCount", this.defaultSettings.tabCryptCount)[1].setLore(["Change the crypts found number in tab to also show total crypts in dungeon"])
 
         this.addToggle("Show Mimic Status", "tabMimic", this.defaultSettings.tabMimic)[1].setLore(["Add a line to tab displaying wether the minic has been killed"])
-
-        // THIS IS WHERE COLOR SETTINGS WILL GO
-        //ChatLib.chat(JSON.stringify(this.defaultSettings))
-        this.addColorSelector("Border Color", "borderColor", this.defaultSettings.borderColor)
-        this.addColorSelector("Map Color", "mapBackgroundColor", this.defaultSettings.mapBackgroundColor)
-        this.addColorSelector("Extra Info Color", "extraInfoBackroundColor", this.defaultSettings.extraInfoBackroundColor)
 
 
         this.addCategory("Other Settings")

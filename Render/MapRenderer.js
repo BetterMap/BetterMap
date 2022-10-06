@@ -63,7 +63,7 @@ class MapRenderer {
 
         if (renderContext.scoreInfoUnderMap === "simplified") {
             let scoreInfoHeight = 10 * size / 100
-            Renderer.drawRect(Renderer.color(0,0,0,150), x, y + size, size, scoreInfoHeight)
+            Renderer.drawRect(Renderer.color(renderContext.settings.extraInfoBackroundColor[0], renderContext.settings.extraInfoBackroundColor[1], renderContext.settings.extraInfoBackroundColor[2], renderContext.settings.extraInfoBackroundColor[3]), x, y + size, size, scoreInfoHeight)
 
             renderLibs.drawStringCenteredFull("&f" + scoreInfo.total, x + size / 4, y + size + scoreInfoHeight / 2, size / 100)
 
@@ -148,10 +148,10 @@ class MapRenderer {
 
             renderLibs.scizzorFast(x + tabXOff, y - tabH, tabW, tabH)
 
-            Renderer.drawRect(Renderer.color(0, 0, 0, 100), x + tabXOff, y - maxTabH, tabW, maxTabH) //background
-            Renderer.drawRect(Renderer.color(0, 0, 0, 255), x + tabXOff, y - tabH, tabW, renderContext.borderWidth) //background
-            Renderer.drawRect(Renderer.color(0, 0, 0, 255), x + tabXOff, y - maxTabH, renderContext.borderWidth, maxTabH) //background
-            Renderer.drawRect(Renderer.color(0, 0, 0, 255), x + tabXOff + tabW - renderContext.borderWidth, y - maxTabH, renderContext.borderWidth, maxTabH) //background
+            Renderer.drawRect(Renderer.color(renderContext.settings.mapBackgroundColor[0], renderContext.settings.mapBackgroundColor[1], renderContext.settings.mapBackgroundColor[2], renderContext.settings.mapBackgroundColor[3]), x + tabXOff, y - maxTabH, tabW, maxTabH) //background
+            Renderer.drawRect(Renderer.color(renderContext.settings.borderColor[0], renderContext.settings.borderColor[1], renderContext.settings.borderColor[2], renderContext.settings.borderColor[3]), x + tabXOff, y - tabH, tabW, renderContext.borderWidth) //background
+            Renderer.drawRect(Renderer.color(renderContext.settings.borderColor[0], renderContext.settings.borderColor[1], renderContext.settings.borderColor[2], renderContext.settings.borderColor[3]), x + tabXOff, y - maxTabH, renderContext.borderWidth, maxTabH) //background
+            Renderer.drawRect(Renderer.color(renderContext.settings.borderColor[0], renderContext.settings.borderColor[1], renderContext.settings.borderColor[2], renderContext.settings.borderColor[3]), x + tabXOff + tabW - renderContext.borderWidth, y - maxTabH, renderContext.borderWidth, maxTabH) //background
 
             let hovered = (mouseX >= x + tabXOff && mouseX <= x + tabXOff + tabW
                 && mouseY >= y - maxTabH && mouseY <= y)

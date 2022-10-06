@@ -1,5 +1,6 @@
 /**
  * @typedef {Object} ContextSettings
+ * @property {Boolean} showMap - Should the map be rendered
  * @property {"legalmap"|"hypixelmap"|"teniosmap"} mapStyle - Style of the map rendering
  * @property {Number} posX - X Position of the map on screen
  * @property {Number} posY - y Position of the map on screen
@@ -15,6 +16,7 @@
  * @property {Boolean} tabSecretCount - Show the estimated secret count in tab
  * @property {Boolean} tabCryptCount - Show the current total crypt count for discovered rooms in tab 
  * @property {Boolean} tabMimic - Show the mimic status in tab
+ * @property {Boolean} fixScore - Replaces the sidebar scoreboard score with the correct score
  * @property {Boolean} hideInBoss - Hide the map in boss entirely 
  * @property {Boolean} showTabs - Show tabs at the top of the map 
  * @property {Boolean} showSecrets - Show waypoints for secrets in the dungeon
@@ -48,6 +50,10 @@ class RenderContext {
 
     getImageSize(floor) {
         return this.paddingLeft * 2 + this.blockSize * 6 + this.roomGap
+    }
+
+    get showMap(){
+        return this.settings.showMap;
     }
 
     get posX() {
@@ -110,6 +116,10 @@ class RenderContext {
 
     get tabMimic() {
         return this.settings.tabMimic
+    }
+
+    get fixScore() {
+        return this.settings.fixScore
     }
 
     get forcePaul() {
@@ -236,6 +246,7 @@ class RenderContext {
     }
 
     static addMissing({
+        showMap = true,
         mapStyle = "legalmap",
         posX = 0,
         posY = 0,
@@ -251,6 +262,7 @@ class RenderContext {
         tabSecretCount = false,
         tabCryptCount = false,
         tabMimic = false,
+        fixScore = true,
         hideInBoss = false,
         showTabs = true,
         showSecrets = false,
@@ -261,6 +273,7 @@ class RenderContext {
         devInfo = false
     }) {
         return {
+            showMap,
             mapStyle,
             posX,
             posY,
@@ -276,6 +289,7 @@ class RenderContext {
             tabCryptCount,
             tabSecretCount,
             tabMimic,
+            fixScore,
             hideInBoss,
             showTabs,
             showSecrets,

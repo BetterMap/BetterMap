@@ -105,7 +105,7 @@ register("renderOverlay", () => {
 
         let mapContext = renderContextManager.getRenderContextData(dungeonMapRenderContext)
         currentDungeonMap.updatePlayersFast()
-
+        currentDungeonMap.updateScoreboardScore()
 
         let cursorX = -1
         let cursorY = -1

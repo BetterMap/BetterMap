@@ -78,6 +78,8 @@ class SettingGui {
         // TITLE
         this.addSidebarElement(new SoopyTextElement().setText("§0BetterMap Settings").setMaxTextScale(3))
 
+        this.addToggle("Map enabled", "showMap", this.defaultSettings.showMap)
+
         this.addDropdown("Map Style", {
             "legalmap": "Legal Map",
             "hypixelmap": "Hypixel",
@@ -147,6 +149,8 @@ class SettingGui {
         this.addToggle("Show current Crypt total", "tabCryptCount", this.defaultSettings.tabCryptCount)[1].setLore(["Change the crypts found number in tab to also show total crypts in dungeon"])
 
         this.addToggle("Show Mimic Status", "tabMimic", this.defaultSettings.tabMimic)[1].setLore(["Add a line to tab displaying wether the minic has been killed"])
+
+        this.addToggle("Fix Score in Scoreboard", "fixScore", this.defaultSettings.fixScore)[1].setLore(["Replaces the score in the Sidebar-Scoreboard with the correct score"])
 
         this.addCategory("Other Settings")
 

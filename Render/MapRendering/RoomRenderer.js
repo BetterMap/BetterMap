@@ -53,7 +53,7 @@ class RoomRenderer {
         if (context.tickStyle === 'tenios') {
             //tenios map style draws checkmarks if room isnt identified
             if (context.mapStyle === 'teniosmap' && room.maxSecrets !== undefined && room.type !== Room.PUZZLE) return;
-            if ([Room.FAIRY, Room.SPAWN, Room.FAIRY].includes(room.type)) return;
+            if ([Room.FAIRY, Room.SPAWN].includes(room.type)) return;
             if (room.type === Room.PUZZLE && context.puzzleNames === 'text') return;
             if (room.type === Room.PUZZLE && context.mapStyle === 'teniosmap' && room.maxSecrets !== undefined && context.puzzleNames === 'none') return;
             if (room.type === Room.PUZZLE && room.checkmarkState !== Room.COMPLETED) return;
@@ -69,7 +69,7 @@ class RoomRenderer {
                     graphics.setColor(new Color(220 / 255, 220 / 255, 220 / 255));
                 }
                 graphics.drawString('✔', x * context.blockSize + context.roomSize / 2 - 5, y * context.blockSize + context.roomSize - 4);
-            } else if (room.checkmarkState <= Room.ADJACENT) {
+            } else if (room.checkmarkState === Room.ADJACENT) {
                 graphics.setColor(new Color(0, 0, 0));
                 graphics.drawString('?', x * context.blockSize + context.roomSize / 2 - 2, y * context.blockSize + context.roomSize - 4);
             }
@@ -119,7 +119,7 @@ class RoomRenderer {
     drawExtras(context, room, dungeon) {
         if (room.type === Room.SPAWN || room.type === Room.FAIRY) return
 
-        if (context.mapStyle === 'teniosmap' && (room.type !== Room.PUZZLE || context.puzzleNames === 'none' || (context.tickStyle === 'secrets' && context.puzzleNames ==='icon'))) {
+        if (context.mapStyle === 'teniosmap' && (room.type !== Room.PUZZLE || context.puzzleNames === 'none' || (context.tickStyle === 'secrets' && context.puzzleNames === 'icon'))) {
             let text = null;
             if (room.maxSecrets !== undefined) {
                 text = room.currentSecrets + '/' + room.maxSecrets

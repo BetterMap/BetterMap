@@ -105,15 +105,18 @@ register("renderOverlay", () => {
 
         let mapContext = renderContextManager.getRenderContextData(dungeonMapRenderContext)
         currentDungeonMap.updatePlayersFast()
-
+        currentDungeonMap.updateScoreboardScore()
 
         let cursorX = -1
         let cursorY = -1
 
-        if (Client.isInChat() || currentDungeonMap.cursorStoreXY) {
+        if (Client.isInChat()) {
             // Putting checks and xy loading here so that we can draw tooltips in other guis in the future
             cursorX = Client.getMouseX();
             cursorY = Client.getMouseY();
+        }
+        if (currentDungeonMap.cursorStoreXY) {
+            [cursorX, cursorY] = currentDungeonMap.cursorStoreXY
         }
 
         mapRenderer.draw(mapContext, currentDungeonMap, cursorX, cursorY)

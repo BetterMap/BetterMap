@@ -40,6 +40,8 @@ class MapPlayer {
         this.maxRooms = 0
         /**@type {[MapPlayer[], import("./Room").default][]} */
         this.roomsData = []
+
+        this.dungeonClass = null;
     }
 
     get username() {
@@ -52,6 +54,17 @@ class MapPlayer {
         this._username = name
         this.uuid = undefined
         this.checkUpdateUUID()
+    }
+
+    setDungeonClass() {
+        TabList.getNames().forEach(function(entry) {
+            if (entry.includes(this.username)){
+                this.dungeonClass = entry.split(' ')[2]
+                return this.dungeonClass
+            }
+          });
+          this.dungeonClass = null
+          return null
     }
 
     checkUpdateUUID() {
@@ -119,7 +132,8 @@ class MapPlayer {
         Renderer.translate(x + w / 2, y + h / 2, 50)
         // Renderer.translate(x + (this.location.worldX + 256 - 32) * size / 256, y + (this.location.worldY + 256 - 32) * size / 256, 50)
         Renderer.rotate(rotation)
-
+        
+        // THIS IS WHERE BORDER IS RENDERED
         if (border) Renderer.drawRect(Renderer.BLACK, -w / 2 - 1, -h / 2 - 1, w + 2, h + 2)
 
         GlStateManager[m.enableBlend]()

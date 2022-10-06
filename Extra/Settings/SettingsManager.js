@@ -48,6 +48,23 @@ class SettingsManager {
             }
         }
 
+        this.settingsGui.changedArr = (key, index, val) => {
+            //ChatLib.chat(this.currentSettings[key][index])
+            this.currentSettings[key][index] = val
+
+            this.saveSettings()
+
+            for (let contextData of this.renderContexts.entries()) {
+                let [context, settingOverrides] = contextData
+
+                let data = this.renderContextManager.getRenderContextData(context)
+
+                data.setSettings({ ...this.currentSettings, ...settingOverrides })
+
+                data.markReRender()
+            }
+        }
+
         register("renderOverlay", () => {
             this.settingsGui.renderOverlay()
         })

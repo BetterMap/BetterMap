@@ -256,7 +256,10 @@ class RenderContext {
         forcePaul = false,
         clearedRoomInfo = true,
         apiKey = "",
-        devInfo = false
+        devInfo = false,
+        borderColor = [0, 0, 0, 0],
+        mapBackgroundColor = [0, 0, 0, 100],
+        extraInfoBackroundColor = [0, 0, 0, 100]
     }) {
         return {
             mapStyle,
@@ -281,7 +284,10 @@ class RenderContext {
             forcePaul,
             clearedRoomInfo,
             apiKey,
-            devInfo
+            devInfo,
+            borderColor,
+            mapBackgroundColor,
+            extraInfoBackroundColor
         }
     }
 

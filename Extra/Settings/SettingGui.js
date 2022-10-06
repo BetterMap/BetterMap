@@ -154,10 +154,7 @@ class SettingGui {
 
         this.addToggle("Show Mimic Status", "tabMimic", this.defaultSettings.tabMimic)[1].setLore(["Add a line to tab displaying wether the minic has been killed"])
 
-<<<<<<< HEAD
-=======
         this.addToggle("Fix Score in Scoreboard", "fixScore", this.defaultSettings.fixScore)[1].setLore(["Replaces the score in the Sidebar-Scoreboard with the correct score"])
->>>>>>> fd06e5a7a169fb6aa88227dd15840506f31f5cb0
 
         this.addCategory("Other Settings")
 

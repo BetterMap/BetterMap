@@ -1,12 +1,13 @@
 /**
  * @typedef {Object} ContextSettings
+ * @property {Boolean} showMap - Should the map be rendered
  * @property {"legalmap"|"hypixelmap"|"teniosmap"} mapStyle - Style of the map rendering
  * @property {Number} posX - X Position of the map on screen
  * @property {Number} posY - y Position of the map on screen
  * @property {Number} size - Width/height of the map when rendered
  * @property {Number} headScale - Width/height of heads (scales with size, will be same if size is 100)
  * @property {Number} iconScale - Width/height of icons (scales with size, will be same if size is 100)
- * @property {"hypixel"|"default"|"secrets"} tickStyle - Style of the ticks
+ * @property {"hypixel"|"default"|"tenios"|"secrets"} tickStyle - Style of the ticks
  * @property {"none"|"text"|"icon"} puzzleNames - Render style of puzzle names
  * @property {Boolean} headBorder - Wether to put a black border around heads on the map
  * @property {"never"|"leap"|"always"} playerNames - When to show player names on map
@@ -15,6 +16,7 @@
  * @property {Boolean} tabSecretCount - Show the estimated secret count in tab
  * @property {Boolean} tabCryptCount - Show the current total crypt count for discovered rooms in tab 
  * @property {Boolean} tabMimic - Show the mimic status in tab
+ * @property {Boolean} fixScore - Replaces the sidebar scoreboard score with the correct score
  * @property {Boolean} hideInBoss - Hide the map in boss entirely 
  * @property {Boolean} showTabs - Show tabs at the top of the map 
  * @property {Boolean} showSecrets - Show waypoints for secrets in the dungeon
@@ -51,6 +53,10 @@ class RenderContext {
 
     getImageSize(floor) {
         return this.paddingLeft * 2 + this.blockSize * 6 + this.roomGap
+    }
+
+    get showMap(){
+        return this.settings.showMap;
     }
 
     get posX() {
@@ -115,6 +121,10 @@ class RenderContext {
         return this.settings.tabMimic
     }
 
+    get fixScore() {
+        return this.settings.fixScore
+    }
+
     get forcePaul() {
         return this.settings.forcePaul
     }
@@ -146,7 +156,7 @@ class RenderContext {
             case "hypixelmap":
                 return HypixelColorMap
             case "teniosmap":
-                return HypixelColorMap //TODO: this color map
+                return TeniosMapColorMap
         }
     }
 
@@ -157,7 +167,7 @@ class RenderContext {
             case "hypixelmap":
                 return 6
             case "teniosmap":
-                return 6 //TODO: this value
+                return 6
         }
     }
 
@@ -168,7 +178,7 @@ class RenderContext {
             case "hypixelmap":
                 return 24
             case "teniosmap":
-                return 24 //TODO: this value
+                return 24
         }
     }
 
@@ -183,7 +193,7 @@ class RenderContext {
             case "hypixelmap":
                 return 10
             case "teniosmap":
-                return 15 //TODO: this value (atm i just set it high to show of changes)
+                return 10;
         }
     }
 
@@ -205,6 +215,7 @@ class RenderContext {
 
                 graphics.dispose()
                 return scaledDownImage
+            case 'tenios':
             case "hypixel":
                 return HypixelTicksOld.get(type)
         }
@@ -219,6 +230,7 @@ class RenderContext {
         switch (this.tickStyle) {
             case "default":
                 return [16 * this.iconScale / 8, 16 * this.iconScale / 8]
+            case 'tenios':
             case "hypixel":
                 switch (type) {
                     case "questionMark":
@@ -237,6 +249,7 @@ class RenderContext {
     }
 
     static addMissing({
+        showMap = true,
         mapStyle = "legalmap",
         posX = 0,
         posY = 0,
@@ -252,6 +265,7 @@ class RenderContext {
         tabSecretCount = false,
         tabCryptCount = false,
         tabMimic = false,
+        fixScore = true,
         hideInBoss = false,
         showTabs = true,
         showSecrets = false,
@@ -265,6 +279,7 @@ class RenderContext {
         extraInfoBackroundColor = [0, 0, 0, 100]
     }) {
         return {
+            showMap,
             mapStyle,
             posX,
             posY,
@@ -280,6 +295,7 @@ class RenderContext {
             tabCryptCount,
             tabSecretCount,
             tabMimic,
+            fixScore,
             hideInBoss,
             showTabs,
             showSecrets,
@@ -371,6 +387,20 @@ LegalMapColorMap.set(roomHash.BLOOD, new Color(Renderer.color(255, 0, 0, 255)))
 LegalMapColorMap.set(roomHash.TRAP, new Color(Renderer.color(216, 127, 51, 255)))
 LegalMapColorMap.set(roomHash.UNKNOWN, new Color(Renderer.color(65, 65, 65, 255)))
 LegalMapColorMap.set(roomHash.BLACK, new Color(Renderer.color(0, 0, 0, 255)))
+
+
+const TeniosMapColorMap = new Map()
+TeniosMapColorMap.set('mobs', new Color(Renderer.color(114, 67, 27)));
+TeniosMapColorMap.set('miniboss', new Color(Renderer.color(85, 51, 19)));
+TeniosMapColorMap.set('rare', new Color(Renderer.color(175, 122, 87)));
+TeniosMapColorMap.set('fairy', new Color(Renderer.color(239, 126, 163)));
+TeniosMapColorMap.set('blood', new Color(Renderer.color(255, 0, 0)));
+TeniosMapColorMap.set('spawn', new Color(Renderer.color(0, 123, 0)));
+TeniosMapColorMap.set('trap', new Color(Renderer.color(213, 126, 50)));
+TeniosMapColorMap.set('puzzle', new Color(Renderer.color(176, 75, 213)));
+TeniosMapColorMap.set('gold', new Color(Renderer.color(226, 226, 50)));
+TeniosMapColorMap.set('unknown', new Color(Renderer.color(64, 64, 64)));
+TeniosMapColorMap.set('wither', new Color(Renderer.color(0, 0, 0)));
 
 const HypixelTicksOld = new Map()
 HypixelTicksOld.set("greenCheck", new Image("greenCheckVanilla.png", "https://i.imgur.com/h2WM1LO.png").image)

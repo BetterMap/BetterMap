@@ -78,10 +78,12 @@ class SettingGui {
         // TITLE
         this.addSidebarElement(new SoopyTextElement().setText("§0BetterMap Settings").setMaxTextScale(3))
 
+        this.addToggle("Map enabled", "showMap", this.defaultSettings.showMap)
+
         this.addDropdown("Map Style", {
             "legalmap": "Legal Map",
-            "hypixelmap": "Hypixel"//,
-            // "teniosmap": "Tenios Map"
+            "hypixelmap": "Hypixel",
+            "teniosmap": "Tenios Map"
         }, "mapStyle", "legalmap")
 
 
@@ -110,7 +112,8 @@ class SettingGui {
         this.addDropdown("Tick Style", {
             "default": "NEU Map",
             "hypixel": "Hypixel",
-            "secrets": "Secrets Found"
+            "tenios": "tenios",
+            "secrets": "Secrets Found",
         }, "tickStyle", this.defaultSettings.tickStyle)
 
 
@@ -151,6 +154,10 @@ class SettingGui {
 
         this.addToggle("Show Mimic Status", "tabMimic", this.defaultSettings.tabMimic)[1].setLore(["Add a line to tab displaying wether the minic has been killed"])
 
+<<<<<<< HEAD
+=======
+        this.addToggle("Fix Score in Scoreboard", "fixScore", this.defaultSettings.fixScore)[1].setLore(["Replaces the score in the Sidebar-Scoreboard with the correct score"])
+>>>>>>> fd06e5a7a169fb6aa88227dd15840506f31f5cb0
 
         this.addCategory("Other Settings")
 

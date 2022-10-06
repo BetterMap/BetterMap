@@ -6,7 +6,7 @@ import Room from "./Room.js"
 import { getScoreboardInfo, getTabListInfo, getRequiredSecrets } from "../Utils/Score"
 import Door from "./Door.js"
 import DungeonRoomData from "../Data/DungeonRoomData.js"
-import { dungeonOffsetX, dungeonOffsetY, MESSAGE_PREFIX, renderLore } from "../Utils/Utils.js"
+import { changeScoreboardLine, dungeonOffsetX, dungeonOffsetY, MESSAGE_PREFIX, renderLore } from "../Utils/Utils.js"
 import socketConnection from "../socketConnection.js"
 import DataLoader from "../Utils/DataLoader.js"
 import { fetch } from "../Utils/networkUtils.js"
@@ -1123,10 +1123,6 @@ class DungeonMap {
     }
 
     drawRoomTooltip(context, cursorX, cursorY) {
-        if (this.cursorStoreXY) {
-            [cursorX, cursorY] = this.cursorStoreXY
-        }
-
         let { x, y, size } = context.getMapDimensions();
 
         if (this.dropdownXY) {
@@ -1628,7 +1624,7 @@ class DungeonMap {
         let loc = `${x},${y},${z}`
 
         let currentRoom = this.getCurrentRoom()
-        if (type === "bat" && currentRoom.data) {
+        if (type === "bat" && currentRoom?.data) {
             let closestD = Infinity
 
             currentRoom.data.secret_coords?.bat?.forEach(([rx, ry, rz]) => {
@@ -1642,7 +1638,7 @@ class DungeonMap {
                 }
             });
         }
-        if (type === "item" && currentRoom.data) {
+        if (type === "item" && currentRoom?.data) {
             let closestD = 25
 
             currentRoom.data.secret_coords?.item?.forEach(([rx, ry, rz]) => {
@@ -1659,6 +1655,24 @@ class DungeonMap {
 
         this.collectedSecrets.add(loc)
         this.sendSocketData({ type: "secretCollect", location: loc })
+    }
+
+    updateScoreboardScore() {
+        if (!settings.settings.fixScore) return;
+        let lines = Scoreboard?.getLines();
+        let score = this.cachedScore?.data?.total;
+        if (!score) return;
+        if (lines && lines.length) {
+            for (let i = 0; i < lines.length; i++) {
+                let cleanedLine = ChatLib.removeFormatting(lines[i].toString()).replace(/[^\x00-\x7F]/g, "");
+                if (cleanedLine.includes('Cleared:') && !cleanedLine.includes(score)) {
+                    let parts = cleanedLine.split(' ');
+                    let completion = parts[1];
+                    let scoreboardScore = lines[i].getPoints();
+                    changeScoreboardLine(scoreboardScore, '§rCleared: §c' + completion + ' §7(§b' + score + '§7)', false);
+                }
+            }
+        }
     }
 }
 

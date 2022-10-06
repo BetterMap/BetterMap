@@ -1123,10 +1123,6 @@ class DungeonMap {
     }
 
     drawRoomTooltip(context, cursorX, cursorY) {
-        if (this.cursorStoreXY) {
-            [cursorX, cursorY] = this.cursorStoreXY
-        }
-
         let { x, y, size } = context.getMapDimensions();
 
         if (this.dropdownXY) {

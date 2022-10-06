@@ -42,3 +42,11 @@ First released version!
 ```diff
 + Potentially fix ping spike issue (idk for certian if its even a thing but better safe than sorry lol)
 ```
+
+@ver v1.0.8
+```diff
++ Fix bug with hover info sometimes showing on map when not hovering
++ Tenios map style
++ Toggle map setting
++ Fix scoreboard score setting
+```

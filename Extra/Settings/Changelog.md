@@ -45,6 +45,7 @@ First released version!
 
 @ver v1.0.8
 ```diff
++ Added color custumization to the map background, borders, and extra info section. (thenose2003)
 + Fix bug with hover info sometimes showing on map when not hovering
 + Tenios map style
 + Toggle map setting

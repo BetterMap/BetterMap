@@ -25,6 +25,9 @@
  * @property {Boolean} clearedRoomInfo - Show a summory of what rooms people cleared after run finishes
  * @property {String} apiKey - The user's api key, or "" if unknown
  * @property {Boolean} devInfo - Wether to show def info in various places in the map
+ * @property {Object[]} borderColor - The RGBO value of the map border color
+ * @property {Object[]} mapBackgroundColor - The RGBO value of the map backround color
+ * @property {Object[]} extraInfoBackroundColor - The RGBO value of the extrainfo backround color
  */
 
 const BufferedImage = Java.type("java.awt.image.BufferedImage")
@@ -270,7 +273,10 @@ class RenderContext {
         forcePaul = false,
         clearedRoomInfo = true,
         apiKey = "",
-        devInfo = false
+        devInfo = false,
+        borderColor = [0, 0, 0, 255],
+        mapBackgroundColor = [0, 0, 0, 100],
+        extraInfoBackroundColor = [0, 0, 0, 100]
     }) {
         return {
             showMap,
@@ -297,7 +303,10 @@ class RenderContext {
             forcePaul,
             clearedRoomInfo,
             apiKey,
-            devInfo
+            devInfo,
+            borderColor,
+            mapBackgroundColor,
+            extraInfoBackroundColor
         }
     }
 

@@ -49,8 +49,8 @@ class SettingsManager {
         }
 
         this.settingsGui.changedArr = (key, index, val) => {
-            //ChatLib.chat(this.currentSettings[key][index])
-            this.currentSettings[key][index] = val
+            if (isNaN(val)) this.currentSettings[key][index] = 0;
+            else this.currentSettings[key][index] = val;
 
             this.saveSettings()
 

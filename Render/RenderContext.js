@@ -257,7 +257,7 @@ class RenderContext {
         clearedRoomInfo = true,
         apiKey = "",
         devInfo = false,
-        borderColor = [0, 0, 0, 0],
+        borderColor = [0, 0, 0, 255],
         mapBackgroundColor = [0, 0, 0, 100],
         extraInfoBackroundColor = [0, 0, 0, 100]
     }) {

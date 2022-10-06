@@ -53,7 +53,7 @@ class RoomRenderer {
         if (context.tickStyle === 'tenios') {
             //tenios map style draws checkmarks if room isnt identified
             if (context.mapStyle === 'teniosmap' && room.maxSecrets && room.type !== Room.PUZZLE) return;
-            if ([Room.FAIRY, Room.SPAWN].includes(room.type)) return;
+            if ([Room.SPAWN].includes(room.type)) return;
             if (room.type === Room.PUZZLE && context.puzzleNames === 'text') return;
             if (room.type === Room.PUZZLE && context.mapStyle === 'teniosmap' && room.maxSecrets !== undefined && context.puzzleNames === 'none') return;
             if (room.type === Room.PUZZLE && room.checkmarkState !== Room.COMPLETED) return;

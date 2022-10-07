@@ -47,7 +47,8 @@ First released version!
 ```diff
 + Added color custumization to the map background, borders, and extra info section. (thenose2003)
 + Fix bug with hover info sometimes showing on map when not hovering
-+ Tenios map style
++ Tenios map and tick style
 + Toggle map setting
 + Fix scoreboard score setting
++ Show [NO API KEY] if you dont have an api key in the secrets gained this run text
 ```

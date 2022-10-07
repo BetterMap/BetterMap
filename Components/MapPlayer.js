@@ -41,7 +41,11 @@ class MapPlayer {
         /**@type {[MapPlayer[], import("./Room").default][]} */
         this.roomsData = []
 
-        this.dungeonClass = null;
+        this.skyblockLevel = null
+        this.dungeonClass = null
+        this.classLevel = null
+
+        this.playerColor = [0, 0, 0, 255]
     }
 
     get username() {
@@ -56,15 +60,38 @@ class MapPlayer {
         this.checkUpdateUUID()
     }
 
-    setDungeonClass() {
-        TabList.getNames().forEach(function(entry) {
+    updateDungeonClass() {
+        // for everything in tab
+        for (let entry of TabList.getNames()) {
+            // remove everything thats not a letter space or number and get rid of color codes
+            entry = ChatLib.removeFormatting(entry).replace(/[^a-z0-9 -]/gi, '')
+            // if players username is it it 
             if (entry.includes(this.username)){
+                // pull out the cool stuff and then leave
+                this.skyblockLevel = entry.split(' ')[0]
                 this.dungeonClass = entry.split(' ')[2]
-                return this.dungeonClass
+                this.classLevel = entry.split(' ')[3]
+                switch(this.dungeonClass) {
+                    case "Archer":
+                        this.playerColor = [30, 170, 50, 255]
+                        break;
+                    case "Mage":
+                        this.playerColor = [70, 210, 210, 255]
+                        break;
+                    case "Tank":
+                        this.playerColor = [150, 150, 150, 255]
+                        break;
+                    case "Berserk":
+                        this.playerColor = [255, 0, 0, 255]
+                        break;
+                    case "Healer":
+                        this.playerColor = [240, 70, 240, 255]
+                        break;
+                }
+                return this
             }
-          });
-          this.dungeonClass = null
-          return null
+          }
+          return this
     }
 
     checkUpdateUUID() {
@@ -133,8 +160,8 @@ class MapPlayer {
         // Renderer.translate(x + (this.location.worldX + 256 - 32) * size / 256, y + (this.location.worldY + 256 - 32) * size / 256, 50)
         Renderer.rotate(rotation)
         
-        // THIS IS WHERE BORDER IS RENDERED
-        if (border) Renderer.drawRect(Renderer.BLACK, -w / 2 - 1, -h / 2 - 1, w + 2, h + 2)
+        // Player name border color thing
+        if (border) Renderer.drawRect(Renderer.color(this.playerColor[0] ?? 0, this.playerColor[1] ?? 0, this.playerColor[2] ?? 0, this.playerColor[3] ?? 255), -w / 2 - 1, -h / 2 - 1, w + 2, h + 2)
 
         GlStateManager[m.enableBlend]()
         Client.getMinecraft()[m.getTextureManager]()[m.bindTexture.TextureManager](this.networkPlayerInfo[m.getLocationSkin.NetworkPlayerInfo]())

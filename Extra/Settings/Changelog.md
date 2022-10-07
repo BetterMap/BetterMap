@@ -51,4 +51,5 @@ First released version!
 + Toggle map setting
 + Fix scoreboard score setting
 + Show [NO API KEY] if you dont have an api key in the secrets gained this run text
++ Fix settings not saving correctly on linux
 ```

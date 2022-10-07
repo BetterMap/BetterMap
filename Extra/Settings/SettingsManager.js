@@ -16,7 +16,7 @@ class SettingsManager {
     constructor(renderContextManager) {
         this.renderContextManager = renderContextManager
 
-        this.currentSettings = RenderContext.addMissing(JSON.parse(FileLib.read("soopyaddonsdata", "bettermapsettings.json") || "{}") || {})
+        this.currentSettings = RenderContext.addMissing(JSON.parse(FileLib.read("soopyAddonsData", "bettermapsettings.json") || "{}") || {})
 
         /**
          * @type {Map<RenderContext, Object>}
@@ -72,7 +72,7 @@ class SettingsManager {
 
     saveSettings() {
         new Thread(() => {
-            FileLib.write("soopyaddonsdata", "bettermapsettings.json", JSON.stringify(this.currentSettings))
+            FileLib.write("soopyAddonsData", "bettermapsettings.json", JSON.stringify(this.currentSettings))
         }).start()
     }
 

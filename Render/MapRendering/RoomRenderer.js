@@ -90,7 +90,7 @@ class RoomRenderer {
         if (context.mapStyle === 'teniosmap' && room.maxSecrets !== undefined && (room.type !== Room.PUZZLE || context.puzzleNames !== 'icon')) return; //tenios map style forces secret count on explored rooms
         if (room.type === Room.SPAWN) return // Dont render tick on spawn room
 
-        if (context.tickStyle === 'secrets') return // Needs to be rendered in renderoverlay, see drawExtras()
+        if (context.tickStyle === 'secrets' || context.tickStyle === "secrets_underhead") return // Needs to be rendered in renderoverlay, see drawExtras()
         if (room.type === Room.PUZZLE && context.puzzleNames === "text") return
         if (room.type === Room.PUZZLE && (room.checkmarkState === Room.UNOPENED || room.checkmarkState === Room.OPENED)) return
 
@@ -119,11 +119,11 @@ class RoomRenderer {
     drawExtras(context, room, dungeon) {
         if (room.type === Room.SPAWN || room.type === Room.FAIRY) return
 
-        if (context.mapStyle === 'teniosmap' && (room.type !== Room.PUZZLE || context.puzzleNames === 'none' || (context.tickStyle === 'secrets' && context.puzzleNames === 'icon'))) {
+        if (context.mapStyle === 'teniosmap' && (room.type !== Room.PUZZLE || context.puzzleNames === 'none' || ((context.tickStyle === 'secrets' || context.tickStyle === "secrets_underhead") && context.puzzleNames === 'icon'))) {
             let text = null;
             if (room.maxSecrets) {
                 text = room.currentSecrets + '/' + room.maxSecrets
-            } else if (context.tickStyle === 'secrets')
+            } else if (context.tickStyle === 'secrets' || context.tickStyle === "secrets_underhead")
                 text = (room.currentSecrets ?? "?") + "/" + (room.maxSecrets ?? "?");
             if (!text) return;
             let color = ''
@@ -152,7 +152,7 @@ class RoomRenderer {
 
             Renderer.translate(0, 0, 100)
             renderLibs.drawStringCenteredShadow(text, x, y, scale)
-        } else if (context.tickStyle === 'secrets' && (room.type !== Room.PUZZLE || (context.mapStyle !== 'teniosmap' && context.puzzleNames !== 'text'))) {
+        } else if ((context.tickStyle === 'secrets' || context.tickStyle === "secrets_underhead") && (room.type !== Room.PUZZLE || (context.mapStyle !== 'teniosmap' && context.puzzleNames !== 'text'))) {
 
             let location = room.components[0]
 
@@ -191,16 +191,16 @@ class RoomRenderer {
             }
             text = "&0" + text
 
-            Renderer.translate(0, 0, 100)
+            if (context.tickStyle === "secrets") Renderer.translate(0, 0, 100)
             renderLibs.drawStringCenteredShadow(text, x + scale, y - 4.5 * scale, scale)
-            Renderer.translate(0, 0, 100)
+            if (context.tickStyle === "secrets") Renderer.translate(0, 0, 100)
             renderLibs.drawStringCenteredShadow(text, x - scale, y - 4.5 * scale, scale)
-            Renderer.translate(0, 0, 100)
+            if (context.tickStyle === "secrets") Renderer.translate(0, 0, 100)
             renderLibs.drawStringCenteredShadow(text, x, y + scale - 4.5 * scale, scale)
-            Renderer.translate(0, 0, 100)
+            if (context.tickStyle === "secrets") Renderer.translate(0, 0, 100)
             renderLibs.drawStringCenteredShadow(text, x, y - scale - 4.5 * scale, scale)
 
-            Renderer.translate(0, 0, 100)
+            if (context.tickStyle === "secrets") Renderer.translate(0, 0, 100)
             renderLibs.drawStringCenteredShadow(textColored, x, y - 4.5 * scale, scale)
         }
 

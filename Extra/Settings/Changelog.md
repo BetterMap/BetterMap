@@ -52,4 +52,5 @@ First released version!
 + Fix scoreboard score setting
 + Show [NO API KEY] if you dont have an api key in the secrets gained this run text
 + Fix settings not saving correctly on linux
++ Setting to put player head above secrets when on secrets tick style
 ```

@@ -54,3 +54,8 @@ First released version!
 + Fix settings not saving correctly on linux
 + Setting to put player head above secrets when on secrets tick style
 ```
+
+@ver v1.0.9
+```diff
++ No changes yet
+```

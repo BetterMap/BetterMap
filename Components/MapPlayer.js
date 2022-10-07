@@ -64,7 +64,7 @@ class MapPlayer {
         // for everything in tab
         for (let entry of TabList.getNames()) {
             // remove everything thats not a letter space or number and get rid of color codes
-            entry = ChatLib.removeFormatting(entry).replace(/[^a-z0-9 -]/gi, '')
+            entry = ChatLib.removeFormatting(entry).replace(/[^A-Za-z0-9 _]/gi, '')
             // if players username is it it 
             if (entry.includes(this.username)){
                 // pull out the cool stuff and then leave

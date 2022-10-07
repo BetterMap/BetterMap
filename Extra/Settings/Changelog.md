@@ -45,13 +45,14 @@ First released version!
 
 @ver v1.0.8
 ```diff
-<<<<<<< HEAD
-+ Added color custumization to the map background, borders, and extra info section.
-=======
 + Added color custumization to the map background, borders, and extra info section. (thenose2003)
 + Fix bug with hover info sometimes showing on map when not hovering
 + Tenios map style
 + Toggle map setting
 + Fix scoreboard score setting
->>>>>>> fd06e5a7a169fb6aa88227dd15840506f31f5cb0
+```
+
+@ver v1.0.9
+```diff
++ Added custom border colors depending on the class of the player
 ```

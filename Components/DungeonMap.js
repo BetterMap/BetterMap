@@ -194,11 +194,11 @@ class DungeonMap {
             case "roomSecrets":
                 let currentRoom = this.rooms.get(data.x + ',' + data.y);
 
-                if (!currentRoom) return;
+                if (!currentRoom || currentRoom.type === Room.UNKNOWN) return; //current room not loaded yet
 
                 if (currentRoom.currentSecrets !== data.min) {
-                    currentRoom.currentSecrets = min
                     currentRoom.currentSecrets = data.min
+                    if (currentRoom.maxSecrets !== data.max) currentRoom.maxSecrets = data.max
 
                     this.markChanged() //re-render map incase of a secret count specific texturing
                 }
@@ -1018,18 +1018,20 @@ class DungeonMap {
 
         let currentRoom = this.rooms.get(x + ',' + y);
 
-        if (!currentRoom) return; //current room not loaded yet
+        if (!currentRoom || currentRoom.type === Room.UNKNOWN) return; //current room not loaded yet
 
-        if (currentRoom.currentSecrets !== min && (currentRoom.maxSecrets === max || currentRoom.type === Room.UNKNOWN)) {
+        if (currentRoom.currentSecrets !== min && (currentRoom.maxSecrets === max || !currentRoom.roomId)) {
             currentRoom.currentSecrets = min
+            if (currentRoom.maxSecrets !== max) currentRoom.maxSecrets = max
 
             this.markChanged() //re-render map incase of a secret count specific texturing
 
             this.sendSocketData({
                 type: 'roomSecrets',
-                min: min,
-                x: x,
-                y: y
+                min,
+                max,
+                x,
+                y
             })
         }
     }

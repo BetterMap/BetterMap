@@ -123,7 +123,33 @@ class SettingGui {
             "icon": "Icon"
         }, "puzzleNames", this.defaultSettings.puzzleNames)
 
-        this.addToggle("Border around heads", "headBorder", this.defaultSettings.headBorder)
+        //this.addToggle("Border around heads", "headBorder", this.defaultSettings.headBorder)
+        Client.scheduleTask(0.5 * 20, () => {
+            if (typeof renderContext.settings.headBorder === "boolean"){
+                if (renderContext.settings.headBorder)
+                    this.changed("headBorder", "single")
+                else
+                    this.changed("headBorder", "none")
+            }
+        })
+
+        this.addDropdown("Border around heads", {
+            "none": "None",
+            "single": "Single Color",
+            "class-color": "Class Colors"
+        }, "headBorder", this.defaultSettings.headBorder)[0]
+        this.addCategory("NOTE: All border colors can be changed in the config file")
+
+        /* perhaps some day the stuff will be added to be able to do this
+        if (renderContext.settings.headBorder == "single"){
+            this.addColorSelector("Player Border Color", "singleBorderColor", this.defaultSettings.singleBorderColor)
+        } else if (renderContext.settings.headBorder == "class-color"){
+            this.addColorSelector("Healer Border Color", "healerColor", this.defaultSettings.healerColor)
+            this.addColorSelector("Mage Border Color", "mageColor", this.defaultSettings.mageColor)
+            this.addColorSelector("Berserk Border Color", "bersColor", this.defaultSettings.bersColor)
+            this.addColorSelector("Archer Border Color", "healerColor", this.defaultSettings.healerColor)
+            this.addColorSelector("Tank Border Color", "tankColor", this.defaultSettings.tankColor)
+        }*/
 
         this.addDropdown("Player names on map", {
             "never": "Never",
@@ -134,7 +160,7 @@ class SettingGui {
         this.addSlider("Head Scale", "headScale", this.defaultSettings.headScale || 8, 2, 15)
         this.addSlider("Icon Scale", "iconScale", this.defaultSettings.iconScale || 10, 2, 15)
 
-        this.addColorSelector("Border Color", "borderColor", this.defaultSettings.borderColor)
+        this.addColorSelector("Map Border Color", "mapBorderColor", this.defaultSettings.mapBorderColor)
         this.addColorSelector("Map Color", "mapBackgroundColor", this.defaultSettings.mapBackgroundColor)
         this.addColorSelector("Extra Info Color", "extraInfoBackroundColor", this.defaultSettings.extraInfoBackroundColor)
 

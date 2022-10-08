@@ -25,7 +25,7 @@
  * @property {Boolean} clearedRoomInfo - Show a summory of what rooms people cleared after run finishes
  * @property {String} apiKey - The user's api key, or "" if unknown
  * @property {Boolean} devInfo - Wether to show def info in various places in the map
- * @property {Object[]} borderColor - The RGBO value of the map border color
+ * @property {Object[]} mapBorderColor - The RGBO value of the map border color
  * @property {Object[]} mapBackgroundColor - The RGBO value of the map backround color
  * @property {Object[]} extraInfoBackroundColor - The RGBO value of the extrainfo backround color
  */

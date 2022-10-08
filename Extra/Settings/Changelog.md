@@ -60,4 +60,5 @@ First released version!
 + White tick blood when all mobs spawned
 + Fix deaths on legalmap score info style not showing
 ! fix random bug with heads changing color i think
+! fix secrets under head setting showing secrets over head with tenios style
 ```

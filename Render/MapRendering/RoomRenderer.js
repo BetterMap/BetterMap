@@ -150,7 +150,7 @@ class RoomRenderer {
             y = context.posY + y * (context.size - context.borderWidth) + context.borderWidth
 
 
-            Renderer.translate(0, 0, 100)
+            if (context.tickStyle === "secrets") Renderer.translate(0, 0, 100)
             renderLibs.drawStringCenteredShadow(text, x, y, scale)
         } else if ((context.tickStyle === 'secrets' || context.tickStyle === "secrets_underhead") && (room.type !== Room.PUZZLE || (context.mapStyle !== 'teniosmap' && context.puzzleNames !== 'text'))) {
 

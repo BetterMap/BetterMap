@@ -54,5 +54,5 @@ First released version!
 
 @ver v1.0.9
 ```diff
-+ Added custom border colors depending on the class of the player
++ Added option for custom border colors depending on the class of the player
 ```

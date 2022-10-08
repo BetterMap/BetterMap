@@ -120,7 +120,10 @@ class MapPlayer {
         // Renderer.translate(x + (this.location.worldX + 256 - 32) * size / 256, y + (this.location.worldY + 256 - 32) * size / 256, 50)
         Renderer.rotate(rotation)
 
+        Renderer.colorize(0, 0, 0)
         if (border) Renderer.drawRect(Renderer.BLACK, -w / 2 - 1, -h / 2 - 1, w + 2, h + 2)
+
+        Renderer.colorize(255, 255, 255)
 
         GlStateManager[m.enableBlend]()
         Client.getMinecraft()[m.getTextureManager]()[m.bindTexture.TextureManager](this.networkPlayerInfo[m.getLocationSkin.NetworkPlayerInfo]())
@@ -171,8 +174,6 @@ class MapPlayer {
         let { size, headScale } = renderContext.getMapDimensions()
 
         if (!dungeon) return
-
-        Renderer.colorize(255, 255, 255) //fix random bug with heads changing color i think
 
         let rx = -headScale / 2 * size / 100 //offsetting to the left by half image width,
         let ry = -headScale / 2 * size / 100 //image width = headscale* size /100 (size = map size eg 100px, dividing by 100 so its exactly headscale when mapsize is 100)

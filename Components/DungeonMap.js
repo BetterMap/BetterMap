@@ -1017,9 +1017,9 @@ class DungeonMap {
 
         let currentRoom = this.rooms.get(x + ',' + y);
 
-        if (!currentRoom || currentRoom.type === Room.UNKNOWN) return; //current room not loaded yet
+        if (!currentRoom) return; //current room not loaded yet
 
-        if (currentRoom.currentSecrets !== min && currentRoom.maxSecrets === max) {
+        if (currentRoom.currentSecrets !== min && (currentRoom.maxSecrets === max || currentRoom.type === Room.UNKNOWN)) {
             currentRoom.currentSecrets = min
 
             this.markChanged() //re-render map incase of a secret count specific texturing

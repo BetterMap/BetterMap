@@ -171,7 +171,7 @@ class DungeonMap {
                 Client.scheduleTask(2 * 20, () => {
                     // update all player classes
                     this.players.forEach(p => {
-                        p.updateDungeonClass()
+                        p.updateDungeonClass().updatePlayerColor()
                     })
                 })
             }).setChatCriteria("&r&aDungeon starts in 1 second.&r"))

@@ -237,6 +237,7 @@ class DungeonMap {
 
     /**
      * NOTE: the callback function will be given a boolean representing wether the user is using bettermap
+     * TODO: Make a server side custom packet to get this info so it doesent require both players to be in a dungeon
      * 
      * @example
      * DungeonMap.pingPlayer("Soopyboo32", (usingMap) => {

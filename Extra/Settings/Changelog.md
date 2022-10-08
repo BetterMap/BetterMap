@@ -62,4 +62,6 @@ First released version!
 ! fix random bug with heads changing color i think
 ! fix secrets under head setting showing secrets over head with tenios style
 ! fix secret tick style showing ?/? for ironman players
+! fix spirit leap menu not switching to boss tab in boss
+! fix not switching to boss/score tab if you have tabs disabled
 ```

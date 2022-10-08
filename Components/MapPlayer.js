@@ -172,6 +172,8 @@ class MapPlayer {
 
         if (!dungeon) return
 
+        Renderer.colorize(255, 255, 255) //fix random bug with heads changing color i think
+
         let rx = -headScale / 2 * size / 100 //offsetting to the left by half image width,
         let ry = -headScale / 2 * size / 100 //image width = headscale* size /100 (size = map size eg 100px, dividing by 100 so its exactly headscale when mapsize is 100)
         let rw = headScale * size / 100

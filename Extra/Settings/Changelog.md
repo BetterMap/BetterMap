@@ -59,4 +59,5 @@ First released version!
 ```diff
 + White tick blood when all mobs spawned
 + Fix deaths on legalmap score info style not showing
+! fix random bug with heads changing color i think
 ```

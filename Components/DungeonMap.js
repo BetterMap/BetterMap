@@ -198,7 +198,7 @@ class DungeonMap {
 
                 if (currentRoom.currentSecrets !== data.min) {
                     currentRoom.currentSecrets = data.min
-                    if (currentRoom.maxSecrets !== data.max) currentRoom.maxSecrets = data.max
+                    currentRoom.maxSecrets = data.max
 
                     this.markChanged() //re-render map incase of a secret count specific texturing
                 }
@@ -1022,7 +1022,7 @@ class DungeonMap {
 
         if (currentRoom.currentSecrets !== min && (currentRoom.maxSecrets === max || !currentRoom.roomId)) {
             currentRoom.currentSecrets = min
-            if (currentRoom.maxSecrets !== max) currentRoom.maxSecrets = max
+            currentRoom.maxSecrets = max
 
             this.markChanged() //re-render map incase of a secret count specific texturing
 

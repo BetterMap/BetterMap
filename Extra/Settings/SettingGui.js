@@ -9,6 +9,7 @@ import SoopyTextElement from "../../../guimanager/GuiElement/SoopyTextElement"
 import DropDown from "../../../guimanager/GuiElement/Dropdown"
 import Toggle from "../../../guimanager/GuiElement/Toggle"
 import Slider from "../../../guimanager/GuiElement/Slider"
+import ColorPicker from "../../../guimanager/GuiElement/ColorPicker"
 import SoopyContentChangeEvent from "../../../guimanager/EventListener/SoopyContentChangeEvent"
 import TextWithArrow from "../../../guimanager/GuiElement/TextWithArrow"
 import ButtonWithArrow from "../../../guimanager/GuiElement/ButtonWithArrow"
@@ -382,72 +383,20 @@ class SettingGui {
      * @param {Object[]} defau Default value
      */
     addColorSelector(label, setting, defau) {
-        // Slider 0
-        let slider0 = new Slider().setValue(this.defaultSettings[setting][0] ?? defau).setMin(0).setMax(255).addEvent(new SoopyContentChangeEvent().setHandler((val, prev, cancelFun) => {
-            this.changedArr(setting, 0, Math.round(val))
-            numberT0.setText(Math.round(val).toString())
+
+        let colorPicker = new ColorPicker().setRGBColor(this.defaultSettings[setting][0] ?? defau[0], this.defaultSettings[setting][1] ?? defau[1], this.defaultSettings[setting][2] ?? defau[2]).addEvent(new SoopyContentChangeEvent().setHandler((val, prev, cancelFun) => {
+            this.changedArr(setting, 0, val[0])
+            this.changedArr(setting, 1, val[1])
+            this.changedArr(setting, 2, val[2])
         }))
-
-        let numberT0 = new NumberTextBox().setText((this.defaultSettings[setting][0] ?? defau).toString())
-
-        numberT0.isNumber = isNumber
-
-        numberT0.text.addEvent(new SoopyContentChangeEvent().setHandler((val, prev, cancelFun) => {
-            if (!val) return
-
-            this.changedArr(setting, 0, parseInt(val))
-            slider0.setValue(parseInt(val))
-        }))
-        this.addSidebarElement(slider0, 0.26, 0.09, 0.05).setLore(["red"])
-        this.addSidebarElement(numberT0, 0.35, 0.08, 0.05).setLore(["red"])
-
-        // Slider 1
-        let slider1 = new Slider().setValue(this.defaultSettings[setting][1] ?? defau).setMin(0).setMax(255).addEvent(new SoopyContentChangeEvent().setHandler((val, prev, cancelFun) => {
-            this.changedArr(setting, 1, Math.round(val))
-            numberT1.setText(Math.round(val).toString())
-        }))
-
-        let numberT1 = new NumberTextBox().setText((this.defaultSettings[setting][1] ?? defau).toString())
-
-        numberT1.isNumber = isNumber
-
-        numberT1.text.addEvent(new SoopyContentChangeEvent().setHandler((val, prev, cancelFun) => {
-            if (!val) return
-
-            this.changedArr(setting, 1, parseInt(val))
-            slider1.setValue(parseInt(val))
-        }))
-
-        this.addSidebarElement(slider1, 0.44, 0.09, 0.05).setLore(["green"])
-        this.addSidebarElement(numberT1, 0.53, 0.08, 0.05).setLore(["green"])
-
-        // Slider 2
-        let slider2 = new Slider().setValue(this.defaultSettings[setting][2] ?? defau).setMin(0).setMax(255).addEvent(new SoopyContentChangeEvent().setHandler((val, prev, cancelFun) => {
-            this.changedArr(setting, 2, Math.round(val))
-            numberT2.setText(Math.round(val).toString())
-        }))
-
-        let numberT2 = new NumberTextBox().setText((this.defaultSettings[setting][2] ?? defau).toString())
-
-        numberT2.isNumber = isNumber
-
-        numberT2.text.addEvent(new SoopyContentChangeEvent().setHandler((val, prev, cancelFun) => {
-            if (!val) return
-
-            this.changedArr(setting, 2, parseInt(val))
-            slider2.setValue(parseInt(val))
-        }))
-
-        this.addSidebarElement(slider2, 0.62, 0.09, 0.05).setLore(["blue"])
-        this.addSidebarElement(numberT2, 0.71, 0.08, 0.05).setLore(["blue"])
 
         // Slider 3
-        let slider3 = new Slider().setValue(this.defaultSettings[setting][3] ?? defau).setMin(0).setMax(255).addEvent(new SoopyContentChangeEvent().setHandler((val, prev, cancelFun) => {
+        let slider3 = new Slider().setValue(this.defaultSettings[setting][3] ?? defau[3]).setMin(0).setMax(255).addEvent(new SoopyContentChangeEvent().setHandler((val, prev, cancelFun) => {
             this.changedArr(setting, 3, Math.round(val))
             numberT3.setText(Math.round(val).toString())
         }))
 
-        let numberT3 = new NumberTextBox().setText((this.defaultSettings[setting][3] ?? defau).toString())
+        let numberT3 = new NumberTextBox().setText((this.defaultSettings[setting][3] ?? defau[3]).toString())
 
         numberT3.isNumber = isNumber
 
@@ -458,11 +407,12 @@ class SettingGui {
             slider3.setValue(parseInt(val))
         }))
 
-        this.addSidebarElement(slider3, 0.81, 0.09, 0.05).setLore(["opacity"])
-        this.addSidebarElement(numberT3, 0.9, 0.08, 0.05).setLore(["opacity"])
+        this.addSidebarElement(colorPicker, 0.5, 0.1, 0.05)
 
+        this.addSidebarElement(slider3, 0.6, 0.2, 0.05).setLore(["opacity"])
+        this.addSidebarElement(numberT3, 0.8, 0.1, 0.05).setLore(["opacity"])
 
-        return [[slider0, numberT0], this.addSidebarElement(new SoopyTextElement().setText("§0" + label).setMaxTextScale(2), 0.1, 0.15)]
+        return [[], this.addSidebarElement(new SoopyTextElement().setText("§0" + label).setMaxTextScale(2), 0.1, 0.35)]
     }
 
     /**

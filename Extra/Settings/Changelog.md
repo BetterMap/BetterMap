@@ -57,5 +57,6 @@ First released version!
 
 @ver v1.0.9
 ```diff
-+ No changes yet
++ White tick blood when all mobs spawned
++ Fix deaths on legalmap score info style not showing
 ```

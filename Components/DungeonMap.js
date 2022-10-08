@@ -161,6 +161,14 @@ class DungeonMap {
                 this.scanFirstDeathForSpiritPet(player)
             }).setChatCriteria("&r&c ☠ ${info} and became a ghost&r&7.&r"))
 
+            this.triggers.push(register("chat", (info) => {
+                this.roomsArr.forEach(r => {
+                    if (r.type === Room.BLOOD) {
+                        r.checkmarkState = Room.CLEARED
+                    }
+                })
+            }).setChatCriteria("[BOSS] The Watcher: That will be enough for now."))
+
             this.triggers.push(register("step", () => {
                 this.pingIdFuncs.forEach(([timestamp, callback], id) => {
                     if (Date.now() - timestamp < 5000) return

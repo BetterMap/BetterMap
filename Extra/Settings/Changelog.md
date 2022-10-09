@@ -57,6 +57,7 @@ First released version!
 
 @ver v1.0.9
 ```diff
++ Added option for custom border colors depending on the class of the player (thenose2003)
 + White tick blood when all mobs spawned
 + Fix deaths on legalmap score info style not showing
 ! fix random bug with heads changing color i think

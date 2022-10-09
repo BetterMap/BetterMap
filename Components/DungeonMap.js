@@ -177,6 +177,17 @@ class DungeonMap {
                     this.pingIdFuncs.delete(id)
                 })
             }).setFps(1))
+
+            // On dungeon start
+            this.triggers.push(register("chat", (chat) => {
+                // wait 2 secs
+                Client.scheduleTask(2 * 20, () => {
+                    // update all player classes
+                    this.players.forEach(p => {
+                        p.updateDungeonClass().updatePlayerColor()
+                    })
+                })
+            }).setChatCriteria("&r&aDungeon starts in 1 second.&r"))
         }
     }
 

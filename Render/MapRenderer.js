@@ -41,9 +41,9 @@ class MapRenderer {
         this.tabs[this.selectedTabIndex].draw(renderContext, dungeonMap, mouseX, mouseY)
 
         // THIS IS THE LEFT TOP AND RIGHT BORDER IN THAT ORDER
-        Renderer.drawRect(Renderer.color(renderContext.settings.borderColor[0] ?? 0, renderContext.settings.borderColor[1] ?? 0, renderContext.settings.borderColor[2] ?? 0, renderContext.settings.borderColor[3]), x, y, size, renderContext.borderWidth) //border
-        Renderer.drawRect(Renderer.color(renderContext.settings.borderColor[0] ?? 0, renderContext.settings.borderColor[1] ?? 0, renderContext.settings.borderColor[2] ?? 0, renderContext.settings.borderColor[3]), x, y, renderContext.borderWidth, size)
-        Renderer.drawRect(Renderer.color(renderContext.settings.borderColor[0] ?? 0, renderContext.settings.borderColor[1] ?? 0, renderContext.settings.borderColor[2] ?? 0, renderContext.settings.borderColor[3]), x + size - renderContext.borderWidth, y, renderContext.borderWidth, size)
+        Renderer.drawRect(Renderer.color(renderContext.settings.mapBorderColor[0] ?? 0, renderContext.settings.mapBorderColor[1] ?? 0, renderContext.settings.mapBorderColor[2] ?? 0, renderContext.settings.mapBorderColor[3]), x, y, size, renderContext.borderWidth) //border
+        Renderer.drawRect(Renderer.color(renderContext.settings.mapBorderColor[0] ?? 0, renderContext.settings.mapBorderColor[1] ?? 0, renderContext.settings.mapBorderColor[2] ?? 0, renderContext.settings.mapBorderColor[3]), x, y, renderContext.borderWidth, size)
+        Renderer.drawRect(Renderer.color(renderContext.settings.mapBorderColor[0] ?? 0, renderContext.settings.mapBorderColor[1] ?? 0, renderContext.settings.mapBorderColor[2] ?? 0, renderContext.settings.mapBorderColor[3]), x + size - renderContext.borderWidth, y, renderContext.borderWidth, size)
 
         // Dont render bottom line if scoreinfo rendering
         // Renderer.drawRect(Renderer.color(0, 0, 0), x, y + size - this.borderWidth, size, this.borderWidth)
@@ -76,10 +76,10 @@ class MapRenderer {
             renderLibs.drawStringCenteredFull("&7Mimic " + (scoreInfo.mimic ? "&a✔" : "&c✕"), x + size / 4 * 3, y + size + scoreInfoHeight / 2, size / 100)
 
 
-            Renderer.drawRect(Renderer.color(renderContext.settings.borderColor[0] ?? 0, renderContext.settings.borderColor[1] ?? 0, renderContext.settings.borderColor[2] ?? 0, renderContext.settings.borderColor[3]), x, y + size, renderContext.borderWidth, scoreInfoHeight) //border of score info
-            Renderer.drawRect(Renderer.color(renderContext.settings.borderColor[0] ?? 0, renderContext.settings.borderColor[1] ?? 0, renderContext.settings.borderColor[2] ?? 0, renderContext.settings.borderColor[3]), x + size - renderContext.borderWidth, y + size, renderContext.borderWidth, scoreInfoHeight)
-            Renderer.drawRect(Renderer.color(renderContext.settings.borderColor[0] ?? 0, renderContext.settings.borderColor[1] ?? 0, renderContext.settings.borderColor[2] ?? 0, renderContext.settings.borderColor[3]), x, y + size + scoreInfoHeight, size, renderContext.borderWidth)
-                ?? 0
+            Renderer.drawRect(Renderer.color(renderContext.settings.mapBorderColor[0] ?? 0, renderContext.settings.mapBorderColor[1] ?? 0, renderContext.settings.mapBorderColor[2] ?? 0, renderContext.settings.mapBorderColor[3]), x, y + size, renderContext.borderWidth, scoreInfoHeight) //border of score info
+            Renderer.drawRect(Renderer.color(renderContext.settings.mapBorderColor[0] ?? 0, renderContext.settings.mapBorderColor[1] ?? 0, renderContext.settings.mapBorderColor[2] ?? 0, renderContext.settings.mapBorderColor[3]), x + size - renderContext.borderWidth, y + size, renderContext.borderWidth, scoreInfoHeight)
+            Renderer.drawRect(Renderer.color(renderContext.settings.mapBorderColor[0] ?? 0, renderContext.settings.mapBorderColor[1] ?? 0, renderContext.settings.mapBorderColor[2] ?? 0, renderContext.settings.mapBorderColor[3]), x, y + size + scoreInfoHeight, size, renderContext.borderWidth)
+
             if (mouseX >= x && mouseX <= x + size
                 && mouseY >= y + size && mouseY <= y + size + scoreInfoHeight) {
 
@@ -103,9 +103,9 @@ class MapRenderer {
             renderLibs.drawStringCenteredShadow(mapLine1, x + size / 2, y + size + 1, size / 220)
             renderLibs.drawStringCenteredShadow(mapLine2, x + size / 2, y + size + 1 + 10 * size / 200, size / 220)
 
-            Renderer.drawRect(Renderer.color(renderContext.settings.borderColor[0] ?? 0, renderContext.settings.borderColor[1] ?? 0, renderContext.settings.borderColor[2] ?? 0, renderContext.settings.borderColor[3]), x, y + size, renderContext.borderWidth, scoreInfoHeight) //border of score info
-            Renderer.drawRect(Renderer.color(renderContext.settings.borderColor[0] ?? 0, renderContext.settings.borderColor[1] ?? 0, renderContext.settings.borderColor[2] ?? 0, renderContext.settings.borderColor[3]), x + size - renderContext.borderWidth, y + size, renderContext.borderWidth, scoreInfoHeight)
-            Renderer.drawRect(Renderer.color(renderContext.settings.borderColor[0] ?? 0, renderContext.settings.borderColor[1] ?? 0, renderContext.settings.borderColor[2] ?? 0, renderContext.settings.borderColor[3]), x, y + size + scoreInfoHeight, size, renderContext.borderWidth)
+            Renderer.drawRect(Renderer.color(renderContext.settings.mapBorderColor[0] ?? 0, renderContext.settings.mapBorderColor[1] ?? 0, renderContext.settings.mapBorderColor[2] ?? 0, renderContext.settings.mapBorderColor[3]), x, y + size, renderContext.borderWidth, scoreInfoHeight) //border of score info
+            Renderer.drawRect(Renderer.color(renderContext.settings.mapBorderColor[0] ?? 0, renderContext.settings.mapBorderColor[1] ?? 0, renderContext.settings.mapBorderColor[2] ?? 0, renderContext.settings.mapBorderColor[3]), x + size - renderContext.borderWidth, y + size, renderContext.borderWidth, scoreInfoHeight)
+            Renderer.drawRect(Renderer.color(renderContext.settings.mapBorderColor[0] ?? 0, renderContext.settings.mapBorderColor[1] ?? 0, renderContext.settings.mapBorderColor[2] ?? 0, renderContext.settings.mapBorderColor[3]), x, y + size + scoreInfoHeight, size, renderContext.borderWidth)
 
             if (mouseX >= x && mouseX <= x + size
                 && mouseY >= y + size && mouseY <= y + size + scoreInfoHeight) {
@@ -114,7 +114,7 @@ class MapRenderer {
             }
         } else {
             // BOTTOM BORDER IF DISABLED
-            Renderer.drawRect(Renderer.color(renderContext.settings.borderColor[0] ?? 0, renderContext.settings.borderColor[1] ?? 0, renderContext.settings.borderColor[2] ?? 0, renderContext.settings.borderColor[3]), x, y + size, size, renderContext.borderWidth)
+            Renderer.drawRect(Renderer.color(renderContext.settings.mapBorderColor[0] ?? 0, renderContext.settings.mapBorderColor[1] ?? 0, renderContext.settings.mapBorderColor[2] ?? 0, renderContext.settings.mapBorderColor[3]), x, y + size, size, renderContext.borderWidth)
         }
 
         if (renderContext.currentRoomInfo !== "none") {
@@ -155,9 +155,9 @@ class MapRenderer {
             renderLibs.scizzorFast(x + tabXOff, y - tabH, tabW, tabH)
 
             Renderer.drawRect(Renderer.color(renderContext.settings.mapBackgroundColor[0] ?? 0, renderContext.settings.mapBackgroundColor[1] ?? 0, renderContext.settings.mapBackgroundColor[2] ?? 0, renderContext.settings.mapBackgroundColor[3] ?? 150), x + tabXOff, y - maxTabH, tabW, maxTabH) //background
-            Renderer.drawRect(Renderer.color(renderContext.settings.borderColor[0] ?? 0, renderContext.settings.borderColor[1] ?? 0, renderContext.settings.borderColor[2] ?? 0, renderContext.settings.borderColor[3]), x + tabXOff, y - tabH, tabW, renderContext.borderWidth) //background
-            Renderer.drawRect(Renderer.color(renderContext.settings.borderColor[0] ?? 0, renderContext.settings.borderColor[1] ?? 0, renderContext.settings.borderColor[2] ?? 0, renderContext.settings.borderColor[3]), x + tabXOff, y - maxTabH, renderContext.borderWidth, maxTabH) //background
-            Renderer.drawRect(Renderer.color(renderContext.settings.borderColor[0] ?? 0, renderContext.settings.borderColor[1] ?? 0, renderContext.settings.borderColor[2] ?? 0, renderContext.settings.borderColor[3]), x + tabXOff + tabW - renderContext.borderWidth, y - maxTabH, renderContext.borderWidth, maxTabH) //background
+            Renderer.drawRect(Renderer.color(renderContext.settings.mapBorderColor[0] ?? 0, renderContext.settings.mapBorderColor[1] ?? 0, renderContext.settings.mapBorderColor[2] ?? 0, renderContext.settings.mapBorderColor[3]), x + tabXOff, y - tabH, tabW, renderContext.borderWidth) //background
+            Renderer.drawRect(Renderer.color(renderContext.settings.mapBorderColor[0] ?? 0, renderContext.settings.mapBorderColor[1] ?? 0, renderContext.settings.mapBorderColor[2] ?? 0, renderContext.settings.mapBorderColor[3]), x + tabXOff, y - maxTabH, renderContext.borderWidth, maxTabH) //background
+            Renderer.drawRect(Renderer.color(renderContext.settings.mapBorderColor[0] ?? 0, renderContext.settings.mapBorderColor[1] ?? 0, renderContext.settings.mapBorderColor[2] ?? 0, renderContext.settings.mapBorderColor[3]), x + tabXOff + tabW - renderContext.borderWidth, y - maxTabH, renderContext.borderWidth, maxTabH) //background
 
             let hovered = (mouseX >= x + tabXOff && mouseX <= x + tabXOff + tabW
                 && mouseY >= y - maxTabH && mouseY <= y)

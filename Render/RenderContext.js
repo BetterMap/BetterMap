@@ -9,7 +9,7 @@
  * @property {Number} iconScale - Width/height of icons (scales with size, will be same if size is 100)
  * @property {"hypixel"|"default"|"tenios"|"secrets"|"secrets_underhead"} tickStyle - Style of the ticks
  * @property {"none"|"text"|"icon"} puzzleNames - Render style of puzzle names
- * @property {Boolean} headBorder - Wether to put a black border around heads on the map
+ * @property {"none"|"single"|"class-color"|} headBorder - Wether to put a black border around heads on the map
  * @property {"never"|"leap"|"always"} playerNames - When to show player names on map
  * @property {"none"|"left"|"right"} currentRoomInfo - Render current room hover info on side of map
  * @property {"none"|"legalmap"|"simplified"} scoreInfoUnderMap - Render score info under the map
@@ -25,7 +25,7 @@
  * @property {Boolean} clearedRoomInfo - Show a summory of what rooms people cleared after run finishes
  * @property {String} apiKey - The user's api key, or "" if unknown
  * @property {Boolean} devInfo - Wether to show def info in various places in the map
- * @property {Object[]} borderColor - The RGBO value of the map border color
+ * @property {Object[]} mapBorderColor - The RGBO value of the map border color
  * @property {Object[]} mapBackgroundColor - The RGBO value of the map backround color
  * @property {Object[]} extraInfoBackroundColor - The RGBO value of the extrainfo backround color
  */
@@ -258,7 +258,7 @@ class RenderContext {
         iconScale = 10,
         tickStyle = "default",
         puzzleNames = "none",
-        headBorder = false,
+        headBorder = "none",
         playerNames = "leap",
         currentRoomInfo = "none",
         scoreInfoUnderMap = "simplified",
@@ -274,9 +274,16 @@ class RenderContext {
         clearedRoomInfo = true,
         apiKey = "",
         devInfo = false,
-        borderColor = [0, 0, 0, 255],
+        mapBorderColor = [0, 0, 0, 255],
         mapBackgroundColor = [0, 0, 0, 100],
-        extraInfoBackroundColor = [0, 0, 0, 100]
+        extraInfoBackroundColor = [0, 0, 0, 100],
+        healerColor = [240, 70, 240, 255],
+        mageColor = [70, 210, 210, 255],
+        bersColor = [255, 0, 0, 255],
+        archColor = [30, 170, 50, 255],
+        tankColor = [150, 150, 150, 255],
+        singleBorderColor = [0, 0, 0, 255]
+
     }) {
         return {
             showMap,
@@ -304,9 +311,15 @@ class RenderContext {
             clearedRoomInfo,
             apiKey,
             devInfo,
-            borderColor,
+            mapBorderColor,
             mapBackgroundColor,
-            extraInfoBackroundColor
+            extraInfoBackroundColor,
+            healerColor,
+            mageColor,
+            bersColor, 
+            archColor, 
+            tankColor, 
+            singleBorderColor
         }
     }
 

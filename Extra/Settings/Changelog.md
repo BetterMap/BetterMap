@@ -66,4 +66,5 @@ First released version!
 ! fix secret tick style showing ?/? for ironman players
 ! fix spirit leap menu not switching to boss tab in boss
 ! fix not switching to boss/score tab if you have tabs disabled
+! fix mimic kill detection
 ```

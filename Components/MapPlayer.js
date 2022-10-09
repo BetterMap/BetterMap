@@ -66,23 +66,23 @@ class MapPlayer {
             // remove everything thats not a letter space or number and get rid of color codes
             entry = ChatLib.removeFormatting(entry).replace('[YOUTUBE] ', '').replace('[ADMIN] ', '').replace(/[^A-Za-z0-9 _]/gi, '').replace('  ', ' ')
             // if players username is it it 
-            if (entry.includes(this.username)){
+            if (entry.includes(this.username)) {
                 // pull out the cool stuff and then leave
                 this.skyblockLevel = entry.split(' ')[0]
                 this.dungeonClass = entry.split(' ')[2]
                 this.classLevel = entry.split(' ')[3] // This can be simplified if all the class colors become an object, but thats weird so i didnt do that...
                 return this
             }
-          }
-          return this
+        }
+        return this
     }
 
     updatePlayerColor() {
-        if (settings.settings.headBorder == "single"){
+        if (settings.settings.headBorder == "single") {
             this.playerColor = settings.settings.singleBorderColor
             return this
         }
-        switch(this.dungeonClass) {
+        switch (this.dungeonClass) {
             case "Healer":
                 this.playerColor = settings.settings.healerColor ?? [240, 70, 240, 255]
                 break;
@@ -101,7 +101,7 @@ class MapPlayer {
         }
         return this
     }
-    
+
 
     checkUpdateUUID() {
         if (this.uuid) return
@@ -168,14 +168,14 @@ class MapPlayer {
         Renderer.translate(x + w / 2, y + h / 2, 50)
         // Renderer.translate(x + (this.location.worldX + 256 - 32) * size / 256, y + (this.location.worldY + 256 - 32) * size / 256, 50)
         Renderer.rotate(rotation)
-        
-        if (border != "none" || border == false){
+
+        if (border != "none" || border == false) {
             this.updatePlayerColor()
-            Renderer.colorize(255,255,255)
+            Renderer.colorize(1, 1, 1)
             Renderer.drawRect(Renderer.color(this.playerColor[0] ?? 0, this.playerColor[1] ?? 0, this.playerColor[2] ?? 0, this.playerColor[3] ?? 255), -w / 2 - 1, -h / 2 - 1, w + 2, h + 2)
         }
 
-        Renderer.colorize(255, 255, 255)
+        Renderer.colorize(1, 1, 1)
 
         GlStateManager[m.enableBlend]()
         Client.getMinecraft()[m.getTextureManager]()[m.bindTexture.TextureManager](this.networkPlayerInfo[m.getLocationSkin.NetworkPlayerInfo]())

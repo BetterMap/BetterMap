@@ -148,7 +148,7 @@ class DungeonMap {
                 if (!e.func_70631_g_()) return // .isChild()
 
                 // Check all armor slots, if they are all null then mimic is die!
-                if ([0, 1, 2, 3].every(a => !e.func_82169_q(a))) {
+                if ([0, 1, 2, 3].every(a => e.func_82169_q(a) === null)) {
                     // ChatLib.chat("Mimic Kapow!")
                     this.mimicKilled = true
                     this.sendSocketData({ type: "mimicKilled" })

@@ -60,6 +60,7 @@ First released version!
 + Added option for custom border colors depending on the class of the player (thenose2003)
 + White tick blood when all mobs spawned
 + Fix deaths on legalmap score info style not showing
++ Actual color pickers instead of 3 sliders
 ! fix random bug with heads changing color i think
 ! fix secrets under head setting showing secrets over head with tenios style
 ! fix secret tick style showing ?/? for ironman players

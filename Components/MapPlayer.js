@@ -171,11 +171,8 @@ class MapPlayer {
 
         if (border != "none" || border == false) {
             this.updatePlayerColor()
-            Renderer.colorize(1, 1, 1)
             Renderer.drawRect(Renderer.color(this.playerColor[0] ?? 0, this.playerColor[1] ?? 0, this.playerColor[2] ?? 0, this.playerColor[3] ?? 255), -w / 2 - 1, -h / 2 - 1, w + 2, h + 2)
         }
-
-        Renderer.colorize(1, 1, 1)
 
         GlStateManager[m.enableBlend]()
         Client.getMinecraft()[m.getTextureManager]()[m.bindTexture.TextureManager](this.networkPlayerInfo[m.getLocationSkin.NetworkPlayerInfo]())

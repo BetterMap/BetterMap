@@ -127,7 +127,7 @@ class SettingGui {
 
         //this.addToggle("Border around heads", "headBorder", this.defaultSettings.headBorder)
         Client.scheduleTask(0.5 * 20, () => {
-            if (typeof renderContext.settings.headBorder === "boolean"){
+            if (typeof renderContext.settings.headBorder === "boolean") {
                 if (renderContext.settings.headBorder)
                     this.changed("headBorder", "single")
                 else
@@ -139,8 +139,7 @@ class SettingGui {
             "none": "None",
             "single": "Single Color",
             "class-color": "Class Colors"
-        }, "headBorder", this.defaultSettings.headBorder)[0]
-        this.addCategory("NOTE: All border colors can be changed in the config file")
+        }, "headBorder", this.defaultSettings.headBorder)[1].setLore(["All border colors can be changed in the config file"])
 
         /* perhaps some day the stuff will be added to be able to do this
         if (renderContext.settings.headBorder == "single"){

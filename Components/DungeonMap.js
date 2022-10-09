@@ -127,7 +127,12 @@ class DungeonMap {
                         })
 
                         m.addTextComponent(new TextComponent("&6" + p.minRooms + "-" + p.maxRooms).setHover("show_text", roomLore.trim()))
-                        m.addTextComponent(new TextComponent("&7 rooms and got &6" + p.secretsCollected + "&7 secrets"))
+
+                        if (settings.settings.apiKey) {
+                            m.addTextComponent(new TextComponent("&7 rooms and got &6" + p.secretsCollected + "&7 secrets"))
+                        } else {
+                            m.addTextComponent(new TextComponent("&7 rooms and got &c[NO API KEY]&7 secrets"))
+                        }
 
                         m.chat()
                     })
@@ -155,6 +160,14 @@ class DungeonMap {
 
                 this.scanFirstDeathForSpiritPet(player)
             }).setChatCriteria("&r&c ☠ ${info} and became a ghost&r&7.&r"))
+
+            this.triggers.push(register("chat", (info) => {
+                this.roomsArr.forEach(r => {
+                    if (r.type === Room.BLOOD) {
+                        r.checkmarkState = Room.CLEARED
+                    }
+                })
+            }).setChatCriteria("[BOSS] The Watcher: That will be enough for now."))
 
             this.triggers.push(register("step", () => {
                 this.pingIdFuncs.forEach(([timestamp, callback], id) => {
@@ -196,6 +209,7 @@ class DungeonMap {
 
                 if (currentRoom.currentSecrets !== data.min) {
                     currentRoom.currentSecrets = data.min
+                    currentRoom.maxSecrets = data.max
 
                     this.markChanged() //re-render map incase of a secret count specific texturing
                 }
@@ -235,6 +249,7 @@ class DungeonMap {
 
     /**
      * NOTE: the callback function will be given a boolean representing wether the user is using bettermap
+     * TODO: Make a server side custom packet to get this info so it doesent require both players to be in a dungeon
      * 
      * @example
      * DungeonMap.pingPlayer("Soopyboo32", (usingMap) => {
@@ -1016,16 +1031,18 @@ class DungeonMap {
 
         if (!currentRoom || currentRoom.type === Room.UNKNOWN) return; //current room not loaded yet
 
-        if (currentRoom.currentSecrets !== min && currentRoom.maxSecrets === max) {
+        if (currentRoom.currentSecrets !== min && (currentRoom.maxSecrets === max || !currentRoom.roomId)) {
             currentRoom.currentSecrets = min
+            currentRoom.maxSecrets = max
 
             this.markChanged() //re-render map incase of a secret count specific texturing
 
             this.sendSocketData({
                 type: 'roomSecrets',
-                min: min,
-                x: x,
-                y: y
+                min,
+                max,
+                x,
+                y
             })
         }
     }

@@ -113,7 +113,8 @@ class SettingGui {
             "default": "NEU Map",
             "hypixel": "Hypixel",
             "tenios": "tenios",
-            "secrets": "Secrets Found",
+            "secrets": "Secrets Found (Above head)",
+            "secrets_underhead": "Secrets Found (Under head)",
         }, "tickStyle", this.defaultSettings.tickStyle)
 
 
@@ -392,7 +393,7 @@ class SettingGui {
      * @param {String} setting internal name of the setting to control
      * @param {String} defau Default value
      */
-     addString(label, setting, defau) {
+    addString(label, setting, defau) {
         let textBox = this.addSidebarElement(new TextBox().setText(this.defaultSettings[setting] ?? defau).addEvent(new SoopyContentChangeEvent().setHandler((val, prev, cancelFun) => {
             this.changed(setting, val)
         })), 0.625, 0.2, 0.05)
@@ -425,7 +426,7 @@ class SettingGui {
         }))
         this.addSidebarElement(slider0, 0.26, 0.09, 0.05).setLore(["red"])
         this.addSidebarElement(numberT0, 0.35, 0.08, 0.05).setLore(["red"])
-        
+
         // Slider 1
         let slider1 = new Slider().setValue(this.defaultSettings[setting][1] ?? defau).setMin(0).setMax(255).addEvent(new SoopyContentChangeEvent().setHandler((val, prev, cancelFun) => {
             this.changedArr(setting, 1, Math.round(val))
@@ -443,7 +444,7 @@ class SettingGui {
             slider1.setValue(parseInt(val))
         }))
 
-        this.addSidebarElement(slider1, 0.44, 0.09,  0.05).setLore(["green"])
+        this.addSidebarElement(slider1, 0.44, 0.09, 0.05).setLore(["green"])
         this.addSidebarElement(numberT1, 0.53, 0.08, 0.05).setLore(["green"])
 
         // Slider 2
@@ -463,7 +464,7 @@ class SettingGui {
             slider2.setValue(parseInt(val))
         }))
 
-        this.addSidebarElement(slider2, 0.62, 0.09,  0.05).setLore(["blue"])
+        this.addSidebarElement(slider2, 0.62, 0.09, 0.05).setLore(["blue"])
         this.addSidebarElement(numberT2, 0.71, 0.08, 0.05).setLore(["blue"])
 
         // Slider 3
@@ -483,12 +484,12 @@ class SettingGui {
             slider3.setValue(parseInt(val))
         }))
 
-        this.addSidebarElement(slider3, 0.81, 0.09,  0.05).setLore(["opacity"])
+        this.addSidebarElement(slider3, 0.81, 0.09, 0.05).setLore(["opacity"])
         this.addSidebarElement(numberT3, 0.9, 0.08, 0.05).setLore(["opacity"])
 
 
         return [[slider0, numberT0], this.addSidebarElement(new SoopyTextElement().setText("§0" + label).setMaxTextScale(2), 0.1, 0.15)]
-    } 
+    }
 
     /**
      * 

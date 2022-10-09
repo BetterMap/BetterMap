@@ -47,12 +47,22 @@ First released version!
 ```diff
 + Added color custumization to the map background, borders, and extra info section. (thenose2003)
 + Fix bug with hover info sometimes showing on map when not hovering
-+ Tenios map style
++ Tenios map and tick style
 + Toggle map setting
 + Fix scoreboard score setting
++ Show [NO API KEY] if you dont have an api key in the secrets gained this run text
++ Fix settings not saving correctly on linux
++ Setting to put player head above secrets when on secrets tick style
 ```
 
 @ver v1.0.9
 ```diff
-+ Added option for custom border colors depending on the class of the player
++ Added option for custom border colors depending on the class of the player (thenose2003)
++ White tick blood when all mobs spawned
++ Fix deaths on legalmap score info style not showing
+! fix random bug with heads changing color i think
+! fix secrets under head setting showing secrets over head with tenios style
+! fix secret tick style showing ?/? for ironman players
+! fix spirit leap menu not switching to boss tab in boss
+! fix not switching to boss/score tab if you have tabs disabled
 ```

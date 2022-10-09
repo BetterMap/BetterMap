@@ -27,7 +27,13 @@ class MapRenderer {
 
         let { x, y, size } = renderContext.getMapDimensions()
 
-        if (renderContext.showTabs) this.drawTabs(renderContext, dungeonMap, mouseX, mouseY)
+        if (renderContext.showTabs) {
+            this.drawTabs(renderContext, dungeonMap, mouseX, mouseY)
+        } else {
+            for (let tab of this.tabs) {
+                tab.getRenderHeight() //Update wether to show the tab or not (bad coding sideeffects moment D:)
+            }
+        }
 
         // BACKROUND COLOR
         Renderer.drawRect(Renderer.color(renderContext.settings.mapBackgroundColor[0] ?? 0, renderContext.settings.mapBackgroundColor[1] ?? 0, renderContext.settings.mapBackgroundColor[2] ?? 0, renderContext.settings.mapBackgroundColor[3] ?? 150), x, y, size, size)//background
@@ -73,7 +79,7 @@ class MapRenderer {
             Renderer.drawRect(Renderer.color(renderContext.settings.mapBorderColor[0] ?? 0, renderContext.settings.mapBorderColor[1] ?? 0, renderContext.settings.mapBorderColor[2] ?? 0, renderContext.settings.mapBorderColor[3]), x, y + size, renderContext.borderWidth, scoreInfoHeight) //border of score info
             Renderer.drawRect(Renderer.color(renderContext.settings.mapBorderColor[0] ?? 0, renderContext.settings.mapBorderColor[1] ?? 0, renderContext.settings.mapBorderColor[2] ?? 0, renderContext.settings.mapBorderColor[3]), x + size - renderContext.borderWidth, y + size, renderContext.borderWidth, scoreInfoHeight)
             Renderer.drawRect(Renderer.color(renderContext.settings.mapBorderColor[0] ?? 0, renderContext.settings.mapBorderColor[1] ?? 0, renderContext.settings.mapBorderColor[2] ?? 0, renderContext.settings.mapBorderColor[3]), x, y + size + scoreInfoHeight, size, renderContext.borderWidth)
- ?? 0
+
             if (mouseX >= x && mouseX <= x + size
                 && mouseY >= y + size && mouseY <= y + size + scoreInfoHeight) {
 
@@ -88,7 +94,7 @@ class MapRenderer {
             let dMimic = [6, 7].includes(dungeonMap.floorNumber) ? ("&7Mimic: " + (scoreInfo.mimic ? "&a✔" : "&c✘")) : ""
 
             let minSecrets = "&7Min Secrets: " + (!scoreInfo.secretsFound ? "&b?" : scoreInfo.minSecrets > scoreInfo.secretsFound ? `&e${scoreInfo.minSecrets}` : `&a${scoreInfo.minSecrets}`)
-            let dDeaths = "&7Deaths: " + (scoreInfo.deathPenalty < 0 ? `&c${scoreInfo.deathPenalty}` : "&a0")
+            let dDeaths = "&7Deaths: " + (scoreInfo.deathPenalty > 0 ? `&c-${scoreInfo.deathPenalty}` : "&a0")
             let dScore = "&7Score: " + (scoreInfo.total >= 300 ? `&a` : scoreInfo.total >= 270 ? `&e` : `&c`) + scoreInfo.total
 
             let mapLine1 = `${dSecrets}    ${dCrypts}    ${dMimic}`.trim()

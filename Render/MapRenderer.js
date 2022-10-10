@@ -31,7 +31,7 @@ class MapRenderer {
             this.drawTabs(renderContext, dungeonMap, mouseX, mouseY)
         } else {
             for (let tab of this.tabs) {
-                tab.getRenderHeight() //Update wether to show the tab or not (bad coding sideeffects moment D:)
+                tab.getRenderHeight(renderContext, dungeonMap) //Update wether to show the tab or not (bad coding sideeffects moment D:)
             }
         }
 

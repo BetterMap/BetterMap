@@ -63,6 +63,7 @@ First released version!
 + Fix deaths on legalmap score info style not showing
 + Actual color pickers instead of 3 sliders
 + Update failed puzzles instantly from tab list
++ Instantly checkmark blaze puzzle after all blazes are done
 ! fix secrets under head setting showing secrets over head with tenios style
 ! fix secret tick style showing ?/? for ironman players
 ! fix spirit leap menu not switching to boss tab in boss

@@ -91,6 +91,7 @@ class DungeonMap {
         this.pingIdFuncs = new Map()
 
         this.dungeonFinished = false
+        this.deadBlazes = 0;
 
         let mimicDeadMessages = ["$SKYTILS-DUNGEON-SCORE-MIMIC$", "Mimic Killed!", "Mimic Dead!", "Mimic dead!"]
 
@@ -142,6 +143,18 @@ class DungeonMap {
             //&r&r&r               &r&cMaster Mode Catacombs &r&8- &r&eFloor III Stats&r
             //&r&r&r                         &r&cThe Catacombs &r&8- &r&eFloor V&r
 
+            this.triggers.push(register("entityDeath", (entity) => {
+                if (entity.getClassName() !== "EntityBlaze") return
+                this.deadBlazes++;
+                if (this.deadBlazes === 10) {
+                    this.roomsArr.forEach(room => {
+                        if (room.data?.name?.toLowerCase() === 'higher or lower') {
+                            room.checkmarkState = room.currentSecrets ? Room.COMPLETED : Room.CLEARED;
+                            //todo: Send packet to update this everywhere ig?
+                        }
+                    })
+                }
+            }))
             this.triggers.push(register("entityDeath", (entity) => {
                 if (entity.getClassName() !== "EntityZombie") return
                 let e = entity.getEntity()
@@ -1041,6 +1054,8 @@ class DungeonMap {
         if (currentRoom.currentSecrets !== min && (currentRoom.maxSecrets === max || !currentRoom.roomId)) {
             currentRoom.currentSecrets = min
             currentRoom.maxSecrets = max
+            if (currentRoom.checkmarkState === Room.CLEARED && currentRoom.currentSecrets >= currentRoom.maxSecrets)
+                currentRoom.checkmarkState = Room.COMPLETED;
 
             this.markChanged() //re-render map incase of a secret count specific texturing
 

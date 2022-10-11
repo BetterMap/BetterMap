@@ -831,8 +831,15 @@ class DungeonMap {
                 readingPuzzles = true;
             } else if (readingPuzzles) {
                 if (line.includes('[')) {
+                    let name = line.split(':')[0]
                     if (!line.includes('???'))
-                        puzzleNamesList.push(line.split(':')[0])
+                        puzzleNamesList.push(name)
+                    if (line.includes('✖')) {
+                        this.roomsArr.forEach(room => {
+                            if (room.data?.name?.toLowerCase() === name.toLowerCase())
+                                room.checkmarkState = Room.FAILED;
+                        })
+                    }
                 } else {
                     readingPuzzles = false;
                 }

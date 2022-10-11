@@ -58,6 +58,7 @@ First released version!
 @ver v1.0.9
 ```diff
 + Added option for custom border colors depending on the class of the player (thenose2003)
++ Show crypts in simplified map info, only show mimic in f6 and above
 + White tick blood when all mobs spawned
 + Fix deaths on legalmap score info style not showing
 + Actual color pickers instead of 3 sliders
@@ -66,4 +67,5 @@ First released version!
 ! fix spirit leap menu not switching to boss tab in boss
 ! fix not switching to boss/score tab if you have tabs disabled
 ! fix mimic kill detection
+! fix boss map images not showing on most floors
 ```

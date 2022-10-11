@@ -23,7 +23,7 @@ class BossMapRenderer extends MapTab {
                 "2": [
                     {
                         image: getBossImage("Hn1xSu3"),
-                        bounds: [[-34, 100, -35], [18, 54, 15]],
+                        bounds: [[-34, 54, -35], [18, 100, 15]],
                         widthInWorld: 52,
                         heightInWorld: 50,
                         topLeftLocation: [-34, -35]
@@ -33,7 +33,7 @@ class BossMapRenderer extends MapTab {
                 "3": [
                     {
                         image: getBossImage("h52JPEI"),
-                        bounds: [[-33, 118, -34], [35, 64, 37]],
+                        bounds: [[-33, 64, -34], [35, 118, 37]],
                         widthInWorld: 68,
                         heightInWorld: 73,
                         topLeftLocation: [-33, -34]
@@ -43,7 +43,7 @@ class BossMapRenderer extends MapTab {
                 "4": [
                     {
                         image: getBossImage("m0uqjFN"),
-                        bounds: [[-37, 114, -37], [47, 53, 47]],
+                        bounds: [[-37, 53, -37], [47, 114, 47]],
                         widthInWorld: 84,
                         heightInWorld: 84,
                         topLeftLocation: [-33, -34]
@@ -53,7 +53,7 @@ class BossMapRenderer extends MapTab {
                 "5": [
                     {
                         image: getBossImage("dCcouUx"),
-                        bounds: [[-35, 53, 2], [45, 112, 82]],
+                        bounds: [[-35, 53, -5], [45, 112, 82]],
                         widthInWorld: 80,
                         heightInWorld: 80,
                         topLeftLocation: [-35, 2]
@@ -79,35 +79,35 @@ class BossMapRenderer extends MapTab {
                     },
                     {
                         image: getBossImage("HO1CxQU"),
-                        bounds: [[33, 255, 11], [113, 213, 86]],
+                        bounds: [[33, 213, 11], [113, 255, 86]],
                         widthInWorld: 100,
                         heightInWorld: 75,
                         topLeftLocation: [33, 11]
                     },
                     {
                         image: getBossImage("kMLGla2"),
-                        bounds: [[19, 212, -1], [127, 160, 107]],
+                        bounds: [[19, 160, -1], [127, 212, 107]],
                         widthInWorld: 108,
                         heightInWorld: 108,
                         topLeftLocation: [19, -1]
                     },
                     {
                         image: getBossImage("9OjMNwt"),
-                        bounds: [[-3, 159, 29], [111, 103, 143]],
+                        bounds: [[-3, 103, 29], [111, 159, 143]],
                         widthInWorld: 114,
                         heightInWorld: 114,
                         topLeftLocation: [-3, 29]
                     },
                     {
                         image: getBossImage("lCBf5Ix"),
-                        bounds: [[-3, 102, 19], [111, 54, 133]],
+                        bounds: [[-3, 54, 19], [111, 102, 133]],
                         widthInWorld: 114,
                         heightInWorld: 94,
                         topLeftLocation: [-3, 19]
                     },
                     {
                         image: getBossImage("TqOs3ki"),
-                        bounds: [[-5, 53, -5], [131, 0, 142]],
+                        bounds: [[-5, 0, -5], [131, 53, 142]],
                         widthInWorld: 136,
                         heightInWorld: 147,
                         topLeftLocation: [-5, -5]
@@ -176,8 +176,7 @@ class BossMapRenderer extends MapTab {
      */
     shouldShowTab(renderContext, dungeonMap) {
         if (Date.now() - this.lastUpdatedBossImage > 2000) this.updateBossImage(renderContext, dungeonMap)
-
-        return this.currentBossImage || Player.getX() > 0 || Player.getZ() > 0
+        return this.currentBossImage;
     }
 }
 

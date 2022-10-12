@@ -66,4 +66,6 @@ First released version!
 ! fix spirit leap menu not switching to boss tab in boss
 ! fix not switching to boss/score tab if you have tabs disabled
 ! fix mimic kill detection
+! fix boss room detection
+! fix changelog sometimes having weard gaps
 ```

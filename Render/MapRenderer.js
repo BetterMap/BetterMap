@@ -23,7 +23,7 @@ class MapRenderer {
     draw(renderContext, dungeonMap, mouseX, mouseY) {
         if (!renderContext) return
         if (!renderContext.showMap) return;
-        if (renderContext.hideInBoss && (Player.getX() > 0 || Player.getZ() > 0)) return;
+        if (renderContext.hideInBoss && this.tabs[1].shouldShowTab(renderContext, dungeonMap)) return;
 
         let { x, y, size } = renderContext.getMapDimensions()
 

@@ -60,6 +60,8 @@ class SettingGui {
             this.howToUse.location.location.x.set(-2, 250)
             this.mainpage.location.location.x.set(-1, 250)
             this.changelog.location.location.x.set(0, 250)
+
+            this.generateChangelog()
         })))
         this.mainpage.addChild(new TextWithArrow().setText("§0How To Use").setLocation(0.025, 0, 0.3, 0.05).setDirectionRight(false).addEvent(new SoopyMouseClickEvent().setHandler(() => {
             this.howToUse.location.location.x.set(0, 250)

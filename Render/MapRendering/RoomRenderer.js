@@ -55,8 +55,8 @@ class RoomRenderer {
             if (context.mapStyle === 'teniosmap' && room.maxSecrets && room.type !== Room.PUZZLE) return;
             if ([Room.SPAWN].includes(room.type)) return;
             if (room.type === Room.PUZZLE && context.puzzleNames === 'text') return;
-            if (room.type === Room.PUZZLE && context.mapStyle === 'teniosmap' && room.maxSecrets !== undefined && context.puzzleNames === 'none') return;
-            if (room.type === Room.PUZZLE && room.checkmarkState !== Room.COMPLETED) return;
+            if (room.type === Room.PUZZLE && context.mapStyle === 'teniosmap' && room.checkmarkState <= Room.CLEARED && context.puzzleNames === 'none') return;
+            if (room.type === Room.PUZZLE && room.checkmarkState <= Room.CLEARED) return;
             let x = Math.min(...rc.map(r => r.arrayX))
             let y = Math.min(...rc.map(r => r.arrayY))
             //top left might not be inside the room for l rooms
@@ -87,7 +87,7 @@ class RoomRenderer {
      */
     drawCheckmark(context, graphics, room) {
         if (context.tickStyle === 'tenios' && (room.type !== Room.PUZZLE || room.checkmarkState !== Room.FAILED)) return; //tenios map checkmaps are permanent 
-        if (context.mapStyle === 'teniosmap' && room.maxSecrets !== undefined && (room.type !== Room.PUZZLE || context.puzzleNames !== 'icon')) return; //tenios map style forces secret count on explored rooms
+        if (context.mapStyle === 'teniosmap' && (room.type !== Room.PUZZLE || context.puzzleNames === 'text')) return; //tenios map style forces secret count on explored rooms
         if (room.type === Room.SPAWN) return // Dont render tick on spawn room
 
         if (context.tickStyle === 'secrets' || context.tickStyle === "secrets_underhead") return // Needs to be rendered in renderoverlay, see drawExtras()
@@ -119,7 +119,7 @@ class RoomRenderer {
     drawExtras(context, room, dungeon) {
         if (room.type === Room.SPAWN || room.type === Room.FAIRY) return
 
-        if (context.mapStyle === 'teniosmap' && (room.type !== Room.PUZZLE || context.puzzleNames === 'none' || ((context.tickStyle === 'secrets' || context.tickStyle === "secrets_underhead") && context.puzzleNames === 'icon'))) {
+        if (context.mapStyle === 'teniosmap' && (room.type !== Room.PUZZLE || ((context.tickStyle === 'secrets' || context.tickStyle === "secrets_underhead") && context.puzzleNames === 'icon'))) {
             let text = null;
             if (room.maxSecrets) {
                 text = room.currentSecrets + '/' + room.maxSecrets

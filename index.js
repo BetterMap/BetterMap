@@ -92,7 +92,7 @@ register("command", (name) => { //TODO: change this command to show somewhere in
             if (usingMap) {
                 ChatLib.chat(MESSAGE_PREFIX + name + " is using bettermap")
             } else {
-                ChatLib.chat(MESSAGE_PREFIX + name + " is NOT using bettermap (or issnt in a dungeon)")
+                ChatLib.chat(MESSAGE_PREFIX + name + " is NOT using bettermap (or isnt in a dungeon)")
             }
         })
     } else {

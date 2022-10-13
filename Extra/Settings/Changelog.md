@@ -70,6 +70,6 @@ First released version!
 ! fix not switching to boss/score tab if you have tabs disabled
 ! fix mimic kill detection
 ! fix boss room detection for only show map in boss setting
-! fix changelog sometimes having weard gaps
+! fix changelog sometimes having weird gaps
 ! fix boss map images not showing on most floors
 ```

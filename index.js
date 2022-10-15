@@ -13,6 +13,8 @@ import DungeonRoomData from "./Data/DungeonRoomData.js"
 import CurrentSettings from "./Extra/Settings/CurrentSettings"
 import eventManager from "./Extra/Events/EventManager"
 import { MESSAGE_PREFIX } from "./Utils/Utils"
+import { drawBoxAtBlock } from "./Utils/renderUtils"
+import settings from "./Extra/Settings/CurrentSettings"
 require("./Extra/Events/SecretTracker.js")
 
 /**@type {DungeonMap} */
@@ -178,6 +180,17 @@ register('command', () => {
 
 register("renderWorld", () => {
     if (!currentDungeonMap) return;
+
+    if (settings.settings.boxDoors && !currentDungeonMap.bloodOpen) {
+        let isOpenable = currentDungeonMap.keys >= 1
+        currentDungeonMap.witherDoors.forEach(door => {
+            let x = door.position.worldX - door.position.worldX % 8 - 2 //round to nearest door location, incase map is too low quality to get exact block
+            let y = door.position.worldY - door.position.worldY % 8 - 2
+
+            drawBoxAtBlock(x, 69, y, isOpenable ? 0 : 1, isOpenable ? 1 : 0, 0, 3, 4)
+        })
+    }
+
     let curRoom = currentDungeonMap.getCurrentRoom();
     if (!curRoom) return;
     curRoom.drawRoomSecrets()

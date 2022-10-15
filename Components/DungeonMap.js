@@ -30,6 +30,11 @@ class DungeonMap {
          */
         this.doors = new Map()
 
+        /**
+         * @type {Set<Door>} A set of all wither doors in the dungeon
+         */
+        this.witherDoors = new Set()
+
         this.fullRoomScaleMap = 0 //how many pixels on the map is 32 blocks
         this.widthRoomImageMap = 0 //how wide the main boxes are on the map
 
@@ -92,6 +97,9 @@ class DungeonMap {
 
         this.dungeonFinished = false
         this.deadBlazes = 0;
+
+        this.keys = 0
+        this.bloodOpen = false
 
         let mimicDeadMessages = ["$SKYTILS-DUNGEON-SCORE-MIMIC$", "Mimic Killed!", "Mimic Dead!", "Mimic dead!"]
 
@@ -178,6 +186,7 @@ class DungeonMap {
                 this.roomsArr.forEach(r => {
                     if (r.type === Room.BLOOD) {
                         r.checkmarkState = Room.CLEARED
+                        this.markChanged()
                     }
                 })
             }).setChatCriteria("[BOSS] The Watcher: That will be enough for now."))
@@ -192,7 +201,7 @@ class DungeonMap {
             }).setFps(1))
 
             // On dungeon start
-            this.triggers.push(register("chat", (chat) => {
+            this.triggers.push(register("chat", () => {
                 // wait 2 secs
                 Client.scheduleTask(2 * 20, () => {
                     // update all player classes
@@ -201,6 +210,23 @@ class DungeonMap {
                     })
                 })
             }).setChatCriteria("&r&aDungeon starts in 1 second.&r"))
+
+            this.triggers.push(register("chat", () => {
+                this.bloodOpened = true
+                this.keys--
+            }).setChatCriteria("&r&cThe &r&c&lBLOOD DOOR&r&c has been opened!&r"))
+
+            this.triggers.push(register("chat", () => {
+                this.keys++
+            }).setChatCriteria("${*} &r&ehas obtained &r&a&r&${*} Key&r&e!&r"))
+
+            this.triggers.push(register("chat", () => {
+                this.keys++
+            }).setChatCriteria("&r&eA &r&a&r&${*} Key&r&e was picked up!&r"))
+
+            this.triggers.push(register("chat", () => {
+                this.keys--
+            }).setChatCriteria("&r&a${player}&r&a opened a &r&8&lWITHER &r&adoor!&r"))
         }
     }
 
@@ -779,11 +805,14 @@ class DungeonMap {
                         let door = new Door(type, position, false)
                         this.doors.set(position.arrayX + "," + position.arrayY, door)
                         this.addDoorToAdjacentRooms(door);
-
+                        if (type === Room.BLACK || type === Room.BLOOD) this.witherDoors.add(door)
+                        this.markChanged()
                     } else {
                         // Door already there
-                        if (this.doors.get(position.arrayX + "," + position.arrayY).type !== type) {
-                            this.doors.get(position.arrayX + "," + position.arrayY).type = type
+                        let door = this.doors.get(position.arrayX + "," + position.arrayY)
+                        if (door.type !== type) {
+                            door.type = type
+                            if (type === Room.BLACK || type === Room.BLOOD) { this.witherDoors.add(door) } else { this.witherDoors.delete(door) }
                             this.markChanged()
                         }
                     }
@@ -814,11 +843,14 @@ class DungeonMap {
                         let door = new Door(type, position, true)
                         this.doors.set(position.arrayX + "," + position.arrayY, door);
                         this.addDoorToAdjacentRooms(door);
-
+                        if (type === Room.BLACK || type === Room.BLOOD) this.witherDoors.add(door)
+                        this.markChanged()
                     } else {
                         // Door already there
-                        if (this.doors.get(position.arrayX + "," + position.arrayY).type !== type) {
-                            this.doors.get(position.arrayX + "," + position.arrayY).type = type
+                        let door = this.doors.get(position.arrayX + "," + position.arrayY)
+                        if (door.type !== type) {
+                            door.type = type
+                            if (type === Room.BLACK || type === Room.BLOOD) { this.witherDoors.add(door) } else { this.witherDoors.delete(door) }
                             this.markChanged()
                         }
                     }
@@ -1521,6 +1553,7 @@ class DungeonMap {
         let door = new Door(type, pos, ishorizontal)
         this.addDoorToAdjacentRooms(door);
         this.doors.set(pos.arrayX + "," + pos.arrayY, door)
+        if (type === Room.BLACK || type === Room.BLOOD) { this.witherDoors.add(door) } else { this.witherDoors.delete(door) }
         this.markChanged()
 
         if (locallyFound) {

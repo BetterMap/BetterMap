@@ -20,6 +20,7 @@
  * @property {Boolean} hideInBoss - Hide the map in boss entirely 
  * @property {Boolean} showTabs - Show tabs at the top of the map 
  * @property {Boolean} showSecrets - Show waypoints for secrets in the dungeon
+ * @property {Boolean} boxDoors - Put a box around wither doors
  * @property {Boolean} spiritLeapOverlay - Show an overlay on the spirit leap gui
  * @property {Boolean} forcePaul - Wether to force enable the +10 score for paul (eg if jerry mayor)
  * @property {Boolean} clearedRoomInfo - Show a summory of what rooms people cleared after run finishes
@@ -55,7 +56,7 @@ class RenderContext {
         return this.paddingLeft * 2 + this.blockSize * 6 + this.roomGap
     }
 
-    get showMap(){
+    get showMap() {
         return this.settings.showMap;
     }
 
@@ -139,6 +140,10 @@ class RenderContext {
 
     get clearedRoomInfo() {
         return this.settings.clearedRoomInfo
+    }
+
+    get boxDoors() {
+        return this.settings.boxDoors
     }
 
     get apiKey() {
@@ -274,6 +279,7 @@ class RenderContext {
         clearedRoomInfo = true,
         apiKey = "",
         devInfo = false,
+        boxDoors = true,
         mapBorderColor = [0, 0, 0, 255],
         mapBackgroundColor = [0, 0, 0, 100],
         extraInfoBackroundColor = [0, 0, 0, 100],
@@ -311,14 +317,15 @@ class RenderContext {
             clearedRoomInfo,
             apiKey,
             devInfo,
+            boxDoors,
             mapBorderColor,
             mapBackgroundColor,
             extraInfoBackroundColor,
             healerColor,
             mageColor,
-            bersColor, 
-            archColor, 
-            tankColor, 
+            bersColor,
+            archColor,
+            tankColor,
             singleBorderColor
         }
     }

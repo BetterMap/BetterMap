@@ -196,6 +196,8 @@ class SettingGui {
             "right": "Right of map"
         }, "currentRoomInfo", this.defaultSettings.currentRoomInfo)[1].setLore(["Shows the same info that would be shown when hovering over a room"])
 
+        this.addToggle("Box wither doors", "boxDoors", this.defaultSettings.boxDoors)[1].setLore(["Not esp, loads door locations from map."])
+
         this.addToggle("Force paul +10 score", "forcePaul", this.defaultSettings.forcePaul)[1].setLore(["Paul score bonus will get auto-detected when paul is mayor", "But it wont be auto detected from jerry-paul"])
 
         this.addToggle("Dungeon clear breakdown", "clearedRoomInfo", this.defaultSettings.clearedRoomInfo)[1].setLore(["Shows the cleared room count and specific rooms in chat when the dungeon ends"])

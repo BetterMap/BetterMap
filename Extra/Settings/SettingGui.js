@@ -9,6 +9,7 @@ import SoopyTextElement from "../../../guimanager/GuiElement/SoopyTextElement"
 import DropDown from "../../../guimanager/GuiElement/Dropdown"
 import Toggle from "../../../guimanager/GuiElement/Toggle"
 import Slider from "../../../guimanager/GuiElement/Slider"
+import ColorPicker from "../../../guimanager/GuiElement/ColorPicker"
 import SoopyContentChangeEvent from "../../../guimanager/EventListener/SoopyContentChangeEvent"
 import TextWithArrow from "../../../guimanager/GuiElement/TextWithArrow"
 import ButtonWithArrow from "../../../guimanager/GuiElement/ButtonWithArrow"
@@ -59,6 +60,8 @@ class SettingGui {
             this.howToUse.location.location.x.set(-2, 250)
             this.mainpage.location.location.x.set(-1, 250)
             this.changelog.location.location.x.set(0, 250)
+
+            this.generateChangelog()
         })))
         this.mainpage.addChild(new TextWithArrow().setText("§0How To Use").setLocation(0.025, 0, 0.3, 0.05).setDirectionRight(false).addEvent(new SoopyMouseClickEvent().setHandler(() => {
             this.howToUse.location.location.x.set(0, 250)
@@ -124,7 +127,32 @@ class SettingGui {
             "icon": "Icon"
         }, "puzzleNames", this.defaultSettings.puzzleNames)
 
-        this.addToggle("Border around heads", "headBorder", this.defaultSettings.headBorder)
+        //this.addToggle("Border around heads", "headBorder", this.defaultSettings.headBorder)
+        Client.scheduleTask(0.5 * 20, () => {
+            if (typeof renderContext.settings.headBorder === "boolean") {
+                if (renderContext.settings.headBorder)
+                    this.changed("headBorder", "single")
+                else
+                    this.changed("headBorder", "none")
+            }
+        })
+
+        this.addDropdown("Border around heads", {
+            "none": "None",
+            "single": "Single Color",
+            "class-color": "Class Colors"
+        }, "headBorder", this.defaultSettings.headBorder)[1].setLore(["All border colors can be changed in the config file"])
+
+        /* perhaps some day the stuff will be added to be able to do this
+        if (renderContext.settings.headBorder == "single"){
+            this.addColorSelector("Player Border Color", "singleBorderColor", this.defaultSettings.singleBorderColor)
+        } else if (renderContext.settings.headBorder == "class-color"){
+            this.addColorSelector("Healer Border Color", "healerColor", this.defaultSettings.healerColor)
+            this.addColorSelector("Mage Border Color", "mageColor", this.defaultSettings.mageColor)
+            this.addColorSelector("Berserk Border Color", "bersColor", this.defaultSettings.bersColor)
+            this.addColorSelector("Archer Border Color", "healerColor", this.defaultSettings.healerColor)
+            this.addColorSelector("Tank Border Color", "tankColor", this.defaultSettings.tankColor)
+        }*/
 
         this.addDropdown("Player names on map", {
             "never": "Never",
@@ -135,7 +163,7 @@ class SettingGui {
         this.addSlider("Head Scale", "headScale", this.defaultSettings.headScale || 8, 2, 15)
         this.addSlider("Icon Scale", "iconScale", this.defaultSettings.iconScale || 10, 2, 15)
 
-        this.addColorSelector("Border Color", "borderColor", this.defaultSettings.borderColor)
+        this.addColorSelector("Map Border Color", "mapBorderColor", this.defaultSettings.mapBorderColor)
         this.addColorSelector("Map Color", "mapBackgroundColor", this.defaultSettings.mapBackgroundColor)
         this.addColorSelector("Extra Info Color", "extraInfoBackroundColor", this.defaultSettings.extraInfoBackroundColor)
 
@@ -167,6 +195,8 @@ class SettingGui {
             "left": "Left of map",
             "right": "Right of map"
         }, "currentRoomInfo", this.defaultSettings.currentRoomInfo)[1].setLore(["Shows the same info that would be shown when hovering over a room"])
+
+        this.addToggle("Box wither doors", "boxDoors", this.defaultSettings.boxDoors)[1].setLore(["Not esp, loads door locations from map."])
 
         this.addToggle("Force paul +10 score", "forcePaul", this.defaultSettings.forcePaul)[1].setLore(["Paul score bonus will get auto-detected when paul is mayor", "But it wont be auto detected from jerry-paul"])
 
@@ -382,72 +412,20 @@ class SettingGui {
      * @param {Object[]} defau Default value
      */
     addColorSelector(label, setting, defau) {
-        // Slider 0
-        let slider0 = new Slider().setValue(this.defaultSettings[setting][0] ?? defau).setMin(0).setMax(255).addEvent(new SoopyContentChangeEvent().setHandler((val, prev, cancelFun) => {
-            this.changedArr(setting, 0, Math.round(val))
-            numberT0.setText(Math.round(val).toString())
+
+        let colorPicker = new ColorPicker().setRGBColor(this.defaultSettings[setting][0] ?? defau[0], this.defaultSettings[setting][1] ?? defau[1], this.defaultSettings[setting][2] ?? defau[2]).addEvent(new SoopyContentChangeEvent().setHandler((val, prev, cancelFun) => {
+            this.changedArr(setting, 0, val[0])
+            this.changedArr(setting, 1, val[1])
+            this.changedArr(setting, 2, val[2])
         }))
-
-        let numberT0 = new NumberTextBox().setText((this.defaultSettings[setting][0] ?? defau).toString())
-
-        numberT0.isNumber = isNumber
-
-        numberT0.text.addEvent(new SoopyContentChangeEvent().setHandler((val, prev, cancelFun) => {
-            if (!val) return
-
-            this.changedArr(setting, 0, parseInt(val))
-            slider0.setValue(parseInt(val))
-        }))
-        this.addSidebarElement(slider0, 0.26, 0.09, 0.05).setLore(["red"])
-        this.addSidebarElement(numberT0, 0.35, 0.08, 0.05).setLore(["red"])
-
-        // Slider 1
-        let slider1 = new Slider().setValue(this.defaultSettings[setting][1] ?? defau).setMin(0).setMax(255).addEvent(new SoopyContentChangeEvent().setHandler((val, prev, cancelFun) => {
-            this.changedArr(setting, 1, Math.round(val))
-            numberT1.setText(Math.round(val).toString())
-        }))
-
-        let numberT1 = new NumberTextBox().setText((this.defaultSettings[setting][1] ?? defau).toString())
-
-        numberT1.isNumber = isNumber
-
-        numberT1.text.addEvent(new SoopyContentChangeEvent().setHandler((val, prev, cancelFun) => {
-            if (!val) return
-
-            this.changedArr(setting, 1, parseInt(val))
-            slider1.setValue(parseInt(val))
-        }))
-
-        this.addSidebarElement(slider1, 0.44, 0.09, 0.05).setLore(["green"])
-        this.addSidebarElement(numberT1, 0.53, 0.08, 0.05).setLore(["green"])
-
-        // Slider 2
-        let slider2 = new Slider().setValue(this.defaultSettings[setting][2] ?? defau).setMin(0).setMax(255).addEvent(new SoopyContentChangeEvent().setHandler((val, prev, cancelFun) => {
-            this.changedArr(setting, 2, Math.round(val))
-            numberT2.setText(Math.round(val).toString())
-        }))
-
-        let numberT2 = new NumberTextBox().setText((this.defaultSettings[setting][2] ?? defau).toString())
-
-        numberT2.isNumber = isNumber
-
-        numberT2.text.addEvent(new SoopyContentChangeEvent().setHandler((val, prev, cancelFun) => {
-            if (!val) return
-
-            this.changedArr(setting, 2, parseInt(val))
-            slider2.setValue(parseInt(val))
-        }))
-
-        this.addSidebarElement(slider2, 0.62, 0.09, 0.05).setLore(["blue"])
-        this.addSidebarElement(numberT2, 0.71, 0.08, 0.05).setLore(["blue"])
 
         // Slider 3
-        let slider3 = new Slider().setValue(this.defaultSettings[setting][3] ?? defau).setMin(0).setMax(255).addEvent(new SoopyContentChangeEvent().setHandler((val, prev, cancelFun) => {
+        let slider3 = new Slider().setValue(this.defaultSettings[setting][3] ?? defau[3]).setMin(0).setMax(255).addEvent(new SoopyContentChangeEvent().setHandler((val, prev, cancelFun) => {
             this.changedArr(setting, 3, Math.round(val))
             numberT3.setText(Math.round(val).toString())
         }))
 
-        let numberT3 = new NumberTextBox().setText((this.defaultSettings[setting][3] ?? defau).toString())
+        let numberT3 = new NumberTextBox().setText((this.defaultSettings[setting][3] ?? defau[3]).toString())
 
         numberT3.isNumber = isNumber
 
@@ -458,11 +436,12 @@ class SettingGui {
             slider3.setValue(parseInt(val))
         }))
 
-        this.addSidebarElement(slider3, 0.81, 0.09, 0.05).setLore(["opacity"])
-        this.addSidebarElement(numberT3, 0.9, 0.08, 0.05).setLore(["opacity"])
+        this.addSidebarElement(colorPicker, 0.5, 0.1, 0.05)
 
+        this.addSidebarElement(slider3, 0.6, 0.2, 0.05).setLore(["opacity"])
+        this.addSidebarElement(numberT3, 0.8, 0.1, 0.05).setLore(["opacity"])
 
-        return [[slider0, numberT0], this.addSidebarElement(new SoopyTextElement().setText("§0" + label).setMaxTextScale(2), 0.1, 0.15)]
+        return [[], this.addSidebarElement(new SoopyTextElement().setText("§0" + label).setMaxTextScale(2), 0.1, 0.35)]
     }
 
     /**

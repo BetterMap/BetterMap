@@ -30,6 +30,11 @@ class DungeonMap {
          */
         this.doors = new Map()
 
+        /**
+         * @type {Set<Door>} A set of all wither doors in the dungeon
+         */
+        this.witherDoors = new Set()
+
         this.fullRoomScaleMap = 0 //how many pixels on the map is 32 blocks
         this.widthRoomImageMap = 0 //how wide the main boxes are on the map
 
@@ -91,6 +96,10 @@ class DungeonMap {
         this.pingIdFuncs = new Map()
 
         this.dungeonFinished = false
+        this.deadBlazes = 0;
+
+        this.keys = 0
+        this.bloodOpen = false
 
         let mimicDeadMessages = ["$SKYTILS-DUNGEON-SCORE-MIMIC$", "Mimic Killed!", "Mimic Dead!", "Mimic dead!"]
 
@@ -143,12 +152,24 @@ class DungeonMap {
             //&r&r&r                         &r&cThe Catacombs &r&8- &r&eFloor V&r
 
             this.triggers.push(register("entityDeath", (entity) => {
+                if (entity.getClassName() !== "EntityBlaze") return
+                this.deadBlazes++;
+                if (this.deadBlazes === 10) {
+                    this.roomsArr.forEach(room => {
+                        if (room.data?.name?.toLowerCase() === 'higher or lower') {
+                            room.checkmarkState = room.currentSecrets ? Room.COMPLETED : Room.CLEARED;
+                            //todo: Send packet to update this everywhere ig?
+                        }
+                    })
+                }
+            }))
+            this.triggers.push(register("entityDeath", (entity) => {
                 if (entity.getClassName() !== "EntityZombie") return
                 let e = entity.getEntity()
                 if (!e.func_70631_g_()) return // .isChild()
 
                 // Check all armor slots, if they are all null then mimic is die!
-                if ([0, 1, 2, 3].every(a => !e.func_82169_q(a))) {
+                if ([0, 1, 2, 3].every(a => e.func_82169_q(a) === null)) {
                     // ChatLib.chat("Mimic Kapow!")
                     this.mimicKilled = true
                     this.sendSocketData({ type: "mimicKilled" })
@@ -161,6 +182,15 @@ class DungeonMap {
                 this.scanFirstDeathForSpiritPet(player)
             }).setChatCriteria("&r&c ☠ ${info} and became a ghost&r&7.&r"))
 
+            this.triggers.push(register("chat", (info) => {
+                this.roomsArr.forEach(r => {
+                    if (r.type === Room.BLOOD) {
+                        r.checkmarkState = Room.CLEARED
+                        this.markChanged()
+                    }
+                })
+            }).setChatCriteria("[BOSS] The Watcher: That will be enough for now."))
+
             this.triggers.push(register("step", () => {
                 this.pingIdFuncs.forEach(([timestamp, callback], id) => {
                     if (Date.now() - timestamp < 5000) return
@@ -169,6 +199,34 @@ class DungeonMap {
                     this.pingIdFuncs.delete(id)
                 })
             }).setFps(1))
+
+            // On dungeon start
+            this.triggers.push(register("chat", () => {
+                // wait 2 secs
+                Client.scheduleTask(2 * 20, () => {
+                    // update all player classes
+                    this.players.forEach(p => {
+                        p.updateDungeonClass().updatePlayerColor()
+                    })
+                })
+            }).setChatCriteria("&r&aDungeon starts in 1 second.&r"))
+
+            this.triggers.push(register("chat", () => {
+                this.bloodOpened = true
+                this.keys--
+            }).setChatCriteria("&r&cThe &r&c&lBLOOD DOOR&r&c has been opened!&r"))
+
+            this.triggers.push(register("chat", () => {
+                this.keys++
+            }).setChatCriteria("${*} &r&ehas obtained &r&a&r&${*} Key&r&e!&r"))
+
+            this.triggers.push(register("chat", () => {
+                this.keys++
+            }).setChatCriteria("&r&eA &r&a&r&${*} Key&r&e was picked up!&r"))
+
+            this.triggers.push(register("chat", () => {
+                this.keys--
+            }).setChatCriteria("&r&a${player}&r&a opened a &r&8&lWITHER &r&adoor!&r"))
         }
     }
 
@@ -190,6 +248,7 @@ class DungeonMap {
 
                 if (currentRoom.currentSecrets !== data.min) {
                     currentRoom.currentSecrets = data.min
+                    currentRoom.maxSecrets = data.max
 
                     this.markChanged() //re-render map incase of a secret count specific texturing
                 }
@@ -746,11 +805,14 @@ class DungeonMap {
                         let door = new Door(type, position, false)
                         this.doors.set(position.arrayX + "," + position.arrayY, door)
                         this.addDoorToAdjacentRooms(door);
-
+                        if (type === Room.BLACK || type === Room.BLOOD) this.witherDoors.add(door)
+                        this.markChanged()
                     } else {
                         // Door already there
-                        if (this.doors.get(position.arrayX + "," + position.arrayY).type !== type) {
-                            this.doors.get(position.arrayX + "," + position.arrayY).type = type
+                        let door = this.doors.get(position.arrayX + "," + position.arrayY)
+                        if (door.type !== type) {
+                            door.type = type
+                            if (type === Room.BLACK || type === Room.BLOOD) { this.witherDoors.add(door) } else { this.witherDoors.delete(door) }
                             this.markChanged()
                         }
                     }
@@ -781,11 +843,14 @@ class DungeonMap {
                         let door = new Door(type, position, true)
                         this.doors.set(position.arrayX + "," + position.arrayY, door);
                         this.addDoorToAdjacentRooms(door);
-
+                        if (type === Room.BLACK || type === Room.BLOOD) this.witherDoors.add(door)
+                        this.markChanged()
                     } else {
                         // Door already there
-                        if (this.doors.get(position.arrayX + "," + position.arrayY).type !== type) {
-                            this.doors.get(position.arrayX + "," + position.arrayY).type = type
+                        let door = this.doors.get(position.arrayX + "," + position.arrayY)
+                        if (door.type !== type) {
+                            door.type = type
+                            if (type === Room.BLACK || type === Room.BLOOD) { this.witherDoors.add(door) } else { this.witherDoors.delete(door) }
                             this.markChanged()
                         }
                     }
@@ -811,8 +876,15 @@ class DungeonMap {
                 readingPuzzles = true;
             } else if (readingPuzzles) {
                 if (line.includes('[')) {
+                    let name = line.split(':')[0]
                     if (!line.includes('???'))
-                        puzzleNamesList.push(line.split(':')[0])
+                        puzzleNamesList.push(name)
+                    if (line.includes('✖')) {
+                        this.roomsArr.forEach(room => {
+                            if (room.data?.name?.toLowerCase() === name.toLowerCase())
+                                room.checkmarkState = Room.FAILED;
+                        })
+                    }
                 } else {
                     readingPuzzles = false;
                 }
@@ -1011,16 +1083,20 @@ class DungeonMap {
 
         if (!currentRoom || currentRoom.type === Room.UNKNOWN) return; //current room not loaded yet
 
-        if (currentRoom.currentSecrets !== min && currentRoom.maxSecrets === max) {
+        if (currentRoom.currentSecrets !== min && (currentRoom.maxSecrets === max || !currentRoom.roomId)) {
             currentRoom.currentSecrets = min
+            currentRoom.maxSecrets = max
+            if (currentRoom.checkmarkState === Room.CLEARED && currentRoom.currentSecrets >= currentRoom.maxSecrets)
+                currentRoom.checkmarkState = Room.COMPLETED;
 
             this.markChanged() //re-render map incase of a secret count specific texturing
 
             this.sendSocketData({
                 type: 'roomSecrets',
-                min: min,
-                x: x,
-                y: y
+                min,
+                max,
+                x,
+                y
             })
         }
     }
@@ -1477,6 +1553,7 @@ class DungeonMap {
         let door = new Door(type, pos, ishorizontal)
         this.addDoorToAdjacentRooms(door);
         this.doors.set(pos.arrayX + "," + pos.arrayY, door)
+        if (type === Room.BLACK || type === Room.BLOOD) { this.witherDoors.add(door) } else { this.witherDoors.delete(door) }
         this.markChanged()
 
         if (locallyFound) {

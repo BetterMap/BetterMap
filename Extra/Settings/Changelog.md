@@ -74,3 +74,8 @@ First released version!
 ! fix changelog sometimes having weird gaps
 ! fix boss map images not showing on most floors
 ```
+
+@ver v1.0.10
+```diff
++ TODO: ADD CHANGES POGU
+```

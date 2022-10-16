@@ -39,7 +39,12 @@ class SettingGui {
         this.gui.setOpenCommand("bm")
 
         this.gui.element.addChild(new SoopyGuiElement().addEvent(new SoopyRenderEvent().setHandler((mouseX, mouseY) => {
-            mapRenderer.draw(renderContext, fakeDungeon, mouseX, mouseY)
+            try {
+                mapRenderer.draw(renderContext, fakeDungeon, mouseX, mouseY)
+            } catch (e) {
+                console.error("BROKE RENDERING DUNGEON MAP PREVIEW!!!") //Incase we break rendering for some obscure combination of settings the user can still change them back
+                console.log(JSON.stringify(e, undefined, 2))
+            }
         })))
 
         this.mainSidebar = new SoopyBoxElement().setLocation(0, 0, 0.5, 1)

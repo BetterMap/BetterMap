@@ -1684,7 +1684,7 @@ class DungeonMap {
 
     getRoofAt(x, z) {
         let y = 255
-        while (y > 0 && World.getBlockStateAt(new BlockPos(x, y, z)).getBlockId() === 0) y--
+        while (y > 0 && World.getBlockStateAt(new BlockPos(x, y, z)).getBlockId?.() === 0) y--
 
         return y
     }

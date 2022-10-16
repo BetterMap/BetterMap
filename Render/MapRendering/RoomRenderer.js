@@ -51,7 +51,7 @@ class RoomRenderer {
             if (rc.length == 4 && new Set(rc.map(a => a.arrayX)).size == 2 && x == Math.min(...rc.map(a => a.arrayX)) && y == Math.min(...rc.map(a => a.arrayY))) draw(x + 0.75, y + 0.75, roomSize / 3, roomSize / 3)
         }
         if (context.tickStyle === 'tenios') {
-            //tenios map style draws checkmarks if room isnt identified
+            // Tenios map style draws checkmarks if room isnt identified
             if (context.mapStyle === 'teniosmap' && room.maxSecrets && room.type !== Room.PUZZLE) return;
             if ([Room.SPAWN].includes(room.type)) return;
             if (room.type === Room.PUZZLE && context.puzzleNames === 'text') return;
@@ -59,17 +59,14 @@ class RoomRenderer {
             if (room.type === Room.PUZZLE && room.checkmarkState <= Room.CLEARED) return;
             let x = Math.min(...rc.map(r => r.arrayX))
             let y = Math.min(...rc.map(r => r.arrayY))
-            //top left might not be inside the room for l rooms
-            if (!(rc.some(c => c.arrayX === x && c.arrayY === y)))
-                y++;
+            // Top left might not be inside the room for l rooms
+            if (!(rc.some(c => c.arrayX === x && c.arrayY === y))) y++;
             if (room.checkmarkState >= Room.CLEARED) {
-                if (room.checkmarkState >= Room.COMPLETED) {
-                    graphics.setColor(new Color(0, 123 / 255, 0));
-                } else {
-                    graphics.setColor(new Color(220 / 255, 220 / 255, 220 / 255));
-                }
+                if (room.checkmarkState >= Room.COMPLETED) graphics.setColor(new Color(0, 123 / 255, 0))
+                else graphics.setColor(new Color(220 / 255, 220 / 255, 220 / 255))
                 graphics.drawString('✔', x * context.blockSize + context.roomSize / 2 - 5, y * context.blockSize + context.roomSize - 4);
-            } else if (room.checkmarkState === Room.ADJACENT) {
+            }
+            else if (room.checkmarkState === Room.ADJACENT) {
                 graphics.setColor(new Color(0, 0, 0));
                 graphics.drawString('?', x * context.blockSize + context.roomSize / 2 - 2, y * context.blockSize + context.roomSize - 4);
             }
@@ -86,8 +83,8 @@ class RoomRenderer {
      * @returns 
      */
     drawCheckmark(context, graphics, room) {
-        if (context.tickStyle === 'tenios' && (room.type !== Room.PUZZLE || room.checkmarkState !== Room.FAILED)) return; //tenios map checkmaps are permanent 
-        if (context.mapStyle === 'teniosmap' && (room.type !== Room.PUZZLE || context.puzzleNames === 'text')) return; //tenios map style forces secret count on explored rooms
+        if (context.tickStyle === 'tenios' && (room.type !== Room.PUZZLE || room.checkmarkState !== Room.FAILED)) return; // Tenios map checkmaps are permanent 
+        if (context.mapStyle === 'teniosmap' && (room.type !== Room.PUZZLE || context.puzzleNames === 'text')) return; // Tenios map style forces secret count on explored rooms
         if (room.type === Room.SPAWN) return // Dont render tick on spawn room
 
         if (context.tickStyle === 'secrets' || context.tickStyle === "secrets_underhead") return // Needs to be rendered in renderoverlay, see drawExtras()
@@ -121,28 +118,22 @@ class RoomRenderer {
 
         if (context.mapStyle === 'teniosmap' && (room.type !== Room.PUZZLE || ((context.tickStyle === 'secrets' || context.tickStyle === "secrets_underhead") && context.puzzleNames === 'icon'))) {
             let text = null;
-            if (room.maxSecrets) {
-                text = room.currentSecrets + '/' + room.maxSecrets
-            } else if (context.tickStyle === 'secrets' || context.tickStyle === "secrets_underhead")
-                text = (room.currentSecrets ?? "?") + "/" + (room.maxSecrets ?? "?");
+            if (room.maxSecrets) text = room.currentSecrets + '/' + room.maxSecrets
+            else if (context.tickStyle === 'secrets' || context.tickStyle === "secrets_underhead") text = (room.currentSecrets ?? "?") + "/" + (room.maxSecrets ?? "?");
             if (!text) return;
+
             let color = ''
-            if (room.checkmarkState >= Room.COMPLETED)
-                color = '&a'
-            else if (room.checkmarkState >= Room.CLEARED)
-                color = '&f'
-            else if (room.checkmarkState === Room.FAILED)
-                color = "&c"
-            else
-                color = '&0'
+            if (room.checkmarkState >= Room.COMPLETED) color = '&a'
+            else if (room.checkmarkState >= Room.CLEARED) color = '&f'
+            else if (room.checkmarkState === Room.FAILED) color = "&c"
+            else color = '&0'
             text = color + text;
 
             let scale = context.size / 175 * context.iconScale / 8
             let x = Math.min(...room.components.map(r => r.arrayX))
             let y = Math.min(...room.components.map(r => r.arrayY))
-            //top left might not be inside the room for l rooms
-            if (!(room.components.some(c => c.arrayX === x && c.arrayY === y)))
-                y++;
+            // Top left might not be inside the room for l rooms
+            if (!(room.components.some(c => c.arrayX === x && c.arrayY === y))) y++;
             x = (context.roomGap / 2 + context.blockSize * x + context.roomSize / 2 + context.borderWidth + context.paddingLeft) / context.getImageSize(dungeon.floor)
             y = (context.blockSize * y + context.roomSize / 2 + context.borderWidth + context.paddingTop) / context.getImageSize(dungeon.floor)
 
@@ -199,7 +190,6 @@ class RoomRenderer {
             renderLibs.drawStringCenteredShadow(text, x, y + scale - 4.5 * scale, scale)
             if (context.tickStyle === "secrets") Renderer.translate(0, 0, 100)
             renderLibs.drawStringCenteredShadow(text, x, y - scale - 4.5 * scale, scale)
-
             if (context.tickStyle === "secrets") Renderer.translate(0, 0, 100)
             renderLibs.drawStringCenteredShadow(textColored, x, y - 4.5 * scale, scale)
         }

@@ -24,7 +24,7 @@ class MapPlayer {
         this.location.worldYRaw.setAnimMode("linea")
 
         /**@type {import("./Room").default} */
-        this.currentRoomCache = undefined //to track player enter/exit events
+        this.currentRoomCache = undefined // To track player enter/exit events
 
         this.yaw = new SoopyNumber(0)
         this.yaw.setAnimMode("sin_out")
@@ -60,22 +60,24 @@ class MapPlayer {
         this.checkUpdateUUID()
     }
 
-    updateDungeonClass() {
-        // for everything in tab
-        for (let entry of TabList.getNames()) {
-            // remove everything thats not a letter space or number and get rid of color codes
-            entry = ChatLib.removeFormatting(entry).replace('[YOUTUBE] ', '').replace('[ADMIN] ', '').replace(/[^A-Za-z0-9 _]/gi, '').replace('  ', ' ')
-            // if players username is it it 
-            if (entry.includes(this.username)) {
-                // pull out the cool stuff and then leave
-                this.skyblockLevel = entry.split(' ')[0]
-                this.dungeonClass = entry.split(' ')[2]
-                this.classLevel = entry.split(' ')[3] // This can be simplified if all the class colors become an object, but thats weird so i didnt do that...
-                return this
-            }
-        }
-        return this
-    }
+    // updateDungeonClass() {
+    //     // for everything in tab
+    //     for (let entry of TabList.getNames()) {
+    //         // remove everything thats not a letter space or number and get rid of color codes
+    //         entry = ChatLib.removeFormatting(entry).replace('[YOUTUBE] ', '').replace('[ADMIN] ', '').replace(/[^A-Za-z0-9 _]/gi, '').replace('  ', ' ')
+    //         // if players username is it it 
+    //         if (!entry.includes(this.username)) continue
+    //         // pull out the cool stuff and then leave
+    //         this.skyblockLevel = entry.split(' ')[0]
+    //         this.dungeonClass = entry.split(' ')[2]
+    //         this.classLevel = entry.split(' ')[3] // This can be simplified if all the class colors become an object, but thats weird so i didnt do that...
+    //         // ChatLib.chat(`SB Level: ${this.skyblockLevel}`)
+    //         // ChatLib.chat(`Class: ${this.dungeonClass}`)
+    //         // ChatLib.chat(`Class Level: ${this.classLevel}`)
+    //         return this
+    //     }
+    //     return this
+    // }
 
     updatePlayerColor() {
         if (settings.settings.headBorder == "single") {
@@ -102,19 +104,32 @@ class MapPlayer {
         return this
     }
 
+    /**
+     * Updates the player's username, class, class level and Skyblock level using the match object from running
+     * the tablist line against https:// Regex101.com/r/cUzJoK/3
+     * @param {Object} matchObject 
+     */
+    updateTablistInfo(matchObject) {
+        let [_, sbLevel, name, clazz, level] = matchObject
+        this.skyblockLevel = parseInt(sbLevel)
+        this.username = name
+        if (["EMPTY", "DEAD"].includes(clazz)) return
+        this.dungeonClass = clazz
+        this.classLevel = parseInt(level)
+    }
+
 
     checkUpdateUUID() {
         if (this.uuid) return
-        //Check players in world to update uuid field
+        // Check players in world to update uuid field
 
         let player = World.getPlayerByName(this.username)
-        if (player) {
-            this.uuid = player.getUUID().toString()
-            getPlayerSecrets(this.uuid, 120000, secrets => {
-                this.startedRunSecrets = secrets
-                this.currentSecrets = secrets //So it doesent show negative numbers if error later
-            })
-        }
+        if (!player) return
+        this.uuid = player.getUUID().toString()
+        getPlayerSecrets(this.uuid, 120000, secrets => {
+            this.startedRunSecrets = secrets
+            this.currentSecrets = secrets // So it doesent show negative numbers if error later
+        })
     }
 
     updateCurrentSecrets() {
@@ -146,12 +161,8 @@ class MapPlayer {
     }
     setRotateAnimate(yaw, time = 1000) {
         let dist = yaw - this.yaw.get()
-        if (dist > 180) {
-            this.yaw.set(this.yaw.get() + 360, 0)
-        }
-        if (dist < -180) {
-            this.yaw.set(this.yaw.get() - 360, 0)
-        }
+        if (dist > 180) this.yaw.set(this.yaw.get() + 360, 0)
+        if (dist < -180) this.yaw.set(this.yaw.get() - 360, 0)
 
         this.yaw.set(yaw, time)
     }
@@ -224,8 +235,8 @@ class MapPlayer {
 
         if (!dungeon) return
 
-        let rx = -headScale / 2 * size / 100 //offsetting to the left by half image width,
-        let ry = -headScale / 2 * size / 100 //image width = headscale* size /100 (size = map size eg 100px, dividing by 100 so its exactly headscale when mapsize is 100)
+        let rx = -headScale / 2 * size / 100 // Offsetting to the left by half image width,
+        let ry = -headScale / 2 * size / 100 // Image width = headscale* size /100 (size = map size eg 100px, dividing by 100 so its exactly headscale when mapsize is 100)
         let rw = headScale * size / 100
         let rh = headScale * size / 100
 
@@ -271,7 +282,7 @@ export default MapPlayer
 let secretsData = new Map()
 
 register("step", () => {
-    //Check if peoples data needs to be cleared from the map
+    // Check if peoples data needs to be cleared from the map
 
     secretsData.forEach(([timestamp], uuid) => {
         if (Date.now() - timestamp > 5 * 60 * 1000) secretsData.delete(uuid)
@@ -294,7 +305,7 @@ function getPlayerSecrets(uuid, cacheMs, callback) {
     let apiKey = settings.settings.apiKey
 
     if (!apiKey) return
-    fetch(`https://api.hypixel.net/player?key=${apiKey}&uuid=${uuid}`).json(data => {
+    fetch(`https:// Api.hypixel.net/player?key=${apiKey}&uuid=${uuid}`).json(data => {
         let secrets = data?.player?.achievements?.skyblock_treasure_hunter || 0
 
         secretsData.set(uuid, [Date.now(), secrets])

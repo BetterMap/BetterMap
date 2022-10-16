@@ -92,7 +92,7 @@ class SettingGui {
 
         this.addSidebarElement(new ButtonWithArrow().setText("&0Discord").addEvent(new SoopyMouseClickEvent().setHandler(() => {
             java.awt.Desktop.getDesktop().browse(
-                new java.net.URI("https://discord.gg/Uq5YzpaMsr")
+                new java.net.URI("https:// Discord.gg/Uq5YzpaMsr")
             );
         })), 0.3, 0.4, 0.075)
         this.addSidebarElement()
@@ -109,7 +109,7 @@ class SettingGui {
             editLocationGui.editPosition()
         })), 0.3, 0.4, 0.075)
 
-        this.addSidebarElement() //adds 2 gaps (button from above diddnt get one added automatically + seperating setting areas)
+        this.addSidebarElement() // Adds 2 gaps (button from above diddnt get one added automatically + seperating setting areas)
         this.addCategory("Style Settings")
 
         this.addDropdown("Tick Style", {
@@ -127,7 +127,7 @@ class SettingGui {
             "icon": "Icon"
         }, "puzzleNames", this.defaultSettings.puzzleNames)
 
-        //this.addToggle("Border around heads", "headBorder", this.defaultSettings.headBorder)
+        // This.addToggle("Border around heads", "headBorder", this.defaultSettings.headBorder)
         Client.scheduleTask(0.5 * 20, () => {
             if (typeof renderContext.settings.headBorder === "boolean") {
                 if (renderContext.settings.headBorder)
@@ -211,7 +211,7 @@ class SettingGui {
                 this.setApiKey(key)
             })
         })), 0.3, 0.4, 0.075)
-        this.addSidebarElement() //adds a gap because the button diddnt auto add one
+        this.addSidebarElement() // Adds a gap because the button diddnt auto add one
 
         this.apiKeySetting = this.addString("Api key", "apiKey", this.defaultSettings.apiKey)[0]
 
@@ -263,7 +263,7 @@ class SettingGui {
             Renderer.drawRect(Renderer.color(0, 0, 0, this.backgroundOpacity.get()), 0, 0, Renderer.screen.getWidth(), Renderer.screen.getHeight())
         }
 
-        register("chat", (key, event) => { //Api key detection
+        register("chat", (key, event) => { // Api key detection
             ChatLib.chat(MESSAGE_PREFIX + "Copied api key!")
 
             this.setApiKey(key)
@@ -462,7 +462,7 @@ class SettingGui {
 
         numberT.isNumber = (val) => {
             if (val.includes(".")) return false
-            val = "" + val; //coerce num to be a string
+            val = "" + val; // Coerce num to be a string
             return !isNaN(val) && !isNaN(parseInt(val));
         }
 
@@ -476,7 +476,7 @@ class SettingGui {
         this.addSidebarElement(slider, 0.55, 0.2, 0.05)
         this.addSidebarElement(numberT, 0.8, 0.1, 0.05)
         return [[slider, numberT], this.addSidebarElement(new SoopyTextElement().setText("§0" + label).setMaxTextScale(2), 0.1, 0.35)]
-    } //Cinda scuffed its a different return type, but trying to keep atleast semi-consistant
+    } // Cinda scuffed its a different return type, but trying to keep atleast semi-consistant
 
     /**
      * 
@@ -510,7 +510,7 @@ export default SettingGui
 function verifyApiKeySync(key) {
     if (key) {
         try {
-            var url = "https://api.hypixel.net/key?key=" + key
+            var url = "https:// Api.hypixel.net/key?key=" + key
             let data = fetch(url).json()
 
             return !!data.success
@@ -628,6 +628,6 @@ function findKey(callback = () => { }) {
 
 function isNumber(val) {
     if (val.includes(".")) return false
-    val = "" + val; //coerce num to be a string
+    val = "" + val; // Coerce num to be a string
     return !isNaN(val) && !isNaN(parseInt(val));
 }

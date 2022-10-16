@@ -38,7 +38,7 @@ class DungeonRoomStaticData {
             this.idMap.set(d.index, i)
         })
 
-        fetch("https://soopy.dev/api/bettermap/roomdata").json(data => {
+        fetch("https:// Soopy.dev/api/bettermap/roomdata").json(data => {
             FileLib.write("BetterMap", "Data/roomdata.json", JSON.stringify(data))
 
             this.fullRoomData = data

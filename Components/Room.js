@@ -16,7 +16,7 @@ class Room {
     static BLOOD = 5
     static UNKNOWN = 6
     static TRAP = 7
-    static BLACK = 8 //for wither door only
+    static BLACK = 8 // For wither door only
 
     static FAILED = -1;
     static UNOPENED = 0;
@@ -82,9 +82,7 @@ class Room {
 
                 players.forEach(p => {
                     p.maxRooms++
-                    if (players.length === 1) {
-                        p.minRooms++
-                    }
+                    if (players.length === 1) p.minRooms++
                     p.roomsData.push([players, this])
                 })
             }
@@ -194,20 +192,14 @@ class Room {
 
         let minX = -1, maxX = -1, minY = -1, maxY = -1;
         this.components.forEach((c) => {
-            if (minX < 0 || c.arrayX < minX)
-                minX = c.arrayX;
-            if (maxX < 0 || c.arrayX > maxX)
-                maxX = c.arrayX;
 
-            if (minY < 0 || c.arrayY < minY)
-                minY = c.arrayY;
-            if (maxY < 0 || c.arrayY > maxY)
-                maxY = c.arrayY;
+            if (minX < 0 || c.arrayX < minX) minX = c.arrayX;
+            if (maxX < 0 || c.arrayX > maxX) maxX = c.arrayX;
+            if (minY < 0 || c.arrayY < minY) minY = c.arrayY;
+            if (maxY < 0 || c.arrayY > maxY) maxY = c.arrayY;
 
-            if (!this.minX || this.minX > c.worldX)
-                this.minX = c.worldX;
-            if (!this.minY || this.minY > c.worldY)
-                this.minY = c.worldY;
+            if (!this.minX || this.minX > c.worldX) this.minX = c.worldX;
+            if (!this.minY || this.minY > c.worldY) this.minY = c.worldY;
         });
 
         let dx = maxX - minX;
@@ -217,67 +209,52 @@ class Room {
         this.height = 30 + 32 * dy;
 
         if (dx > 0 && dy > 0) {
-            //2x2
-            if (this.components.length === 4) {
-                return 1;
-            } else if (this.components.length === 3) {
-                let parts = [];
-                this.components.forEach(c => parts.push(c.arrayX + ',' + c.arrayY));
-                if (!parts.includes(minX + ',' + minY)) {
-                    return 4;
-                } else if (!parts.includes(minX + ',' + maxY)) {
-                    return 3;
-                } else if (!parts.includes(maxX + ',' + minY)) {
-                    return 1;
-                } else if (!parts.includes(maxX + ',' + maxY)) {
-                    return 2;
-                }
+            // 2x2
+            if (this.components.length === 4) return 1
+            if (this.components.length === 3) {
+                let parts = this.components.reduce((a, b) => [...a, b.arrayX + ',' + b.arrayY], [])
+
+                if (!parts.includes(minX + ',' + minY)) return 4
+                if (!parts.includes(minX + ',' + maxY)) return 3
+                if (!parts.includes(maxX + ',' + minY)) return 1
+                if (!parts.includes(maxX + ',' + maxY)) return 2
                 return -1;
                 // OH IT'S AN L ROOM
             }
-        } else if (dx > 0) {
-            return 1;
-        } else if (dy > 0) {
-            return 2;
-        } else {
-            let roomX = minX;
-            let roomY = minY;
-            let doorLocations = this.adjacentDoors.map(a => `${a.position.arrayX},${a.position.arrayY}`)
-            let up = doorLocations.includes((roomX + 0.5) + ',' + (roomY));
-            let down = doorLocations.includes((roomX + 0.5) + ',' + (roomY + 1));
-            let right = doorLocations.includes((roomX + 1) + ',' + (roomY + 0.5));
-            let left = doorLocations.includes((roomX) + ',' + (roomY + 0.5));
-            //1x1s, check door positions
-            if (this.adjacentDoors.length === 4) {
-                // Do not ask me why
-                return 1;
-            } else if (this.adjacentDoors.length === 3) {
-                if (!left) return 3;
-                if (!right) return 1;
-                if (!up) return 4;
-                if (!down) return 2;
-
-            } else if (this.adjacentDoors.length === 1) {
-                // Dead end 
-                if (right)
-                    return 2;
-                else if (left)
-                    return 4;
-                else if (down)
-                    return 3;
-                else if (up)
-                    return 1;
-
-            } else {
-                if (up && down) return 2;
-                if (left && right) return 1;
-
-                if (left && down) return 1;
-                if (up && left) return 2;
-                if (up && right) return 3;
-                if (right && down) return 4;
-            }
         }
+        if (dx > 0) return 1
+        if (dy > 0) return 2
+        let roomX = minX;
+        let roomY = minY;
+        let doorLocations = this.adjacentDoors.map(a => `${a.position.arrayX},${a.position.arrayY}`)
+        let up = doorLocations.includes((roomX + 0.5) + ',' + (roomY));
+        let down = doorLocations.includes((roomX + 0.5) + ',' + (roomY + 1));
+        let right = doorLocations.includes((roomX + 1) + ',' + (roomY + 0.5));
+        let left = doorLocations.includes((roomX) + ',' + (roomY + 0.5));
+        // 1x1s, check door positions
+        // Do not ask me why
+        if (this.adjacentDoors.length === 4) return 1
+        if (this.adjacentDoors.length === 3) {
+            if (!left) return 3;
+            if (!right) return 1;
+            if (!up) return 4;
+            if (!down) return 2;
+        }
+        if (this.adjacentDoors.length === 1) {
+            // Dead end 
+            if (right) return 2;
+            else if (left) return 4;
+            else if (down) return 3;
+            else if (up) return 1;
+        }
+
+        if (up && down) return 2;
+        if (left && right) return 1;
+        if (left && down) return 1;
+        if (up && left) return 2;
+        if (up && right) return 3;
+        if (right && down) return 4
+
         return -1;
     }
 
@@ -334,7 +311,8 @@ class Room {
             if (this.maxSecrets) roomLore.push("Secrets: " + this.currentSecrets + ' / ' + this.maxSecrets)
             if (this.data?.crypts !== undefined && (this.type === Room.NORMAL || this.type === Room.MINIBOSS || this.type === Room.TRAP)) roomLore.push("Crypts: " + this.data.crypts)
             if (this.type === Room.NORMAL) roomLore.push("Ceiling Spiders: " + (this.data?.spiders ? "Yes" : "No"))
-        } else {
+        }
+        else {
             roomLore.push('Unknown room!')
             if (CurrentSettings.settings.devInfo) roomLore.push('&9Rotation: ' + (this.rotation || 'NONE'));
         }
@@ -392,38 +370,57 @@ class Room {
     drawRoomSecrets() {
         if (!settings.settings.showSecrets) return
         if (!this.data) return
-        if (this.currentSecrets === this.maxSecrets) return //TODO: account for 3/1 room
+        // TODO: account for 3/1 room
+        if (this.currentSecrets === this.maxSecrets) return
+        if (!("secret_coords" in this.data)) return ChatLib.chat("No Data!")
 
-        this.data.secret_coords?.chest?.forEach(([rx, ry, rz]) => {
-            let { x, y, z } = this.toRoomCoords(rx, ry, rz);
+        // Every secret type in the room
+        Object.keys(this.data.secret_coords).forEach(type => {
+            const secrets = this.data.secret_coords[type]
+            // Loop over every secret
+            for (let i = 0; i < secrets.length; i++) {
+                let [rx, ry, rz] = this.data.secret_coords[type][i]
+                let { x, y, z } = this.toRoomCoords(rx, ry, rz)
+                if (this.dungeon.collectedSecrets.has(x + "," + y + "," + z)) return
+    
+                if (type == "chest") drawBoxAtBlock(x, y, z, 0, 1, 0, 1, 1)
+                if (type == "item") drawBoxAtBlock(x + 0.25, y, z + 0.25, 0, 0, 1, 0.5, 0.5)
+                if (type == "wither") drawBoxAtBlock(x + 0.25, y, z + 0.25, 1, 0, 1, 0.5, 0.5)
+                if (type == "bat") drawBoxAtBlock(x + 0.25, y + 0.25, z + 0.25, 0, 1, 0, 0.5, 0.5)
+                if (type == "redstone_key") drawBoxAtBlock(x + 0.25, y, z + 0.25, 1, 0, 0, 0.5, 0.5)
+            }
+        })
 
-            if (this.dungeon.collectedSecrets.has(x + "," + y + "," + z)) return
-            drawBoxAtBlock(x, y, z, 0, 1, 0, 1, 1)
-        });
-        this.data.secret_coords?.item?.forEach(([rx, ry, rz]) => {
-            let { x, y, z } = this.toRoomCoords(rx, ry, rz);
+        // this.data.secret_coords?.chest?.forEach(([rx, ry, rz]) => {
+        //     let { x, y, z } = this.toRoomCoords(rx, ry, rz);
 
-            if (this.dungeon.collectedSecrets.has(x + "," + y + "," + z)) return
-            drawBoxAtBlock(x + 0.25, y, z + 0.25, 0, 0, 1, 0.5, 0.5)
-        });
-        this.data.secret_coords?.wither?.forEach(([rx, ry, rz]) => {
-            let { x, y, z } = this.toRoomCoords(rx, ry, rz);
+        //     if (this.dungeon.collectedSecrets.has(x + "," + y + "," + z)) return
+        //     drawBoxAtBlock(x, y, z, 0, 1, 0, 1, 1)
+        // });
+        // this.data.secret_coords?.item?.forEach(([rx, ry, rz]) => {
+        //     let { x, y, z } = this.toRoomCoords(rx, ry, rz);
 
-            if (this.dungeon.collectedSecrets.has(x + "," + y + "," + z)) return
-            drawBoxAtBlock(x + 0.25, y, z + 0.25, 1, 0, 1, 0.5, 0.5)
-        });
-        this.data.secret_coords?.bat?.forEach(([rx, ry, rz]) => {
-            let { x, y, z } = this.toRoomCoords(rx, ry, rz);
+        //     if (this.dungeon.collectedSecrets.has(x + "," + y + "," + z)) return
+        //     drawBoxAtBlock(x + 0.25, y, z + 0.25, 0, 0, 1, 0.5, 0.5)
+        // });
+        // this.data.secret_coords?.wither?.forEach(([rx, ry, rz]) => {
+        //     let { x, y, z } = this.toRoomCoords(rx, ry, rz);
 
-            if (this.dungeon.collectedSecrets.has(x + "," + y + "," + z)) return
-            drawBoxAtBlock(x + 0.25, y + 0.25, z + 0.25, 0, 1, 0, 0.5, 0.5)
-        });
-        this.data.secret_coords?.redstone_key?.forEach(([rx, ry, rz]) => {
-            let { x, y, z } = this.toRoomCoords(rx, ry, rz);
+        //     if (this.dungeon.collectedSecrets.has(x + "," + y + "," + z)) return
+        //     drawBoxAtBlock(x + 0.25, y, z + 0.25, 1, 0, 1, 0.5, 0.5)
+        // });
+        // this.data.secret_coords?.bat?.forEach(([rx, ry, rz]) => {
+        //     let { x, y, z } = this.toRoomCoords(rx, ry, rz);
 
-            if (this.dungeon.collectedSecrets.has(x + "," + y + "," + z)) return
-            drawBoxAtBlock(x + 0.25, y, z + 0.25, 1, 0, 0, 0.5, 0.5)
-        });
+        //     if (this.dungeon.collectedSecrets.has(x + "," + y + "," + z)) return
+        //     drawBoxAtBlock(x + 0.25, y + 0.25, z + 0.25, 0, 1, 0, 0.5, 0.5)
+        // });
+        // this.data.secret_coords?.redstone_key?.forEach(([rx, ry, rz]) => {
+        //     let { x, y, z } = this.toRoomCoords(rx, ry, rz);
+
+        //     if (this.dungeon.collectedSecrets.has(x + "," + y + "," + z)) return
+        //     drawBoxAtBlock(x + 0.25, y, z + 0.25, 1, 0, 0, 0.5, 0.5)
+        // });
     }
 
     checkmarkStateToName(state = this.checkmarkState) {

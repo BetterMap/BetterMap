@@ -27,7 +27,7 @@ class LocationGui {
         this.resizeInitialPos = [0, 0, 0, 0, 0, 0]
 
         this.soopyGui = new SoopyGui()
-        this.soopyGui._renderBackground = () => { } //remove background darkening
+        this.soopyGui._renderBackground = () => { } // Remove background darkening
 
         this.elmSettings = new SoopyBoxElement().setLocation(0, 0, 0.25, 0.25)
 

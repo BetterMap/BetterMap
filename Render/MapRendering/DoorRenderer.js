@@ -25,12 +25,8 @@ class DoorRenderer {
      * @returns 
      */
     getRenderColor(renderContext, type) {
-        if (type === Room.NORMAL) {
-            type = 9 //NORMAL_CONNECTION
-        }
-        if (renderContext.mapStyle === 'teniosmap') {
-            type = teniosDoorMap[type];
-        }
+        if (type === Room.NORMAL) type = 9 // NORMAL_CONNECTION
+        if (renderContext.mapStyle === 'teniosmap') type = teniosDoorMap[type];
         return renderContext.colorMap.get(type)
     }
 }

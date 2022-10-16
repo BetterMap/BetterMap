@@ -42,9 +42,9 @@ function getTabListInfo() {
             if (cleanedLine.includes('%')) {
                 let secretString = cleanedLine.split(' ')[2]
                 secretString = secretString.substring(0, secretString.length - 1)
-                secrets = parseFloat(secretString); //secrets percentage
+                secrets = parseFloat(secretString); // Secrets percentage
             } else {
-                collectedSecrets = parseInt(cleanedLine.split(' ')[2]) //secrets number
+                collectedSecrets = parseInt(cleanedLine.split(' ')[2]) // Secrets number
             }
         } else if (cleanedLine.includes('Crypts:')) {
             let cryptString = cleanedLine.split(' ')[1]

@@ -4,7 +4,7 @@ const { default: renderBeaconBeam2 } = require("../../BeaconBeam/index");
 const { numberWithCommas } = require("./Utils");
 
 if (!GlStateManager) {
-    var GL11 = Java.type("org.lwjgl.opengl.GL11"); //using var so it goes to global scope
+    var GL11 = Java.type("org.lwjgl.opengl.GL11"); // Using var so it goes to global scope
     var GlStateManager = Java.type("net.minecraft.client.renderer.GlStateManager");
 }
 let ret = {
@@ -307,7 +307,7 @@ let ret = {
         if (phase) GL11.glEnable(GL11.GL_DEPTH_TEST);
         GL11.glDisable(GL11.GL_BLEND);
     },
-    drawFilledBox: function (x, y, z, w, h, red, green, blue, alpha, phase) { //FROM RENDERUTILS
+    drawFilledBox: function (x, y, z, w, h, red, green, blue, alpha, phase) { // FROM RENDERUTILS
         GL11.glDisable(GL11.GL_CULL_FACE);
         if (phase) {
             GL11.glBlendFunc(770, 771);

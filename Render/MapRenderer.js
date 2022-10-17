@@ -71,7 +71,11 @@ class MapRenderer {
             let scoreInfoHeight = 10 * size / 100
             Renderer.drawRect(Renderer.color(renderContext.settings.extraInfoBackroundColor[0] ?? 0, renderContext.settings.extraInfoBackroundColor[1] ?? 0, renderContext.settings.extraInfoBackroundColor[2] ?? 0, renderContext.settings.extraInfoBackroundColor[3]), x, y + size, size, scoreInfoHeight)
 
-            renderLibs.drawStringCenteredFull("&f" + scoreInfo.total, x + size * (dungeonMap.floorNumber >= 6 ? 1 / 5 : 1 / 4), y + size + scoreInfoHeight / 2, size / 100)
+            let colorScoreThingo = "c"
+            if (scoreInfo.total >= 270) colorScoreThingo = "e"
+            if (scoreInfo.total >= 300) colorScoreThingo = "a"
+
+            renderLibs.drawStringCenteredFull("&" + colorScoreThingo + scoreInfo.total, x + size * (dungeonMap.floorNumber >= 6 ? 1 / 5 : 1 / 4), y + size + scoreInfoHeight / 2, size / 100)
             renderLibs.drawStringCenteredFull((scoreInfo.crypts >= 5 ? `&a${scoreInfo.crypts}` : scoreInfo.crypts > 0 ? `&e${scoreInfo.crypts}` : `&c0`) + 'c', x + size * (dungeonMap.floorNumber >= 6 ? 10 / 23 : 3 / 4), y + size + scoreInfoHeight / 2, size / 100)
             if (dungeonMap.floorNumber >= 6)
                 renderLibs.drawStringCenteredFull("&7Mimic " + (scoreInfo.mimic ? "&a✔" : "&c✕"), x + size / 4 * 3, y + size + scoreInfoHeight / 2, size / 100)

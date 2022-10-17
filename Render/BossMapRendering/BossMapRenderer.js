@@ -7,7 +7,7 @@ class BossMapRenderer extends MapTab {
     constructor(mapRenderer) {
         super("Boss", mapRenderer)
 
-        const getBossImage = (imageName) => new Image("imgur_" + imageName, "https:// I.imgur.com/" + imageName + ".png")
+        const getBossImage = (imageName) => new Image("imgur_" + imageName, "https://i.imgur.com/" + imageName + ".png")
 
         this.dungeonBossImages = {}
         new Thread(() => {

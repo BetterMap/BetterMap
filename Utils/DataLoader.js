@@ -71,7 +71,7 @@ class DataLoader {
         this.dungeonFloor = undefined
 
 
-        fetch("https:// Soopy.dev/api/v2/mayor").json(data => {
+        fetch("https://soopy.dev/api/v2/mayor").json(data => {
             if (!data.success) return
             this.mayorData = data.data
             this.currentMayorPerks = new Set(data.data.mayor.perks.map(a => a.name))

@@ -423,13 +423,13 @@ TeniosMapColorMap.set('unknown', new Color(Renderer.color(64, 64, 64)));
 TeniosMapColorMap.set('wither', new Color(Renderer.color(0, 0, 0)));
 
 const HypixelTicksOld = new Map()
-HypixelTicksOld.set("greenCheck", new Image("greenCheckVanilla.png", "https:// I.imgur.com/h2WM1LO.png").image)
-HypixelTicksOld.set("whiteCheck", new Image("whiteCheckVanilla.png", "https:// I.imgur.com/hwEAcnI.png").image)
-HypixelTicksOld.set("failedRoom", new Image("failedRoomVanilla.png", "https:// I.imgur.com/WqW69z3.png").image)
-HypixelTicksOld.set("questionMark", new Image("questionMarkVanilla.png", "https:// I.imgur.com/1jyxH9I.png").image)
+HypixelTicksOld.set("greenCheck", new Image("greenCheckVanilla.png", "https://i.imgur.com/h2WM1LO.png").image)
+HypixelTicksOld.set("whiteCheck", new Image("whiteCheckVanilla.png", "https://i.imgur.com/hwEAcnI.png").image)
+HypixelTicksOld.set("failedRoom", new Image("failedRoomVanilla.png", "https://i.imgur.com/WqW69z3.png").image)
+HypixelTicksOld.set("questionMark", new Image("questionMarkVanilla.png", "https://i.imgur.com/1jyxH9I.png").image)
 
 const NEUMapTicks = new Map()
-NEUMapTicks.set("greenCheck", new Image("NEUMapGreenCheck.png", "https:// I.imgur.com/vwiTAAf.png").image) //old: https://i.imgur.com/GQfTfmp.png
-NEUMapTicks.set("whiteCheck", new Image("NEUMapWhiteCheck.png", "https:// I.imgur.com/YOUsTg8.png").image) //old: https://i.imgur.com/9cZ28bJ.png
-NEUMapTicks.set("failedRoom", new Image("NEUMapFailedRoom.png", "https:// I.imgur.com/TM8LbGS.png").image) //old: https://i.imgur.com/YOUsTg8.png
-NEUMapTicks.set("questionMark", new Image("NEUMapQuestionMark.png", "https:// I.imgur.com/CPBuhXu.png").image) //old: https://i.imgur.com/kp92Inw.png
+NEUMapTicks.set("greenCheck", new Image("NEUMapGreenCheck.png", "https://i.imgur.com/vwiTAAf.png").image) //old: https://i.imgur.com/GQfTfmp.png
+NEUMapTicks.set("whiteCheck", new Image("NEUMapWhiteCheck.png", "https://i.imgur.com/YOUsTg8.png").image) //old: https://i.imgur.com/9cZ28bJ.png
+NEUMapTicks.set("failedRoom", new Image("NEUMapFailedRoom.png", "https://i.imgur.com/TM8LbGS.png").image) //old: https://i.imgur.com/YOUsTg8.png
+NEUMapTicks.set("questionMark", new Image("NEUMapQuestionMark.png", "https://i.imgur.com/CPBuhXu.png").image) //old: https://i.imgur.com/kp92Inw.png

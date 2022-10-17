@@ -106,7 +106,7 @@ class MapPlayer {
 
     /**
      * Updates the player's username, class, class level and Skyblock level using the match object from running
-     * the tablist line against https:// Regex101.com/r/cUzJoK/3
+     * the tablist line against https://regex101.com/r/cUzJoK/3
      * @param {Object} matchObject 
      */
     updateTablistInfo(matchObject) {
@@ -305,7 +305,7 @@ function getPlayerSecrets(uuid, cacheMs, callback) {
     let apiKey = settings.settings.apiKey
 
     if (!apiKey) return
-    fetch(`https:// Api.hypixel.net/player?key=${apiKey}&uuid=${uuid}`).json(data => {
+    fetch(`https://api.hypixel.net/player?key=${apiKey}&uuid=${uuid}`).json(data => {
         let secrets = data?.player?.achievements?.skyblock_treasure_hunter || 0
 
         secretsData.set(uuid, [Date.now(), secrets])

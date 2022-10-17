@@ -371,7 +371,7 @@ class DungeonMap {
         for (let p of pl) {
             if (!p[m.getDisplayName.NetworkPlayerInfo]()) continue
             let line = p[m.getDisplayName.NetworkPlayerInfo]()[m.getUnformattedText]()
-            // https:// Regex101.com/r/cUzJoK/3
+            // https://regex101.com/r/cUzJoK/3
             let match = line.match(/^\[(\d+)\] (?:\[\w+\] )*(\w+) [♲Ⓑ ]*\((\w+)(?: (\w+))*\)$/)
             if (!match) continue
             let [_, sbLevel, name, clazz, level] = match
@@ -984,7 +984,7 @@ class DungeonMap {
         let apiKey = settings.settings.apiKey
 
         if (apiKey) {
-            fetch(`https:// Api.hypixel.net/skyblock/profiles?key=${apiKey}&uuid=${uuid}`).json(data => {
+            fetch(`https://api.hypixel.net/skyblock/profiles?key=${apiKey}&uuid=${uuid}`).json(data => {
                 if (!data.success) return
 
                 let latestProfile = undefined
@@ -1006,7 +1006,7 @@ class DungeonMap {
             })
         }
         else { // Works without api key, api key still recommended though for secrets tracking
-            fetch(`https:// Soopy.dev/api/v2/player_skyblock/${uuid}`).json(data => {
+            fetch(`https://soopy.dev/api/v2/player_skyblock/${uuid}`).json(data => {
                 if (!data.success) return
 
                 if (data.data.profiles[data.data.stats.currentProfileId].members[uuid].pets.some(pet => pet.type === "SPIRIT" && pet.tier === "LEGENDARY")) {

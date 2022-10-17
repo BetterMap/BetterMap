@@ -92,7 +92,7 @@ class SettingGui {
 
         this.addSidebarElement(new ButtonWithArrow().setText("&0Discord").addEvent(new SoopyMouseClickEvent().setHandler(() => {
             java.awt.Desktop.getDesktop().browse(
-                new java.net.URI("https:// Discord.gg/Uq5YzpaMsr")
+                new java.net.URI("https://discord.gg/Uq5YzpaMsr")
             );
         })), 0.3, 0.4, 0.075)
         this.addSidebarElement()
@@ -510,7 +510,7 @@ export default SettingGui
 function verifyApiKeySync(key) {
     if (key) {
         try {
-            var url = "https:// Api.hypixel.net/key?key=" + key
+            var url = "https://api.hypixel.net/key?key=" + key
             let data = fetch(url).json()
 
             return !!data.success

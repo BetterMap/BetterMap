@@ -9,7 +9,7 @@
  * @property {Number} iconScale - Width/height of icons (scales with size, will be same if size is 100)
  * @property {"hypixel"|"default"|"tenios"|"secrets"|"secrets_underhead"} tickStyle - Style of the ticks
  * @property {"none"|"text"|"icon"} puzzleNames - Render style of puzzle names
- * @property {"none"|"single"|"class-color"|} headBorder - Wether to put a black border around heads on the map
+ * @property {"none"|"single"|"class-color"} headBorder - Wether to put a black border around heads on the map
  * @property {"never"|"leap"|"always"} playerNames - When to show player names on map
  * @property {"none"|"left"|"right"} currentRoomInfo - Render current room hover info on side of map
  * @property {"none"|"legalmap"|"simplified"} scoreInfoUnderMap - Render score info under the map

@@ -212,7 +212,7 @@ class DungeonMap {
             }).setChatCriteria("&r&aDungeon starts in 1 second.&r"))
 
             this.triggers.push(register("chat", () => {
-                this.bloodOpened = true
+                this.bloodOpen = true
                 this.keys--
             }).setChatCriteria("&r&cThe &r&c&lBLOOD DOOR&r&c has been opened!&r"))
 
@@ -654,6 +654,11 @@ class DungeonMap {
                 let pixelColor = bytes[(mapX) + (mapY) * 128]
                 if (pixelColor === 0) continue
                 if (r1x1sM.has(pixelColor)) {
+
+                    if (r1x1s[pixelColor] === Room.BLOOD) {
+                        this.bloodOpen = true
+                    }
+
                     // Special room at that location
                     let position = new Position(0, 0, this)
                     position.mapX = mapX

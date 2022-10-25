@@ -107,7 +107,7 @@ class RenderContext {
     }
 
     get showTabs() {
-        return this.settings.showTabs
+        return this.settings.showTabs && this.posY > 0 //if y is 0 or less then tabs arnt visable anyway
     }
 
     get tabSecretCount() {

@@ -92,9 +92,9 @@ register("command", (name) => { // TODO: change this command to show somewhere i
     if (currentDungeonMap) {
         currentDungeonMap.pingPlayer(name, (usingMap) => {
             if (usingMap) {
-                ChatLib.chat(MESSAGE_PREFIX + name + " is using bettermap")
+                ChatLib.chat(MESSAGE_PREFIX + name + " &ais using bettermap")
             } else {
-                ChatLib.chat(MESSAGE_PREFIX + name + " is NOT using bettermap (or isnt in a dungeon)")
+                ChatLib.chat(MESSAGE_PREFIX + name + " &eis NOT using bettermap (or isnt in a dungeon)")
             }
         })
     } else {

@@ -94,7 +94,7 @@ register("command", (name) => {
         if (usingMap) {
             ChatLib.chat(MESSAGE_PREFIX + name + " is using bettermap")
         } else {
-            ChatLib.chat(MESSAGE_PREFIX + name + " is NOT using bettermap")
+            ChatLib.chat(MESSAGE_PREFIX + name + " is NOT using bettermap (or issnt online)")
         }
     })
 }).setName("bping", true)
@@ -111,7 +111,7 @@ register("command", () => {
             if (usingMap[index]) {
                 ChatLib.chat(MESSAGE_PREFIX + name + " is using bettermap")
             } else {
-                ChatLib.chat(MESSAGE_PREFIX + name + " is NOT using bettermap")
+                ChatLib.chat(MESSAGE_PREFIX + name + " is NOT using bettermap (or issnt online)")
             }
         })
     })

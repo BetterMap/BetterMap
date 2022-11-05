@@ -274,42 +274,7 @@ class DungeonMap {
             case "secretCollect":
                 this.collectedSecrets.add(data.location)
                 break;
-            case "ping":
-                socketConnection.sendDungeonData({ "data": { "type": "pingRespond", "from": Player.getName(), "id": data.id }, "players": [data.from] })
-                break
-            case "pingRespond":
-                if (this.pingIdFuncs.get(data.id)) {
-                    this.pingIdFuncs.get(data.id)[1](true)
-                    this.pingIdFuncs.delete(data.id)
-                }
-                break
         }
-    }
-
-    /**
-     * NOTE: the callback function will be given a boolean representing wether the user is using bettermap
-     * TODO: Make a server side custom packet to get this info so it doesent require both players to be in a dungeon
-     * 
-     * @example
-     * DungeonMap.pingPlayer("Soopyboo32", (usingMap) => {
-     *     if(usingMap){
-     *         ChatLib.chat("Soopyboo32 is using bettermap")
-     *     }else{
-     *         ChatLib.chat("Soopyboo32 is NOT using bettermap")
-     *     }
-     * })
-     */
-    pingPlayer(username, callback) {
-        if (username === Player.getName()) {
-            callback(true) //Server doesent allow sending data to self
-            return
-        }
-
-        let pingId = this.pingIds++
-
-        this.pingIdFuncs.set(pingId, [Date.now(), callback])
-
-        socketConnection.sendDungeonData({ "data": { "type": "ping", "from": Player.getName(), "id": pingId }, "players": [username] })
     }
 
     regenRooms() {
@@ -376,7 +341,7 @@ class DungeonMap {
                 // This is a tab list line for a player
                 let name = line.split(" ")[0]
 
-                if (name === Player.getName()) { //move the current player to end of list
+                if (name === ChatLib.removeFormatting(Player.getDisplayName().text)) { //move the current player to end of list
                     thePlayer = [p, name]
                     continue
                 }
@@ -498,19 +463,19 @@ class DungeonMap {
         this.players.forEach(p => p.checkUpdateUUID())
 
         World.getAllPlayers().forEach(player => {
-            if (!this.playersNameToId[ChatLib.removeFormatting(player.getName()).trim()]) return
-            let p = this.players[this.playersNameToId[ChatLib.removeFormatting(player.getName()).trim()]]
+            if (!this.playersNameToId[ChatLib.removeFormatting(player.getDisplayName().text).trim()]) return
+            let p = this.players[this.playersNameToId[ChatLib.removeFormatting(player.getDisplayName().text)]]
             if (!p) return
 
             p.setX(player.getX())
             p.setY(player.getZ())
             p.setRotate(player.getYaw() + 180)
             p.locallyUpdated = Date.now()
-            this.nameToUuid[player.getName().toLowerCase()] = player.getUUID().toString()
+            this.nameToUuid[ChatLib.removeFormatting(player.getDisplayName().text).toLowerCase()] = player.getUUID().toString()
 
             this.sendSocketData({
                 type: "playerLocation",
-                username: ChatLib.removeFormatting(player.getName()).trim(),
+                username: ChatLib.removeFormatting(player.getDisplayName().text).trim(),
                 x: player.getX(),
                 y: player.getY(),
                 z: player.getZ(),
@@ -524,7 +489,7 @@ class DungeonMap {
      */
     updatePlayersFast() {
         World.getAllPlayers().forEach(player => {
-            let p = this.players[this.playersNameToId[ChatLib.removeFormatting(player.getName()).trim()]]
+            let p = this.players[this.playersNameToId[ChatLib.removeFormatting(player.getDisplayName().text).trim()]]
             if (!p) return
 
             p.setX(player.getX())

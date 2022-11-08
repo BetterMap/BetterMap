@@ -33,6 +33,8 @@ class MapPlayer {
 
         this.locallyUpdated = 0
 
+        this.deaths = 0
+
         this.startedRunSecrets = 0
         this.currentSecrets = 0
 

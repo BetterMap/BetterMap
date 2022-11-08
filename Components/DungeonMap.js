@@ -6,7 +6,7 @@ import Room from "./Room.js"
 import { getScoreboardInfo, getTabListInfo, getRequiredSecrets } from "../Utils/Score"
 import Door from "./Door.js"
 import DungeonRoomData from "../Data/DungeonRoomData.js"
-import { changeScoreboardLine, dungeonOffsetX, dungeonOffsetY, MESSAGE_PREFIX, renderLore } from "../Utils/Utils.js"
+import { changeScoreboardLine, dungeonOffsetX, dungeonOffsetY, MESSAGE_PREFIX, MESSAGE_PREFIX_SHORT, renderLore } from "../Utils/Utils.js"
 import socketConnection from "../socketConnection.js"
 import DataLoader from "../Utils/DataLoader.js"
 import { fetch } from "../Utils/networkUtils.js"
@@ -122,7 +122,7 @@ class DungeonMap {
                     ChatLib.chat(MESSAGE_PREFIX + "Cleared room counts:")
                     this.players.forEach(p => {
                         let m = new Message()
-                        m.addTextComponent(new TextComponent(MESSAGE_PREFIX + "&3" + p.username + "&7 cleared "))
+                        m.addTextComponent(new TextComponent(MESSAGE_PREFIX_SHORT + "&3" + p.username + "&7 cleared "))
 
                         let roomLore = ""
                         p.roomsData.forEach(([players, room]) => {
@@ -138,10 +138,11 @@ class DungeonMap {
                         m.addTextComponent(new TextComponent("&6" + p.minRooms + "-" + p.maxRooms).setHover("show_text", roomLore.trim()))
 
                         if (settings.settings.apiKey) {
-                            m.addTextComponent(new TextComponent("&7 rooms and &6" + p.secretsCollected + "&7 secrets"))
+                            m.addTextComponent(new TextComponent("&7 rooms | &6" + p.secretsCollected + "&7 secrets"))
                         } else {
-                            m.addTextComponent(new TextComponent("&7 rooms and &c[NO API KEY]&7 secrets"))
+                            m.addTextComponent(new TextComponent("&7 rooms | &c[NO API KEY]&7 secrets"))
                         }
+                        m.addTextComponent(new TextComponent("&7 | &6" + p.deaths + "&7 deaths"))
 
                         m.chat()
                     })
@@ -178,6 +179,12 @@ class DungeonMap {
 
             this.triggers.push(register("chat", (info) => {
                 let player = ChatLib.removeFormatting(info).split(" ")[0]
+
+                for (let p of this.players) {
+                    if (p.username === player) {
+                        p.deaths++
+                    }
+                }
 
                 this.scanFirstDeathForSpiritPet(player)
             }).setChatCriteria("&r&c ☠ ${info} and became a ghost&r&7.&r"))

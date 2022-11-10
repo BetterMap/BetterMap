@@ -323,7 +323,7 @@ class RenderContext {
         currentRoomInfo = "none",
         scoreInfoUnderMap = "simplified",
         scoreInfoUnderMap_simplified_showMimicText = true,
-        showScoreMessage = false,
+        showScoreMessage = 'never',
         custom270scoreMessage = '270 score reached!',
         custom300scoreMessage = '300 score reached!',
         tabSecretCount = false,

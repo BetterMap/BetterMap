@@ -5,10 +5,13 @@
  * @property {Number} posX - X Position of the map on screen
  * @property {Number} posY - y Position of the map on screen
  * @property {Number} size - Width/height of the map when rendered
+ * @property {"off", "icons", "heads"} showHeads - show player heads on the map
  * @property {Number} headScale - Width/height of heads (scales with size, will be same if size is 100)
  * @property {Number} iconScale - Width/height of icons (scales with size, will be same if size is 100)
- * @property {"hypixel"|"default"|"tenios"|"secrets"} tickStyle - Style of the ticks
- * @property {Boolean} tickStyle_secrets_overHead - Wether to render the secrets tick style over player heads
+ * @property {"hypixel-old", "hypixel-new"|"default"|"tenios"|"roomnames"} tickStyle - Style of the ticks
+ * @property {"never","hasSecrets","always"} showSecretCount - When to show secrets instead of checkmarks
+ * @property {Boolean} checkmarkCompleteRooms - Turn completed rooms into checkmarks
+ * @property {Boolean} tickStyle_secrets_overHead - Wether to render the secrets / room name tick style over player heads
  * @property {"none"|"text"|"icon"} puzzleNames - Render style of puzzle names
  * @property {"none"|"single"|"class-color"} headBorder - Wether to put a black border around heads on the map
  * @property {"never"|"leap"|"always"} playerNames - When to show player names on map
@@ -19,6 +22,9 @@
  * @property {Boolean} tabCryptCount - Show the current total crypt count for discovered rooms in tab 
  * @property {Boolean} tabMimic - Show the mimic status in tab
  * @property {Boolean} fixScore - Replaces the sidebar scoreboard score with the correct score
+ * @property {"never", "at270", "at300", "automatic", "always"} showScoreMessage - Broadcast a score message after reaching a specific score
+ * @property {String} custom270scoreMessage - Allows the player to set a custom message for 270 score
+ * @property {String} custom300scoreMessage - Allows the player to set a custom message for 300 score
  * @property {Boolean} hideInBoss - Hide the map in boss entirely 
  * @property {Boolean} showTabs - Show tabs at the top of the map 
  * @property {Boolean} showSecrets - Show waypoints for secrets in the dungeon
@@ -73,6 +79,9 @@ class RenderContext {
     get size() {
         return this.settings.size
     }
+    get showHeads() {
+        return this.settings.showHeads;
+    }
     get headScale() {
         return this.settings.headScale
     }
@@ -85,6 +94,13 @@ class RenderContext {
     get tickStyle_secrets_overHead() {
         return this.settings.tickStyle_secrets_overHead
     }
+    get showSecretCount() {
+        return this.settings.showSecretCount
+    }
+    get checkmarkCompleteRooms() {
+        return this.settings.checkmarkCompleteRooms
+    }
+
     get puzzleNames() {
         return this.settings.puzzleNames
     }
@@ -109,6 +125,18 @@ class RenderContext {
 
     get scoreInfoUnderMap_simplified_showMimicText() {
         return this.settings.scoreInfoUnderMap_simplified_showMimicText
+    }
+
+    get showScoreMessage() {
+        return this.settings.showScoreMessage;
+    }
+
+    get custom270scoreMessage() {
+        return this.settings.custom270scoreMessage;
+    }
+
+    get custom300scoreMessage() {
+        return this.settings.custom300scoreMessage;
     }
 
     get hideInBoss() {
@@ -177,22 +205,22 @@ class RenderContext {
     get roomGap() {
         switch (this.mapStyle) {
             case "legalmap":
-                return 8 // 1/3 roomSize
+                return 12 // 1/3 roomSize
             case "hypixelmap":
-                return 6
+                return 9
             case "teniosmap":
-                return 6
+                return 9
         }
     }
 
     get roomSize() {
         switch (this.mapStyle) {
             case "legalmap":
-                return 24
+                return 36
             case "hypixelmap":
-                return 24
+                return 36
             case "teniosmap":
-                return 24
+                return 36
         }
     }
 
@@ -203,11 +231,11 @@ class RenderContext {
     get doorWidth() {
         switch (this.mapStyle) {
             case "legalmap":
-                return 8
+                return 12
             case "hypixelmap":
-                return 10
+                return 15
             case "teniosmap":
-                return 10;
+                return 15;
         }
     }
 
@@ -229,8 +257,11 @@ class RenderContext {
 
                 graphics.dispose()
                 return scaledDownImage
+            case 'hypixel-new':
+                return HypixelTicksNew.get(type);
             case 'tenios':
-            case "hypixel":
+            case "hypixel-old":
+            default:
                 return HypixelTicksOld.get(type)
         }
     }
@@ -244,14 +275,25 @@ class RenderContext {
         switch (this.tickStyle) {
             case "default":
                 return [16 * this.iconScale / 8, 16 * this.iconScale / 8]
+            case "hypixel-new":
+                switch (type) {
+                    case "questionMark":
+                        return [10 * this.iconScale / 10, 18 * this.iconScale / 10]
+                    case "whiteCheck":
+                    case "greenCheck":
+                        return [18 * this.iconScale / 10, 18 * this.iconScale / 10]
+                    case "failedRoom":
+                        return [14 * this.iconScale / 8, 14 * this.iconScale / 8]
+                }
             case 'tenios':
-            case "hypixel":
+            case "hypixel-old":
+            default:
                 switch (type) {
                     case "questionMark":
                         return [10 * this.iconScale / 8, 16 * this.iconScale / 8]
                     case "whiteCheck":
                     case "greenCheck":
-                        return [10 * this.iconScale / 8, 10 * this.iconScale / 8]
+                        return [18 * this.iconScale / 10, 18 * this.iconScale / 10]
                     case "failedRoom":
                         return [14 * this.iconScale / 8, 14 * this.iconScale / 8]
                 }
@@ -268,16 +310,22 @@ class RenderContext {
         posX = 0,
         posY = 0,
         size = 100,
+        showHeads = 'heads',
         headScale = 8,
         iconScale = 10,
         tickStyle = "default",
         tickStyle_secrets_overHead = true,
+        showSecretCount = "never",
+        checkmarkCompleteRooms = false,
         puzzleNames = "none",
         headBorder = "none",
         playerNames = "leap",
         currentRoomInfo = "none",
         scoreInfoUnderMap = "simplified",
         scoreInfoUnderMap_simplified_showMimicText = true,
+        showScoreMessage = false,
+        custom270scoreMessage = '270 score reached!',
+        custom300scoreMessage = '300 score reached!',
         tabSecretCount = false,
         tabCryptCount = false,
         tabMimic = false,
@@ -308,16 +356,22 @@ class RenderContext {
             posX,
             posY,
             size,
+            showHeads,
             headScale,
             iconScale,
             tickStyle,
             tickStyle_secrets_overHead,
+            showSecretCount,
+            checkmarkCompleteRooms,
             puzzleNames,
             headBorder,
             playerNames,
             currentRoomInfo,
             scoreInfoUnderMap,
             scoreInfoUnderMap_simplified_showMimicText,
+            showScoreMessage,
+            custom270scoreMessage,
+            custom300scoreMessage,
             tabCryptCount,
             tabSecretCount,
             tabMimic,
@@ -436,10 +490,16 @@ TeniosMapColorMap.set('unknown', new Color(Renderer.color(64, 64, 64)));
 TeniosMapColorMap.set('wither', new Color(Renderer.color(0, 0, 0)));
 
 const HypixelTicksOld = new Map()
-HypixelTicksOld.set("greenCheck", new Image("greenCheckVanilla.png", "https://i.imgur.com/h2WM1LO.png").image)
-HypixelTicksOld.set("whiteCheck", new Image("whiteCheckVanilla.png", "https://i.imgur.com/hwEAcnI.png").image)
+HypixelTicksOld.set("greenCheck", new Image("greenCheckVanilla-old.png", "https://i.imgur.com/h2WM1LO.png").image)
+HypixelTicksOld.set("whiteCheck", new Image("whiteCheckVanilla-old.png", "https://i.imgur.com/hwEAcnI.png").image)
 HypixelTicksOld.set("failedRoom", new Image("failedRoomVanilla.png", "https://i.imgur.com/WqW69z3.png").image)
-HypixelTicksOld.set("questionMark", new Image("questionMarkVanilla.png", "https://i.imgur.com/1jyxH9I.png").image)
+HypixelTicksOld.set("questionMark", new Image("questionMarkVanilla-old.png", "https://i.imgur.com/1jyxH9I.png").image)
+
+const HypixelTicksNew = new Map()
+HypixelTicksNew.set("greenCheck", new Image("greenCheckVanilla-new.png", "https://i.imgur.com/KFGT3RL.png").image)
+HypixelTicksNew.set("whiteCheck", new Image("whiteCheckVanilla-new.png", "https://i.imgur.com/pfDVZA0.png").image)
+HypixelTicksNew.set("failedRoom", new Image("failedRoomVanilla.png", "https://i.imgur.com/WqW69z3.png").image)
+HypixelTicksNew.set("questionMark", new Image("questionMarkVanilla-new.png", "https://i.imgur.com/xLI4gR6.png").image)
 
 const NEUMapTicks = new Map()
 NEUMapTicks.set("greenCheck", new Image("NEUMapGreenCheck.png", "https://i.imgur.com/vwiTAAf.png").image) //old: https://i.imgur.com/GQfTfmp.png

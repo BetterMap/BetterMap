@@ -284,6 +284,8 @@ class SettingGui {
             this.howToUse.location.location.x.set(-1, 0)
             this.mainpage.location.location.x.set(0, 0)
             this.changelog.location.location.x.set(1, 0)
+
+            this.closeMoreSettingsGui()
         }))
 
         this.gui.element.addEvent(new SoopyRenderEvent().setHandler(() => {
@@ -362,6 +364,8 @@ class SettingGui {
             this.closeMoreSettingsGui = () => {
                 this.mainpage.location.location.x.set(0, 250)
                 this.moreSettingsPage.location.location.x.set(1, 250)
+
+                this.closeMoreSettingsGui = () => { }
             }
         }))
 
@@ -496,7 +500,7 @@ class SettingGui {
     addString(label, setting, defau, addFun = this.addSidebarElement) {
         let textBox = addFun(new TextBox().setText(this.currentSettings[setting] ?? defau).addEvent(new SoopyContentChangeEvent().setHandler((val, prev, cancelFun) => {
             this.changed(setting, val)
-        })), 0.625, 0.2, 0.05)
+        })), 0.55, 0.35, 0.05)
 
         return [textBox, addFun(new SoopyTextElement().setText("§0" + label).setMaxTextScale(2), 0.1, 0.35)]
     }

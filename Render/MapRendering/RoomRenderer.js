@@ -63,16 +63,6 @@ class RoomRenderer {
             // 2x2 Center
             if (rc.length == 4 && new Set(rc.map(a => a.arrayX)).size == 2 && x == Math.min(...rc.map(a => a.arrayX)) && y == Math.min(...rc.map(a => a.arrayY))) draw(x + 0.75, y + 0.75, roomSize / 3, roomSize / 3)
         }
-        if (context.tickStyle === 'tenios') {
-            //tenios map style only draws checkmarks if room isnt identified
-            if (context.mapStyle === 'teniosmap' && room.maxSecrets && room.type !== Room.PUZZLE) return;
-            //ignore rooms that dont get checkmarked
-            if ([Room.SPAWN].includes(room.type)) return;
-            if (room.type === Room.PUZZLE && context.puzzleNames === 'text') return;
-            if (room.type === Room.PUZZLE && context.mapStyle === 'teniosmap' && room.checkmarkState <= Room.CLEARED && context.puzzleNames === 'none') return;
-            if (room.type === Room.PUZZLE && room.checkmarkState <= Room.CLEARED) return;
-
-        }
     }
 
     /**
@@ -140,16 +130,6 @@ class RoomRenderer {
         if (checkmarkStateToName.has(room.checkmarkState)) {
             drawCheckmark(checkmarkStateToName.get(room.checkmarkState))
         }
-
-
-        return;
-        if (context.tickStyle === 'tenios' && (room.type !== Room.PUZZLE || room.checkmarkState !== Room.FAILED)) return; //tenios map checkmaps are permanent 
-        if (context.mapStyle === 'teniosmap' && (room.type !== Room.PUZZLE || context.puzzleNames === 'text')) return;
-
-        if (context.tickStyle === 'secrets' || context.tickStyle === "secrets_underhead") return // Needs to be rendered in renderoverlay, see drawExtras()
-        if (room.type === Room.PUZZLE && context.puzzleNames === "text") return
-        if (room.type === Room.PUZZLE && (room.checkmarkState === Room.UNOPENED || room.checkmarkState === Room.OPENED)) return
-
     }
 
     drawPuzzle(context, room, dungeon) {
@@ -334,45 +314,6 @@ class RoomRenderer {
         drawSecretCount();
         drawRoomName();
         return;
-        if (room.type === Room.SPAWN || room.type === Room.FAIRY) return
-
-        if (context.mapStyle === 'teniosmap' && (room.type !== Room.PUZZLE || (context.tickStyle === 'secrets' && context.puzzleNames === 'icon'))) {
-            let text = null;
-            if (room.maxSecrets) {
-                text = room.currentSecrets + '/' + room.maxSecrets
-            } else if (context.tickStyle === 'secrets')
-                text = (room.currentSecrets ?? "?") + "/" + (room.maxSecrets ?? "?");
-            if (!text) return;
-            let color = ''
-            if (room.checkmarkState >= Room.COMPLETED)
-                color = '&a'
-            else if (room.checkmarkState >= Room.CLEARED)
-                color = '&f'
-            else if (room.checkmarkState === Room.FAILED)
-                color = "&c"
-            else
-                color = '&0'
-            text = color + text;
-
-            let scale = context.size / 175 * context.iconScale / 8
-            let x = Math.min(...room.components.map(r => r.arrayX))
-            let y = Math.min(...room.components.map(r => r.arrayY))
-            //top left might not be inside the room for l rooms
-            if (!(room.components.some(c => c.arrayX === x && c.arrayY === y)))
-                y++;
-            x = (context.roomGap / 2 + context.blockSize * x + context.roomSize / 2 + context.borderWidth + context.paddingLeft) / context.getImageSize(dungeon.floor)
-            y = (context.blockSize * y + context.roomSize / 2 + context.borderWidth + context.paddingTop) / context.getImageSize(dungeon.floor)
-
-            x = context.posX + x * context.size + context.borderWidth
-            y = context.posY + y * (context.size - context.borderWidth) + context.borderWidth
-
-
-            if (context.tickStyle_secrets_overHead) Renderer.translate(0, 0, 100)
-            renderLibs.drawStringCenteredShadow(text, x, y, scale)
-        } else if (context.tickStyle === 'secrets' && (room.type !== Room.PUZZLE || (context.mapStyle !== 'teniosmap' && context.puzzleNames !== 'text'))) {
-
-
-        }
     }
 
     /**

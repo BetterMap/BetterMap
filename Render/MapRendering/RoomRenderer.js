@@ -18,6 +18,11 @@ const puzzleItems = {
 }
 
 const Color = Java.type('java.awt.Color');
+const Font = Java.type('java.awt.Font');
+
+const black = new Color(0, 0, 0);
+const gray = new Color(220 / 255, 255 / 255, 220 / 255);
+const green = new Color(0, 123 / 255, 0);
 
 class RoomRenderer {
 
@@ -82,6 +87,9 @@ class RoomRenderer {
 
         //tenios checkmark is perm on the image
         if (context.tickStyle === 'tenios') {
+            let fontSize = 24 * context.iconScale / 10;
+            let teniosFont = new Font('Dialog', Font.BOLD, fontSize);
+            graphics.setFont(teniosFont);
             let x = Math.min(...room.components.map(r => r.arrayX))
             let y = Math.min(...room.components.map(r => r.arrayY))
             //top left might not be inside the room for l rooms
@@ -89,13 +97,13 @@ class RoomRenderer {
                 y++;
             if (room.checkmarkState >= Room.CLEARED) {
                 if (room.checkmarkState >= Room.COMPLETED) {
-                    graphics.setColor(new Color(0, 123 / 255, 0));
+                    graphics.setColor(green);
                 } else {
-                    graphics.setColor(new Color(220 / 255, 220 / 255, 220 / 255));
+                    graphics.setColor(gray);
                 }
-                graphics.drawString('✔', x * context.blockSize + context.roomSize / 2 - 5, y * context.blockSize + context.roomSize - 4);
+                graphics.drawString('✔', x * context.blockSize + (context.roomSize - fontSize) / 2 + 4, y * context.blockSize + context.roomSize - (context.roomSize - fontSize) / 2);
             } else if (room.checkmarkState === Room.ADJACENT) {
-                graphics.setColor(new Color(0, 0, 0));
+                graphics.setColor(black);
                 graphics.drawString('?', x * context.blockSize + context.roomSize / 2 - 2, y * context.blockSize + context.roomSize - 4);
             }
             //checkmark done

@@ -144,9 +144,10 @@ class SettingGui {
         }
         this.addDropdown("Tick Style", {
             "default": "NEU Map",
-            "hypixel": "Hypixel",
+            "hypixel-old": "Hypixel (old)",
+            "hypixel-new": "Hypixel (new)",
             "tenios": "tenios",
-            "secrets": "Secrets Found",
+            "roomnames": "Roomname",
         }, "tickStyle", this.currentSettings.tickStyle)
 
         this.addGear(() => {

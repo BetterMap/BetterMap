@@ -78,7 +78,7 @@ class MapRenderer {
             renderLibs.drawStringCenteredFull("&" + colorScoreThingo + scoreInfo.total, x + size * (dungeonMap.floorNumber >= 6 ? 1 / 5 : 1 / 4), y + size + scoreInfoHeight / 2, size / 100)
             renderLibs.drawStringCenteredFull((scoreInfo.crypts >= 5 ? `&a${scoreInfo.crypts}` : scoreInfo.crypts > 0 ? `&e${scoreInfo.crypts}` : `&c0`) + 'c', x + size * (dungeonMap.floorNumber >= 6 ? 10 / 23 : 3 / 4), y + size + scoreInfoHeight / 2, size / 100)
             if (dungeonMap.floorNumber >= 6)
-                renderLibs.drawStringCenteredFull("&7Mimic " + (scoreInfo.mimic ? "&a✔" : "&c✕"), x + size / 4 * 3, y + size + scoreInfoHeight / 2, size / 100)
+                renderLibs.drawStringCenteredFull((renderContext.settings.scoreInfoUnderMap_simplified_showMimicText ? "&7Mimic " : "") + (scoreInfo.mimic ? "&a✔" : "&c✕"), x + size / 4 * 3, y + size + scoreInfoHeight / 2, size / 100)
 
 
             Renderer.drawRect(Renderer.color(renderContext.settings.mapBorderColor[0] ?? 0, renderContext.settings.mapBorderColor[1] ?? 0, renderContext.settings.mapBorderColor[2] ?? 0, renderContext.settings.mapBorderColor[3]), x, y + size, renderContext.borderWidth, scoreInfoHeight) //border of score info

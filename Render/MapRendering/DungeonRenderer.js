@@ -8,7 +8,6 @@ import renderLibs from "../../../guimanager/renderLibs"
 import DungeonMap from "../../Components/DungeonMap"
 import RenderContext from "./../RenderContext"
 import MapTab from "../MapTab"
-import Room from "../../Components/Room";
 
 class DungeonRenderer extends MapTab {
     constructor(mapRenderer) {

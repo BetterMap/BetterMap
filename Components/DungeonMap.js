@@ -336,6 +336,7 @@ class DungeonMap {
      * Update players from tab list, also sends locations of players in render distance to other players
      */
     updatePlayers() {
+        if (!Player.getPlayer()) return //How tf is this null sometimes wtf 
         let pl = Player.getPlayer()[f.sendQueue.EntityPlayerSP][m.getPlayerInfoMap]().sort((a, b) => sorter.compare(a, b)) //tab player list
         let i = 0
 

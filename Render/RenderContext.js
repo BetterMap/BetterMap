@@ -7,12 +7,14 @@
  * @property {Number} size - Width/height of the map when rendered
  * @property {Number} headScale - Width/height of heads (scales with size, will be same if size is 100)
  * @property {Number} iconScale - Width/height of icons (scales with size, will be same if size is 100)
- * @property {"hypixel"|"default"|"tenios"|"secrets"|"secrets_underhead"} tickStyle - Style of the ticks
+ * @property {"hypixel"|"default"|"tenios"|"secrets"} tickStyle - Style of the ticks
+ * @property {Boolean} tickStyle_secrets_overHead - Wether to render the secrets tick style over player heads
  * @property {"none"|"text"|"icon"} puzzleNames - Render style of puzzle names
  * @property {"none"|"single"|"class-color"} headBorder - Wether to put a black border around heads on the map
  * @property {"never"|"leap"|"always"} playerNames - When to show player names on map
  * @property {"none"|"left"|"right"} currentRoomInfo - Render current room hover info on side of map
  * @property {"none"|"legalmap"|"simplified"} scoreInfoUnderMap - Render score info under the map
+ * @property {Boolean} scoreInfoUnderMap_simplified_showMimicText - Wether to show 'mimic' before the tick/cross
  * @property {Boolean} tabSecretCount - Show the estimated secret count in tab
  * @property {Boolean} tabCryptCount - Show the current total crypt count for discovered rooms in tab 
  * @property {Boolean} tabMimic - Show the mimic status in tab
@@ -80,6 +82,9 @@ class RenderContext {
     get tickStyle() {
         return this.settings.tickStyle
     }
+    get tickStyle_secrets_overHead() {
+        return this.settings.tickStyle_secrets_overHead
+    }
     get puzzleNames() {
         return this.settings.puzzleNames
     }
@@ -100,6 +105,10 @@ class RenderContext {
 
     get scoreInfoUnderMap() {
         return this.settings.scoreInfoUnderMap
+    }
+
+    get scoreInfoUnderMap_simplified_showMimicText() {
+        return this.settings.scoreInfoUnderMap_simplified_showMimicText
     }
 
     get hideInBoss() {
@@ -264,11 +273,13 @@ class RenderContext {
         headScale = 8,
         iconScale = 10,
         tickStyle = "default",
+        tickStyle_secrets_overHead = true,
         puzzleNames = "none",
         headBorder = "none",
         playerNames = "leap",
         currentRoomInfo = "none",
         scoreInfoUnderMap = "simplified",
+        scoreInfoUnderMap_simplified_showMimicText = true,
         tabSecretCount = false,
         tabCryptCount = false,
         tabMimic = false,
@@ -302,11 +313,13 @@ class RenderContext {
             headScale,
             iconScale,
             tickStyle,
+            tickStyle_secrets_overHead,
             puzzleNames,
             headBorder,
             playerNames,
             currentRoomInfo,
             scoreInfoUnderMap,
+            scoreInfoUnderMap_simplified_showMimicText,
             tabCryptCount,
             tabSecretCount,
             tabMimic,

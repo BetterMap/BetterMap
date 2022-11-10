@@ -76,14 +76,21 @@ class RoomRenderer {
      * @returns 
      */
     drawCheckmark(context, graphics, room) {
-        //dont draw checkmarks if we select a secret count style
-        if (room.type !== Room.PUZZLE && ['secrets', 'secrets_underhead'].includes(context.tickStyle)) return;
         //spawn room wont get checkmarked
         if (room.type === Room.SPAWN) return;
-        //dont draw checkmarks if we display roomnames instead
-        if (room.type === Room.PUZZLE && context.puzzleNames === 'text') return;
-        //tenios style shows secrets in this case instead
-        if (context.mapStyle === 'teniosmap' && room.maxSecrets !== 0 && room.checkmarkState !== Room.ADJACENT) return;
+        //puzzle checkmarks are drawn in drawPuzzle
+        if (room.type === Room.PUZZLE) return;
+        //dont show checkmarks if all rooms are rendered by name
+        if (context.showSecretCount === 'always') {
+            if (!context.checkmarkCompleteRooms) return;
+            if (context.checkmarkCompleteRooms && room.checkmarkState !== Room.COMPLETED) return;
+        }
+        if (context.showSecretCount === 'hasSecrets' && room.maxSecrets > 0) {
+            if (!context.checkmarkCompleteRooms) return;
+            if (context.checkmarkCompleteRooms && room.checkmarkState !== Room.COMPLETED) return;
+        }
+        //room names are rendered in drawExtras 
+        if (context.tickStyle === 'roomnames') return;
 
         //tenios checkmark is perm on the image
         if (context.tickStyle === 'tenios') {
@@ -104,7 +111,7 @@ class RoomRenderer {
                 graphics.drawString('✔', x * context.blockSize + (context.roomSize - fontSize) / 2 + 4, y * context.blockSize + context.roomSize - (context.roomSize - fontSize) / 2);
             } else if (room.checkmarkState === Room.ADJACENT) {
                 graphics.setColor(black);
-                graphics.drawString('?', x * context.blockSize + context.roomSize / 2 - 2, y * context.blockSize + context.roomSize - 4);
+                graphics.drawString('?', x * context.blockSize + context.roomSize / 3 * 2 - fontSize / 3 - 1, y * context.blockSize + context.roomSize - (context.roomSize - fontSize) / 2);
             }
             //checkmark done
             if (room.checkmarkState !== Room.FAILED)
@@ -201,6 +208,59 @@ class RoomRenderer {
      * @param {Room} room 
      */
     drawExtras(context, room, dungeon) {
+        if (room.type === Room.PUZZLE) return;
+        if (room.type === Room.SPAWN) return;
+        if (context.showSecretCount === 'never') return;
+        if (context.checkmarkCompleteRooms && room.checkmarkState === Room.COMPLETED) return;
+        if (context.showSecretCount === 'hasSecrets' && !room.maxSecrets > 0) return;
+        let location = room.components[0]
+
+        let x = (context.roomGap / 2 + context.blockSize * location.arrayX + context.roomSize / 2 + context.borderWidth + context.paddingLeft) / context.getImageSize(dungeon.floor)
+        let y = (context.roomGap / 2 + context.blockSize * location.arrayY + context.roomSize / 2 + context.borderWidth + context.paddingTop) / context.getImageSize(dungeon.floor)
+
+        x = context.posX + x * context.size + context.borderWidth
+        y = context.posY + y * (context.size - context.borderWidth) + context.borderWidth
+
+        let scale = context.size / 175 * context.iconScale / 8
+
+        if (room.maxSecrets === 10) x += 12 * scale
+
+        let text = (room.currentSecrets ?? "?") + "/" + (room.maxSecrets ?? "?");
+
+        if (room.type === Room.BLOOD) text = "0/0"
+
+        let textColored = ""
+        switch (room.checkmarkState) {
+            case Room.ADJACENT:
+                textColored = "&7" + text
+                break;
+            case Room.CLEARED:
+                textColored = "&f" + text
+                break;
+            case Room.COMPLETED:
+                textColored = "&a" + text
+                break;
+            case Room.FAILED:
+                textColored = "&c" + text
+                break;
+            case Room.OPENED:
+            default:
+                textColored = "&8" + text
+                break;
+        }
+        text = "&0" + text
+
+        if (context.tickStyle_secrets_overHead) Renderer.translate(0, 0, 100)
+        renderLibs.drawStringCenteredShadow(text, x + scale, y - 4.5 * scale, scale)
+        if (context.tickStyle_secrets_overHead) Renderer.translate(0, 0, 100)
+        renderLibs.drawStringCenteredShadow(text, x - scale, y - 4.5 * scale, scale)
+        if (context.tickStyle_secrets_overHead) Renderer.translate(0, 0, 100)
+        renderLibs.drawStringCenteredShadow(text, x, y + scale - 4.5 * scale, scale)
+        if (context.tickStyle_secrets_overHead) Renderer.translate(0, 0, 100)
+        renderLibs.drawStringCenteredShadow(text, x, y - scale - 4.5 * scale, scale)
+
+        if (context.tickStyle_secrets_overHead) Renderer.translate(0, 0, 100)
+        renderLibs.drawStringCenteredShadow(textColored, x, y - 4.5 * scale, scale)
         return;
         if (room.type === Room.SPAWN || room.type === Room.FAIRY) return
 
@@ -239,54 +299,7 @@ class RoomRenderer {
             renderLibs.drawStringCenteredShadow(text, x, y, scale)
         } else if (context.tickStyle === 'secrets' && (room.type !== Room.PUZZLE || (context.mapStyle !== 'teniosmap' && context.puzzleNames !== 'text'))) {
 
-            let location = room.components[0]
 
-            let x = (context.roomGap / 2 + context.blockSize * location.arrayX + context.roomSize / 2 + context.borderWidth + context.paddingLeft) / context.getImageSize(dungeon.floor)
-            let y = (context.roomGap / 2 + context.blockSize * location.arrayY + context.roomSize / 2 + context.borderWidth + context.paddingTop) / context.getImageSize(dungeon.floor)
-
-            x = context.posX + x * context.size + context.borderWidth
-            y = context.posY + y * (context.size - context.borderWidth) + context.borderWidth
-
-            let scale = context.size / 175 * context.iconScale / 8
-
-            if (room.maxSecrets === 10) x += 12 * scale
-
-            let text = (room.currentSecrets ?? "?") + "/" + (room.maxSecrets ?? "?");
-
-            if (room.type === Room.BLOOD) text = "0/0"
-
-            let textColored = ""
-            switch (room.checkmarkState) {
-                case Room.ADJACENT:
-                    textColored = "&7" + text
-                    break;
-                case Room.CLEARED:
-                    textColored = "&f" + text
-                    break;
-                case Room.COMPLETED:
-                    textColored = "&a" + text
-                    break;
-                case Room.FAILED:
-                    textColored = "&c" + text
-                    break;
-                case Room.OPENED:
-                default:
-                    textColored = "&8" + text
-                    break;
-            }
-            text = "&0" + text
-
-            if (context.tickStyle === "secrets") Renderer.translate(0, 0, 100)
-            renderLibs.drawStringCenteredShadow(text, x + scale, y - 4.5 * scale, scale)
-            if (context.tickStyle === "secrets") Renderer.translate(0, 0, 100)
-            renderLibs.drawStringCenteredShadow(text, x - scale, y - 4.5 * scale, scale)
-            if (context.tickStyle === "secrets") Renderer.translate(0, 0, 100)
-            renderLibs.drawStringCenteredShadow(text, x, y + scale - 4.5 * scale, scale)
-            if (context.tickStyle === "secrets") Renderer.translate(0, 0, 100)
-            renderLibs.drawStringCenteredShadow(text, x, y - scale - 4.5 * scale, scale)
-
-            if (context.tickStyle === "secrets") Renderer.translate(0, 0, 100)
-            renderLibs.drawStringCenteredShadow(textColored, x, y - 4.5 * scale, scale)
         }
     }
 

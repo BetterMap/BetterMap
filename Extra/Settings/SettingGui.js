@@ -156,6 +156,17 @@ class SettingGui {
             elm.addToggle("Show secrets over player heads", "tickStyle_secrets_overHead", this.currentSettings.tickStyle_secrets_overHead)
         })
 
+        this.addDropdown("Secret Count instead of Checkmarks", {
+            "never": "Never",
+            "hasSecrets": "Rooms with Secrets",
+            "always": "Always"
+        }, "showSecretCount", this.currentSettings.showSecretCount)
+
+        this.addGear(() => {
+            return this.currentSettings.showSecretCount !== "never"
+        }, (elm) => {
+            elm.addToggle("Use Checkmarks for fully cleared Rooms", "checkmarkCompleteRooms", this.currentSettings.checkmarkCompleteRooms)
+        })
 
         this.addDropdown("Puzzle Style", {
             "none": "None",
@@ -206,7 +217,7 @@ class SettingGui {
         this.addColorSelector("Map Color", "mapBackgroundColor", this.currentSettings.mapBackgroundColor)
         this.addColorSelector("Extra Info Color", "extraInfoBackroundColor", this.currentSettings.extraInfoBackroundColor)
 
-        this.addCategory("Secret info Settings")
+        this.addCategory("Score Settings")
 
         this.addDropdown("Score info under map style", {
             "none": "None",
@@ -220,6 +231,27 @@ class SettingGui {
             elm.addToggle("Show 'Mimic' text before cross/tick", "scoreInfoUnderMap_simplified_showMimicText", this.currentSettings.scoreInfoUnderMap_simplified_showMimicText)[1].setLore(["If this is disabled it will still show wether mimic has been killed", "It just wont show the text before the indicator"])
         })
 
+        this.addToggle("Fix Score in Scoreboard", "fixScore", this.currentSettings.fixScore)[1].setLore(["Replaces the score in the Sidebar-Scoreboard with the correct score"])
+
+        this.addToggle("Force paul +10 score", "forcePaul", this.currentSettings.forcePaul)[1].setLore(["Paul score bonus will get auto-detected when paul is mayor", "But it wont be auto detected from jerry-paul"])
+
+        this.addDropdown("Broadcast score message", {
+            "never": "Off",
+            "automatic": "Relevant score depending on your floor",
+            "at270": "After reaching 270 score",
+            "at300": "After reaching 300 score",
+            "always": "Both 270 and 300",
+        }, "showScoreMessage", this.currentSettings.showScoreMessage);
+
+        this.addGear(() => {
+            return this.currentSettings.showScoreMessage !== "never"
+        }, (elm) => {
+            if (this.currentSettings.showScoreMessage !== "at300")
+                elm.addString("270 Score Message", "custom270scoreMessage", this.currentSettings.custom270scoreMessage)[0];
+            if (this.currentSettings.showScoreMessage !== "at270")
+                elm.addString("300 Score Message", "custom300scoreMessage", this.currentSettings.custom300scoreMessage)[0];
+        })
+
         this.addCategory("Tab Info")
 
         this.addToggle("Show current Secret total", "tabSecretCount", this.currentSettings.tabSecretCount)[1].setLore(["Change the secrets found number in tab to also show total secrets in dungeon"])
@@ -227,8 +259,6 @@ class SettingGui {
         this.addToggle("Show current Crypt total", "tabCryptCount", this.currentSettings.tabCryptCount)[1].setLore(["Change the crypts found number in tab to also show total crypts in dungeon"])
 
         this.addToggle("Show Mimic Status", "tabMimic", this.currentSettings.tabMimic)[1].setLore(["Add a line to tab displaying wether the minic has been killed"])
-
-        this.addToggle("Fix Score in Scoreboard", "fixScore", this.currentSettings.fixScore)[1].setLore(["Replaces the score in the Sidebar-Scoreboard with the correct score"])
 
         this.addCategory("Other Settings")
 
@@ -242,8 +272,6 @@ class SettingGui {
         }, "currentRoomInfo", this.currentSettings.currentRoomInfo)[1].setLore(["Shows the same info that would be shown when hovering over a room"])
 
         this.addToggle("Box wither doors", "boxDoors", this.currentSettings.boxDoors)[1].setLore(["Not esp, loads door locations from map."])
-
-        this.addToggle("Force paul +10 score", "forcePaul", this.currentSettings.forcePaul)[1].setLore(["Paul score bonus will get auto-detected when paul is mayor", "But it wont be auto detected from jerry-paul"])
 
         this.addToggle("Dungeon clear breakdown", "clearedRoomInfo", this.currentSettings.clearedRoomInfo)[1].setLore(["Shows the cleared room count and specific rooms in chat when the dungeon ends"])
 

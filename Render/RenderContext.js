@@ -8,7 +8,8 @@
  * @property {Number} headScale - Width/height of heads (scales with size, will be same if size is 100)
  * @property {Number} iconScale - Width/height of icons (scales with size, will be same if size is 100)
  * @property {"hypixel-old", "hypixel-new"|"default"|"tenios"|"roomnames"} tickStyle - Style of the ticks
- * @property {"never","uncompleted","always"} showSecretCount - When to show secrets instead of checkmarks
+ * @property {"never","hasSecrets","always"} showSecretCount - When to show secrets instead of checkmarks
+ * @property {Boolean} checkmarkCompleteRooms - Turn completed rooms into checkmarks
  * @property {Boolean} tickStyle_secrets_overHead - Wether to render the secrets / room name tick style over player heads
  * @property {"none"|"text"|"icon"} puzzleNames - Render style of puzzle names
  * @property {"none"|"single"|"class-color"} headBorder - Wether to put a black border around heads on the map
@@ -89,6 +90,13 @@ class RenderContext {
     get tickStyle_secrets_overHead() {
         return this.settings.tickStyle_secrets_overHead
     }
+    get showSecretCount(){
+        return this.settings.showSecretCount
+    }
+    get checkmarkCompleteRooms(){
+        return this.settings.checkmarkCompleteRooms
+    }
+
     get puzzleNames() {
         return this.settings.puzzleNames
     }
@@ -113,6 +121,18 @@ class RenderContext {
 
     get scoreInfoUnderMap_simplified_showMimicText() {
         return this.settings.scoreInfoUnderMap_simplified_showMimicText
+    }
+
+    get showScoreMessage() {
+        return this.settings.showScoreMessage;
+    }
+
+    get custom270scoreMessage() {
+        return this.settings.custom270scoreMessage;
+    }
+
+    get custom300scoreMessage() {
+        return this.settings.custom300scoreMessage;
     }
 
     get hideInBoss() {
@@ -290,12 +310,17 @@ class RenderContext {
         iconScale = 10,
         tickStyle = "default",
         tickStyle_secrets_overHead = true,
+        showSecretCount = "never",
+        checkmarkCompleteRooms = false,
         puzzleNames = "none",
         headBorder = "none",
         playerNames = "leap",
         currentRoomInfo = "none",
         scoreInfoUnderMap = "simplified",
         scoreInfoUnderMap_simplified_showMimicText = true,
+        showScoreMessage = false,
+        custom270scoreMessage = '270 score reached!',
+        custom300scoreMessage = '300 score reached!',
         tabSecretCount = false,
         tabCryptCount = false,
         tabMimic = false,
@@ -330,12 +355,17 @@ class RenderContext {
             iconScale,
             tickStyle,
             tickStyle_secrets_overHead,
+            showSecretCount,
+            checkmarkCompleteRooms,
             puzzleNames,
             headBorder,
             playerNames,
             currentRoomInfo,
             scoreInfoUnderMap,
             scoreInfoUnderMap_simplified_showMimicText,
+            showScoreMessage,
+            custom270scoreMessage,
+            custom300scoreMessage,
             tabCryptCount,
             tabSecretCount,
             tabMimic,

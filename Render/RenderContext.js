@@ -5,6 +5,7 @@
  * @property {Number} posX - X Position of the map on screen
  * @property {Number} posY - y Position of the map on screen
  * @property {Number} size - Width/height of the map when rendered
+ * @property {"off", "icons", "heads"} showHeads - show player heads on the map
  * @property {Number} headScale - Width/height of heads (scales with size, will be same if size is 100)
  * @property {Number} iconScale - Width/height of icons (scales with size, will be same if size is 100)
  * @property {"hypixel-old", "hypixel-new"|"default"|"tenios"|"roomnames"} tickStyle - Style of the ticks
@@ -78,6 +79,9 @@ class RenderContext {
     get size() {
         return this.settings.size
     }
+    get showHeads() {
+        return this.settings.showHeads;
+    }
     get headScale() {
         return this.settings.headScale
     }
@@ -90,10 +94,10 @@ class RenderContext {
     get tickStyle_secrets_overHead() {
         return this.settings.tickStyle_secrets_overHead
     }
-    get showSecretCount(){
+    get showSecretCount() {
         return this.settings.showSecretCount
     }
-    get checkmarkCompleteRooms(){
+    get checkmarkCompleteRooms() {
         return this.settings.checkmarkCompleteRooms
     }
 
@@ -306,6 +310,7 @@ class RenderContext {
         posX = 0,
         posY = 0,
         size = 100,
+        showHeads = 'heads',
         headScale = 8,
         iconScale = 10,
         tickStyle = "default",
@@ -351,6 +356,7 @@ class RenderContext {
             posX,
             posY,
             size,
+            showHeads,
             headScale,
             iconScale,
             tickStyle,

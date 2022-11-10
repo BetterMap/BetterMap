@@ -164,39 +164,42 @@ class MapPlayer {
         return dungeon.rooms.get(x + ',' + y)
     }
 
-    drawAt(x, y, w, h, rotation = 0, border = true) {
+    drawAt(context, x, y, w, h, rotation = 0, border = true) {
         Tessellator.pushMatrix()
         Renderer.retainTransforms(true)
         Renderer.translate(x + w / 2, y + h / 2, 50)
         // Renderer.translate(x + (this.location.worldX + 256 - 32) * size / 256, y + (this.location.worldY + 256 - 32) * size / 256, 50)
         Renderer.rotate(rotation)
+        if (context.showHeads === 'icons') {
+            Renderer.drawImage(this.username === Player.getName() ? markerSelf : markerOther, -5, -7, 10, 14)
+        } else {
+            if (border != "none" || border == false) {
+                this.updatePlayerColor()
+                Renderer.drawRect(Renderer.color(this.playerColor[0] ?? 0, this.playerColor[1] ?? 0, this.playerColor[2] ?? 0, this.playerColor[3] ?? 255), -w / 2 - 1, -h / 2 - 1, w + 2, h + 2)
+            }
 
-        if (border != "none" || border == false) {
-            this.updatePlayerColor()
-            Renderer.drawRect(Renderer.color(this.playerColor[0] ?? 0, this.playerColor[1] ?? 0, this.playerColor[2] ?? 0, this.playerColor[3] ?? 255), -w / 2 - 1, -h / 2 - 1, w + 2, h + 2)
+            GlStateManager[m.enableBlend]()
+            Client.getMinecraft()[m.getTextureManager]()[m.bindTexture.TextureManager](this.networkPlayerInfo[m.getLocationSkin.NetworkPlayerInfo]())
+            GlStateManager[m.enableTexture2D]()
+
+            let tessellator = MCTessellator[m.getInstance.Tessellator]()
+            let worldRenderer = tessellator[m.getWorldRenderer]()
+            worldRenderer[m.begin](7, DefaultVertexFormats[f.POSITION_TEX])
+
+            worldRenderer[m.pos](-w / 2, h / 2, 0.0)[m.tex](8 / 64, 16 / 64)[m.endVertex]()
+            worldRenderer[m.pos](w / 2, h / 2, 0.0)[m.tex](16 / 64, 16 / 64)[m.endVertex]()
+            worldRenderer[m.pos](w / 2, -h / 2, 0.0)[m.tex](16 / 64, 8 / 64)[m.endVertex]()
+            worldRenderer[m.pos](-w / 2, -h / 2, 0.0)[m.tex](8 / 64, 8 / 64)[m.endVertex]()
+            tessellator[m.draw.Tessellator]()
+
+            worldRenderer[m.begin](7, DefaultVertexFormats[f.POSITION_TEX])
+
+            worldRenderer[m.pos](-w / 2, h / 2, 0.0)[m.tex](40 / 64, 16 / 64)[m.endVertex]()
+            worldRenderer[m.pos](w / 2, h / 2, 0.0)[m.tex](48 / 64, 16 / 64)[m.endVertex]()
+            worldRenderer[m.pos](w / 2, -h / 2, 0.0)[m.tex](48 / 64, 8 / 64)[m.endVertex]()
+            worldRenderer[m.pos](-w / 2, -h / 2, 0.0)[m.tex](40 / 64, 8 / 64)[m.endVertex]()
+            tessellator[m.draw.Tessellator]()
         }
-
-        GlStateManager[m.enableBlend]()
-        Client.getMinecraft()[m.getTextureManager]()[m.bindTexture.TextureManager](this.networkPlayerInfo[m.getLocationSkin.NetworkPlayerInfo]())
-        GlStateManager[m.enableTexture2D]()
-
-        let tessellator = MCTessellator[m.getInstance.Tessellator]()
-        let worldRenderer = tessellator[m.getWorldRenderer]()
-        worldRenderer[m.begin](7, DefaultVertexFormats[f.POSITION_TEX])
-
-        worldRenderer[m.pos](-w / 2, h / 2, 0.0)[m.tex](8 / 64, 16 / 64)[m.endVertex]()
-        worldRenderer[m.pos](w / 2, h / 2, 0.0)[m.tex](16 / 64, 16 / 64)[m.endVertex]()
-        worldRenderer[m.pos](w / 2, -h / 2, 0.0)[m.tex](16 / 64, 8 / 64)[m.endVertex]()
-        worldRenderer[m.pos](-w / 2, -h / 2, 0.0)[m.tex](8 / 64, 8 / 64)[m.endVertex]()
-        tessellator[m.draw.Tessellator]()
-
-        worldRenderer[m.begin](7, DefaultVertexFormats[f.POSITION_TEX])
-
-        worldRenderer[m.pos](-w / 2, h / 2, 0.0)[m.tex](40 / 64, 16 / 64)[m.endVertex]()
-        worldRenderer[m.pos](w / 2, h / 2, 0.0)[m.tex](48 / 64, 16 / 64)[m.endVertex]()
-        worldRenderer[m.pos](w / 2, -h / 2, 0.0)[m.tex](48 / 64, 8 / 64)[m.endVertex]()
-        worldRenderer[m.pos](-w / 2, -h / 2, 0.0)[m.tex](40 / 64, 8 / 64)[m.endVertex]()
-        tessellator[m.draw.Tessellator]()
         Renderer.retainTransforms(false)
         Tessellator.popMatrix()
     }
@@ -222,6 +225,7 @@ class MapPlayer {
      * @param {RenderContext} renderContext 
      */
     drawIcon(renderContext, dungeon, overrideX, overrideY) {
+        if (renderContext.showHeads === 'off') return;
         let { size, headScale } = renderContext.getMapDimensions()
 
         if (!dungeon) return
@@ -235,7 +239,7 @@ class MapPlayer {
         x2 = overrideX || x2
         y2 = overrideY || y2
 
-        this.drawAt(x2 + rx, y2 + ry, rw, rh, this.yaw.get(), renderContext.headBorder)
+        this.drawAt(renderContext, x2 + rx, y2 + ry, rw, rh, this.yaw.get(), renderContext.headBorder)
 
         let showNametag = renderContext.playerNames === "always"
 
@@ -304,3 +308,6 @@ function getPlayerSecrets(uuid, cacheMs, callback) {
         callback(secretsData.get(uuid)[1])
     })
 }
+
+const markerSelf = new Image("markerSelf.png", "https://i.imgur.com/mwpjgRz.png");
+const markerOther = new Image("markerOther.png", "https://i.imgur.com/xnoBx3p.png");

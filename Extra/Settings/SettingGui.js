@@ -184,24 +184,42 @@ class SettingGui {
             }
         })
 
-        this.addDropdown("Border around heads", {
-            "none": "None",
-            "single": "Single Color",
-            "class-color": "Class Colors"
-        }, "headBorder", this.currentSettings.headBorder)[1].setLore(["All border colors can be changed in the config file"])
+        this.addDropdown("Player Heads", {
+            "off": "None",
+            "icons": "Arrows",
+            "heads": "Heads"
+        }, "showHeads", this.currentSettings.showHeads);
 
         this.addGear(() => {
-            return this.currentSettings.headBorder === "class-color" || this.currentSettings.headBorder === "single"
+            return this.currentSettings.showHeads === "heads"
         }, (elm) => {
-            if (this.currentSettings.headBorder == "single") {
-                elm.addColorSelector("Player Border Color", "singleBorderColor", this.currentSettings.singleBorderColor)
-            } else if (this.currentSettings.headBorder == "class-color") {
-                elm.addColorSelector("Healer Border Color", "healerColor", this.currentSettings.healerColor)
-                elm.addColorSelector("Mage Border Color", "mageColor", this.currentSettings.mageColor)
-                elm.addColorSelector("Berserk Border Color", "bersColor", this.currentSettings.bersColor)
-                elm.addColorSelector("Archer Border Color", "healerColor", this.currentSettings.healerColor)
-                elm.addColorSelector("Tank Border Color", "tankColor", this.currentSettings.tankColor)
-            }
+
+            elm.addSlider("Head Scale", "headScale", this.currentSettings.headScale || 8, 2, 15)
+            elm.addDropdown("Border around heads", {
+                "none": "None",
+                "single": "Single Color",
+                "class-color": "Class Colors"
+            }, "headBorder", this.currentSettings.headBorder)[1].setLore(["All border colors can be changed in the config file"])
+            elm.addColorSelector("Player Border Color", "singleBorderColor", this.currentSettings.singleBorderColor)
+            elm.addColorSelector("Healer Border Color", "healerColor", this.currentSettings.healerColor)
+            elm.addColorSelector("Mage Border Color", "mageColor", this.currentSettings.mageColor)
+            elm.addColorSelector("Berserk Border Color", "bersColor", this.currentSettings.bersColor)
+            elm.addColorSelector("Archer Border Color", "healerColor", this.currentSettings.healerColor)
+            elm.addColorSelector("Tank Border Color", "tankColor", this.currentSettings.tankColor)
+            // elm.addGear(() => {
+            //     return this.currentSettings.headBorder === "class-color" || this.currentSettings.headBorder === "single"
+            // }, (elm2) => {
+            //     if (this.currentSettings.headBorder == "single") {
+            //         elm2.addColorSelector("Player Border Color", "singleBorderColor", this.currentSettings.singleBorderColor)
+            //     } else if (this.currentSettings.headBorder == "class-color") {
+            //         elm2.addColorSelector("Healer Border Color", "healerColor", this.currentSettings.healerColor)
+            //         elm2.addColorSelector("Mage Border Color", "mageColor", this.currentSettings.mageColor)
+            //         elm2.addColorSelector("Berserk Border Color", "bersColor", this.currentSettings.bersColor)
+            //         elm2.addColorSelector("Archer Border Color", "healerColor", this.currentSettings.healerColor)
+            //         elm2.addColorSelector("Tank Border Color", "tankColor", this.currentSettings.tankColor)
+            //     }
+            // });
+
         })
 
         this.addDropdown("Player names on map", {
@@ -210,7 +228,6 @@ class SettingGui {
             "always": "Always"
         }, "playerNames", this.currentSettings.playerNames)
 
-        this.addSlider("Head Scale", "headScale", this.currentSettings.headScale || 8, 2, 15)
         this.addSlider("Icon Scale", "iconScale", this.currentSettings.iconScale || 10, 2, 15)
 
         this.addColorSelector("Map Border Color", "mapBorderColor", this.currentSettings.mapBorderColor)

@@ -180,16 +180,16 @@ class RoomRenderer {
             let i = 0
             for (let line of text) {
                 let ly = y + 9 * scale * (i - text.length / 2)
-                Renderer.translate(0, 0, 100)
+                if (context.tickStyle_secrets_overHead) Renderer.translate(0, 0, 100)
                 renderLibs.drawStringCenteredShadow("&0" + line, x + scale, ly, scale)
-                Renderer.translate(0, 0, 100)
+                if (context.tickStyle_secrets_overHead) Renderer.translate(0, 0, 100)
                 renderLibs.drawStringCenteredShadow("&0" + line, x - scale, ly, scale)
-                Renderer.translate(0, 0, 100)
+                if (context.tickStyle_secrets_overHead) Renderer.translate(0, 0, 100)
                 renderLibs.drawStringCenteredShadow("&0" + line, x, ly + scale, scale)
-                Renderer.translate(0, 0, 100)
+                if (context.tickStyle_secrets_overHead) Renderer.translate(0, 0, 100)
                 renderLibs.drawStringCenteredShadow("&0" + line, x, ly - scale, scale)
 
-                Renderer.translate(0, 0, 100)
+                if (context.tickStyle_secrets_overHead) Renderer.translate(0, 0, 100)
                 renderLibs.drawStringCenteredShadow(textColor + line, x, ly, scale)
 
                 i++
@@ -309,16 +309,16 @@ class RoomRenderer {
             let i = 0
             for (let line of text) {
                 let ly = y + 9 * scale * (i - text.length / 2)
-                Renderer.translate(0, 0, 100)
+                if (context.tickStyle_secrets_overHead) Renderer.translate(0, 0, 100)
                 renderLibs.drawStringCenteredShadow("&0" + line, x + scale, ly, scale)
-                Renderer.translate(0, 0, 100)
+                if (context.tickStyle_secrets_overHead) Renderer.translate(0, 0, 100)
                 renderLibs.drawStringCenteredShadow("&0" + line, x - scale, ly, scale)
-                Renderer.translate(0, 0, 100)
+                if (context.tickStyle_secrets_overHead) Renderer.translate(0, 0, 100)
                 renderLibs.drawStringCenteredShadow("&0" + line, x, ly + scale, scale)
-                Renderer.translate(0, 0, 100)
+                if (context.tickStyle_secrets_overHead) Renderer.translate(0, 0, 100)
                 renderLibs.drawStringCenteredShadow("&0" + line, x, ly - scale, scale)
 
-                Renderer.translate(0, 0, 100)
+                if (context.tickStyle_secrets_overHead) Renderer.translate(0, 0, 100)
                 renderLibs.drawStringCenteredShadow(textColor + line, x, ly, scale)
 
                 i++

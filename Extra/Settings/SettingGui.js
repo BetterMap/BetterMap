@@ -151,9 +151,9 @@ class SettingGui {
         }, "tickStyle", this.currentSettings.tickStyle)
 
         this.addGear(() => {
-            return this.currentSettings.tickStyle === "secrets"
+            return this.currentSettings.tickStyle === "roomnames"
         }, (elm) => {
-            elm.addToggle("Show secrets over player heads", "tickStyle_secrets_overHead", this.currentSettings.tickStyle_secrets_overHead)
+            elm.addToggle("Show room names over player heads", "tickStyle_secrets_overHead", this.currentSettings.tickStyle_secrets_overHead)
         })
 
         this.addDropdown("Secret Count instead of Checkmarks", {
@@ -166,6 +166,7 @@ class SettingGui {
             return this.currentSettings.showSecretCount !== "never"
         }, (elm) => {
             elm.addToggle("Use Checkmarks for fully cleared Rooms", "checkmarkCompleteRooms", this.currentSettings.checkmarkCompleteRooms)
+            elm.addToggle("Show secret count over player heads", "tickStyle_secrets_overHead", this.currentSettings.tickStyle_secrets_overHead)
         })
 
         this.addDropdown("Puzzle Style", {
@@ -241,12 +242,6 @@ class SettingGui {
             "legalmap": "LegalMap",
             "simplified": "Simplified"
         }, "scoreInfoUnderMap", this.currentSettings.scoreInfoUnderMap)
-
-        this.addGear(() => {
-            return this.currentSettings.scoreInfoUnderMap === "simplified"
-        }, (elm) => {
-            elm.addToggle("Show 'Mimic' text before cross/tick", "scoreInfoUnderMap_simplified_showMimicText", this.currentSettings.scoreInfoUnderMap_simplified_showMimicText)[1].setLore(["If this is disabled it will still show wether mimic has been killed", "It just wont show the text before the indicator"])
-        })
 
         this.addToggle("Fix Score in Scoreboard", "fixScore", this.currentSettings.fixScore)[1].setLore(["Replaces the score in the Sidebar-Scoreboard with the correct score"])
 

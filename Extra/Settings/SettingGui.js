@@ -134,6 +134,14 @@ class SettingGui {
         this.addSidebarElement() //adds 2 gaps (button from above diddnt get one added automatically + seperating setting areas)
         this.addCategory("Style Settings")
 
+        if (this.currentSettings.tickStyle === "secrets_underhead") {
+            this.currentSettings.tickStyle = "secrets"
+            this.currentSettings.tickStyle_secrets_overHead = false
+            Client.scheduleTask(10, () => {
+                this.changed("tickStyle", "secrets")
+                this.changed("tickStyle_secrets_overHead", false)
+            })
+        }
         this.addDropdown("Tick Style", {
             "default": "NEU Map",
             "hypixel": "Hypixel",

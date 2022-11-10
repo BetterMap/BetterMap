@@ -205,6 +205,12 @@ class SettingGui {
             "simplified": "Simplified"
         }, "scoreInfoUnderMap", this.currentSettings.scoreInfoUnderMap)
 
+        this.addGear(() => {
+            return this.currentSettings.scoreInfoUnderMap === "simplified"
+        }, (elm) => {
+            elm.addToggle("Show 'Mimic' text before cross/tick", "scoreInfoUnderMap_simplified_showMimicText", this.currentSettings.scoreInfoUnderMap_simplified_showMimicText)[1].setLore(["If this is disabled it will still show wether mimic has been killed", "It just wont show the text before the indicator"])
+        })
+
         this.addCategory("Tab Info")
 
         this.addToggle("Show current Secret total", "tabSecretCount", this.currentSettings.tabSecretCount)[1].setLore(["Change the secrets found number in tab to also show total secrets in dungeon"])
@@ -764,7 +770,7 @@ class CustomSettingsBuilder {
      * @param {Boolean} defau Default value
      */
     addToggle(label, setting, defau) {
-        this.parent.addToggle(label, setting, defau, this.addSidebarElement)
+        return this.parent.addToggle(label, setting, defau, this.addSidebarElement)
     }
 
     /**

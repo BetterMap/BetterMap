@@ -85,4 +85,6 @@ First released version!
 + add deaths to dungeon clear overview
 + fix heads sometimes not showing on map
 + add option for settings about settings (will show as a gear to the right of the selected setting)
++ add option to change head border colors
++ add toggle for mimic text on simplified score style
 ```

@@ -14,6 +14,7 @@
  * @property {"never"|"leap"|"always"} playerNames - When to show player names on map
  * @property {"none"|"left"|"right"} currentRoomInfo - Render current room hover info on side of map
  * @property {"none"|"legalmap"|"simplified"} scoreInfoUnderMap - Render score info under the map
+ * @property {Boolean} scoreInfoUnderMap_simplified_showMimicText - Wether to show 'mimic' before the tick/cross
  * @property {Boolean} tabSecretCount - Show the estimated secret count in tab
  * @property {Boolean} tabCryptCount - Show the current total crypt count for discovered rooms in tab 
  * @property {Boolean} tabMimic - Show the mimic status in tab
@@ -104,6 +105,10 @@ class RenderContext {
 
     get scoreInfoUnderMap() {
         return this.settings.scoreInfoUnderMap
+    }
+
+    get scoreInfoUnderMap_simplified_showMimicText() {
+        return this.settings.scoreInfoUnderMap_simplified_showMimicText
     }
 
     get hideInBoss() {
@@ -272,6 +277,7 @@ class RenderContext {
         playerNames = "leap",
         currentRoomInfo = "none",
         scoreInfoUnderMap = "simplified",
+        scoreInfoUnderMap_simplified_showMimicText = true,
         tabSecretCount = false,
         tabCryptCount = false,
         tabMimic = false,
@@ -311,6 +317,7 @@ class RenderContext {
             playerNames,
             currentRoomInfo,
             scoreInfoUnderMap,
+            scoreInfoUnderMap_simplified_showMimicText,
             tabCryptCount,
             tabSecretCount,
             tabMimic,

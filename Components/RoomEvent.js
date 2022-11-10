@@ -1,5 +1,9 @@
 import { timeNumber } from "../Utils/Utils"
 
+/**
+ * @readonly
+ * @enum {Number}
+ */
 export let RoomEvents = {
     CHECKMARK_STATE_CHANGE: 0,
     PLAYER_ENTER: 1,

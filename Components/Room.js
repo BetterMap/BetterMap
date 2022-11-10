@@ -302,6 +302,10 @@ class Room {
         }
     }
 
+    /**
+     * @param {RoomEvent} event 
+     * @param  {...any} args 
+     */
     addEvent(event, ...args) {
         this.roomEvents.push(createEvent(event, ...args))
     }

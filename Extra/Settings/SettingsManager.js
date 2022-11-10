@@ -46,6 +46,8 @@ class SettingsManager {
 
                 data.markReRender()
             }
+
+            this.settingsGui.onSettingChangeFunctions.forEach(f => f())
         }
 
         this.settingsGui.changedArr = (key, index, val) => {
@@ -63,6 +65,7 @@ class SettingsManager {
 
                 data.markReRender()
             }
+            this.settingsGui.onSettingChangeFunctions.forEach(f => f())
         }
 
         register("renderOverlay", () => {

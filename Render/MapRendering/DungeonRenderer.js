@@ -8,6 +8,7 @@ import renderLibs from "../../../guimanager/renderLibs"
 import DungeonMap from "../../Components/DungeonMap"
 import RenderContext from "./../RenderContext"
 import MapTab from "../MapTab"
+import Room from "../../Components/Room";
 
 class DungeonRenderer extends MapTab {
     constructor(mapRenderer) {
@@ -62,6 +63,8 @@ class DungeonRenderer extends MapTab {
             renderContext.image.draw(x + renderContext.borderWidth, y + renderContext.borderWidth, size, size - renderContext.borderWidth)
 
             for (let room of dungeonMap.roomsArr) {
+                //those arent exclusive, each checks their own conditions
+                this.roomRenderer.drawPuzzle(renderContext, room, dungeonMap)
                 this.roomRenderer.drawExtras(renderContext, room, dungeonMap)
             }
 

@@ -222,6 +222,7 @@ class RenderContext {
                 return scaledDownImage
             case 'tenios':
             case "hypixel":
+            default:
                 return HypixelTicksOld.get(type)
         }
     }
@@ -237,6 +238,7 @@ class RenderContext {
                 return [16 * this.iconScale / 8, 16 * this.iconScale / 8]
             case 'tenios':
             case "hypixel":
+            default:
                 switch (type) {
                     case "questionMark":
                         return [10 * this.iconScale / 8, 16 * this.iconScale / 8]

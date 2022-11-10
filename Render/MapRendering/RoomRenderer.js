@@ -17,6 +17,13 @@ const puzzleItems = {
     "Ice Path": new Item("minecraft:mob_spawner")
 }
 
+const checkmarkStateToName = new Map()
+checkmarkStateToName.set(-1, "failedRoom")
+checkmarkStateToName.set(1, "questionMark")
+checkmarkStateToName.set(3, "whiteCheck")
+checkmarkStateToName.set(4, "greenCheck")
+checkmarkStateToName.set(5, "failedRoom")
+
 const Color = Java.type('java.awt.Color');
 const Font = Java.type('java.awt.Font');
 
@@ -130,11 +137,9 @@ class RoomRenderer {
             graphics.drawImage(context.getImage(checkmark), getX(w), getY(h), w, h, null)
         }
 
-        if (room.checkmarkState === -1) drawCheckmark("failedRoom")
-        if (room.checkmarkState === 1) drawCheckmark("questionMark")
-        if (room.checkmarkState === 3) drawCheckmark("whiteCheck")
-        if (room.checkmarkState === 4) drawCheckmark("greenCheck")
-        if (room.checkmarkState === 5) drawCheckmark("failedRoom")
+        if (checkmarkStateToName.has(room.checkmarkState)) {
+            drawCheckmark(checkmarkStateToName.get(room.checkmarkState))
+        }
 
 
         return;

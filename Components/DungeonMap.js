@@ -101,6 +101,10 @@ class DungeonMap {
         this.keys = 0
         this.bloodOpen = false
 
+        //initialize with true, only if score is below threshold will they get set to false to avoid repeats on /ct reload
+        this.broadcast270message = true;
+        this.broadcast300message = true;
+
         let mimicDeadMessages = ["$SKYTILS-DUNGEON-SCORE-MIMIC$", "Mimic Killed!", "Mimic Dead!", "Mimic dead!"]
 
         this.triggers = []
@@ -962,6 +966,21 @@ class DungeonMap {
 
         let minSecrets = Math.ceil(totalSecrets * requiredSecrets / 100 * ((40 - bonus + deathPenalty) / 40))
 
+        let total = skill + exploration + time + bonus;
+
+        if (total >= 300 && !this.broadcast300message) {
+            this.broadcast300message = true;
+            ChatLib.command('pc ' + settings.settings.custom300scoreMessage);
+        } else if (total >= 270 && !this.broadcast270message) {
+            this.broadcast270message = true;
+            ChatLib.command('pc ' + settings.settings.custom270scoreMessage);
+        }
+
+        if (total < 270 && this.broadcast270message)
+            this.broadcast270message = false;
+        if (total < 300 && this.broadcast300message)
+            this.broadcast300message = false;
+
         this.cachedScore = {
             time: Date.now(),
             data: {
@@ -969,7 +988,7 @@ class DungeonMap {
                 "exploration": exploration,
                 "time": time,
                 "bonus": bonus,
-                "total": skill + exploration + time + bonus,
+                "total": total,
                 "mimic": this.mimicKilled,
                 "secretsFound": collectedSecrets,
                 "crypts": crypts,

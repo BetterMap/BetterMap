@@ -278,6 +278,12 @@ class SettingGui {
             "simplified": "Simplified"
         }, "scoreInfoUnderMap", this.currentSettings.scoreInfoUnderMap)
 
+        this.addGear(() => {
+            return this.currentSettings.scoreInfoUnderMap === "simplified"
+        }, (elm) => {
+            elm.addToggle("Show 'Mimic' text before cross/tick", "scoreInfoUnderMap_simplified_showMimicText", this.currentSettings.scoreInfoUnderMap_simplified_showMimicText)[1].setLore(["If this is disabled it will still show wether mimic has been killed", "It just wont show the text before the indicator"])
+        })
+
         this.addToggle("Fix Score in Scoreboard", "fixScore", this.currentSettings.fixScore)[1].setLore(["Replaces the score in the Sidebar-Scoreboard with the correct score"])
 
         this.addToggle("Force paul +10 score", "forcePaul", this.currentSettings.forcePaul)[1].setLore(["Paul score bonus will get auto-detected when paul is mayor", "But it wont be auto detected from jerry-paul"])

@@ -43,7 +43,9 @@ class RoomRenderer {
      * @param {Room} room 
      */
     drawRoom(context, graphics, room) {
-        graphics.setColor(this.getRenderColor(context, room))
+        let color = this.getRenderColor(context, room)
+        graphics.setColor(color)
+
         let rc = room.components // effort to type
         // Drawing the main room and its sections
 
@@ -58,14 +60,14 @@ class RoomRenderer {
             draw(x, y, context.roomSize, context.roomSize);
 
             if (rc.some(a => a.arrayX == x + 1 && a.arrayY == y))
-                draw(x, y, context.roomSize + context.roomGap, context.roomSize, context.roomSize, 0) // Component to the right
+                draw(x, y, context.roomGap, context.roomSize, context.roomSize, 0) // Component to the right
 
             if (rc.some(a => a.arrayX == x && a.arrayY == y + 1))
-                draw(x, y, context.roomSize, context.roomSize + context.roomGap, 0, context.roomSize) // Component above
+                draw(x, y, context.roomSize, context.roomGap, 0, context.roomSize) // Component above
 
             // 2x2 Center
             if (rc.length == 4 && new Set(rc.map(a => a.arrayX)).size == 2 && x == Math.min(...rc.map(a => a.arrayX)) && y == Math.min(...rc.map(a => a.arrayY)))
-                draw(x, y, context.roomSize + context.roomGap, context.roomSize + context.roomGap, context.roomSize, context.roomSize)
+                draw(x, y, context.roomGap, context.roomGap, context.roomSize, context.roomSize)
         }
     }
 
@@ -332,18 +334,18 @@ class RoomRenderer {
             return context.colorMap.get(room.data?.type || teniosRoomMap[room.type])
         } else if (context.mapStyle === 'custom') {
             switch (room.data?.type || teniosRoomMap[room.type]) {
-                case 'spawn': return new Color(Renderer.color(...context.customRoomColorSpawn));
-                case 'mobs': return new Color(Renderer.color(...context.customRoomColorNormal));
-                case 'miniboss': return new Color(Renderer.color(...context.customRoomColorMini));
-                case 'rare': return new Color(Renderer.color(...context.customRoomColorRare));
-                case 'puzzle': return new Color(Renderer.color(...context.customRoomColorPuzzle));
-                case 'gold': return new Color(Renderer.color(...context.customRoomColorGold));
-                case 'fairy': return new Color(Renderer.color(...context.customRoomColorFairy));
-                case 'blood': return new Color(Renderer.color(...context.customRoomColorBlood));
-                case 'trap': return new Color(Renderer.color(...context.customRoomColorTrap));
-                case 'wither': return new Color(Renderer.color(...context.customRoomColorWitherDoor));
+                case 'spawn': return new Color(Renderer.color(...context.customRoomColorSpawn), true);
+                case 'mobs': return new Color(Renderer.color(...context.customRoomColorNormal), true);
+                case 'miniboss': return new Color(Renderer.color(...context.customRoomColorMini), true);
+                case 'rare': return new Color(Renderer.color(...context.customRoomColorRare), true);
+                case 'puzzle': return new Color(Renderer.color(...context.customRoomColorPuzzle), true);
+                case 'gold': return new Color(Renderer.color(...context.customRoomColorGold), true);
+                case 'fairy': return new Color(Renderer.color(...context.customRoomColorFairy), true);
+                case 'blood': return new Color(Renderer.color(...context.customRoomColorBlood), true);
+                case 'trap': return new Color(Renderer.color(...context.customRoomColorTrap), true);
+                case 'wither': return new Color(Renderer.color(...context.customRoomColorWitherDoor), true);
                 default:
-                case 'unknown': return new Color(Renderer.color(...context.customRoomColorUnknown));
+                case 'unknown': return new Color(Renderer.color(...context.customRoomColorUnknown), true);
             }
         }
         else {

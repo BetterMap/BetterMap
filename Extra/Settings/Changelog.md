@@ -78,12 +78,9 @@ First released version!
 @ver v1.0.10
 ```diff
 + make score change color based on score on simplified score style
-+ fix blood open detection for box around wither doors
-+ improve /bping [name]
 + add /pingp (ping whole party)
 + shorten dungeon clear overview message slightly
 + add deaths to dungeon clear overview
-+ fix heads sometimes not showing on map
 + add option for settings about settings (will show as a gear to the right of the selected setting)
 + add option to change head border colors
 + add toggle for mimic text on simplified score style
@@ -92,4 +89,7 @@ First released version!
 + player head arrows
 + 270/300 score messages
 + roomname tick style
+! fix blood open detection for box around wither doors
+! improve /bping [name]
+! fix heads sometimes not showing on map
 ```

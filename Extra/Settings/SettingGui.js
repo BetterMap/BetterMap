@@ -561,10 +561,9 @@ class SettingGui {
     }
 
     /**
-     * 
      * @param {String} label The text to go to the left of the slider
      * @param {String} setting internal name of the setting to control
-     * @param {Object[]} defau Default value
+     * @param {[r:Number, g:Number, b:Number, a:number]} defau Default value
      */
     addColorSelector(label, setting, defau, addFun = this.addSidebarElement) {
 

@@ -34,9 +34,15 @@
  * @property {Boolean} clearedRoomInfo - Show a summory of what rooms people cleared after run finishes
  * @property {String} apiKey - The user's api key, or "" if unknown
  * @property {Boolean} devInfo - Wether to show def info in various places in the map
- * @property {Object[]} mapBorderColor - The RGBO value of the map border color
- * @property {Object[]} mapBackgroundColor - The RGBO value of the map backround color
- * @property {Object[]} extraInfoBackroundColor - The RGBO value of the extrainfo backround color
+ * @property {[r:Number, g:Number, b:Number, a:number]} mapBorderColor - The RGBO value of the map border color
+ * @property {[r:Number, g:Number, b:Number, a:number]} mapBackgroundColor - The RGBO value of the map backround color
+ * @property {[r:Number, g:Number, b:Number, a:number]} extraInfoBackroundColor - The RGBO value of the extrainfo backround color
+ * @property {[r:Number, g:Number, b:Number, a:number]} healerColor - Border color for healer class
+ * @property {[r:Number, g:Number, b:Number, a:number]} mageColor - Border color for mage class
+ * @property {[r:Number, g:Number, b:Number, a:number]} bersColor - Border color for bers class
+ * @property {[r:Number, g:Number, b:Number, a:number]} archColor - Border color for arch class
+ * @property {[r:Number, g:Number, b:Number, a:number]} tankColor - Border color for tank class
+ * @property {[r:Number, g:Number, b:Number, a:number]} singleBorderColor - Border color for everyone
  */
 
 const BufferedImage = Java.type("java.awt.image.BufferedImage")

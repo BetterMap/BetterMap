@@ -326,7 +326,23 @@ class RoomRenderer {
     getRenderColor(context, room) {
         if (context.mapStyle === 'teniosmap') {
             return context.colorMap.get(room.data?.type || teniosRoomMap[room.type])
-        } else {
+        } else if (context.mapStyle === 'custom') {
+            switch (room.data?.type || teniosRoomMap[room.type]) {
+                case 'spawn': return new Color(Renderer.color(...context.customRoomColorSpawn));
+                case 'mobs': return new Color(Renderer.color(...context.customRoomColorNormal));
+                case 'miniboss': return new Color(Renderer.color(...context.customRoomColorMini));
+                case 'rare': return new Color(Renderer.color(...context.customRoomColorRare));
+                case 'puzzle': return new Color(Renderer.color(...context.customRoomColorPuzzle));
+                case 'gold': return new Color(Renderer.color(...context.customRoomColorGold));
+                case 'fairy': return new Color(Renderer.color(...context.customRoomColorFairy));
+                case 'blood': return new Color(Renderer.color(...context.customRoomColorBlood));
+                case 'trap': return new Color(Renderer.color(...context.customRoomColorTrap));
+                case 'wither': return new Color(Renderer.color(...context.customRoomColorWitherDoor));
+                default:
+                case 'unknown': return new Color(Renderer.color(...context.customRoomColorUnknown));
+            }
+        }
+        else {
             return context.colorMap.get(room.type)
         }
     }

@@ -108,9 +108,27 @@ class SettingGui {
         this.addDropdown("Map Style", {
             "legalmap": "Legal Map",
             "hypixelmap": "Hypixel",
-            "teniosmap": "Tenios Map"
+            "teniosmap": "Tenios Map",
+            "custom": "Make your own"
         }, "mapStyle", "legalmap")
 
+        this.addGear(() => {
+            return this.currentSettings.mapStyle === "custom"
+        }, (elm) => {
+            elm.addColorSelector("Normal Mob Room Color", "customRoomColorNormal", this.currentSettings.customRoomColorNormal)
+            elm.addColorSelector("Miniboss Mob Room Color", "customRoomColorMini", this.currentSettings.customRoomColorMini)
+            elm.addColorSelector("Rare 1x1 Room Color", "customRoomColorRare", this.currentSettings.customRoomColorRare)
+            elm.addColorSelector("Fairy Room Color", "customRoomColorFairy", this.currentSettings.customRoomColorFairy)
+            elm.addColorSelector("Blood Room Color", "customRoomColorBlood", this.currentSettings.customRoomColorBlood)
+            elm.addColorSelector("Trap Room Color", "customRoomColorTrap", this.currentSettings.customRoomColorTrap)
+            elm.addColorSelector("Spawn Room Color", "customRoomColorSpawn", this.currentSettings.customRoomColorSpawn)
+            elm.addColorSelector("Gold Miniboss Room Color", "customRoomColorGold", this.currentSettings.customRoomColorGold)
+            elm.addColorSelector("Puzzle Room Color", "customRoomColorPuzzle", this.currentSettings.customRoomColorPuzzle)
+            elm.addColorSelector("Unknown Room Color", "customRoomColorUnknown", this.currentSettings.customRoomColorUnknown)
+            elm.addColorSelector("Wither Door Color", "customRoomColorWitherDoor", this.currentSettings.customRoomColorWitherDoor)
+            elm.addSlider("Gap Size", "customRoomGapSize", this.currentSettings.customRoomGapSize || 5, 2, 36)
+            elm.addSlider("Door Width", "customDoorSize", this.currentSettings.customDoorWidth || 5, 2, 36)
+        })
 
         this.addSidebarElement(new ButtonWithArrow().setText("&0Discord").addEvent(new SoopyMouseClickEvent().setHandler(() => {
             java.awt.Desktop.getDesktop().browse(

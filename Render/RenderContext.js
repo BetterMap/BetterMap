@@ -1,15 +1,15 @@
 /**
  * @typedef {Object} ContextSettings
  * @property {Boolean} showMap - Should the map be rendered
- * @property {"legalmap"|"hypixelmap"|"teniosmap"} mapStyle - Style of the map rendering
+ * @property {"legalmap"|"hypixelmap"|"teniosmap"|"custom"} mapStyle - Style of the map rendering
  * @property {Number} posX - X Position of the map on screen
  * @property {Number} posY - y Position of the map on screen
  * @property {Number} size - Width/height of the map when rendered
- * @property {"off", "icons", "heads"} showHeads - show player heads on the map
+ * @property {"off"|"icons"|"heads"} showHeads - show player heads on the map
  * @property {Number} headScale - Width/height of heads (scales with size, will be same if size is 100)
  * @property {Number} iconScale - Width/height of icons (scales with size, will be same if size is 100)
  * @property {"hypixel-old", "hypixel-new"|"default"|"tenios"|"roomnames"} tickStyle - Style of the ticks
- * @property {"never","hasSecrets","always"} showSecretCount - When to show secrets instead of checkmarks
+ * @property {"never"|"hasSecrets"|"always"} showSecretCount - When to show secrets instead of checkmarks
  * @property {Boolean} checkmarkCompleteRooms - Turn completed rooms into checkmarks
  * @property {Boolean} tickStyle_secrets_overHead - Wether to render the secrets / room name tick style over player heads
  * @property {"none"|"text"|"icon"} puzzleNames - Render style of puzzle names
@@ -22,7 +22,7 @@
  * @property {Boolean} tabCryptCount - Show the current total crypt count for discovered rooms in tab 
  * @property {Boolean} tabMimic - Show the mimic status in tab
  * @property {Boolean} fixScore - Replaces the sidebar scoreboard score with the correct score
- * @property {"never", "at270", "at300", "automatic", "always"} showScoreMessage - Broadcast a score message after reaching a specific score
+ * @property {"never"|"at270"|"at300"|"automatic"|"always"} showScoreMessage - Broadcast a score message after reaching a specific score
  * @property {String} custom270scoreMessage - Allows the player to set a custom message for 270 score
  * @property {String} custom300scoreMessage - Allows the player to set a custom message for 300 score
  * @property {Boolean} hideInBoss - Hide the map in boss entirely 
@@ -195,20 +195,64 @@ class RenderContext {
         switch (this.mapStyle) {
             case "legalmap":
                 return LegalMapColorMap
-            case "hypixelmap":
-                return HypixelColorMap
             case "teniosmap":
                 return TeniosMapColorMap
+            default:
+            case "hypixelmap":
+                return HypixelColorMap
         }
+    }
+
+    get customRoomColorNormal() {
+        return this.settings.customRoomColorNormal;
+    }
+    get customRoomColorMini() {
+        return this.settings.customRoomColorMini;
+    }
+    get customRoomColorRare() {
+        return this.settings.customRoomColorRare;
+    }
+    get customRoomColorFairy() {
+        return this.settings.customRoomColorFairy;
+    }
+    get customRoomColorBlood() {
+        return this.settings.customRoomColorBlood;
+    }
+    get customRoomColorTrap() {
+        return this.settings.customRoomColorTrap;
+    }
+    get customRoomColorSpawn() {
+        return this.settings.customRoomColorSpawn;
+    }
+    get customRoomColorGold() {
+        return this.settings.customRoomColorGold;
+    }
+    get customRoomColorPuzzle() {
+        return this.settings.customRoomColorPuzzle;
+    }
+    get customRoomColorUnknown() {
+        return this.settings.customRoomColorUnknown;
+    }
+    get customRoomColorWitherDoor() {
+        return this.settings.customRoomColorWitherDoor;
+    }
+    get customRoomGapSize() {
+        return this.settings.customRoomGapSize;
+    }
+    get customDoorSize() {
+        return this.settings.customDoorSize;
     }
 
     get roomGap() {
         switch (this.mapStyle) {
+            case 'custom':
+                return this.customRoomGapSize;
             case "legalmap":
                 return 12 // 1/3 roomSize
             case "hypixelmap":
                 return 9
             case "teniosmap":
+            default:
                 return 9
         }
     }
@@ -220,6 +264,7 @@ class RenderContext {
             case "hypixelmap":
                 return 36
             case "teniosmap":
+            default:
                 return 36
         }
     }
@@ -230,11 +275,14 @@ class RenderContext {
 
     get doorWidth() {
         switch (this.mapStyle) {
+            case 'custom':
+                return this.customDoorSize;
             case "legalmap":
                 return 12
             case "hypixelmap":
                 return 15
             case "teniosmap":
+            default:
                 return 15;
         }
     }
@@ -347,7 +395,20 @@ class RenderContext {
         bersColor = [255, 0, 0, 255],
         archColor = [30, 170, 50, 255],
         tankColor = [150, 150, 150, 255],
-        singleBorderColor = [0, 0, 0, 255]
+        singleBorderColor = [0, 0, 0, 255],
+        customRoomColorNormal = [114, 67, 27, 255],
+        customRoomColorMini = [114, 67, 27, 255],
+        customRoomColorRare = [114, 67, 27, 255],
+        customRoomColorFairy = [239, 126, 163, 255],
+        customRoomColorBlood = [255, 0, 0, 255],
+        customRoomColorTrap = [213, 126, 50, 255],
+        customRoomColorSpawn = [0, 123, 0, 255],
+        customRoomColorGold = [226, 226, 50, 255],
+        customRoomColorPuzzle = [176, 75, 213, 255],
+        customRoomColorUnknown = [64, 64, 64, 255],
+        customRoomColorWitherDoor = [0, 0, 0, 255],
+        customRoomGapSize = 9,
+        customDoorSize = 15
 
     }) {
         return {
@@ -393,7 +454,20 @@ class RenderContext {
             bersColor,
             archColor,
             tankColor,
-            singleBorderColor
+            singleBorderColor,
+            customRoomColorNormal,
+            customRoomColorMini,
+            customRoomColorRare,
+            customRoomColorFairy,
+            customRoomColorBlood,
+            customRoomColorTrap,
+            customRoomColorSpawn,
+            customRoomColorGold,
+            customRoomColorPuzzle,
+            customRoomColorUnknown,
+            customRoomColorWitherDoor,
+            customRoomGapSize,
+            customDoorSize
         }
     }
 

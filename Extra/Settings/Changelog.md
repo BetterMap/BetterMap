@@ -89,6 +89,7 @@ First released version!
 + player head arrows
 + 270/300 score messages
 + roomname tick style
++ border around head width setting
 ! fix blood open detection for box around wither doors
 ! improve /bping [name]
 ! fix heads sometimes not showing on map

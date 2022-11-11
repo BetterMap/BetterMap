@@ -204,6 +204,7 @@ class SettingGui {
                 "single": "Single Color",
                 "class-color": "Class Colors"
             }, "headBorder", this.currentSettings.headBorder)[1].setLore(["All border colors can be changed in the config file"])
+            elm.addSlider("Head border width", "headBorderWidth", this.currentSettings.headBorderWidth ?? 3, 1, 5)
 
             if (this.currentSettings.headBorder == "single") {
                 elm.addColorSelector("Self Border Color", "singleBorderColorSelf", this.currentSettings.singleBorderColorSelf)

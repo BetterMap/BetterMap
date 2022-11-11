@@ -14,6 +14,7 @@
  * @property {Boolean} tickStyle_secrets_overHead - Wether to render the secrets / room name tick style over player heads
  * @property {"none"|"text"|"icon"} puzzleNames - Render style of puzzle names
  * @property {"none"|"single"|"class-color"} headBorder - Wether to put a black border around heads on the map
+ * @property {Number} headBorderWidth - Width of the head border
  * @property {"never"|"leap"|"always"} playerNames - When to show player names on map
  * @property {"none"|"left"|"right"} currentRoomInfo - Render current room hover info on side of map
  * @property {"none"|"legalmap"|"simplified"} scoreInfoUnderMap - Render score info under the map
@@ -113,6 +114,9 @@ class RenderContext {
     }
     get headBorder() {
         return this.settings.headBorder
+    }
+    get headBorderWidth() {
+        return this.settings.headBorderWidth
     }
     get playerNames() {
         return this.settings.playerNames
@@ -366,6 +370,7 @@ class RenderContext {
         checkmarkCompleteRooms = false,
         puzzleNames = "none",
         headBorder = "none",
+        headBorderWidth = 3,
         playerNames = "leap",
         currentRoomInfo = "none",
         scoreInfoUnderMap = "simplified",
@@ -412,6 +417,7 @@ class RenderContext {
             checkmarkCompleteRooms,
             puzzleNames,
             headBorder,
+            headBorderWidth,
             playerNames,
             currentRoomInfo,
             scoreInfoUnderMap,

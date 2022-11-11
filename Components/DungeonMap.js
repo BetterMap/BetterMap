@@ -968,10 +968,18 @@ class DungeonMap {
 
         let total = skill + exploration + time + bonus;
 
-        if (total >= 300 && !this.broadcast300message) {
+        let shouldAllow300Message = settings.settings.showScoreMessage === "at300" || settings.settings.showScoreMessage === "always"
+        let shouldAllow270Message = settings.settings.showScoreMessage === "at270" || settings.settings.showScoreMessage === "always"
+
+        if (settings.settings.showScoreMessage === "automatic") {
+            shouldAllow270Message = this.floorNumber <= 5
+            shouldAllow300Message = this.floorNumber >= 5 || this.floor === "M4"
+        }
+
+        if (shouldAllow300Message && total >= 300 && !this.broadcast300message) {
             this.broadcast300message = true;
             ChatLib.command('pc ' + settings.settings.custom300scoreMessage);
-        } else if (total >= 270 && !this.broadcast270message) {
+        } else if (shouldAllow270Message && total >= 270 && !this.broadcast270message) {
             this.broadcast270message = true;
             ChatLib.command('pc ' + settings.settings.custom270scoreMessage);
         }

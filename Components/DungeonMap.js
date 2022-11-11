@@ -843,7 +843,8 @@ class DungeonMap {
 
     updatePuzzles() {
         let puzzleNamesList = [];
-        let readingPuzzles = false
+        let identifiedPuzzleList = [];
+        let readingPuzzles = false;
         if (!TabList) return;
         let names = []
         try {
@@ -874,8 +875,11 @@ class DungeonMap {
         });
         let puzzleCount = 0
         this.roomsArr.forEach((room) => {
-            if (room.type === Room.PUZZLE && room.checkmarkState !== Room.ADJACENT)
+            if (room.type === Room.PUZZLE && room.checkmarkState !== Room.ADJACENT) {
+                if (room.roomId)
+                    identifiedPuzzleList.push(room.data?.name?.toLowerCase() || '???');
                 puzzleCount++;
+            }
         })
         if (puzzleNamesList.length <= this.identifiedPuzzleCount) {
             return
@@ -883,6 +887,7 @@ class DungeonMap {
         if (puzzleNamesList.length != puzzleCount) {
             return;
         }
+        puzzleNamesList = puzzleNamesList.filter(e => !identifiedPuzzleList.includes(e.toLowerCase()));
         for (let i = 0; i < 6; i++) {
             for (let j = 0; j < 6; j++) {
                 let coords = i + ',' + j;
@@ -894,9 +899,9 @@ class DungeonMap {
                     let ids = DungeonRoomData.getRoomIdsFromName(puzzleName)
                     room.roomId = ids[0];
                     this.identifiedRoomIds.addAll(...ids);
-                } else if (room.type == Room.PUZZLE) {
-                    puzzleNamesList.shift();
-                }
+                } //else if (room.type == Room.PUZZLE) {
+                //     puzzleNamesList.shift();
+                // }
             }
         }
         this.identifiedPuzzleCount = puzzleNamesList.length;

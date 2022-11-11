@@ -70,6 +70,11 @@ class SettingsManager {
             this.settingsGui.onSettingChangeFunctions.forEach(f => f())
         }
 
+        let a = register("worldLoad", () => {
+            this.addPlayersToDungeonPreview(this.fakeDungeon)
+            a.unregister()
+        })
+
         register("renderOverlay", () => {
             this.settingsGui.renderOverlay()
         })
@@ -381,6 +386,15 @@ class SettingsManager {
             dungeon.doors.set("-156.8000030517578,-76.80000305175781", d);
         }
 
+        return dungeon;
+    }
+
+    /**
+     * @param {DungeonMap} dungeon 
+     */
+    addPlayersToDungeonPreview(dungeon) {
+        if (dungeon.players.length !== 0) return
+
         let fun = AbstractClientPlayer.class.getDeclaredMethod("func_175155_b")
         fun.setAccessible(true)
         let info = fun.invoke(Player.getPlayer())
@@ -390,6 +404,7 @@ class SettingsManager {
             player.setX(-50)
             player.setY(-142)
             player.setRotate(73)
+            player.uuid = Player.getUUID().toString()
             dungeon.players.push(player)
 
             player.dungeonClass = "Healer"
@@ -407,8 +422,6 @@ class SettingsManager {
             player.classLevel = "25"
             player.skyblockLevel = "300"
         }
-
-        return dungeon;
     }
 }
 

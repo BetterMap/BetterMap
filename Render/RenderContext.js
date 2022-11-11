@@ -8,7 +8,7 @@
  * @property {"off"|"icons"|"heads"} showHeads - show player heads on the map
  * @property {Number} headScale - Width/height of heads (scales with size, will be same if size is 100)
  * @property {Number} iconScale - Width/height of icons (scales with size, will be same if size is 100)
- * @property {"hypixel-old", "hypixel-new"|"default"|"tenios"|"roomnames"} tickStyle - Style of the ticks
+ * @property {"hypixel-old"|"hypixel-new"|"default"|"tenios"|"roomnames"} tickStyle - Style of the ticks
  * @property {"never"|"hasSecrets"|"always"} showSecretCount - When to show secrets instead of checkmarks
  * @property {Boolean} checkmarkCompleteRooms - Turn completed rooms into checkmarks
  * @property {Boolean} tickStyle_secrets_overHead - Wether to render the secrets / room name tick style over player heads
@@ -34,9 +34,16 @@
  * @property {Boolean} clearedRoomInfo - Show a summory of what rooms people cleared after run finishes
  * @property {String} apiKey - The user's api key, or "" if unknown
  * @property {Boolean} devInfo - Wether to show def info in various places in the map
- * @property {Object[]} mapBorderColor - The RGBO value of the map border color
- * @property {Object[]} mapBackgroundColor - The RGBO value of the map backround color
- * @property {Object[]} extraInfoBackroundColor - The RGBO value of the extrainfo backround color
+ * @property {[r:Number, g:Number, b:Number, a:number]} mapBorderColor - The RGBO value of the map border color
+ * @property {[r:Number, g:Number, b:Number, a:number]} mapBackgroundColor - The RGBO value of the map backround color
+ * @property {[r:Number, g:Number, b:Number, a:number]} extraInfoBackroundColor - The RGBO value of the extrainfo backround color
+ * @property {[r:Number, g:Number, b:Number, a:number]} healerColor - Border color for healer class
+ * @property {[r:Number, g:Number, b:Number, a:number]} mageColor - Border color for mage class
+ * @property {[r:Number, g:Number, b:Number, a:number]} bersColor - Border color for bers class
+ * @property {[r:Number, g:Number, b:Number, a:number]} archColor - Border color for arch class
+ * @property {[r:Number, g:Number, b:Number, a:number]} tankColor - Border color for tank class
+ * @property {[r:Number, g:Number, b:Number, a:number]} singleBorderColor - Border color for everyone
+ * @property {[r:Number, g:Number, b:Number, a:number]} singleBorderColorSelf - Border color for self
  */
 
 const BufferedImage = Java.type("java.awt.image.BufferedImage")
@@ -189,6 +196,46 @@ class RenderContext {
 
     get devInfo() {
         return this.settings.devInfo
+    }
+
+    get mapBorderColor() {
+        return this.settings.mapBorderColor
+    }
+
+    get mapBackgroundColor() {
+        return this.settings.mapBackgroundColor
+    }
+
+    get extraInfoBackroundColor() {
+        return this.settings.extraInfoBackroundColor
+    }
+
+    get healerColor() {
+        return this.settings.healerColor
+    }
+
+    get mageColor() {
+        return this.settings.mageColor
+    }
+
+    get bersColor() {
+        return this.settings.bersColor
+    }
+
+    get archColor() {
+        return this.settings.archColor
+    }
+
+    get tankColor() {
+        return this.settings.tankColor
+    }
+
+    get singleBorderColor() {
+        return this.settings.singleBorderColor
+    }
+
+    get singleBorderColorSelf() {
+        return this.settings.singleBorderColorSelf
     }
 
     get colorMap() {
@@ -396,6 +443,7 @@ class RenderContext {
         archColor = [30, 170, 50, 255],
         tankColor = [150, 150, 150, 255],
         singleBorderColor = [0, 0, 0, 255],
+        singleBorderColorSelf = [0, 0, 0, 255],
         customRoomColorNormal = [114, 67, 27, 255],
         customRoomColorMini = [114, 67, 27, 255],
         customRoomColorRare = [114, 67, 27, 255],
@@ -409,7 +457,6 @@ class RenderContext {
         customRoomColorWitherDoor = [0, 0, 0, 255],
         customRoomGapSize = 9,
         customDoorSize = 15
-
     }) {
         return {
             showMap,
@@ -455,6 +502,7 @@ class RenderContext {
             archColor,
             tankColor,
             singleBorderColor,
+            singleBorderColorSelf,
             customRoomColorNormal,
             customRoomColorMini,
             customRoomColorRare,

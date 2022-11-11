@@ -1429,23 +1429,16 @@ class DungeonMap {
                 break
         }
 
+        let room
         if (this.rooms.get(locstr)) { //already a room there
-            let room = this.rooms.get(locstr)
+            room = this.rooms.get(locstr)
             room.setType(type)
             room.components = components
             room.rotation = room.findRotation();
             room.roomId = roomId
-            room.checkmarkState = 1
-            room.components.forEach(c => {
-                this.roomsArr.delete(this.rooms.get(c.arrayX + "," + c.arrayY))
-                this.rooms.set(c.arrayX + "," + c.arrayY, room)
-            })
-            this.roomsArr.add(room)
-            this.markChanged()
-            return
+        } else {
+            room = new Room(this, type, components, roomId)
         }
-
-        let room = new Room(this, type, components, roomId)
 
         room.checkmarkState = 1
 

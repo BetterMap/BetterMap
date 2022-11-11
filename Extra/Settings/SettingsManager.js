@@ -1,12 +1,14 @@
 import SoopyOpenGuiEvent from "../../../guimanager/EventListener/SoopyOpenGuiEvent";
 import Door from "../../Components/Door";
 import DungeonMap from "../../Components/DungeonMap";
+import MapPlayer from "../../Components/MapPlayer";
 import Room from "../../Components/Room";
 import MapRenderer from "../../Render/MapRenderer";
 import RenderContext from "../../Render/RenderContext";
 import RenderContextManager from "../../Render/RenderContextManager";
 import Position from "../../Utils/Position";
 import SettingGui from "./SettingGui";
+const AbstractClientPlayer = Java.type("net.minecraft.client.entity.AbstractClientPlayer")
 
 class SettingsManager {
 
@@ -378,6 +380,34 @@ class SettingsManager {
             let d = new Door(7, new Position(-156.8000030517578, -76.80000305175781), false);
             dungeon.doors.set("-156.8000030517578,-76.80000305175781", d);
         }
+
+        let fun = AbstractClientPlayer.class.getDeclaredMethod("func_175155_b")
+        fun.setAccessible(true)
+        let info = fun.invoke(Player.getPlayer())
+        {
+
+            let player = new MapPlayer(info, dungeon, Player.getName())
+            player.setX(-50)
+            player.setY(-142)
+            player.setRotate(73)
+            dungeon.players.push(player)
+
+            player.dungeonClass = "Healer"
+            player.classLevel = "20"
+            player.skyblockLevel = "400"
+        }
+        {
+            let player = new MapPlayer(info, dungeon, "Minikloon")
+            player.setX(-126)
+            player.setY(-64)
+            player.setRotate(152)
+            dungeon.players.push(player)
+
+            player.dungeonClass = "Tank"
+            player.classLevel = "25"
+            player.skyblockLevel = "300"
+        }
+
         return dungeon;
     }
 }

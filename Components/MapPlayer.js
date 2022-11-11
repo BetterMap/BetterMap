@@ -95,7 +95,7 @@ class MapPlayer {
                 this.playerColor = settings.settings.bersColor ?? [255, 0, 0, 255]
                 break;
             case "Archer":
-                this.playerColor = settings.settings.archerColor ?? [30, 170, 50, 255]
+                this.playerColor = settings.settings.archColor ?? [30, 170, 50, 255]
                 break;
             case "Tank":
                 this.playerColor = settings.settings.tankColor ?? [150, 150, 150, 255]
@@ -167,11 +167,16 @@ class MapPlayer {
     drawAt(context, x, y, w, h, rotation = 0, border = true) {
         Tessellator.pushMatrix()
         Renderer.retainTransforms(true)
+
+        if (context.showHeads === 'icons') {
+            h *= 1.4
+        }
+
         Renderer.translate(x + w / 2, y + h / 2, 50)
-        // Renderer.translate(x + (this.location.worldX + 256 - 32) * size / 256, y + (this.location.worldY + 256 - 32) * size / 256, 50)
+
         Renderer.rotate(rotation)
         if (context.showHeads === 'icons') {
-            Renderer.drawImage(this.username === Player.getName() ? markerSelf : markerOther, -5, -7, 10, 14)
+            Renderer.drawImage(this.username === Player.getName() ? markerSelf : markerOther, -w / 2, -h / 2, w, h)
         } else {
             if (border != "none" || border == false) {
                 this.updatePlayerColor()

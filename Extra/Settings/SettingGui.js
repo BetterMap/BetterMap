@@ -192,10 +192,13 @@ class SettingGui {
         }, "showHeads", this.currentSettings.showHeads);
 
         this.addGear(() => {
-            return this.currentSettings.showHeads === "heads"
+            return this.currentSettings.showHeads === "heads" || this.currentSettings.showHeads === "icons"
         }, (elm) => {
 
             elm.addSlider("Head Scale", "headScale", this.currentSettings.headScale || 8, 2, 15)
+
+            if (this.currentSettings.showHeads !== "heads") return this.currentSettings.headBorder
+
             elm.addDropdown("Border around heads", {
                 "none": "None",
                 "single": "Single Color",
@@ -208,7 +211,7 @@ class SettingGui {
                 elm.addColorSelector("Healer Border Color", "healerColor", this.currentSettings.healerColor)
                 elm.addColorSelector("Mage Border Color", "mageColor", this.currentSettings.mageColor)
                 elm.addColorSelector("Berserk Border Color", "bersColor", this.currentSettings.bersColor)
-                elm.addColorSelector("Archer Border Color", "healerColor", this.currentSettings.healerColor)
+                elm.addColorSelector("Archer Border Color", "archColor", this.currentSettings.archColor)
                 elm.addColorSelector("Tank Border Color", "tankColor", this.currentSettings.tankColor)
             }
 

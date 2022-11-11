@@ -623,6 +623,7 @@ class SettingGui {
 
         numberT.text.addEvent(new SoopyContentChangeEvent().setHandler((val, prev, cancelFun) => {
             if (!val) return
+            if (isNaN(val)) return
 
             this.changed(setting, parseInt(val))
             slider.setValue(parseInt(val))

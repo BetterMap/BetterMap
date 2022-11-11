@@ -124,7 +124,7 @@ class RoomRenderer {
         const getY = (h) => (context.roomGap + context.roomSize - h) / 2 + context.blockSize * location.arrayY
 
         const drawCheckmark = (checkmark) => {
-            const [w, h] = context.getIconSize(checkmark)
+            const [w, h] = context.getIconSize(checkmark).map(a => a * 1.5)
             graphics.drawImage(context.getImage(checkmark), getX(w), getY(h), w, h, null)
         }
 
@@ -181,7 +181,7 @@ class RoomRenderer {
                 i++
             }
         } else if (context.puzzleNames === "icon") {
-            if (['secrets', 'secrets_underhead'].includes(context.tickStyle)) return;
+            if (context.tickStyle === 'secrets') return;
             //dont draw icons if checkmark or fail
             if (room.checkmarkState === Room.FAILED || room.checkmarkState === Room.COMPLETED) return;
             let icon = puzzleItems[room.data?.name] || barrier_block_item

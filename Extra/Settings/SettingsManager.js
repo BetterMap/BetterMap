@@ -390,6 +390,7 @@ class SettingsManager {
             player.setX(-50)
             player.setY(-142)
             player.setRotate(73)
+            player.uuid = Player.getUUID().toString()
             dungeon.players.push(player)
 
             player.dungeonClass = "Healer"

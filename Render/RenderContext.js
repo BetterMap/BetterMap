@@ -1,7 +1,7 @@
 /**
  * @typedef {Object} ContextSettings
  * @property {Boolean} showMap - Should the map be rendered
- * @property {"legalmap"|"hypixelmap"|"teniosmap"} mapStyle - Style of the map rendering
+ * @property {"legalmap"|"hypixelmap"|"teniosmap"|"custom"} mapStyle - Style of the map rendering
  * @property {Number} posX - X Position of the map on screen
  * @property {Number} posY - y Position of the map on screen
  * @property {Number} size - Width/height of the map when rendered
@@ -246,20 +246,64 @@ class RenderContext {
         switch (this.mapStyle) {
             case "legalmap":
                 return LegalMapColorMap
-            case "hypixelmap":
-                return HypixelColorMap
             case "teniosmap":
                 return TeniosMapColorMap
+            default:
+            case "hypixelmap":
+                return HypixelColorMap
         }
+    }
+
+    get customRoomColorNormal() {
+        return this.settings.customRoomColorNormal;
+    }
+    get customRoomColorMini() {
+        return this.settings.customRoomColorMini;
+    }
+    get customRoomColorRare() {
+        return this.settings.customRoomColorRare;
+    }
+    get customRoomColorFairy() {
+        return this.settings.customRoomColorFairy;
+    }
+    get customRoomColorBlood() {
+        return this.settings.customRoomColorBlood;
+    }
+    get customRoomColorTrap() {
+        return this.settings.customRoomColorTrap;
+    }
+    get customRoomColorSpawn() {
+        return this.settings.customRoomColorSpawn;
+    }
+    get customRoomColorGold() {
+        return this.settings.customRoomColorGold;
+    }
+    get customRoomColorPuzzle() {
+        return this.settings.customRoomColorPuzzle;
+    }
+    get customRoomColorUnknown() {
+        return this.settings.customRoomColorUnknown;
+    }
+    get customRoomColorWitherDoor() {
+        return this.settings.customRoomColorWitherDoor;
+    }
+    get customRoomGapSize() {
+        return this.settings.customRoomGapSize;
+    }
+    get customDoorSize() {
+        return this.settings.customDoorSize;
     }
 
     get roomGap() {
         switch (this.mapStyle) {
+            case 'custom':
+                return this.customRoomGapSize;
             case "legalmap":
                 return 12 // 1/3 roomSize
             case "hypixelmap":
                 return 9
             case "teniosmap":
+            default:
                 return 9
         }
     }
@@ -271,6 +315,7 @@ class RenderContext {
             case "hypixelmap":
                 return 36
             case "teniosmap":
+            default:
                 return 36
         }
     }
@@ -281,11 +326,14 @@ class RenderContext {
 
     get doorWidth() {
         switch (this.mapStyle) {
+            case 'custom':
+                return this.customDoorSize;
             case "legalmap":
                 return 12
             case "hypixelmap":
                 return 15
             case "teniosmap":
+            default:
                 return 15;
         }
     }
@@ -400,7 +448,20 @@ class RenderContext {
         archColor = [30, 170, 50, 255],
         tankColor = [150, 150, 150, 255],
         singleBorderColor = [0, 0, 0, 255],
-        singleBorderColorSelf = [0, 0, 0, 255]
+        singleBorderColorSelf = [0, 0, 0, 255],
+        customRoomColorNormal = [114, 67, 27, 255],
+        customRoomColorMini = [114, 67, 27, 255],
+        customRoomColorRare = [114, 67, 27, 255],
+        customRoomColorFairy = [239, 126, 163, 255],
+        customRoomColorBlood = [255, 0, 0, 255],
+        customRoomColorTrap = [213, 126, 50, 255],
+        customRoomColorSpawn = [0, 123, 0, 255],
+        customRoomColorGold = [226, 226, 50, 255],
+        customRoomColorPuzzle = [176, 75, 213, 255],
+        customRoomColorUnknown = [64, 64, 64, 255],
+        customRoomColorWitherDoor = [0, 0, 0, 255],
+        customRoomGapSize = 9,
+        customDoorSize = 15
     }) {
         return {
             showMap,
@@ -447,7 +508,20 @@ class RenderContext {
             archColor,
             tankColor,
             singleBorderColor,
-            singleBorderColorSelf
+            singleBorderColorSelf,
+            customRoomColorNormal,
+            customRoomColorMini,
+            customRoomColorRare,
+            customRoomColorFairy,
+            customRoomColorBlood,
+            customRoomColorTrap,
+            customRoomColorSpawn,
+            customRoomColorGold,
+            customRoomColorPuzzle,
+            customRoomColorUnknown,
+            customRoomColorWitherDoor,
+            customRoomGapSize,
+            customDoorSize
         }
     }
 

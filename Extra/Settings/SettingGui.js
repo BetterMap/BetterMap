@@ -201,26 +201,20 @@ class SettingGui {
                 "single": "Single Color",
                 "class-color": "Class Colors"
             }, "headBorder", this.currentSettings.headBorder)[1].setLore(["All border colors can be changed in the config file"])
-            elm.addColorSelector("Player Border Color", "singleBorderColor", this.currentSettings.singleBorderColor)
-            elm.addColorSelector("Healer Border Color", "healerColor", this.currentSettings.healerColor)
-            elm.addColorSelector("Mage Border Color", "mageColor", this.currentSettings.mageColor)
-            elm.addColorSelector("Berserk Border Color", "bersColor", this.currentSettings.bersColor)
-            elm.addColorSelector("Archer Border Color", "healerColor", this.currentSettings.healerColor)
-            elm.addColorSelector("Tank Border Color", "tankColor", this.currentSettings.tankColor)
-            // elm.addGear(() => {
-            //     return this.currentSettings.headBorder === "class-color" || this.currentSettings.headBorder === "single"
-            // }, (elm2) => {
-            //     if (this.currentSettings.headBorder == "single") {
-            //         elm2.addColorSelector("Player Border Color", "singleBorderColor", this.currentSettings.singleBorderColor)
-            //     } else if (this.currentSettings.headBorder == "class-color") {
-            //         elm2.addColorSelector("Healer Border Color", "healerColor", this.currentSettings.healerColor)
-            //         elm2.addColorSelector("Mage Border Color", "mageColor", this.currentSettings.mageColor)
-            //         elm2.addColorSelector("Berserk Border Color", "bersColor", this.currentSettings.bersColor)
-            //         elm2.addColorSelector("Archer Border Color", "healerColor", this.currentSettings.healerColor)
-            //         elm2.addColorSelector("Tank Border Color", "tankColor", this.currentSettings.tankColor)
-            //     }
-            // });
 
+            if (this.currentSettings.headBorder == "single") {
+                elm.addColorSelector("Player Border Color", "singleBorderColor", this.currentSettings.singleBorderColor)
+            } else if (this.currentSettings.headBorder == "class-color") {
+                elm.addColorSelector("Healer Border Color", "healerColor", this.currentSettings.healerColor)
+                elm.addColorSelector("Mage Border Color", "mageColor", this.currentSettings.mageColor)
+                elm.addColorSelector("Berserk Border Color", "bersColor", this.currentSettings.bersColor)
+                elm.addColorSelector("Archer Border Color", "healerColor", this.currentSettings.healerColor)
+                elm.addColorSelector("Tank Border Color", "tankColor", this.currentSettings.tankColor)
+            }
+
+            return this.currentSettings.headBorder
+        }, (lastStyle) => {
+            return this.currentSettings.headBorder !== lastStyle
         })
 
         this.addDropdown("Player names on map", {
@@ -368,7 +362,8 @@ class SettingGui {
     /**
      * Will add a gear to the right of the last added setting
      * @param {function():Boolean} shouldShowFun
-     * @param {function(CustomSettingsBuilder)} generateGuiElementFun
+     * @param {function(CustomSettingsBuilder):Any} generateGuiElementFun
+     * @param {function(Any)} generateGuiElementFun
      * @example ```js
      * this.addGear(()=>{
      *      //Return true/false wether to show the gear (based of selected settings)
@@ -381,18 +376,20 @@ class SettingGui {
      * })
      * ```
      */
-    addGear(shouldShowFun = () => { }, generateGuiElementFun = () => { }) {
+    addGear(shouldShowFun = () => { }, generateGuiElementFun = () => { }, regenerateWhen = () => { }) {
         let shouldShowStart = shouldShowFun()
 
         let button = new BoxWithGear().setLocation(0.905, this.y - 0.05 - 0.075 / 2, 0.075, 0.075)
         this.mainpage.addChild(button)
 
         button.visable = shouldShowStart
+        let menuOpen = false
 
-        button.addEvent(new SoopyMouseClickEvent().setHandler(() => {
-            //Open button
+        let state
+
+        let openFun = () => {
             let element = new CustomSettingsBuilder(this)
-            generateGuiElementFun(element)
+            state = generateGuiElementFun(element)
 
             this.moreSettingsPage.clearChildren()
 
@@ -402,18 +399,32 @@ class SettingGui {
             this.mainpage.location.location.x.set(-1, 250)
             this.moreSettingsPage.location.location.x.set(0, 250)
 
+            menuOpen = true
+
             this.closeMoreSettingsGui = () => {
                 this.mainpage.location.location.x.set(0, 250)
                 this.moreSettingsPage.location.location.x.set(1, 250)
 
+                menuOpen = false
+
                 this.closeMoreSettingsGui = () => { }
             }
+        }
+
+        button.addEvent(new SoopyMouseClickEvent().setHandler(() => {
+            //Open button
+            openFun()
         }))
 
         this.onSettingChangeFunctions.push(() => {
             let shouldShowNow = shouldShowFun()
 
             button.visable = shouldShowNow
+
+            if (menuOpen && regenerateWhen(state)) {
+                openFun()
+            }
+
         })
 
         return button

@@ -90,6 +90,10 @@ eventManager.onSecretCollect((type, x, y, z) => {
     if (currentDungeonMap) currentDungeonMap.onSecretCollect(type, x, y, z)
 })
 register("command", (name) => {
+    if (!name) {
+        ChatLib.chat(MESSAGE_PREFIX + 'Missing argument. Usage: §c/bping [name]')
+        return;
+    }
     socketConnection.isUsingBMap([name], ([usingMap]) => {
         if (usingMap) {
             ChatLib.chat(MESSAGE_PREFIX + name + " is using bettermap")
@@ -98,9 +102,10 @@ register("command", (name) => {
         }
     })
 }).setName("bping", true)
+
 register("command", () => {
     if (!currentDungeonMap) {
-        ChatLib.chat(MESSAGE_PREFIX + " you must be in a dungeon to run this command.")
+        ChatLib.chat(MESSAGE_PREFIX + "You must be in a dungeon to run this command.")
         return
     }
 

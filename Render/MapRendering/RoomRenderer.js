@@ -47,21 +47,25 @@ class RoomRenderer {
         let rc = room.components // effort to type
         // Drawing the main room and its sections
 
-        const roomSize = context.blockSize - context.roomGap // Width/Height of a single room component (a 1x1 room on the map)
-
         // Draws a rectangle on the map
-        const draw = (x, y, w, h) => graphics.fillRect(x * context.blockSize + context.roomGap / 2, y * context.blockSize + context.roomGap / 2, w, h);
+        const draw = (x, y, w, h, xa = 0, ya = 0) => graphics.fillRect(x * context.blockSize + context.roomGap / 2 + xa, y * context.blockSize + context.roomGap / 2 + ya, w, h);
 
         // Main room components and connectors
         for (let component of rc) {
             let x = component.arrayX
             let y = component.arrayY
-            draw(x, y, roomSize, roomSize);
-            if (rc.some(a => a.arrayX == x + 1 && a.arrayY == y)) draw(x + 0.75, y, roomSize / 3, roomSize) // Component to the right
-            if (rc.some(a => a.arrayX == x && a.arrayY == y + 1)) draw(x, y + 0.75, roomSize, roomSize / 3) // Component above
+
+            draw(x, y, context.roomSize, context.roomSize);
+
+            if (rc.some(a => a.arrayX == x + 1 && a.arrayY == y))
+                draw(x, y, context.roomSize + context.roomGap, context.roomSize, context.roomSize, 0) // Component to the right
+
+            if (rc.some(a => a.arrayX == x && a.arrayY == y + 1))
+                draw(x, y, context.roomSize, context.roomSize + context.roomGap, 0, context.roomSize) // Component above
 
             // 2x2 Center
-            if (rc.length == 4 && new Set(rc.map(a => a.arrayX)).size == 2 && x == Math.min(...rc.map(a => a.arrayX)) && y == Math.min(...rc.map(a => a.arrayY))) draw(x + 0.75, y + 0.75, roomSize / 3, roomSize / 3)
+            if (rc.length == 4 && new Set(rc.map(a => a.arrayX)).size == 2 && x == Math.min(...rc.map(a => a.arrayX)) && y == Math.min(...rc.map(a => a.arrayY)))
+                draw(x, y, context.roomSize + context.roomGap, context.roomSize + context.roomGap, context.roomSize, context.roomSize)
         }
     }
 

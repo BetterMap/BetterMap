@@ -115,6 +115,24 @@ class SettingGui {
         this.addGear(() => {
             return this.currentSettings.mapStyle === "custom"
         }, (elm) => {
+
+            elm.addSidebarElement(new ButtonWithArrow().setText("&0Reset to default").addEvent(new SoopyMouseClickEvent().setHandler(() => {
+                this.changed("customRoomColorNormal", [114, 67, 27, 255])
+                this.changed("customRoomColorMini", [114, 67, 27, 255])
+                this.changed("customRoomColorRare", [114, 67, 27, 255])
+                this.changed("customRoomColorFairy", [239, 126, 163, 255])
+                this.changed("customRoomColorBlood", [255, 0, 0, 255])
+                this.changed("customRoomColorTrap", [213, 126, 50, 255])
+                this.changed("customRoomColorSpawn", [0, 123, 0, 255])
+                this.changed("customRoomColorGold", [226, 226, 50, 255])
+                this.changed("customRoomColorPuzzle", [176, 75, 213, 255])
+                this.changed("customRoomColorUnknown", [64, 64, 64, 255])
+                this.changed("customRoomColorWitherDoor", [0, 0, 0, 255])
+                this.changed("customRoomGapSize", 9)
+                this.changed("customDoorSize", 15)
+            })), 0.3, 0.4, 0.075)
+            elm.addSidebarElement()
+
             elm.addColorSelector("Normal Mob Room Color", "customRoomColorNormal", this.currentSettings.customRoomColorNormal)
             elm.addColorSelector("Miniboss Mob Room Color", "customRoomColorMini", this.currentSettings.customRoomColorMini)
             elm.addColorSelector("Rare 1x1 Room Color", "customRoomColorRare", this.currentSettings.customRoomColorRare)

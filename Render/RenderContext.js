@@ -69,7 +69,7 @@ class RenderContext {
     }
 
     getImageSize(floor) {
-        return this.paddingLeft * 2 + this.blockSize * 6 + this.roomGap
+        return this.paddingLeft * 2 + this.blockSize * 6 + this.roomGap / 2
     }
 
     get showMap() {

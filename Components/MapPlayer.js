@@ -81,7 +81,11 @@ class MapPlayer {
 
     updatePlayerColor() {
         if (settings.settings.headBorder == "single") {
-            this.playerColor = settings.settings.singleBorderColor
+            if (this.uuid === Player.getUUID().toString()) {
+                this.playerColor = settings.settings.singleBorderColorSelf
+            } else {
+                this.playerColor = settings.settings.singleBorderColor
+            }
             return this
         }
         switch (this.dungeonClass) {

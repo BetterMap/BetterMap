@@ -27,7 +27,7 @@ import Notification from "../../../guimanager/Notification"
 
 class SettingGui {
     /**
-     * 
+     * @param {import("../../Render/RenderContext").ContextSettings} currentSettings
      * @param {DungeonMap} fakeDungeon 
      * @param {RenderContext} renderContext 
      * @param {MapRenderer} mapRenderer
@@ -206,7 +206,8 @@ class SettingGui {
             }, "headBorder", this.currentSettings.headBorder)[1].setLore(["All border colors can be changed in the config file"])
 
             if (this.currentSettings.headBorder == "single") {
-                elm.addColorSelector("Player Border Color", "singleBorderColor", this.currentSettings.singleBorderColor)
+                elm.addColorSelector("Self Border Color", "singleBorderColorSelf", this.currentSettings.singleBorderColorSelf)
+                elm.addColorSelector("Others Border Color", "singleBorderColor", this.currentSettings.singleBorderColor)
             } else if (this.currentSettings.headBorder == "class-color") {
                 elm.addColorSelector("Healer Border Color", "healerColor", this.currentSettings.healerColor)
                 elm.addColorSelector("Mage Border Color", "mageColor", this.currentSettings.mageColor)
@@ -226,7 +227,7 @@ class SettingGui {
             "always": "Always"
         }, "playerNames", this.currentSettings.playerNames)
 
-        this.addSlider("Icon Scale", "iconScale", this.currentSettings.iconScale || 10, 2, 15)
+        this.addSlider("Icon Scale", "iconScale", this.currentSettings.iconScale ?? 10, 2, 15)
 
         this.addColorSelector("Map Border Color", "mapBorderColor", this.currentSettings.mapBorderColor)
         this.addColorSelector("Map Color", "mapBackgroundColor", this.currentSettings.mapBackgroundColor)

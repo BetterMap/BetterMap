@@ -5,11 +5,11 @@
  * @property {Number} posX - X Position of the map on screen
  * @property {Number} posY - y Position of the map on screen
  * @property {Number} size - Width/height of the map when rendered
- * @property {"off", "icons", "heads"} showHeads - show player heads on the map
+ * @property {"off"|"icons"|"heads"} showHeads - show player heads on the map
  * @property {Number} headScale - Width/height of heads (scales with size, will be same if size is 100)
  * @property {Number} iconScale - Width/height of icons (scales with size, will be same if size is 100)
- * @property {"hypixel-old", "hypixel-new"|"default"|"tenios"|"roomnames"} tickStyle - Style of the ticks
- * @property {"never","hasSecrets","always"} showSecretCount - When to show secrets instead of checkmarks
+ * @property {"hypixel-old"|"hypixel-new"|"default"|"tenios"|"roomnames"} tickStyle - Style of the ticks
+ * @property {"never"|"hasSecrets"|"always"} showSecretCount - When to show secrets instead of checkmarks
  * @property {Boolean} checkmarkCompleteRooms - Turn completed rooms into checkmarks
  * @property {Boolean} tickStyle_secrets_overHead - Wether to render the secrets / room name tick style over player heads
  * @property {"none"|"text"|"icon"} puzzleNames - Render style of puzzle names
@@ -22,7 +22,7 @@
  * @property {Boolean} tabCryptCount - Show the current total crypt count for discovered rooms in tab 
  * @property {Boolean} tabMimic - Show the mimic status in tab
  * @property {Boolean} fixScore - Replaces the sidebar scoreboard score with the correct score
- * @property {"never", "at270", "at300", "automatic", "always"} showScoreMessage - Broadcast a score message after reaching a specific score
+ * @property {"never"|"at270"|"at300"|"automatic"|"always"} showScoreMessage - Broadcast a score message after reaching a specific score
  * @property {String} custom270scoreMessage - Allows the player to set a custom message for 270 score
  * @property {String} custom300scoreMessage - Allows the player to set a custom message for 300 score
  * @property {Boolean} hideInBoss - Hide the map in boss entirely 
@@ -43,6 +43,7 @@
  * @property {[r:Number, g:Number, b:Number, a:number]} archColor - Border color for arch class
  * @property {[r:Number, g:Number, b:Number, a:number]} tankColor - Border color for tank class
  * @property {[r:Number, g:Number, b:Number, a:number]} singleBorderColor - Border color for everyone
+ * @property {[r:Number, g:Number, b:Number, a:number]} singleBorderColorSelf - Border color for self
  */
 
 const BufferedImage = Java.type("java.awt.image.BufferedImage")
@@ -195,6 +196,46 @@ class RenderContext {
 
     get devInfo() {
         return this.settings.devInfo
+    }
+
+    get mapBorderColor() {
+        return this.settings.mapBorderColor
+    }
+
+    get mapBackgroundColor() {
+        return this.settings.mapBackgroundColor
+    }
+
+    get extraInfoBackroundColor() {
+        return this.settings.extraInfoBackroundColor
+    }
+
+    get healerColor() {
+        return this.settings.healerColor
+    }
+
+    get mageColor() {
+        return this.settings.mageColor
+    }
+
+    get bersColor() {
+        return this.settings.bersColor
+    }
+
+    get archColor() {
+        return this.settings.archColor
+    }
+
+    get tankColor() {
+        return this.settings.tankColor
+    }
+
+    get singleBorderColor() {
+        return this.settings.singleBorderColor
+    }
+
+    get singleBorderColorSelf() {
+        return this.settings.singleBorderColorSelf
     }
 
     get colorMap() {
@@ -353,8 +394,8 @@ class RenderContext {
         bersColor = [255, 0, 0, 255],
         archColor = [30, 170, 50, 255],
         tankColor = [150, 150, 150, 255],
-        singleBorderColor = [0, 0, 0, 255]
-
+        singleBorderColor = [0, 0, 0, 255],
+        singleBorderColorSelf = [0, 0, 0, 255]
     }) {
         return {
             showMap,
@@ -399,7 +440,8 @@ class RenderContext {
             bersColor,
             archColor,
             tankColor,
-            singleBorderColor
+            singleBorderColor,
+            singleBorderColorSelf
         }
     }
 

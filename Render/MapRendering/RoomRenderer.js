@@ -79,22 +79,23 @@ class RoomRenderer {
         if (room.type === Room.PUZZLE) {
             if (context.puzzleNames === 'text') return;
             if (context.puzzleNames === 'icon' && !(room.checkmarkState === Room.COMPLETED || room.checkmarkState === Room.FAILED)) return;
-        }
-        //dont show checkmarks if all rooms are rendered by name
-        if (context.showSecretCount === 'always') {
-            if (!context.checkmarkCompleteRooms) return;
-            if (context.checkmarkCompleteRooms && room.checkmarkState !== Room.COMPLETED) return;
-        }
-        if (context.showSecretCount === 'hasSecrets' && room.maxSecrets > 0) {
-            if (!context.checkmarkCompleteRooms) return;
-            if (context.checkmarkCompleteRooms && room.checkmarkState !== Room.COMPLETED) return;
+        } else {
+            //dont show checkmarks if all rooms are rendered by name
+            if (context.showSecretCount === 'always') {
+                if (!context.checkmarkCompleteRooms) return;
+                if (context.checkmarkCompleteRooms && room.checkmarkState !== Room.COMPLETED) return;
+            }
+            if (context.showSecretCount === 'hasSecrets' && room.maxSecrets > 0) {
+                if (!context.checkmarkCompleteRooms) return;
+                if (context.checkmarkCompleteRooms && room.checkmarkState !== Room.COMPLETED) return;
+            }
         }
         //room names are rendered in drawExtras 
         if (context.tickStyle === 'roomnames') return;
 
         //tenios checkmark is perm on the image
         if (context.tickStyle === 'tenios') {
-            let fontSize = 24 * context.iconScale / 10;
+            let fontSize = 24 * context.iconScale / 10 || 24;
             let teniosFont = new Font('Dialog', Font.BOLD, fontSize);
             graphics.setFont(teniosFont);
             let x = Math.min(...room.components.map(r => r.arrayX))

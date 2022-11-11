@@ -87,4 +87,9 @@ First released version!
 + add option for settings about settings (will show as a gear to the right of the selected setting)
 + add option to change head border colors
 + add toggle for mimic text on simplified score style
++ hypixel new tick style
++ add secret count instead of checkmarks when setting
++ player head arrows
++ 270/300 score messages
++ roomname tick style
 ```

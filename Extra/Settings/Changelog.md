@@ -92,4 +92,5 @@ First released version!
 ! fix blood open detection for box around wither doors
 ! improve /bping [name]
 ! fix heads sometimes not showing on map
+! fix early in rooms not syncing properly
 ```

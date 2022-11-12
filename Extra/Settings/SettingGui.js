@@ -36,7 +36,7 @@ class SettingGui {
         this.gui = new SoopyGui()
         this.currentSettings = currentSettings
 
-        this.addSidebarElement = this.addSidebarElement.bind(this) //BatChamp I LOVE JS this. CONTEXT!
+        this.addSidebarElement = this.addSidebarElement.bind(this) //BatChamp I LOVE JS this. CONTEXT!@
 
         this.gui.setOpenCommand("bettermap")
         this.gui.setOpenCommand("bm")
@@ -300,9 +300,9 @@ class SettingGui {
             return this.currentSettings.showScoreMessage !== "never"
         }, (elm) => {
             if (this.currentSettings.showScoreMessage !== "at300")
-                elm.addString("270 Score Message", "custom270scoreMessage", this.currentSettings.custom270scoreMessage)[0];
+                elm.addString("270 Score Message", "custom270scoreMessage", this.currentSettings.custom270scoreMessage)
             if (this.currentSettings.showScoreMessage !== "at270")
-                elm.addString("300 Score Message", "custom300scoreMessage", this.currentSettings.custom300scoreMessage)[0];
+                elm.addString("300 Score Message", "custom300scoreMessage", this.currentSettings.custom300scoreMessage)
         })
 
         this.addCategory("Tab Info")
@@ -597,9 +597,12 @@ class SettingGui {
      * @param {String} defau Default value
      */
     addString(label, setting, defau, addFun = this.addSidebarElement) {
-        let textBox = addFun(new TextBox().setText(this.currentSettings[setting] ?? defau).addEvent(new SoopyContentChangeEvent().setHandler((val, prev, cancelFun) => {
+        let textBox = new TextBox().setText(this.currentSettings[setting] ?? defau)
+        textBox.text.addEvent(new SoopyContentChangeEvent().setHandler((val, prev, cancelFun) => {
             this.changed(setting, val)
-        })), 0.55, 0.35, 0.05)
+        }))
+
+        addFun(textBox, 0.55, 0.35, 0.05)
 
         return [textBox, addFun(new SoopyTextElement().setText("§0" + label).setMaxTextScale(2), 0.1, 0.35)]
     }

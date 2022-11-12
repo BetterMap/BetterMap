@@ -30,7 +30,7 @@ class SettingsManager {
 
         this.fakeDungeon = this.createFakeDungeon()
 
-        this.settingRenderContext = this.createRenderContext({ currentRoomInfo: "none", hideInBoss: false })
+        this.settingRenderContext = this.createRenderContext({ currentRoomInfo: "none", hideInBoss: false, playerNames: "always" })
 
         this.settingsGui = new SettingGui(this.currentSettings, this.fakeDungeon, this.renderContextManager.getRenderContextData(this.settingRenderContext), mapRenderer)
 

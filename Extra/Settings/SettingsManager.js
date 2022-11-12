@@ -71,8 +71,8 @@ class SettingsManager {
         }
 
         let a = register("worldLoad", () => {
-            this.addPlayersToDungeonPreview(this.fakeDungeon)
-            a.unregister()
+            if (this.addPlayersToDungeonPreview(this.fakeDungeon))
+                a.unregister()
         })
 
         register("renderOverlay", () => {
@@ -393,13 +393,14 @@ class SettingsManager {
      * @param {DungeonMap} dungeon 
      */
     addPlayersToDungeonPreview(dungeon) {
-        if (dungeon.players.length !== 0) return
+        if (dungeon.players.length !== 0) return true
 
         let fun = AbstractClientPlayer.class.getDeclaredMethod("func_175155_b")
         fun.setAccessible(true)
         let info = fun.invoke(Player.getPlayer())
-        {
+        if (!info) return false
 
+        {
             let player = new MapPlayer(info, dungeon, Player.getName())
             player.setX(-50)
             player.setY(-142)
@@ -422,6 +423,8 @@ class SettingsManager {
             player.classLevel = "25"
             player.skyblockLevel = "300"
         }
+
+        return true
     }
 }
 

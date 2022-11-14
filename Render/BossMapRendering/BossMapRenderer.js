@@ -131,6 +131,9 @@ class BossMapRenderer extends MapTab {
     draw(renderContext, dungeonMap, mouseX, mouseY) {
         if (Date.now() - this.lastUpdatedBossImage > 2000) this.updateBossImage(renderContext, dungeonMap)
         let { x, y, size } = renderContext.getMapDimensions()
+
+        //TODO: move image if rectangular (m/f6)
+
         if (this.currentBossImage) {
             this.currentBossImage.image.draw(x + renderContext.borderWidth, y + renderContext.borderWidth, size - renderContext.borderWidth * 2, size - renderContext.borderWidth)
         }

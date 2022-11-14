@@ -91,8 +91,10 @@ First released version!
 + roomname tick style
 + border around head width setting
 + show playernames on spirit leap overlay
++ center boss room map on player instead of stretching
 ! fix blood open detection for box around wither doors
 ! improve /bping [name]
 ! fix heads sometimes not showing on map
 ! fix early in rooms not syncing properly
+! fix map not showing on leap overlay if render map is disabled
 ```

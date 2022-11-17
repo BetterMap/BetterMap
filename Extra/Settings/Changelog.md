@@ -91,6 +91,8 @@ First released version!
 + roomname tick style
 + border around head width setting
 + show playernames on spirit leap overlay
++ add settings profile selection (thenose2003)
++ add importing and exporting settings profiles (thenose2003)
 ! fix blood open detection for box around wither doors
 ! improve /bping [name]
 ! fix heads sometimes not showing on map

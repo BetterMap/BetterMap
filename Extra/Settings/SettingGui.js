@@ -225,16 +225,17 @@ class SettingGui {
         this.addDropdown("Player Heads", {
             "off": "None",
             "icons": "Arrows",
+            "self-icon": "Use Arrow for own Head",
             "heads": "Heads"
         }, "showHeads", this.currentSettings.showHeads);
 
         this.addGear(() => {
-            return this.currentSettings.showHeads === "heads" || this.currentSettings.showHeads === "icons"
+            return this.currentSettings.showHeads != 'off'
         }, (elm) => {
 
             elm.addSlider("Head Scale", "headScale", this.currentSettings.headScale || 8, 2, 15)
 
-            if (this.currentSettings.showHeads !== "heads") return this.currentSettings.headBorder
+            if (this.currentSettings.showHeads === "icons") return this.currentSettings.headBorder
 
             elm.addDropdown("Border around heads", {
                 "none": "None",

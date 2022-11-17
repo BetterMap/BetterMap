@@ -353,11 +353,11 @@ class DungeonMap {
             if (line.endsWith(")") && line.includes(" (") && line.split(" (").length === 2 && line.split(" (")[0].split(" ").length === 1 && line.split(" (")[1].length > 3) {
                 // This is a tab list line for a player
                 let name = line.split(" ")[0]
-
-                if (name === ChatLib.removeFormatting(Player.getDisplayName().text)) { //move the current player to end of list
+                let playerName = ChatLib.removeFormatting(Player.getDisplayName().text).replace(/[♲Ⓑ]/g, "").replace('§z', '').trim()
+                if (name === playerName) { //move the current player to end of list
                     thePlayer = [p, name]
                     continue
-                }
+                } 
 
                 if (!this.players[i]) {
                     this.players[i] = new MapPlayer(p, this, name)
@@ -502,7 +502,8 @@ class DungeonMap {
      */
     updatePlayersFast() {
         World.getAllPlayers().forEach(player => {
-            let p = this.players[this.playersNameToId[ChatLib.removeFormatting(player.getDisplayName().text).trim()]]
+            let playerName = ChatLib.removeFormatting(player.getDisplayName().text).replace(/[♲Ⓑ]/g, "").replace('§z', '').trim()
+            let p = this.players[this.playersNameToId[playerName]]
             if (!p) return
 
             p.setX(player.getX())

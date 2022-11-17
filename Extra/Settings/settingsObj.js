@@ -156,14 +156,17 @@ class SettingsObj {
     changeProfile(name) {
         this.activeProfile = name
         Object.entries(this.profiles[this.activeProfile]).forEach(([key, value]) => {
-            ChatLib.chat(key + ": " + value)
+            //ChatLib.chat(key + ": " + value)
             this[key] = value
         })
 
         this.addMissing()
     }
 
-    createProfile() {
+    createProfile(importedData) {
+        this.importedData = JSON.parse(importedData)
+        ChatLib.chat(`Begining of thingy ${JSON.stringify(this.importedData)}`)
+        // TODO data gets lost somewhere from here to line 183 idk how
         let i = 0
         let newName = `Profile ${i}`
         outer: while (true) {
@@ -177,7 +180,16 @@ class SettingsObj {
             }
             break
         }
-        this.profiles[newName] = this.defaultSettings
+
+        this.profiles[newName] = { ...this.defaultSettings, ...this.importedData}
+        ChatLib.chat(JSON.stringify(this.importedData))
+        /*if (this.importedData = {}) {
+            this.profiles[newName] = { ...this.defaultSettings, ...this.importedData}
+            ChatLib.chat(JSON.stringify(this.importedData))
+        } else {
+            this.profiles[newName] = this.importedData
+            ChatLib.chat(JSON.stringify(this.importedData))
+        }*/
         this.save()
         return newName
     }
@@ -189,6 +201,13 @@ class SettingsObj {
         delete this.profiles[this.activeProfile]
         this.changeProfile(Object.keys(this.profiles)[0])
         return true
+    }
+
+    importProfile(data) {
+        // TODO check for similar names
+        let newProfileName = Object.keys(data)[0]
+        this.profiles[newProfileName] = data[newProfileName]
+        return newProfileName
     }
 
     addMissing() {

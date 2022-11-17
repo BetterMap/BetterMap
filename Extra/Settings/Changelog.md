@@ -97,4 +97,5 @@ First released version!
 ! fix heads sometimes not showing on map
 ! fix early in rooms not syncing properly
 ! fix map not showing on leap overlay if render map is disabled
+! make api key input box show *'s instead of api key (for streamers)
 ```

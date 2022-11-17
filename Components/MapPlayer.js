@@ -168,23 +168,24 @@ class MapPlayer {
         return dungeon.rooms.get(x + ',' + y)
     }
 
-    drawAt(context, x, y, w, h, rotation = 0, border = true) {
+    drawAt(x, y, w, h, showIcons = false, rotation = 0, borderWidth = 2) {
         Tessellator.pushMatrix()
         Renderer.retainTransforms(true)
 
-        if (context.showHeads === 'icons') {
+        if (showIcons) {
             h *= 1.4
         }
 
         Renderer.translate(x + w / 2, y + h / 2, 50)
 
         Renderer.rotate(rotation)
-        if (context.showHeads === 'icons') {
+
+        if (showIcons) {
             Renderer.drawImage(this.username === Player.getName() ? markerSelf : markerOther, -w / 2, -h / 2, w, h)
         } else {
-            if (border != "none" || border == false) {
+            if (borderWidth) {
                 this.updatePlayerColor()
-                Renderer.drawRect(Renderer.color(this.playerColor[0] ?? 0, this.playerColor[1] ?? 0, this.playerColor[2] ?? 0, this.playerColor[3] ?? 255), -w / 2 - context.headBorderWidth * w / 30, -h / 2 - context.headBorderWidth * w / 30, w + context.headBorderWidth * 2 * w / 30, h + context.headBorderWidth * 2 * w / 30)
+                Renderer.drawRect(Renderer.color(this.playerColor[0] ?? 0, this.playerColor[1] ?? 0, this.playerColor[2] ?? 0, this.playerColor[3] ?? 255), -w / 2 - borderWidth * w / 30, -h / 2 - borderWidth * w / 30, w + borderWidth * 2 * w / 30, h + borderWidth * 2 * w / 30)
             }
 
             GlStateManager[m.enableBlend]()
@@ -248,7 +249,7 @@ class MapPlayer {
         x2 = overrideX || x2
         y2 = overrideY || y2
 
-        this.drawAt(renderContext, x2 + rx, y2 + ry, rw, rh, this.yaw.get(), renderContext.headBorder)
+        this.drawAt(x2 + rx, y2 + ry, rw, rh, renderContext.showHeads === "icons", this.yaw.get(), renderContext.headBorder ? renderContext.headBorderWidth : 0)
 
         let showNametag = renderContext.playerNames === "always"
 

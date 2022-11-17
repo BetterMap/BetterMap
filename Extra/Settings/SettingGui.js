@@ -24,6 +24,7 @@ import TextBox from "../../../guimanager/GuiElement/TextBox"
 import BoxWithGear from "../../../guimanager/GuiElement/BoxWithGear"
 import { MESSAGE_PREFIX } from "../../Utils/Utils"
 import Notification from "../../../guimanager/Notification"
+import PasswordInput from "../../../guimanager/GuiElement/PasswordInput"
 
 class SettingGui {
     /**
@@ -339,7 +340,7 @@ class SettingGui {
         })), 0.3, 0.4, 0.075)
         this.addSidebarElement() //adds a gap because the button diddnt auto add one
 
-        this.apiKeySetting = this.addString("Api key", "apiKey", this.currentSettings.apiKey)[0]
+        this.apiKeySetting = this.addHiddenString("Api key", "apiKey", this.currentSettings.apiKey)[0]
 
         this.addToggle("Show dev info", "devInfo", this.currentSettings.devInfo)
 
@@ -598,6 +599,22 @@ class SettingGui {
      */
     addString(label, setting, defau, addFun = this.addSidebarElement) {
         let textBox = new TextBox().setText(this.currentSettings[setting] ?? defau)
+        textBox.text.addEvent(new SoopyContentChangeEvent().setHandler((val, prev, cancelFun) => {
+            this.changed(setting, val)
+        }))
+
+        addFun(textBox, 0.55, 0.35, 0.05)
+
+        return [textBox, addFun(new SoopyTextElement().setText("§0" + label).setMaxTextScale(2), 0.1, 0.35)]
+    }
+
+    /**
+     * @param {String} label The text to go to the left of the dropdown
+     * @param {String} setting internal name of the setting to control
+     * @param {String} defau Default value
+     */
+    addHiddenString(label, setting, defau, addFun = this.addSidebarElement) {
+        let textBox = new PasswordInput().setText(this.currentSettings[setting] ?? defau)
         textBox.text.addEvent(new SoopyContentChangeEvent().setHandler((val, prev, cancelFun) => {
             this.changed(setting, val)
         }))
@@ -894,6 +911,15 @@ class CustomSettingsBuilder {
      */
     addString(label, setting, defau) {
         return this.parent.addString(label, setting, defau, this.addSidebarElement)
+    }
+
+    /**
+     * @param {String} label The text to go to the left of the dropdown
+     * @param {String} setting internal name of the setting to control
+     * @param {String} defau Default value
+     */
+    addHiddenString(label, setting, defau) {
+        return this.parent.addHiddenString(label, setting, defau, this.addSidebarElement)
     }
 
     /**

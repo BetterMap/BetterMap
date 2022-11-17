@@ -101,9 +101,9 @@ class DungeonMap {
         this.keys = 0
         this.bloodOpen = false
 
-        //initialize with true, only if score is below threshold will they get set to false to avoid repeats on /ct reload
-        this.broadcast270message = true;
-        this.broadcast300message = true;
+        //initialize with 0, only if score is below threshold will they get set to 1 then set to 2 after said
+        this.broadcast270message = 0;
+        this.broadcast300message = 0;
 
         let mimicDeadMessages = ["$SKYTILS-DUNGEON-SCORE-MIMIC$", "Mimic Killed!", "Mimic Dead!", "Mimic dead!"]
 
@@ -349,7 +349,7 @@ class DungeonMap {
             if (!p[m.getDisplayName.NetworkPlayerInfo]()) continue
             let line = p[m.getDisplayName.NetworkPlayerInfo]()[m.getUnformattedText]().trim().replace(/\[[0-9]+\] /g, "").replace(/[♲Ⓑ] /g, "")
             line = line.replace(/\[[A-Z]+?\] /, "") //support yt/admin rank
-            line = line.replace('§z',''); //support sba chroma names
+            line = line.replace('§z', ''); //support sba chroma names
             if (line.endsWith(")") && line.includes(" (") && line.split(" (").length === 2 && line.split(" (")[0].split(" ").length === 1 && line.split(" (")[1].length > 3) {
                 // This is a tab list line for a player
                 let name = line.split(" ")[0]
@@ -982,18 +982,18 @@ class DungeonMap {
             shouldAllow300Message = this.floorNumber >= 5 || this.floor === "M4"
         }
 
-        if (shouldAllow300Message && total >= 300 && !this.broadcast300message) {
-            this.broadcast300message = true;
+        if (shouldAllow300Message && total >= 300 && this.broadcast300message === 1) {
+            this.broadcast300message = 2;
             ChatLib.command('pc ' + settings.settings.custom300scoreMessage);
-        } else if (shouldAllow270Message && total >= 270 && !this.broadcast270message) {
-            this.broadcast270message = true;
+        } else if (shouldAllow270Message && total >= 270 && this.broadcast270message === 1) {
+            this.broadcast270message = 2;
             ChatLib.command('pc ' + settings.settings.custom270scoreMessage);
         }
 
-        if (total < 270 && this.broadcast270message)
-            this.broadcast270message = false;
-        if (total < 300 && this.broadcast300message)
-            this.broadcast300message = false;
+        if (total < 270 && this.broadcast270message === 0)
+            this.broadcast270message = 1;
+        if (total < 300 && this.broadcast270message === 0)
+            this.broadcast300message = 1;
 
         this.cachedScore = {
             time: Date.now(),

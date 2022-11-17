@@ -105,6 +105,74 @@ class SettingGui {
 
         this.addToggle("Map enabled", "showMap", this.currentSettings.showMap)
 
+        // Idk a good way to put this into the menu but heres smth
+        //this.addSidebarElement(new SoopyTextElement().setText("§0" + "Settings Profile Selector ->").setMaxTextScale(2), 0.1, 0.75)
+        this.profileDropdown = this.addDropdown("Profile Selection",
+            this.currentSettings.getProfiles(),
+            "activeProfile",
+            "Profile 1")[0]
+
+        this.addGear(() => {
+            return true
+        }, (elm) => {
+            let textBox = new TextBox().setText(this.currentSettings["profileName"] ?? this.currentSettings.activeProfile)
+            textBox.text.addEvent(new SoopyContentChangeEvent().setHandler((val, prev, cancelFun) => {
+                this.changed("profileName", val)
+                this.profileDropdown.setOptions(this.currentSettings.getProfiles())
+                this.profileDropdown.setSelectedOption(this.currentSettings.activeProfile)
+            }))
+
+            elm.addSidebarElement(textBox, 0.55, 0.35, 0.05)
+            elm.addSidebarElement(new SoopyTextElement().setText("§0Profile Name").setMaxTextScale(2), 0.1, 0.35)
+
+            elm.addSidebarElement(new ButtonWithArrow().setText("&0Export Profile").addEvent(new SoopyMouseClickEvent().setHandler(() => {
+                // TODO make something that exports the thing
+            })), 0.09, 0.4, 0.075)
+            elm.addSidebarElement(new ButtonWithArrow().setText("&0Delete Profile").addEvent(new SoopyMouseClickEvent().setHandler(() => {
+                if (this.currentSettings.deleteProfile()) {
+                    this.changed("activeProfile", this.currentSettings.activeProfile)
+                    this.profileDropdown.setOptions(this.currentSettings.getProfiles())
+                    this.profileDropdown.setSelectedOption(this.currentSettings.activeProfile)
+                    this.closeMoreSettingsGui()
+                } else {
+                    new Notification("§cERROR", ["You can not delete your last profile"])
+                }
+            })), 0.5, 0.4, 0.075)
+        })
+
+        this.addSidebarElement(new ButtonWithArrow().setText("&0Create Profile").addEvent(new SoopyMouseClickEvent().setHandler(() => {
+            this.changed("activeProfile", this.currentSettings.createProfile())
+            this.profileDropdown.setOptions(this.currentSettings.getProfiles())
+            this.profileDropdown.setSelectedOption(this.currentSettings.activeProfile)
+        })), 0.09, 0.4, 0.075)
+        this.addSidebarElement(new ButtonWithArrow().setText("&0Import Profile").addEvent(new SoopyMouseClickEvent().setHandler(() => {
+            // TODO make the thing that imports a profile
+        })), 0.5, 0.4, 0.075)
+        this.addSidebarElement()
+
+
+        this.addSidebarElement(new ButtonWithArrow().setText("&0Discord").addEvent(new SoopyMouseClickEvent().setHandler(() => {
+            java.awt.Desktop.getDesktop().browse(
+                new java.net.URI("https://discord.gg/Uq5YzpaMsr")
+            );
+        })), 0.3, 0.4, 0.075)
+        this.addSidebarElement()
+
+
+        // Location edit gui
+        let editLocationGui = new LocationGui(this.currentSettings.posX ?? 0, this.currentSettings.posY ?? 0, (this.currentSettings.size ?? 150) / 100, () => this.gui.open()).onChange(val => {
+            this.changed("posX", val.x)
+            this.changed("posY", val.y)
+            this.changed("size", val.scale * 100)
+        })
+
+        this.addSidebarElement(new ButtonWithArrow().setText("&0Edit Location").addEvent(new SoopyMouseClickEvent().setHandler(() => {
+            editLocationGui.editPosition()
+        })), 0.3, 0.4, 0.075)
+
+        this.addSidebarElement() //adds 2 gaps (button from above diddnt get one added automatically + seperating setting areas)
+        this.addCategory("Style Settings")
+
         this.addDropdown("Map Style", {
             "legalmap": "Legal Map",
             "hypixelmap": "Hypixel",
@@ -147,28 +215,6 @@ class SettingGui {
             elm.addSlider("Gap Size", "customRoomGapSize", this.currentSettings.customRoomGapSize || 5, 2, 36)
             elm.addSlider("Door Width", "customDoorSize", this.currentSettings.customDoorWidth || 5, 2, 36)
         })
-
-        this.addSidebarElement(new ButtonWithArrow().setText("&0Discord").addEvent(new SoopyMouseClickEvent().setHandler(() => {
-            java.awt.Desktop.getDesktop().browse(
-                new java.net.URI("https://discord.gg/Uq5YzpaMsr")
-            );
-        })), 0.3, 0.4, 0.075)
-        this.addSidebarElement()
-
-
-        // Location edit gui
-        let editLocationGui = new LocationGui(this.currentSettings.posX ?? 0, this.currentSettings.posY ?? 0, (this.currentSettings.size ?? 150) / 100, () => this.gui.open()).onChange(val => {
-            this.changed("posX", val.x)
-            this.changed("posY", val.y)
-            this.changed("size", val.scale * 100)
-        })
-
-        this.addSidebarElement(new ButtonWithArrow().setText("&0Edit Location").addEvent(new SoopyMouseClickEvent().setHandler(() => {
-            editLocationGui.editPosition()
-        })), 0.3, 0.4, 0.075)
-
-        this.addSidebarElement() //adds 2 gaps (button from above diddnt get one added automatically + seperating setting areas)
-        this.addCategory("Style Settings")
 
         if (this.currentSettings.tickStyle === "secrets_underhead") {
             this.currentSettings.tickStyle = "secrets"

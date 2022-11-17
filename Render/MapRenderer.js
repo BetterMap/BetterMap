@@ -66,8 +66,8 @@ class MapRenderer {
         scoreInfoLore.push(`&f`)
         scoreInfoLore.push(`&fMin Secrets (s+): &a${scoreInfo.secretsFound ? scoreInfo.minSecrets : "?"}`)
         scoreInfoLore.push(`&fDeath penalty: &c${scoreInfo.deathPenalty}`)
-
-        if (renderContext.scoreInfoUnderMap === "simplified") {
+        if (renderContext.settings.scoreInfoUnderMap === "simplified") {
+            //ChatLib.chat("Got to line 71")
             let scoreInfoHeight = 10 * size / 100
             Renderer.drawRect(Renderer.color(renderContext.settings.extraInfoBackroundColor[0] ?? 0, renderContext.settings.extraInfoBackroundColor[1] ?? 0, renderContext.settings.extraInfoBackroundColor[2] ?? 0, renderContext.settings.extraInfoBackroundColor[3]), x, y + size, size, scoreInfoHeight)
 
@@ -94,7 +94,7 @@ class MapRenderer {
 
                 renderLore(mouseX, mouseY, scoreInfoLore)
             }
-        } else if (renderContext.scoreInfoUnderMap === "legalmap") {
+        } else if (renderContext.settings.scoreInfoUnderMap === "legalmap") {
             let scoreInfoHeight = 20 * size / 200
             Renderer.drawRect(Renderer.color(renderContext.settings.extraInfoBackroundColor[0] ?? 0, renderContext.settings.extraInfoBackroundColor[1] ?? 0, renderContext.settings.extraInfoBackroundColor[2] ?? 0, renderContext.settings.extraInfoBackroundColor[3]), x, y + size, size, scoreInfoHeight)
 

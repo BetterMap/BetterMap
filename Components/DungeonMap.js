@@ -357,7 +357,7 @@ class DungeonMap {
                 if (name === playerName) { //move the current player to end of list
                     thePlayer = [p, name]
                     continue
-                } 
+                }
 
                 if (!this.players[i]) {
                     this.players[i] = new MapPlayer(p, this, name)
@@ -1714,14 +1714,13 @@ class DungeonMap {
         let currentRoom = this.getCurrentRoom()
         if (type === "bat" && currentRoom?.data) {
             let closestD = Infinity
-
             currentRoom.data.secret_coords?.bat?.forEach(([rx, ry, rz]) => {
                 let { x: x2, y: y2, z: z2 } = currentRoom.toRoomCoords(rx, ry, rz);
 
                 if (this.collectedSecrets.has(x2 + "," + y2 + "," + z2)) return
                 let distance = (x2 - x) ** 2 + (y2 - y) ** 2 + (z2 - z) ** 2
                 if (distance < closestD) {
-                    distance = closestD
+                    closestD = distance
                     loc = x2 + "," + y2 + "," + z2
                 }
             });
@@ -1735,7 +1734,7 @@ class DungeonMap {
                 if (this.collectedSecrets.has(x2 + "," + y2 + "," + z2)) return
                 let distance = (x2 - x) ** 2 + (y2 - y) ** 2 + (z2 - z) ** 2
                 if (distance < closestD) {
-                    distance = closestD
+                    closestD = distance
                     loc = x2 + "," + y2 + "," + z2
                 }
             });

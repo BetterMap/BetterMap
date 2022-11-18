@@ -1478,7 +1478,7 @@ class DungeonMap {
         let pos = new Position(rx, ry);
         if (this.doors.get(pos.arrayX + "," + pos.arrayY)) return //already door loaded there
 
-        let id = World.getBlockStateAt(new BlockPos(x, 69, y)).getBlockId() //get type of door
+        let id = World.getBlockAt(new BlockPos(x, 69, y)).type.getID() //get type of door
         if (type === -1) {
             if (id === 0) type = Room.UNKNOWN
             else if (id === 97) type = Room.NORMAL
@@ -1629,7 +1629,7 @@ class DungeonMap {
             return 0
         }
 
-        return World.getBlockStateAt(new BlockPos(x, y, z)).getBlockId()
+        return World.getBlockAt(new BlockPos(x, y, z)).type.getID()
     }
 
     getRoomWorldData() {
@@ -1689,7 +1689,7 @@ class DungeonMap {
 
     getRoofAt(x, z) {
         let y = 255
-        while (y > 0 && World.getBlockStateAt(new BlockPos(x, y, z)).getBlockId?.() === 0) y--
+        while (y > 0 && World.getBlockAt(new BlockPos(x, y, z)).type.getID() === 0) y--
 
         return y
     }
@@ -1697,15 +1697,15 @@ class DungeonMap {
     getTopBlockAt(x, z, y) {
         if (!y) y = this.getRoofAt(x, z)
 
-        return World.getBlockStateAt(new BlockPos(x, y, z)).getMetadata()
+        return World.getBlockAt(new BlockPos(x, y, z)).getMetadata()
     }
     getBlockAt(x, y, z) {
-        return World.getBlockStateAt(new BlockPos(x, y, z)).getBlockId()
+        return World.getBlockAt(new BlockPos(x, y, z)).type.getID()
     }
     getTopBlockAt2(x, z, y) {
         if (!y) y = this.getRoofAt(x, z)
 
-        return World.getBlockStateAt(new BlockPos(x, y, z)).getBlockId()
+        return World.getBlockAt(new BlockPos(x, y, z)).type.getID()
     }
 
     onSecretCollect(type, x, y, z) {

@@ -101,6 +101,7 @@ class RoomRenderer {
 
         //tenios checkmark is perm on the image
         if (context.tickStyle === 'tenios') {
+            //this is considered an icon, not a font
             let fontSize = 24 * context.iconScale / 10 || 24;
             let teniosFont = new Font('Dialog', Font.BOLD, fontSize);
             graphics.setFont(teniosFont);
@@ -151,6 +152,7 @@ class RoomRenderer {
         y = context.posY + y * (context.size - context.borderWidth) + context.borderWidth
 
         let scale = context.size / 250 * context.iconScale / 8
+        let textScale = context.size / 250 * context.textScale / 8
         if (context.puzzleNames === "text" || (context.puzzleNames === 'icon' && context.tickStyle === 'roomnames' && (room.checkmarkState === Room.COMPLETED || room.checkmarkState === Room.FAILED)) || context.puzzleNames === 'none' && context.tickStyle === 'roomnames') {
             let text = room.data?.name?.split(" ") || ["???"]
             let textColor = ""
@@ -171,18 +173,18 @@ class RoomRenderer {
 
             let i = 0
             for (let line of text) {
-                let ly = y + 9 * scale * (i - text.length / 2)
+                let ly = y + 9 * textScale * (i - text.length / 2)
                 if (context.tickStyle_secrets_overHead) Renderer.translate(0, 0, 100)
-                renderLibs.drawStringCenteredShadow("&0" + line, x + scale, ly, scale)
+                renderLibs.drawStringCenteredShadow("&0" + line, x + textScale, ly, textScale)
                 if (context.tickStyle_secrets_overHead) Renderer.translate(0, 0, 100)
-                renderLibs.drawStringCenteredShadow("&0" + line, x - scale, ly, scale)
+                renderLibs.drawStringCenteredShadow("&0" + line, x - textScale, ly, textScale)
                 if (context.tickStyle_secrets_overHead) Renderer.translate(0, 0, 100)
-                renderLibs.drawStringCenteredShadow("&0" + line, x, ly + scale, scale)
+                renderLibs.drawStringCenteredShadow("&0" + line, x, ly + textScale, textScale)
                 if (context.tickStyle_secrets_overHead) Renderer.translate(0, 0, 100)
-                renderLibs.drawStringCenteredShadow("&0" + line, x, ly - scale, scale)
+                renderLibs.drawStringCenteredShadow("&0" + line, x, ly - textScale, textScale)
 
                 if (context.tickStyle_secrets_overHead) Renderer.translate(0, 0, 100)
-                renderLibs.drawStringCenteredShadow(textColor + line, x, ly, scale)
+                renderLibs.drawStringCenteredShadow(textColor + line, x, ly, textScale)
 
                 i++
             }
@@ -219,9 +221,9 @@ class RoomRenderer {
             x = context.posX + x * context.size + context.borderWidth
             y = context.posY + y * (context.size - context.borderWidth) + context.borderWidth
 
-            let scale = context.size / 175 * context.iconScale / 8
+            let textScale = context.size / 175 * context.textScale / 8
 
-            if (room.maxSecrets === 10) x += 12 * scale
+            if (room.maxSecrets === 10) x += 12 * textScale
 
             let text = (room.currentSecrets ?? "?") + "/" + (room.maxSecrets ?? "?");
 
@@ -251,16 +253,16 @@ class RoomRenderer {
 
             if (context.mapStyle !== 'teniosmap') {
                 if (context.tickStyle_secrets_overHead) Renderer.translate(0, 0, 100)
-                renderLibs.drawStringCenteredShadow(text, x + scale, y - 4.5 * scale, scale)
+                renderLibs.drawStringCenteredShadow(text, x + textScale, y - 4.5 * textScale, textScale)
                 if (context.tickStyle_secrets_overHead) Renderer.translate(0, 0, 100)
-                renderLibs.drawStringCenteredShadow(text, x - scale, y - 4.5 * scale, scale)
+                renderLibs.drawStringCenteredShadow(text, x - textScale, y - 4.5 * textScale, textScale)
                 if (context.tickStyle_secrets_overHead) Renderer.translate(0, 0, 100)
-                renderLibs.drawStringCenteredShadow(text, x, y + scale - 4.5 * scale, scale)
+                renderLibs.drawStringCenteredShadow(text, x, y + textScale - 4.5 * textScale, textScale)
                 if (context.tickStyle_secrets_overHead) Renderer.translate(0, 0, 100)
-                renderLibs.drawStringCenteredShadow(text, x, y - scale - 4.5 * scale, scale)
+                renderLibs.drawStringCenteredShadow(text, x, y - textScale - 4.5 * textScale, textScale)
             }
             if (context.tickStyle_secrets_overHead) Renderer.translate(0, 0, 100)
-            renderLibs.drawStringCenteredShadow(textColored, x, y - 4.5 * scale, scale)
+            renderLibs.drawStringCenteredShadow(textColored, x, y - 4.5 * textScale, textScale)
         }
 
         drawRoomName = () => {
@@ -280,7 +282,7 @@ class RoomRenderer {
             x = context.posX + x * context.size + context.borderWidth
             y = context.posY + y * (context.size - context.borderWidth) + context.borderWidth
 
-            let scale = context.size / 250 * context.iconScale / 8
+            let scale = context.size / 250 * context.textScale / 8
             let text = room.data?.name?.split(" ") || ["???"]
             let textColor = ""
             switch (room.checkmarkState) {

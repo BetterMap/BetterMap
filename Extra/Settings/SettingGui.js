@@ -267,6 +267,7 @@ class SettingGui {
         }, "playerNames", this.currentSettings.playerNames)
 
         this.addSlider("Icon Scale", "iconScale", this.currentSettings.iconScale ?? 10, 2, 15)
+        this.addSlider("Text Scale", "textScale", this.currentSettings.textScale ?? 10, 2, 15)
 
         this.addColorSelector("Map Border Color", "mapBorderColor", this.currentSettings.mapBorderColor)
         this.addColorSelector("Map Color", "mapBackgroundColor", this.currentSettings.mapBackgroundColor)

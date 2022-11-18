@@ -8,6 +8,7 @@
  * @property {"off"|"icons"|"self-icon"|"heads"} showHeads - show player heads on the map
  * @property {Number} headScale - Width/height of heads (scales with size, will be same if size is 100)
  * @property {Number} iconScale - Width/height of icons (scales with size, will be same if size is 100)
+ * @property {Number} textScale - Width/height of text
  * @property {"hypixel-old"|"hypixel-new"|"default"|"tenios"|"roomnames"} tickStyle - Style of the ticks
  * @property {"never"|"hasSecrets"|"always"} showSecretCount - When to show secrets instead of checkmarks
  * @property {Boolean} checkmarkCompleteRooms - Turn completed rooms into checkmarks
@@ -95,6 +96,9 @@ class RenderContext {
     }
     get iconScale() {
         return this.settings.iconScale
+    }
+    get textScale() {
+        return this.settings.textScale
     }
     get tickStyle() {
         return this.settings.tickStyle
@@ -412,6 +416,7 @@ class RenderContext {
         showHeads = 'heads',
         headScale = 8,
         iconScale = 10,
+        textScale = 10,
         tickStyle = "default",
         tickStyle_secrets_overHead = true,
         showSecretCount = "never",
@@ -472,6 +477,7 @@ class RenderContext {
             showHeads,
             headScale,
             iconScale,
+            textScale,
             tickStyle,
             tickStyle_secrets_overHead,
             showSecretCount,

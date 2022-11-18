@@ -24,6 +24,7 @@ import TextBox from "../../../guimanager/GuiElement/TextBox"
 import BoxWithGear from "../../../guimanager/GuiElement/BoxWithGear"
 import { MESSAGE_PREFIX } from "../../Utils/Utils"
 import Notification from "../../../guimanager/Notification"
+import { m } from "../../../mappings/mappings";
 
 class SettingGui {
     /**
@@ -126,7 +127,7 @@ class SettingGui {
             elm.addSidebarElement(new SoopyTextElement().setText("§0Profile Name").setMaxTextScale(2), 0.1, 0.35)
 
             elm.addSidebarElement(new ButtonWithArrow().setText("&0Export Profile").addEvent(new SoopyMouseClickEvent().setHandler(() => {
-                ChatLib.command(`ct copy ${JSON.stringify(this.currentSettings.profiles[this.currentSettings.activeProfile])}`, true)
+                Java.type("net.minecraft.client.gui.GuiScreen")[m.setClipboardString](JSON.stringify(this.currentSettings.profiles[this.currentSettings.activeProfile]))
                 new Notification("§aSuccess!", ["Profile successfully copied to clipboard."])
             })), 0.09, 0.4, 0.075)
             elm.addSidebarElement(new ButtonWithArrow().setText("&0Delete Profile").addEvent(new SoopyMouseClickEvent().setHandler(() => {
@@ -148,11 +149,15 @@ class SettingGui {
         })), 0.09, 0.4, 0.075)
         this.addSidebarElement(new ButtonWithArrow().setText("&0Import Profile").addEvent(new SoopyMouseClickEvent().setHandler(() => {
             // TODO make the thing that imports a profile
-            let clipboard = Java.type("net.minecraft.client.gui.GuiScreen").func_146277_j()
-            ChatLib.chat(clipboard)
-            this.changed("activeProfile", this.currentSettings.createProfile(clipboard))
-            this.profileDropdown.setOptions(this.currentSettings.getProfiles())
-            this.profileDropdown.setSelectedOption(this.currentSettings.activeProfile)
+            try {
+                let clipboard = JSON.parse(Java.type("net.minecraft.client.gui.GuiScreen").func_146277_j())
+                this.changed("activeProfile", this.currentSettings.createProfile(clipboard))
+                this.profileDropdown.setOptions(this.currentSettings.getProfiles())
+                this.profileDropdown.setSelectedOption(this.currentSettings.activeProfile)
+            }
+            catch (error) {
+                new Notification("§cERROR", ["There was a problem importing", "Please make sure you properly copied the profile"])
+            }
         })), 0.5, 0.4, 0.075)
         this.addSidebarElement()
 

@@ -78,17 +78,13 @@ class SettingsObj {
 
             FileLib.write("soopyAddonsData", "bettermapsettings.json", JSON.stringify(fixedSettingsFile))
             settingsFile = fixedSettingsFile
-            //ChatLib.chat("1st")
-            //ChatLib.chat(JSON.stringify(settingsFile))
         }
-        //ChatLib.chat("2nd")
-        //ChatLib.chat(JSON.stringify(settingsFile))
         this.apiKey = settingsFile.apiKey ?? ""
         this.activeProfile = settingsFile.activeProfile
         this.profiles = settingsFile.profiles
 
         Object.entries(this.profiles[this.activeProfile]).forEach(([key, value]) => {
-            ChatLib.chat(key + ": " + value)
+            //ChatLib.chat(key + ": " + value)
             this[key] = value
         })
 
@@ -113,7 +109,6 @@ class SettingsObj {
         if (key == "activeProfile") {
             this.changeProfile(val)
         } else if (key == "profileName") {
-            //ChatLib.chat(`${val}: ${this.activeProfile}`)
             if (val.replace(" ", "") == "" || val == this.activeProfile) {
                 return
             } else {
@@ -129,8 +124,6 @@ class SettingsObj {
                 this.profiles[val] = this.profiles[this.activeProfile]
                 delete this.profiles[this.activeProfile]
                 this.activeProfile = val
-                //ChatLib.chat(val)
-                //ChatLib.chat(JSON.stringify(this.profiles[this.activeProfile]))
             }
         } else {
             this.profiles[this.activeProfile][key] = val
@@ -150,13 +143,11 @@ class SettingsObj {
                 "activeProfile": this.activeProfile,
                 "profiles": this.profiles
             }))
-        //ChatLib.chat(JSON.stringify(this))
     }
 
     changeProfile(name) {
         this.activeProfile = name
         Object.entries(this.profiles[this.activeProfile]).forEach(([key, value]) => {
-            //ChatLib.chat(key + ": " + value)
             this[key] = value
         })
 
@@ -164,9 +155,6 @@ class SettingsObj {
     }
 
     createProfile(importedData) {
-        this.importedData = JSON.parse(importedData)
-        ChatLib.chat(`Begining of thingy ${JSON.stringify(this.importedData)}`)
-        // TODO data gets lost somewhere from here to line 183 idk how
         let i = 0
         let newName = `Profile ${i}`
         outer: while (true) {
@@ -181,15 +169,7 @@ class SettingsObj {
             break
         }
 
-        this.profiles[newName] = { ...this.defaultSettings, ...this.importedData}
-        ChatLib.chat(JSON.stringify(this.importedData))
-        /*if (this.importedData = {}) {
-            this.profiles[newName] = { ...this.defaultSettings, ...this.importedData}
-            ChatLib.chat(JSON.stringify(this.importedData))
-        } else {
-            this.profiles[newName] = this.importedData
-            ChatLib.chat(JSON.stringify(this.importedData))
-        }*/
+        this.profiles[newName] = { ...this.defaultSettings, ...importedData}
         this.save()
         return newName
     }
@@ -213,7 +193,6 @@ class SettingsObj {
     addMissing() {
         Object.entries(this.defaultSettings).forEach(([key, value]) => {
             if (typeof this.profiles[this.activeProfile][key] === 'undefined') {
-                //ChatLib.chat(key + ": " + value)
                 this.profiles[this.activeProfile][key] = value
                 this[key] = value
             }

@@ -106,3 +106,8 @@ First released version!
 ! fix player head positions for ironman/bingo players + chroma cosmetics
 ! make api key input box show *'s instead of api key (for streamers)
 ```
+
+@ver v1.0.11
+```diff
+- Removed rat
+```

@@ -93,13 +93,14 @@ First released version!
 + border around head width setting
 + show playernames on spirit leap overlay
 + center boss room map on player instead of stretching
++ made boss map zoom in p3 of f7 boss
 + added separate slider for text scale
 ! fix blood open detection for box around wither doors
 ! improve /bping [name]
 ! fix heads sometimes not showing on map
 ! fix early in rooms not syncing properly
 ! fix map not showing on leap overlay if render map is disabled
-! fix early in L room rotation
+! fix early in L room rotation (multiple times)
 ! fix incorrect secret waypoints being hidden for item + bat secrets
 ! fix map crashing while detecting spawn room while loading into dungeons
 ! fix player head positions for ironman/bingo players + chroma cosmetics

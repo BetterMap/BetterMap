@@ -15,6 +15,7 @@ import eventManager from "./Extra/Events/EventManager"
 import { MESSAGE_PREFIX } from "./Utils/Utils"
 import { drawBoxAtBlock } from "./Utils/renderUtils"
 import settings from "./Extra/Settings/CurrentSettings"
+import socketConnection from "./socketConnection"
 require("./Extra/Events/SecretTracker.js")
 
 /**@type {DungeonMap} */
@@ -88,19 +89,38 @@ betterMapServer.datacallback = (data) => {
 eventManager.onSecretCollect((type, x, y, z) => {
     if (currentDungeonMap) currentDungeonMap.onSecretCollect(type, x, y, z)
 })
-register("command", (name) => { //TODO: change this command to show somewhere instead of command
-    if (currentDungeonMap) {
-        currentDungeonMap.pingPlayer(name, (usingMap) => {
-            if (usingMap) {
+register("command", (name) => {
+    if (!name) {
+        ChatLib.chat(MESSAGE_PREFIX + 'Missing argument. Usage: §c/bping [name]')
+        return;
+    }
+    socketConnection.isUsingBMap([name], ([usingMap]) => {
+        if (usingMap) {
+            ChatLib.chat(MESSAGE_PREFIX + name + " is using bettermap")
+        } else {
+            ChatLib.chat(MESSAGE_PREFIX + name + " is NOT using bettermap (or isn't online)")
+        }
+    })
+}).setName("bping", true)
+
+register("command", () => {
+    if (!currentDungeonMap) {
+        ChatLib.chat(MESSAGE_PREFIX + "You must be in a dungeon to run this command.")
+        return
+    }
+
+    let people = currentDungeonMap.players.map(p => p.username)
+
+    socketConnection.isUsingBMap(people, (usingMap) => {
+        people.forEach((name, index) => {
+            if (usingMap[index]) {
                 ChatLib.chat(MESSAGE_PREFIX + name + " is using bettermap")
             } else {
-                ChatLib.chat(MESSAGE_PREFIX + name + " is NOT using bettermap (or isnt in a dungeon)")
+                ChatLib.chat(MESSAGE_PREFIX + name + " is NOT using bettermap (or isn't online)")
             }
         })
-    } else {
-        ChatLib.chat(MESSAGE_PREFIX + "Both players must be in a dungeon to use this command")
-    }
-}).setName("bping", true)
+    })
+}).setName("bpingp", true)
 
 register("renderOverlay", () => {
     if (dungeonMapRenderContext && currentDungeonMap) {

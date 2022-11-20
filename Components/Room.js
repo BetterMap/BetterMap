@@ -224,7 +224,7 @@ class Room {
                 let parts = [];
                 this.components.forEach(c => parts.push(c.arrayX + ',' + c.arrayY));
                 if (!parts.includes(minX + ',' + minY)) {
-                    return 4;
+                    return 0;
                 } else if (!parts.includes(minX + ',' + maxY)) {
                     return 3;
                 } else if (!parts.includes(maxX + ',' + minY)) {
@@ -254,7 +254,7 @@ class Room {
             } else if (this.adjacentDoors.length === 3) {
                 if (!left) return 3;
                 if (!right) return 1;
-                if (!up) return 4;
+                if (!up) return 0;
                 if (!down) return 2;
 
             } else if (this.adjacentDoors.length === 1) {
@@ -262,7 +262,7 @@ class Room {
                 if (right)
                     return 2;
                 else if (left)
-                    return 4;
+                    return 0;
                 else if (down)
                     return 3;
                 else if (up)
@@ -275,7 +275,7 @@ class Room {
                 if (left && down) return 1;
                 if (up && left) return 2;
                 if (up && right) return 3;
-                if (right && down) return 4;
+                if (right && down) return 0;
             }
         }
         return -1;
@@ -302,6 +302,10 @@ class Room {
         }
     }
 
+    /**
+     * @param {RoomEvent} event 
+     * @param  {...any} args 
+     */
     addEvent(event, ...args) {
         this.roomEvents.push(createEvent(event, ...args))
     }
@@ -336,7 +340,7 @@ class Room {
             if (this.type === Room.NORMAL) roomLore.push("Ceiling Spiders: " + (this.data?.spiders ? "Yes" : "No"))
         } else {
             roomLore.push('Unknown room!')
-            if (CurrentSettings.settings.devInfo) roomLore.push('&9Rotation: ' + (this.rotation || 'NONE'));
+            if (CurrentSettings.settings.devInfo) roomLore.push('&9Rotation: ' + (this.rotation > -1 ? this.rotation : 'NONE'));
         }
 
         if (CurrentSettings.settings.devInfo) {
@@ -366,7 +370,7 @@ class Room {
                 return { x: dz, y: dy, z: this.width - dx };
             case 3:
                 return { x: this.width - dx, y: dy, z: this.height - dz };;
-            case 4:
+            case 0:
                 return { x: this.height - dz, y: dy, z: dx };;
             case 1:
             default:
@@ -380,7 +384,7 @@ class Room {
                 return { x: this.width - z, y: y, z: x };
             case 3:
                 return { x: this.width - x, y: y, z: this.height - z };
-            case 4:
+            case 0:
                 return { x: z, y: y, z: this.height - x };
             case 1:
             // No break, default rotation

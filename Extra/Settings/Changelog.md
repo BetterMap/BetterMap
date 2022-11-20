@@ -74,3 +74,35 @@ First released version!
 ! fix changelog sometimes having weird gaps
 ! fix boss map images not showing on most floors
 ```
+
+
+@ver v1.0.10
+```diff
++ make score change color based on score on simplified score style
++ add /pingp (ping whole party)
++ shorten dungeon clear overview message slightly
++ add deaths to dungeon clear overview
++ add option for settings about settings (will show as a gear to the right of the selected setting)
++ add option to change head border colors
++ add toggle for mimic text on simplified score style
++ hypixel new tick style
++ add secret count instead of checkmarks when setting
++ player head arrows
++ 270/300 score messages
++ roomname tick style
++ border around head width setting
++ show playernames on spirit leap overlay
++ center boss room map on player instead of stretching
++ made boss map zoom in p3 of f7 boss
++ added separate slider for text scale
+! fix blood open detection for box around wither doors
+! improve /bping [name]
+! fix heads sometimes not showing on map
+! fix early in rooms not syncing properly
+! fix map not showing on leap overlay if render map is disabled
+! fix early in L room rotation (multiple times)
+! fix incorrect secret waypoints being hidden for item + bat secrets
+! fix map crashing while detecting spawn room while loading into dungeons
+! fix player head positions for ironman/bingo players + chroma cosmetics
+! make api key input box show *'s instead of api key (for streamers)
+```

@@ -1441,6 +1441,8 @@ class DungeonMap {
                 if (rotation !== 1) components.push(new Position(x, y + 32))
                 if (rotation !== 3) components.push(new Position(x + 32, y))
                 if (rotation !== 0) components.push(new Position(x + 32, y + 32))
+                //top left isnt inside of the L room 
+                if (rotation === 2) locstr = x + ',' + (y + 32);
                 break
         }
 

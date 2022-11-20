@@ -675,7 +675,30 @@
         "id": [
             "678,-240"
         ],
-        "index": 17
+        "index": 17,
+        "secret_coords": {
+            "item": [
+                [
+                    20,
+                    78,
+                    28
+                ]
+            ],
+            "bat": [
+                [
+                    2,
+                    65,
+                    25
+                ]
+            ],
+            "chest": [
+                [
+                    16,
+                    54,
+                    15
+                ]
+            ]
+        }
     },
     {
         "name": "Big Red Flag",
@@ -1947,7 +1970,7 @@
         "name": "Leaves",
         "type": "mobs",
         "shape": "1x1",
-        "doors": "X",
+        "doors": "T",
         "secrets": 1,
         "crypts": 1,
         "revive_stones": 0,
@@ -1964,7 +1987,16 @@
         "id": [
             "66,-240"
         ],
-        "index": 54
+        "index": 54,
+        "secret_coords": {
+            "chest": [
+                [
+                    14,
+                    81,
+                    27
+                ]
+            ]
+        }
     },
     {
         "name": "Withermancers",
@@ -2378,7 +2410,45 @@
         "id": [
             "642,-524"
         ],
-        "index": 65
+        "index": 65,
+        "secret_coords": {
+            "chest": [
+                [
+                    29,
+                    88,
+                    9
+                ],
+                [
+                    29,
+                    88,
+                    7
+                ],
+                [
+                    58,
+                    86,
+                    47
+                ],
+                [
+                    23,
+                    67,
+                    57
+                ]
+            ],
+            "bat": [
+                [
+                    12,
+                    64,
+                    33
+                ]
+            ],
+            "item": [
+                [
+                    16,
+                    51,
+                    32
+                ]
+            ]
+        }
     },
     {
         "name": "Wizard",
@@ -2521,7 +2591,25 @@
             "102,-240"
         ],
         "index": 69,
-        "secret_coords": {}
+        "secret_coords": {
+            "chest": [
+                [
+                    25,
+                    84,
+                    7
+                ],
+                [
+                    5,
+                    69,
+                    28
+                ],
+                [
+                    1,
+                    76,
+                    5
+                ]
+            ]
+        }
     },
     {
         "name": "Purple Flags",

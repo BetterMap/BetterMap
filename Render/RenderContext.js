@@ -8,6 +8,7 @@
  * @property {Number} headScale - Width/height of heads (scales with size, will be same if size is 100)
  * @property {Number} iconScale - Width/height of icons (scales with size, will be same if size is 100)
  * @property {"hypixel"|"default"|"tenios"|"secrets"|"secrets_underhead"} tickStyle - Style of the ticks
+ * @property {Boolean} centerCheckmarks - Centers checkmarks in rooms
  * @property {"none"|"text"|"icon"} puzzleNames - Render style of puzzle names
  * @property {"none"|"single"|"class-color"|} headBorder - Wether to put a black border around heads on the map
  * @property {"never"|"leap"|"always"} playerNames - When to show player names on map
@@ -79,6 +80,9 @@ class RenderContext {
     }
     get tickStyle() {
         return this.settings.tickStyle
+    }
+    get centerCheckmarks() {
+        return this.settings.centerCheckmarks
     }
     get puzzleNames() {
         return this.settings.puzzleNames
@@ -262,6 +266,7 @@ class RenderContext {
         headScale = 8,
         iconScale = 10,
         tickStyle = "default",
+        centerCheckmarks = false,
         puzzleNames = "none",
         headBorder = "none",
         playerNames = "leap",
@@ -300,6 +305,7 @@ class RenderContext {
             headScale,
             iconScale,
             tickStyle,
+            centerCheckmarks,
             puzzleNames,
             headBorder,
             playerNames,

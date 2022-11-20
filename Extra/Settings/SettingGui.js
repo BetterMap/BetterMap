@@ -120,6 +120,8 @@ class SettingGui {
             "secrets_underhead": "Secrets Found (Under head)",
         }, "tickStyle", this.defaultSettings.tickStyle)
 
+        this.addToggle("Center Checkmarks", "centerCheckmarks", this.defaultSettings.centerCheckmarks)
+
 
         this.addDropdown("Puzzle Style", {
             "none": "None",

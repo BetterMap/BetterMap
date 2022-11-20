@@ -91,10 +91,33 @@ class RoomRenderer {
         if (room.type === Room.PUZZLE && context.puzzleNames === "text") return
         if (room.type === Room.PUZZLE && (room.checkmarkState === Room.UNOPENED || room.checkmarkState === Room.OPENED)) return
 
-        const location = room.components[0]
+        // Map components into their basic arrayX, arrayY components so they're easier to work with
+        let components = room.components.map(a => [a.arrayX, a.arrayY])
 
-        const getX = (w) => (context.roomGap + context.roomSize - w) / 2 + context.blockSize * location.arrayX
-        const getY = (h) => (context.roomGap + context.roomSize - h) / 2 + context.blockSize * location.arrayY
+        // Top left most component of the room, where checkmarks generate by default
+        let location = [
+            components[0][0],
+            components[0][1]
+        ]
+        if (context.centerCheckmarks) {
+            let minX = Math.min(...components.map(a => a[0]))
+            let minZ = Math.min(...components.map(a => a[1]))
+            let roomWidth = Math.max(...components.map(a => a[0])) - minX
+            let roomHeight = Math.max(...components.map(a => a[1])) - minZ
+            location = [
+                minX + (roomWidth)/2,
+                minZ + (roomHeight)/2
+            ]
+            // Move the checkmark up or down so that they don't spawn in the exact center like for 2x2 rooms
+            if (room.shape == "L") {
+                if (components.filter(a => a[1] == minZ).length == 2) location[1] -= roomHeight/2
+                else location[1] += roomHeight/2
+            }
+        }
+        
+
+        const getX = (w) => (context.roomGap + context.roomSize - w) / 2 + context.blockSize * location[0]
+        const getY = (h) => (context.roomGap + context.roomSize - h) / 2 + context.blockSize * location[1]
 
         const drawCheckmark = (checkmark) => {
             const [w, h] = context.getIconSize(checkmark)

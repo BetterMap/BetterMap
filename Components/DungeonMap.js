@@ -574,9 +574,9 @@ class DungeonMap {
         let mapColors = mapData[f.colors.MapData]
 
         if (!this.dungeonTopLeft) {
-            // Find the top left most green pixel
-            let thing = mapColors.indexOf(30)
-            if (thing == -1) return ChatLib.chat("No green!")
+            // Find the top left pixel of the entrance room
+            let thing = mapColors.findIndex((a, i) => a == 30 && i+15 < mapColors.length && mapColors[i+15] == 30)
+            if (thing == -1) return
 
             // Get the room size
             let i = 0

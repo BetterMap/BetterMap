@@ -97,7 +97,7 @@ class BossMapRenderer extends MapTab {
                         widthInWorld: 114,
                         heightInWorld: 114,
                         topLeftLocation: [-3, 29],
-                        renderSize: 32, //zoom in to only show 32x32
+                        renderSize: 64, //zoom in to only show 32x32 note: changed it to 64x64 cause it looks way better, 32 is too small inside the boss imo
                     },
                     {
                         image: getBossImage("lCBf5Ix"),
@@ -141,7 +141,9 @@ class BossMapRenderer extends MapTab {
 
         if (this.currentBossImage) {
             sizeInWorld = Math.min(this.currentBossImage.widthInWorld, this.currentBossImage.heightInWorld, this.currentBossImage.renderSize || Infinity)
-            sizeInPixels = Math.min(this.currentBossImage.image.getTextureWidth(), this.currentBossImage.image.getTextureHeight())
+            let pixelWidth = this.currentBossImage.image.getTextureWidth() / this.currentBossImage.widthInWorld * (this.currentBossImage.renderSize || this.currentBossImage.widthInWorld)
+            let pixelHeight = this.currentBossImage.image.getTextureHeight() / this.currentBossImage.heightInWorld * (this.currentBossImage.renderSize || this.currentBossImage.heightInWorld)
+            sizeInPixels = Math.min(pixelWidth, pixelHeight);
 
             textureScale = (size - 2 * renderContext.borderWidth) / sizeInPixels
 

@@ -301,7 +301,8 @@ class RenderContext {
     get roomGap() {
         switch (this.mapStyle) {
             case 'custom':
-                return this.customRoomGapSize;
+                //capped cause players could theoretically create infinite dungeon map image sizes and run out of memory
+                return Math.min(120, this.customRoomGapSize);
             case "legalmap":
                 return 12 // 1/3 roomSize
             case "hypixelmap":

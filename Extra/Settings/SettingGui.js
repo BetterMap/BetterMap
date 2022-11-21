@@ -759,9 +759,9 @@ class SettingGui {
             slider.setValue(parseInt(val))
         }))
 
-        this.addSidebarElement(slider, 0.55, 0.2, 0.05)
-        this.addSidebarElement(numberT, 0.8, 0.1, 0.05)
-        return [[slider, numberT], this.addSidebarElement(new SoopyTextElement().setText("§0" + label).setMaxTextScale(2), 0.1, 0.35)]
+        addFun(slider, 0.55, 0.2, 0.05)
+        addFun(numberT, 0.8, 0.1, 0.05)
+        return [[slider, numberT], addFun(new SoopyTextElement().setText("§0" + label).setMaxTextScale(2), 0.1, 0.35)]
     }
 
     /**

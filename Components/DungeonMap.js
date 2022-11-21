@@ -163,9 +163,10 @@ class DungeonMap {
                     this.roomsArr.forEach(room => {
                         if (room.data?.name?.toLowerCase() === 'higher or lower') {
                             room.checkmarkState = room.currentSecrets ? Room.COMPLETED : Room.CLEARED;
-                            //todo: Send packet to update this everywhere ig?
                         }
                     })
+
+                    this.sendSocketData({ type: "blazeDone" })
                 }
             }))
             this.triggers.push(register("entityDeath", (entity) => {
@@ -281,6 +282,13 @@ class DungeonMap {
                 break;
             case "mimicKilled":
                 this.mimicKilled = true
+                break;
+            case "blazeDone":
+                this.roomsArr.forEach(room => {
+                    if (room.data?.name?.toLowerCase() === 'higher or lower') {
+                        room.checkmarkState = room.currentSecrets ? Room.COMPLETED : Room.CLEARED;
+                    }
+                })
                 break;
             case "secretCollect":
                 this.collectedSecrets.add(data.location)

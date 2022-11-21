@@ -379,20 +379,18 @@ class Room {
         if (!("secret_coords" in this.data)) return //ChatLib.chat("No Data!")
 
         // Every secret type in the room
-        Object.keys(this.data.secret_coords).forEach(type => {
-            const secrets = this.data.secret_coords[type]
+        Object.entries(this.data.secret_coords).forEach(([type, secrets]) => {
             // Loop over every secret
-            for (let i = 0; i < secrets.length; i++) {
-                let [rx, ry, rz] = this.data.secret_coords[type][i]
+            secrets.forEach(([rx, ry, rz]) => {
                 let { x, y, z } = this.toRoomCoords(rx, ry, rz)
-                if (this.dungeon.collectedSecrets.has(x + "," + y + "," + z)) return
-    
+                if (this.dungeon.collectedSecrets.has(x + "," + y + "," + z)) return;
+
                 if (type == "chest") drawBoxAtBlock(x, y, z, 0, 1, 0, 1, 1)
                 if (type == "item") drawBoxAtBlock(x + 0.25, y, z + 0.25, 0, 0, 1, 0.5, 0.5)
                 if (type == "wither") drawBoxAtBlock(x + 0.25, y, z + 0.25, 1, 0, 1, 0.5, 0.5)
                 if (type == "bat") drawBoxAtBlock(x + 0.25, y + 0.25, z + 0.25, 0, 1, 0, 0.5, 0.5)
                 if (type == "redstone_key") drawBoxAtBlock(x + 0.25, y, z + 0.25, 1, 0, 0, 0.5, 0.5)
-            }
+            });
         })
 
         // this.data.secret_coords?.chest?.forEach(([rx, ry, rz]) => {

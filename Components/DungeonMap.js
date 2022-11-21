@@ -141,7 +141,7 @@ class DungeonMap {
                         m.addTextComponent(new TextComponent("&6" + p.minRooms + "-" + p.maxRooms).setHover("show_text", roomLore.trim()))
 
                         if (settings.settings.apiKey) {
-                            m.addTextComponent(new TextComponent("&7 rooms and got &6" + p.secretsCollected + "&7 secrets"))
+                            m.addTextComponent(new TextComponent("&7 rooms | &6" + p.secretsCollected + "&7 secrets"))
                         }
                         else {
                             m.addTextComponent(new TextComponent("&7 rooms and got &c[NO API KEY]&7 secrets"))

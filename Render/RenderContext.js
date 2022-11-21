@@ -13,6 +13,7 @@
  * @property {"never"|"hasSecrets"|"always"} showSecretCount - When to show secrets instead of checkmarks
  * @property {Boolean} checkmarkCompleteRooms - Turn completed rooms into checkmarks
  * @property {Boolean} tickStyle_secrets_overHead - Wether to render the secrets / room name tick style over player heads
+ * @property {Boolean} centerCheckmarks - Centers checkmarks in rooms
  * @property {"none"|"text"|"icon"} puzzleNames - Render style of puzzle names
  * @property {"none"|"single"|"class-color"} headBorder - Wether to put a black border around heads on the map
  * @property {Number} headBorderWidth - Width of the head border
@@ -103,6 +104,11 @@ class RenderContext {
     get tickStyle() {
         return this.settings.tickStyle
     }
+    
+    get centerCheckmarks() {
+        return this.settings.centerCheckmarks
+    }
+    
     get tickStyle_secrets_overHead() {
         return this.settings.tickStyle_secrets_overHead
     }
@@ -420,6 +426,7 @@ class RenderContext {
         textScale = 10,
         tickStyle = "default",
         tickStyle_secrets_overHead = true,
+        centerCheckmarks = false,
         showSecretCount = "never",
         checkmarkCompleteRooms = false,
         puzzleNames = "none",
@@ -481,6 +488,7 @@ class RenderContext {
             textScale,
             tickStyle,
             tickStyle_secrets_overHead,
+            centerCheckmarks,
             showSecretCount,
             checkmarkCompleteRooms,
             puzzleNames,
@@ -579,8 +587,8 @@ let roomHash = {
     BLOOD: 5,
     UNKNOWN: 6,
     TRAP: 7,
-    BLACK: 8, //for rendering wither doors
-    NORMAL_CONNECTION: 9 //for rendering connections between normal rooms
+    BLACK: 8, // For rendering wither doors
+    NORMAL_CONNECTION: 9 // For rendering connections between normal rooms
 }
 
 const Color = Java.type("java.awt.Color")

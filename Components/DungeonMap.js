@@ -591,7 +591,7 @@ class DungeonMap {
 
         if (!this.dungeonTopLeft) {
             // Find the top left pixel of the entrance room
-            let thing = mapColors.findIndex((a, i) => a == 30 && i + 15 < mapColors.length && mapColors[i + 15] == 30)
+            let thing = mapColors.findIndex((a, i) => a == 30 && i + 15 < mapColors.length && mapColors[i + 7] == 30 && mapColors[i + 15] == 30)
             if (thing == -1) return
 
             // Get the room size

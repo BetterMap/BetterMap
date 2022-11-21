@@ -131,8 +131,8 @@ register("renderOverlay", () => {
         currentDungeonMap.updatePlayersFast()
         currentDungeonMap.updateScoreboardScore()
 
-        let cursorX = -1
-        let cursorY = -1
+        let cursorX = -1000
+        let cursorY = -1000
 
         if (Client.isInChat()) {
             // Putting checks and xy loading here so that we can draw tooltips in other guis in the future

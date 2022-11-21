@@ -5,13 +5,13 @@ class CurrentSettings {
     #_renderContext;
 
     constructor() {
-        /**@type {import("../../Render/RenderContext").ContextSettings} */
+        /**@type {import("../../Render/RenderContext").default} */
         this.#_renderContext = undefined
-        /**@type {import("./SettingsManager").SettingsManager} */
+        /**@type {import("./SettingsManager").default} */
         this.settingsManager = undefined
-        /**@type {import("../../Components/DungeonMap").DungeonMap} */
+        /**@type {import("../../Components/DungeonMap").default} */
         this.currentDungeon = undefined
-        /**@type {import("../../Render/RenderContextManager").RenderContextManager} */
+        /**@type {import("../../Render/RenderContextManager").default} */
         this.renderContextManager = undefined
     }
 

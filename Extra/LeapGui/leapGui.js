@@ -7,7 +7,7 @@ import ButtonWithArrow from "../../../guimanager/GuiElement/ButtonWithArrow";
 import SoopyKeyPressEvent from "../../../guimanager/EventListener/SoopyKeyPressEvent";
 import MapRenderer from "../../Render/MapRenderer";
 
-let renderContext = settings.settingsManager.createRenderContext({ currentRoomInfo: "none", hideInBoss: false, showTabs: false, scoreInfoUnderMap: "none" })
+let renderContext = settings.settingsManager.createRenderContext({ showMap: true, currentRoomInfo: "none", hideInBoss: false, showTabs: false, scoreInfoUnderMap: "none" })
 let renderContextData = settings.renderContextManager.getRenderContextData(renderContext)
 
 let mapRenderer = new MapRenderer()

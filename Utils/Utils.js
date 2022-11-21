@@ -11,8 +11,8 @@ export function changeScoreboardLine(id, line) {
         if (name.includes('team') && name.includes(id)) {
             let prefix = line.substring(0, 15);
             let suffix = line.substring(15, 30);
-            team.func_96666_b(prefix); //team.setPrefix()
-            team.func_96662_c(suffix); //team.setSuffix()
+            team.func_96666_b(prefix); // Team.setPrefix()
+            team.func_96662_c(suffix); // Team.setSuffix()
         }
     }
 }
@@ -194,6 +194,13 @@ export function firstLetterWordCapital(string) {
 }
 
 /**
+ * Capitalizes only the first letter of every word of a string.
+ * @param {String} string - The string to title 
+ * @returns {String}
+ */
+export const title = (string) => string.toLowerCase().split(" ").reduce((a, b) => [...a, `${b[0].toUpperCase()}${b.slice(1)}`], []).join(" ")
+
+/**
  * Returns time since the given timestamp, showing only 1 unit
  * Same as Skyblock bank
  * @param {*} date 
@@ -352,3 +359,10 @@ export function getSBEnchantfunction(item, enchant) {
 
 export const dungeonOffsetX = 200;
 export const dungeonOffsetY = 200;
+
+export const isBetween = (number, min, max) => (number - min) * (number - max) <= 0
+
+export function getPlayerName(player) {
+    if (!player) return '???';
+    return ChatLib.removeFormatting(player.getDisplayName()?.text || '???').replace(/[♲Ⓑ]/g, "").replace('§z', '').trim()
+}

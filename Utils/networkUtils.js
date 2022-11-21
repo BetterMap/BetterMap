@@ -1,6 +1,6 @@
 import socketFactory from "./letsEncryptCerts"
 
-if (!global.networkUtilsThingSoopy) { //If soopyv2 is running it should just use the functions already loaded
+if (!global.networkUtilsThingSoopy) { // If soopyv2 is running it should just use the functions already loaded
 
     let jURL = Java.type("java.net.URL")
     let jStandardCharsets = Java.type("java.nio.charset.StandardCharsets")
@@ -19,7 +19,7 @@ if (!global.networkUtilsThingSoopy) { //If soopyv2 is running it should just use
         // if(theUrl.includes("soopy.dev")){
         //     throw new Error("Testing to ensure the module works when my server is down")
         // }
-        // Thread.sleep(1000) //simulating high ping
+        // Thread.sleep(1000) // Simulating high ping
 
         let conn = new jURL(theUrl).openConnection()
         if (conn instanceof JHttpsUrlConnection) {

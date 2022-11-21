@@ -95,6 +95,7 @@ First released version!
 + center boss room map on player instead of stretching
 + made boss map zoom in p3 of f7 boss
 + added separate slider for text scale
++ added toggle to center checkmarks
 ! fix blood open detection for box around wither doors
 ! improve /bping [name]
 ! fix heads sometimes not showing on map

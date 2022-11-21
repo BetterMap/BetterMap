@@ -20,14 +20,14 @@ class MapTab {
      * @param {Number} mouseX
      * @param {Number} mouseY
      */
-    draw(renderContext, dungeonMap, mouseX, mouseY) { } //This function should be overridden all the time, but adding it for tab completion
+    draw(renderContext, dungeonMap, mouseX, mouseY) { } // This function should be overridden all the time, but adding it for tab completion
 
     /**
      * @param {RenderContext} renderContext 
      * @param {DungeonMap} dungeonMap 
      */
     shouldShowTab(renderContext, dungeonMap) {
-        return true //Default to showing tab always unless overridden
+        return true // Default to showing tab always unless overridden
     }
 
     /**

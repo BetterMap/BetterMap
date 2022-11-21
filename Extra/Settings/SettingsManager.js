@@ -26,7 +26,7 @@ class SettingsManager {
         this.renderContexts = new Map()
 
         let mapRenderer = new MapRenderer()
-        mapRenderer.tabs = [mapRenderer.tabs[0]] //Only show the dungeon tab
+        mapRenderer.tabs = [mapRenderer.tabs[0]] // Only show the dungeon tab
 
         this.fakeDungeon = this.createFakeDungeon()
 

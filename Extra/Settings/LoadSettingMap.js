@@ -1,6 +1,6 @@
-//Creating JSON code to create a dummy map
+// Creating JSON code to create a dummy map
 console.log(`let dungeon = new DungeonMap("F7", new Set(), false);`)
-//NOTE: you need to add the global. back before running this
+// NOTE: you need to add the global. back before running this
 for (let room of global.betterMapDungeonMap.roomsArr) {
     console.log(`{`)
     console.log(`   let r = new Room(dungeon, ${room.type}, [${room.components.map(a => "new Position(" + a.worldX + ", " + a.worldY + ")").join(",")}], ${JSON.stringify(room.roomId)});`)
@@ -20,7 +20,7 @@ for (let data of global.betterMapDungeonMap.doors.entries()) {
     console.log(`}`)
 }
 
-//TODO: players need custom thing cus skin cant be loaded from tab in settings menu
-//Or maby just keep not showing players in the gui lol
+// TODO: players need custom thing cus skin cant be loaded from tab in settings menu
+// Or maby just keep not showing players in the gui lol
 
 console.log(`return dungeon;`)

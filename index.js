@@ -35,12 +35,12 @@ require("./Extra/LeapGui/leapGui.js")
 
 register("step", () => {
     if (DataLoader.isInDungeon && DataLoader.dungeonFloor || currentDungeonMap?.getCurrentRoomId() === "30,225") {
-        if (!currentDungeonMap) { //entered dungeon, create map data
+        if (!currentDungeonMap) { // Entered dungeon, create map data
             currentDungeonMap = new DungeonMap(DataLoader.dungeonFloor, deadPlayers)
             CurrentSettings.currentDungeon = currentDungeonMap
         }
     } else {
-        if (currentDungeonMap) { //left dungeon, clear map data
+        if (currentDungeonMap) { // Left dungeon, clear map data
             currentDungeonMap.destroy();
             currentDungeonMap = undefined
             CurrentSettings.currentDungeon = undefined
@@ -48,7 +48,7 @@ register("step", () => {
     }
 
     if (currentDungeonMap) {
-        if (Player.getX() < 0 && Player.getZ() < 0) { //Ensuring they are not in boss room
+        if (Player.getX() < 0 && Player.getZ() < 0) { // Ensuring they are not in boss room
             let mapData
             try {
                 let item = Player.getInventory().getStackInSlot(8)
@@ -89,6 +89,7 @@ betterMapServer.datacallback = (data) => {
 eventManager.onSecretCollect((type, x, y, z) => {
     if (currentDungeonMap) currentDungeonMap.onSecretCollect(type, x, y, z)
 })
+
 register("command", (name) => {
     if (!name) {
         ChatLib.chat(MESSAGE_PREFIX + 'Missing argument. Usage: §c/bping [name]')
@@ -161,9 +162,7 @@ register("clicked", (x, y, button, isPress) => {
 })
 
 register("actionBar", (curr, max) => {
-    if (currentDungeonMap) {
-        currentDungeonMap.secretCountActionBar(parseInt(curr), parseInt(max))
-    }
+    if (currentDungeonMap) currentDungeonMap.secretCountActionBar(parseInt(curr), parseInt(max))
 }).setCriteria('&7${curr}/${max} Secrets').setParameter('contains')
 
 register("worldLoad", () => {
@@ -199,12 +198,12 @@ register('command', () => {
 }).setName('reloadmap', true);
 
 register("renderWorld", () => {
-    if (!currentDungeonMap) return;
+    if (!currentDungeonMap) return
 
     if (settings.settings.boxDoors && !currentDungeonMap.bloodOpen) {
         let isOpenable = currentDungeonMap.keys >= 1
         currentDungeonMap.witherDoors.forEach(door => {
-            let x = door.position.worldX - door.position.worldX % 8 - 2 //round to nearest door location, incase map is too low quality to get exact block
+            let x = door.position.worldX - door.position.worldX % 8 - 2 // Round to nearest door location, incase map is too low quality to get exact block
             let y = door.position.worldY - door.position.worldY % 8 - 2
 
             drawBoxAtBlock(x, 69, y, isOpenable ? 0 : 1, isOpenable ? 1 : 0, 0, 3, 4)
@@ -212,7 +211,7 @@ register("renderWorld", () => {
     }
 
     let curRoom = currentDungeonMap.getCurrentRoom();
-    if (!curRoom) return;
+    if (!curRoom) return
     curRoom.drawRoomSecrets()
 });
 

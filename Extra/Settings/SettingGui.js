@@ -168,7 +168,7 @@ class SettingGui {
             editLocationGui.editPosition()
         })), 0.3, 0.4, 0.075)
 
-        this.addSidebarElement() //adds 2 gaps (button from above diddnt get one added automatically + seperating setting areas)
+        this.addSidebarElement() // Adds 2 gaps (button from above diddnt get one added automatically + seperating setting areas)
         this.addCategory("Style Settings")
 
         if (this.currentSettings.tickStyle === "secrets_underhead") {
@@ -205,6 +205,8 @@ class SettingGui {
             elm.addToggle("Use Checkmarks for fully cleared Rooms", "checkmarkCompleteRooms", this.currentSettings.checkmarkCompleteRooms)
             elm.addToggle("Show secret count over player heads", "tickStyle_secrets_overHead", this.currentSettings.tickStyle_secrets_overHead)
         })
+        
+        this.addToggle("Center Checkmarks", "centerCheckmarks", this.currentSettings.centerCheckmarks)
 
         this.addDropdown("Puzzle Style", {
             "none": "None",
@@ -212,7 +214,7 @@ class SettingGui {
             "icon": "Icon"
         }, "puzzleNames", this.currentSettings.puzzleNames)
 
-        //this.addToggle("Border around heads", "headBorder", this.defaultSettings.headBorder)
+        // This.addToggle("Border around heads", "headBorder", this.defaultSettings.headBorder)
         Client.scheduleTask(0.5 * 20, () => {
             if (typeof renderContext.settings.headBorder === "boolean") {
                 if (renderContext.settings.headBorder)
@@ -340,7 +342,7 @@ class SettingGui {
                 this.setApiKey(key)
             })
         })), 0.3, 0.4, 0.075)
-        this.addSidebarElement() //adds a gap because the button diddnt auto add one
+        this.addSidebarElement() // Adds a gap because the button diddnt auto add one
 
         this.apiKeySetting = this.addHiddenString("Api key", "apiKey", this.currentSettings.apiKey)[0]
 
@@ -394,7 +396,7 @@ class SettingGui {
             Renderer.drawRect(Renderer.color(0, 0, 0, this.backgroundOpacity.get()), 0, 0, Renderer.screen.getWidth(), Renderer.screen.getHeight())
         }
 
-        register("chat", (key, event) => { //Api key detection
+        register("chat", (key, event) => { // Api key detection
             ChatLib.chat(MESSAGE_PREFIX + "Copied api key!")
 
             this.setApiKey(key)
@@ -682,7 +684,7 @@ class SettingGui {
 
         numberT.isNumber = (val) => {
             if (val.includes(".")) return false
-            val = "" + val; //coerce num to be a string
+            val = "" + val; // Coerce num to be a string
             return !isNaN(val) && !isNaN(parseInt(val));
         }
 
@@ -694,10 +696,10 @@ class SettingGui {
             slider.setValue(parseInt(val))
         }))
 
-        addFun(slider, 0.55, 0.2, 0.05)
-        addFun(numberT, 0.8, 0.1, 0.05)
-        return [[slider, numberT], addFun(new SoopyTextElement().setText("§0" + label).setMaxTextScale(2), 0.1, 0.35)]
-    } //Cinda scuffed its a different return type, but trying to keep atleast semi-consistant
+        this.addSidebarElement(slider, 0.55, 0.2, 0.05)
+        this.addSidebarElement(numberT, 0.8, 0.1, 0.05)
+        return [[slider, numberT], this.addSidebarElement(new SoopyTextElement().setText("§0" + label).setMaxTextScale(2), 0.1, 0.35)]
+    }
 
     /**
      * 
@@ -852,7 +854,7 @@ function findKey(callback = () => { }) {
 
 function isNumber(val) {
     if (val.includes(".")) return false
-    val = "" + val; //coerce num to be a string
+    val = "" + val; // Coerce num to be a string
     return !isNaN(val) && !isNaN(parseInt(val));
 }
 

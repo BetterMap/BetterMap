@@ -8,8 +8,8 @@ import SoopyNumber from "../../guimanager/Classes/SoopyNumber"
  */
 class Position {
     constructor(worldX, worldY, dungeonMap) {
-        this.worldXRaw = new SoopyNumber(worldX) //Using the number wrapper so theres easy support for animations
-        this.worldYRaw = new SoopyNumber(worldY) //See usage in MapPlayer.js
+        this.worldXRaw = new SoopyNumber(worldX) // Using the number wrapper so theres easy support for animations
+        this.worldYRaw = new SoopyNumber(worldY) // See usage in MapPlayer.js
 
         this.dungeonMap = dungeonMap
     }

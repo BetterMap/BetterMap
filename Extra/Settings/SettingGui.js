@@ -188,9 +188,11 @@ class SettingGui {
         }, "tickStyle", this.currentSettings.tickStyle)
 
         this.addGear(() => {
-            return this.currentSettings.tickStyle === "roomnames"
+            return true;
         }, (elm) => {
-            elm.addToggle("Show room names over player heads", "tickStyle_secrets_overHead", this.currentSettings.tickStyle_secrets_overHead)
+            elm.addToggle("Center Checkmarks", "centerCheckmarks", this.currentSettings.centerCheckmarks)
+            if (this.currentSettings.tickStyle === "roomnames")
+                elm.addToggle("Show room names over player heads", "tickStyle_secrets_overHead", this.currentSettings.tickStyle_secrets_overHead)
         })
 
         this.addDropdown("Secret Count instead of Checkmarks", {
@@ -205,14 +207,18 @@ class SettingGui {
             elm.addToggle("Use Checkmarks for fully cleared Rooms", "checkmarkCompleteRooms", this.currentSettings.checkmarkCompleteRooms)
             elm.addToggle("Show secret count over player heads", "tickStyle_secrets_overHead", this.currentSettings.tickStyle_secrets_overHead)
         })
-        
-        this.addToggle("Center Checkmarks", "centerCheckmarks", this.currentSettings.centerCheckmarks)
 
         this.addDropdown("Puzzle Style", {
             "none": "None",
             "text": "Text",
             "icon": "Icon"
         }, "puzzleNames", this.currentSettings.puzzleNames)
+
+        this.addGear(() => {
+            return this.currentSettings.puzzleNames === "text"
+        }, (elm) => {
+            elm.addToggle("Show puzzle name over player heads", "tickStyle_secrets_overHead", this.currentSettings.tickStyle_secrets_overHead)
+        })
 
         // This.addToggle("Border around heads", "headBorder", this.defaultSettings.headBorder)
         Client.scheduleTask(0.5 * 20, () => {

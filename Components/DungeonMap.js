@@ -6,7 +6,7 @@ import Room from "./Room.js"
 import { getScoreboardInfo, getTabListInfo, getRequiredSecrets } from "../Utils/Score"
 import Door from "./Door.js"
 import DungeonRoomData from "../Data/DungeonRoomData.js"
-import { changeScoreboardLine, dungeonOffsetX, dungeonOffsetY, MESSAGE_PREFIX, MESSAGE_PREFIX_SHORT, renderLore } from "../Utils/Utils.js"
+import { changeScoreboardLine, dungeonOffsetX, dungeonOffsetY, MESSAGE_PREFIX, MESSAGE_PREFIX_SHORT, renderLore, getPlayerName } from "../Utils/Utils.js"
 import socketConnection from "../socketConnection.js"
 import DataLoader from "../Utils/DataLoader.js"
 import { fetch } from "../Utils/networkUtils.js"
@@ -383,7 +383,7 @@ class DungeonMap {
             name = name.replace('§z', ''); //support sba chroma names
             sbLevel = parseInt(sbLevel)
             // This is a tab list line for a player
-            let playerName = ChatLib.removeFormatting(Player.getDisplayName().text).replace(/[♲Ⓑ]/g, "").replace('§z', '').trim() //we had to do it like this cause of custom names
+            let playerName = getPlayerName(Player)
             if (name === playerName) { // Move the current player to end of list
                 thePlayer = [p, name, match]
                 continue
@@ -498,19 +498,20 @@ class DungeonMap {
         this.players.forEach(p => p.checkUpdateUUID())
 
         World.getAllPlayers().forEach(player => {
-            if (!this.playersNameToId[ChatLib.removeFormatting(player.getDisplayName().text).trim()]) return
-            let p = this.players[this.playersNameToId[ChatLib.removeFormatting(player.getDisplayName().text)]]
+            let name = getPlayerName(player)
+            if (!this.playersNameToId[name]) return
+            let p = this.players[name]
             if (!p) return
 
             p.setX(player.getX())
             p.setY(player.getZ())
             p.setRotate(player.getYaw() + 180)
             p.locallyUpdated = Date.now()
-            this.nameToUuid[ChatLib.removeFormatting(player.getDisplayName().text).toLowerCase()] = player.getUUID().toString()
+            this.nameToUuid[name] = player.getUUID().toString()
 
             this.sendSocketData({
                 type: "playerLocation",
-                username: ChatLib.removeFormatting(player.getDisplayName().text).trim(),
+                username: name,
                 x: player.getX(),
                 y: player.getY(),
                 z: player.getZ(),
@@ -524,7 +525,7 @@ class DungeonMap {
      */
     updatePlayersFast() {
         World.getAllPlayers().forEach(player => {
-            let playerName = ChatLib.removeFormatting(player.getDisplayName().text).replace(/[♲Ⓑ]/g, "").replace('§z', '').trim()
+            let playerName = getPlayerName(player);
             let p = this.players[this.playersNameToId[playerName]]
             if (!p) return
 
@@ -807,7 +808,6 @@ class DungeonMap {
     updatePuzzles() {
         let puzzleNamesList = [];
         let identifiedPuzzleList = [];
-        let readingPuzzles = false;
         if (!TabList) return;
         let names = []
         try {
@@ -821,7 +821,7 @@ class DungeonMap {
         const puzLines = names.slice(puzStart + 1, puzStart + 6).map(a => a.removeFormatting())
         puzLines.forEach(line => {
             // https://regex101.com/r/qhNs78/1
-            let match = line.match(/^ ([\w? ]+)+: \[(.)\] ?$/)
+            let match = line.match(/^ ([\w? ]+)+: \[(.)\] (?:\(.+\))?$/)
             if (!match) return
             let [_, name, status] = match
             if (name == "???") return
@@ -1645,7 +1645,7 @@ class DungeonMap {
             // https://regex101.com/r/bIMFjc/1
             let match = cleanedLine.match(/^Cleared: (\d+)% \((\d+)\)$/)
             if (!match) continue
-            let [_, completion, score] = match
+            let [_, completion, wrong_score] = match
             let scoreboardScore = lines[i].getPoints()
             changeScoreboardLine(scoreboardScore, `§rCleared: §c${completion}% §7(§b${score}§7)`, false);
             return

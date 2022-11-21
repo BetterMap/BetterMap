@@ -376,7 +376,7 @@ class Room {
         if (!this.data) return
         // TODO: account for 3/1 room
         if (this.currentSecrets === this.maxSecrets) return
-        if (!("secret_coords" in this.data)) return ChatLib.chat("No Data!")
+        if (!("secret_coords" in this.data)) return //ChatLib.chat("No Data!")
 
         // Every secret type in the room
         Object.keys(this.data.secret_coords).forEach(type => {

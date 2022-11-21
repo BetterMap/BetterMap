@@ -233,7 +233,7 @@ class RoomRenderer {
 
             let textScale = context.size / 175 * context.textScale / 8
 
-            if (room.maxSecrets === 10) x += 12 * textScale
+            if (room.maxSecrets === 10 && !context.centerCheckmarks) x += 12 * textScale
 
             let text = (room.currentSecrets ?? "?") + "/" + (room.maxSecrets ?? "?");
 

@@ -31,7 +31,7 @@ class DungeonRoomStaticData {
         this.fullRoomData = JSON.parse(FileLib.read("BetterMap", "Data/roomdata.json"))
 
         this.idMap = new Map()
-        this.fullRoomData.forEach((d, i) => {
+        this.fullRoomData?.forEach((d, i) => {
             d.id.forEach(id => {
                 this.idMap.set(id, i)
             })
@@ -62,6 +62,7 @@ class DungeonRoomStaticData {
      * @returns {DungeonData}
      */
     getDataFromId(id) {
+        if(!this.fullRoomData) return;
         return this.fullRoomData[this.idMap.get(id)]
     }
 

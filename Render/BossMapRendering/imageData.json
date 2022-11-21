@@ -84,7 +84,8 @@
             "bounds": [[-3, 103, 29], [111, 159, 143]],
             "widthInWorld": 114,
             "heightInWorld": 114,
-            "topLeftLocation": [-3, 29]
+            "topLeftLocation": [-3, 29],
+            "renderSize": 64
         },
         {
             "image": "lCBf5Ix",

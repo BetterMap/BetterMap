@@ -31,12 +31,35 @@ class BossMapRenderer extends MapTab {
     draw(renderContext, dungeonMap, mouseX, mouseY) {
         if (Date.now() - this.lastUpdatedBossImage > 2000) this.updateBossImage(renderContext, dungeonMap)
         let { x, y, size } = renderContext.getMapDimensions()
+
+        let topLeftHudLocX = 0
+        let topLeftHudLocZ = 0
+        let sizeInWorld = 0
+        let sizeInPixels = 0
+        let textureScale = 0
+
         if (this.currentBossImage) {
-            this.currentBossImage.image.draw(x + renderContext.borderWidth, y + renderContext.borderWidth, size - renderContext.borderWidth * 2, size - renderContext.borderWidth)
+            sizeInWorld = Math.min(this.currentBossImage.widthInWorld, this.currentBossImage.heightInWorld, this.currentBossImage.renderSize || Infinity)
+            let pixelWidth = this.currentBossImage.image.getTextureWidth() / this.currentBossImage.widthInWorld * (this.currentBossImage.renderSize || this.currentBossImage.widthInWorld)
+            let pixelHeight = this.currentBossImage.image.getTextureHeight() / this.currentBossImage.heightInWorld * (this.currentBossImage.renderSize || this.currentBossImage.heightInWorld)
+            sizeInPixels = Math.min(pixelWidth, pixelHeight);
+
+            textureScale = (size - 2 * renderContext.borderWidth) / sizeInPixels
+
+            topLeftHudLocX = (Player.getX() - this.currentBossImage.topLeftLocation[0]) / (sizeInWorld) * (size - 2 * renderContext.borderWidth) - (size - 2 * renderContext.borderWidth) / 2
+            topLeftHudLocZ = (Player.getZ() - this.currentBossImage.topLeftLocation[1]) / (sizeInWorld) * (size - 2 * renderContext.borderWidth) - (size - 2 * renderContext.borderWidth) / 2
+
+            topLeftHudLocX = MathLib.clampFloat(topLeftHudLocX, 0, Math.max(0, this.currentBossImage.image.getTextureWidth() * textureScale - (size - 2 * renderContext.borderWidth)))
+            topLeftHudLocZ = MathLib.clampFloat(topLeftHudLocZ, 0, Math.max(0, this.currentBossImage.image.getTextureHeight() * textureScale - (size - 2 * renderContext.borderWidth)))
+        }
+
+        renderLibs.scizzor(x + renderContext.borderWidth, y + renderContext.borderWidth, size - 2 * renderContext.borderWidth, size - renderContext.borderWidth)
+
+        if (this.currentBossImage) {
+            this.currentBossImage.image.draw(x + renderContext.borderWidth - topLeftHudLocX, y + renderContext.borderWidth - topLeftHudLocZ, this.currentBossImage.image.getTextureWidth() * textureScale, this.currentBossImage.image.getTextureHeight() * textureScale)
         }
 
         // Render heads
-        renderLibs.scizzor(x + renderContext.borderWidth, y + renderContext.borderWidth, size - 2 * renderContext.borderWidth, size - renderContext.borderWidth)
         for (let player of dungeonMap.players) {
             if (dungeonMap.deadPlayers.has(player.username.toLowerCase())) continue
 
@@ -44,10 +67,9 @@ class BossMapRenderer extends MapTab {
             let renderY = null
 
             if (this.currentBossImage) {
-                renderX = (player.location.worldX - this.currentBossImage.topLeftLocation[0]) / this.currentBossImage.widthInWorld * size
-                renderY = (player.location.worldY - this.currentBossImage.topLeftLocation[1]) / this.currentBossImage.heightInWorld * size
-            }
-            else {
+                renderX = (player.location.worldX - this.currentBossImage.topLeftLocation[0]) / sizeInWorld * (size - 2 * renderContext.borderWidth) - topLeftHudLocX
+                renderY = (player.location.worldY - this.currentBossImage.topLeftLocation[1]) / sizeInWorld * (size - 2 * renderContext.borderWidth) - topLeftHudLocZ
+            } else {
                 renderX = (player.location.worldX - Player.getX() + 64) / 128 * size
                 renderY = (player.location.worldY - Player.getZ() + 64) / 128 * size
             }

@@ -343,6 +343,7 @@ export function addNotation(type, value, joiner = "") {
 }
 
 export const MESSAGE_PREFIX = "&6[BetterMap]&7 "
+export const MESSAGE_PREFIX_SHORT = "&6[BM]&7 "
 
 
 export function getSBID(item) {

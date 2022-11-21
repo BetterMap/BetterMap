@@ -1,23 +1,33 @@
 /**
  * @typedef {Object} ContextSettings
  * @property {Boolean} showMap - Should the map be rendered
- * @property {"legalmap"|"hypixelmap"|"teniosmap"} mapStyle - Style of the map rendering
+ * @property {"legalmap"|"hypixelmap"|"teniosmap"|"custom"} mapStyle - Style of the map rendering
  * @property {Number} posX - X Position of the map on screen
  * @property {Number} posY - y Position of the map on screen
  * @property {Number} size - Width/height of the map when rendered
+ * @property {"off"|"icons"|"self-icon"|"heads"} showHeads - show player heads on the map
  * @property {Number} headScale - Width/height of heads (scales with size, will be same if size is 100)
  * @property {Number} iconScale - Width/height of icons (scales with size, will be same if size is 100)
- * @property {"hypixel"|"default"|"tenios"|"secrets"|"secrets_underhead"} tickStyle - Style of the ticks
+ * @property {Number} textScale - Width/height of text
+ * @property {"hypixel-old"|"hypixel-new"|"default"|"tenios"|"roomnames"} tickStyle - Style of the ticks
+ * @property {"never"|"hasSecrets"|"always"} showSecretCount - When to show secrets instead of checkmarks
+ * @property {Boolean} checkmarkCompleteRooms - Turn completed rooms into checkmarks
+ * @property {Boolean} tickStyle_secrets_overHead - Wether to render the secrets / room name tick style over player heads
  * @property {Boolean} centerCheckmarks - Centers checkmarks in rooms
  * @property {"none"|"text"|"icon"} puzzleNames - Render style of puzzle names
- * @property {"none"|"single"|"class-color"|} headBorder - Wether to put a black border around heads on the map
+ * @property {"none"|"single"|"class-color"} headBorder - Wether to put a black border around heads on the map
+ * @property {Number} headBorderWidth - Width of the head border
  * @property {"never"|"leap"|"always"} playerNames - When to show player names on map
  * @property {"none"|"left"|"right"} currentRoomInfo - Render current room hover info on side of map
  * @property {"none"|"legalmap"|"simplified"} scoreInfoUnderMap - Render score info under the map
+ * @property {Boolean} scoreInfoUnderMap_simplified_showMimicText - Wether to show 'mimic' before the tick/cross
  * @property {Boolean} tabSecretCount - Show the estimated secret count in tab
  * @property {Boolean} tabCryptCount - Show the current total crypt count for discovered rooms in tab 
  * @property {Boolean} tabMimic - Show the mimic status in tab
  * @property {Boolean} fixScore - Replaces the sidebar scoreboard score with the correct score
+ * @property {"never"|"at270"|"at300"|"automatic"|"always"} showScoreMessage - Broadcast a score message after reaching a specific score
+ * @property {String} custom270scoreMessage - Allows the player to set a custom message for 270 score
+ * @property {String} custom300scoreMessage - Allows the player to set a custom message for 300 score
  * @property {Boolean} hideInBoss - Hide the map in boss entirely 
  * @property {Boolean} showTabs - Show tabs at the top of the map 
  * @property {Boolean} showSecrets - Show waypoints for secrets in the dungeon
@@ -27,9 +37,16 @@
  * @property {Boolean} clearedRoomInfo - Show a summory of what rooms people cleared after run finishes
  * @property {String} apiKey - The user's api key, or "" if unknown
  * @property {Boolean} devInfo - Wether to show def info in various places in the map
- * @property {Object[]} mapBorderColor - The RGBO value of the map border color
- * @property {Object[]} mapBackgroundColor - The RGBO value of the map backround color
- * @property {Object[]} extraInfoBackroundColor - The RGBO value of the extrainfo backround color
+ * @property {[r:Number, g:Number, b:Number, a:number]} mapBorderColor - The RGBO value of the map border color
+ * @property {[r:Number, g:Number, b:Number, a:number]} mapBackgroundColor - The RGBO value of the map backround color
+ * @property {[r:Number, g:Number, b:Number, a:number]} extraInfoBackroundColor - The RGBO value of the extrainfo backround color
+ * @property {[r:Number, g:Number, b:Number, a:number]} healerColor - Border color for healer class
+ * @property {[r:Number, g:Number, b:Number, a:number]} mageColor - Border color for mage class
+ * @property {[r:Number, g:Number, b:Number, a:number]} bersColor - Border color for bers class
+ * @property {[r:Number, g:Number, b:Number, a:number]} archColor - Border color for arch class
+ * @property {[r:Number, g:Number, b:Number, a:number]} tankColor - Border color for tank class
+ * @property {[r:Number, g:Number, b:Number, a:number]} singleBorderColor - Border color for everyone
+ * @property {[r:Number, g:Number, b:Number, a:number]} singleBorderColorSelf - Border color for self
  */
 
 const BufferedImage = Java.type("java.awt.image.BufferedImage")
@@ -54,7 +71,7 @@ class RenderContext {
     }
 
     getImageSize(floor) {
-        return this.paddingLeft * 2 + this.blockSize * 6 + this.roomGap
+        return this.paddingLeft * 2 + this.blockSize * 6 + this.roomGap / 2
     }
 
     get showMap() {
@@ -72,23 +89,44 @@ class RenderContext {
     get size() {
         return this.settings.size
     }
+    get showHeads() {
+        return this.settings.showHeads;
+    }
     get headScale() {
         return this.settings.headScale
     }
     get iconScale() {
         return this.settings.iconScale
     }
+    get textScale() {
+        return this.settings.textScale
+    }
     get tickStyle() {
         return this.settings.tickStyle
     }
+    
     get centerCheckmarks() {
         return this.settings.centerCheckmarks
     }
+    
+    get tickStyle_secrets_overHead() {
+        return this.settings.tickStyle_secrets_overHead
+    }
+    get showSecretCount() {
+        return this.settings.showSecretCount
+    }
+    get checkmarkCompleteRooms() {
+        return this.settings.checkmarkCompleteRooms
+    }
+
     get puzzleNames() {
         return this.settings.puzzleNames
     }
     get headBorder() {
         return this.settings.headBorder
+    }
+    get headBorderWidth() {
+        return this.settings.headBorderWidth
     }
     get playerNames() {
         return this.settings.playerNames
@@ -106,12 +144,28 @@ class RenderContext {
         return this.settings.scoreInfoUnderMap
     }
 
+    get scoreInfoUnderMap_simplified_showMimicText() {
+        return this.settings.scoreInfoUnderMap_simplified_showMimicText
+    }
+
+    get showScoreMessage() {
+        return this.settings.showScoreMessage;
+    }
+
+    get custom270scoreMessage() {
+        return this.settings.custom270scoreMessage;
+    }
+
+    get custom300scoreMessage() {
+        return this.settings.custom300scoreMessage;
+    }
+
     get hideInBoss() {
         return this.settings.hideInBoss
     }
 
     get showTabs() {
-        return this.settings.showTabs
+        return this.settings.showTabs && this.posY > 0 //if y is 0 or less then tabs arnt visable anyway
     }
 
     get tabSecretCount() {
@@ -158,36 +212,122 @@ class RenderContext {
         return this.settings.devInfo
     }
 
+    get mapBorderColor() {
+        return this.settings.mapBorderColor
+    }
+
+    get mapBackgroundColor() {
+        return this.settings.mapBackgroundColor
+    }
+
+    get extraInfoBackroundColor() {
+        return this.settings.extraInfoBackroundColor
+    }
+
+    get healerColor() {
+        return this.settings.healerColor
+    }
+
+    get mageColor() {
+        return this.settings.mageColor
+    }
+
+    get bersColor() {
+        return this.settings.bersColor
+    }
+
+    get archColor() {
+        return this.settings.archColor
+    }
+
+    get tankColor() {
+        return this.settings.tankColor
+    }
+
+    get singleBorderColor() {
+        return this.settings.singleBorderColor
+    }
+
+    get singleBorderColorSelf() {
+        return this.settings.singleBorderColorSelf
+    }
+
     get colorMap() {
         switch (this.mapStyle) {
             case "legalmap":
                 return LegalMapColorMap
-            case "hypixelmap":
-                return HypixelColorMap
             case "teniosmap":
                 return TeniosMapColorMap
+            default:
+            case "hypixelmap":
+                return HypixelColorMap
         }
+    }
+
+    get customRoomColorNormal() {
+        return this.settings.customRoomColorNormal;
+    }
+    get customRoomColorMini() {
+        return this.settings.customRoomColorMini;
+    }
+    get customRoomColorRare() {
+        return this.settings.customRoomColorRare;
+    }
+    get customRoomColorFairy() {
+        return this.settings.customRoomColorFairy;
+    }
+    get customRoomColorBlood() {
+        return this.settings.customRoomColorBlood;
+    }
+    get customRoomColorTrap() {
+        return this.settings.customRoomColorTrap;
+    }
+    get customRoomColorSpawn() {
+        return this.settings.customRoomColorSpawn;
+    }
+    get customRoomColorGold() {
+        return this.settings.customRoomColorGold;
+    }
+    get customRoomColorPuzzle() {
+        return this.settings.customRoomColorPuzzle;
+    }
+    get customRoomColorUnknown() {
+        return this.settings.customRoomColorUnknown;
+    }
+    get customRoomColorWitherDoor() {
+        return this.settings.customRoomColorWitherDoor;
+    }
+    get customRoomGapSize() {
+        return this.settings.customRoomGapSize;
+    }
+    get customDoorSize() {
+        return this.settings.customDoorSize;
     }
 
     get roomGap() {
         switch (this.mapStyle) {
+            case 'custom':
+                //capped cause players could theoretically create infinite dungeon map image sizes and run out of memory
+                return Math.min(120, this.customRoomGapSize);
             case "legalmap":
-                return 8 // 1/3 roomSize
+                return 12 // 1/3 roomSize
             case "hypixelmap":
-                return 6
+                return 9
             case "teniosmap":
-                return 6
+            default:
+                return 9
         }
     }
 
     get roomSize() {
         switch (this.mapStyle) {
             case "legalmap":
-                return 24
+                return 36
             case "hypixelmap":
-                return 24
+                return 36
             case "teniosmap":
-                return 24
+            default:
+                return 36
         }
     }
 
@@ -197,12 +337,15 @@ class RenderContext {
 
     get doorWidth() {
         switch (this.mapStyle) {
+            case 'custom':
+                return this.customDoorSize;
             case "legalmap":
-                return 8
+                return 12
             case "hypixelmap":
-                return 10
+                return 15
             case "teniosmap":
-                return 10;
+            default:
+                return 15;
         }
     }
 
@@ -224,8 +367,11 @@ class RenderContext {
 
                 graphics.dispose()
                 return scaledDownImage
+            case 'hypixel-new':
+                return HypixelTicksNew.get(type);
             case 'tenios':
-            case "hypixel":
+            case "hypixel-old":
+            default:
                 return HypixelTicksOld.get(type)
         }
     }
@@ -239,14 +385,25 @@ class RenderContext {
         switch (this.tickStyle) {
             case "default":
                 return [16 * this.iconScale / 8, 16 * this.iconScale / 8]
+            case "hypixel-new":
+                switch (type) {
+                    case "questionMark":
+                        return [10 * this.iconScale / 10, 18 * this.iconScale / 10]
+                    case "whiteCheck":
+                    case "greenCheck":
+                        return [18 * this.iconScale / 10, 18 * this.iconScale / 10]
+                    case "failedRoom":
+                        return [14 * this.iconScale / 8, 14 * this.iconScale / 8]
+                }
             case 'tenios':
-            case "hypixel":
+            case "hypixel-old":
+            default:
                 switch (type) {
                     case "questionMark":
                         return [10 * this.iconScale / 8, 16 * this.iconScale / 8]
                     case "whiteCheck":
                     case "greenCheck":
-                        return [10 * this.iconScale / 8, 10 * this.iconScale / 8]
+                        return [18 * this.iconScale / 10, 18 * this.iconScale / 10]
                     case "failedRoom":
                         return [14 * this.iconScale / 8, 14 * this.iconScale / 8]
                 }
@@ -263,15 +420,25 @@ class RenderContext {
         posX = 0,
         posY = 0,
         size = 100,
+        showHeads = 'heads',
         headScale = 8,
         iconScale = 10,
+        textScale = 10,
         tickStyle = "default",
+        tickStyle_secrets_overHead = true,
         centerCheckmarks = false,
+        showSecretCount = "never",
+        checkmarkCompleteRooms = false,
         puzzleNames = "none",
         headBorder = "none",
+        headBorderWidth = 3,
         playerNames = "leap",
         currentRoomInfo = "none",
         scoreInfoUnderMap = "simplified",
+        scoreInfoUnderMap_simplified_showMimicText = true,
+        showScoreMessage = 'never',
+        custom270scoreMessage = '270 Score reached!',
+        custom300scoreMessage = '300 Score reached!',
         tabSecretCount = false,
         tabCryptCount = false,
         tabMimic = false,
@@ -293,8 +460,21 @@ class RenderContext {
         bersColor = [255, 0, 0, 255],
         archColor = [30, 170, 50, 255],
         tankColor = [150, 150, 150, 255],
-        singleBorderColor = [0, 0, 0, 255]
-
+        singleBorderColor = [0, 0, 0, 255],
+        singleBorderColorSelf = [0, 0, 0, 255],
+        customRoomColorNormal = [114, 67, 27, 255],
+        customRoomColorMini = [114, 67, 27, 255],
+        customRoomColorRare = [114, 67, 27, 255],
+        customRoomColorFairy = [239, 126, 163, 255],
+        customRoomColorBlood = [255, 0, 0, 255],
+        customRoomColorTrap = [213, 126, 50, 255],
+        customRoomColorSpawn = [0, 123, 0, 255],
+        customRoomColorGold = [226, 226, 50, 255],
+        customRoomColorPuzzle = [176, 75, 213, 255],
+        customRoomColorUnknown = [64, 64, 64, 255],
+        customRoomColorWitherDoor = [0, 0, 0, 255],
+        customRoomGapSize = 9,
+        customDoorSize = 15
     }) {
         return {
             showMap,
@@ -302,15 +482,25 @@ class RenderContext {
             posX,
             posY,
             size,
+            showHeads,
             headScale,
             iconScale,
+            textScale,
             tickStyle,
+            tickStyle_secrets_overHead,
             centerCheckmarks,
+            showSecretCount,
+            checkmarkCompleteRooms,
             puzzleNames,
             headBorder,
+            headBorderWidth,
             playerNames,
             currentRoomInfo,
             scoreInfoUnderMap,
+            scoreInfoUnderMap_simplified_showMimicText,
+            showScoreMessage,
+            custom270scoreMessage,
+            custom300scoreMessage,
             tabCryptCount,
             tabSecretCount,
             tabMimic,
@@ -332,7 +522,21 @@ class RenderContext {
             bersColor,
             archColor,
             tankColor,
-            singleBorderColor
+            singleBorderColor,
+            singleBorderColorSelf,
+            customRoomColorNormal,
+            customRoomColorMini,
+            customRoomColorRare,
+            customRoomColorFairy,
+            customRoomColorBlood,
+            customRoomColorTrap,
+            customRoomColorSpawn,
+            customRoomColorGold,
+            customRoomColorPuzzle,
+            customRoomColorUnknown,
+            customRoomColorWitherDoor,
+            customRoomGapSize,
+            customDoorSize
         }
     }
 
@@ -429,10 +633,16 @@ TeniosMapColorMap.set('unknown', new Color(Renderer.color(64, 64, 64)));
 TeniosMapColorMap.set('wither', new Color(Renderer.color(0, 0, 0)));
 
 const HypixelTicksOld = new Map()
-HypixelTicksOld.set("greenCheck", new Image("greenCheckVanilla.png", "https://i.imgur.com/h2WM1LO.png").image)
-HypixelTicksOld.set("whiteCheck", new Image("whiteCheckVanilla.png", "https://i.imgur.com/hwEAcnI.png").image)
+HypixelTicksOld.set("greenCheck", new Image("greenCheckVanilla-old.png", "https://i.imgur.com/h2WM1LO.png").image)
+HypixelTicksOld.set("whiteCheck", new Image("whiteCheckVanilla-old.png", "https://i.imgur.com/hwEAcnI.png").image)
 HypixelTicksOld.set("failedRoom", new Image("failedRoomVanilla.png", "https://i.imgur.com/WqW69z3.png").image)
-HypixelTicksOld.set("questionMark", new Image("questionMarkVanilla.png", "https://i.imgur.com/1jyxH9I.png").image)
+HypixelTicksOld.set("questionMark", new Image("questionMarkVanilla-old.png", "https://i.imgur.com/1jyxH9I.png").image)
+
+const HypixelTicksNew = new Map()
+HypixelTicksNew.set("greenCheck", new Image("greenCheckVanilla-new.png", "https://i.imgur.com/KFGT3RL.png").image)
+HypixelTicksNew.set("whiteCheck", new Image("whiteCheckVanilla-new.png", "https://i.imgur.com/pfDVZA0.png").image)
+HypixelTicksNew.set("failedRoom", new Image("failedRoomVanilla.png", "https://i.imgur.com/WqW69z3.png").image)
+HypixelTicksNew.set("questionMark", new Image("questionMarkVanilla-new.png", "https://i.imgur.com/xLI4gR6.png").image)
 
 const NEUMapTicks = new Map()
 NEUMapTicks.set("greenCheck", new Image("NEUMapGreenCheck.png", "https://i.imgur.com/vwiTAAf.png").image) //old: https://i.imgur.com/GQfTfmp.png

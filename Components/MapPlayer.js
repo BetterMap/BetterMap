@@ -33,6 +33,8 @@ class MapPlayer {
 
         this.locallyUpdated = 0
 
+        this.deaths = 0
+
         this.startedRunSecrets = 0
         this.currentSecrets = 0
 
@@ -81,7 +83,11 @@ class MapPlayer {
 
     updatePlayerColor() {
         if (settings.settings.headBorder == "single") {
-            this.playerColor = settings.settings.singleBorderColor
+            if (this.uuid === Player.getUUID().toString()) {
+                this.playerColor = settings.settings.singleBorderColorSelf
+            } else {
+                this.playerColor = settings.settings.singleBorderColor
+            }
             return this
         }
         switch (this.dungeonClass) {
@@ -95,7 +101,7 @@ class MapPlayer {
                 this.playerColor = settings.settings.bersColor ?? [255, 0, 0, 255]
                 break;
             case "Archer":
-                this.playerColor = settings.settings.archerColor ?? [30, 170, 50, 255]
+                this.playerColor = settings.settings.archColor ?? [30, 170, 50, 255]
                 break;
             case "Tank":
                 this.playerColor = settings.settings.tankColor ?? [150, 150, 150, 255]
@@ -173,39 +179,48 @@ class MapPlayer {
         return dungeon.rooms.get(x + ',' + y)
     }
 
-    drawAt(x, y, w, h, rotation = 0, border = true) {
+    drawAt(x, y, w, h, showIcons = false, rotation = 0, borderWidth = 2) {
         Tessellator.pushMatrix()
         Renderer.retainTransforms(true)
-        Renderer.translate(x + w / 2, y + h / 2, 50)
-        // Renderer.translate(x + (this.location.worldX + 256 - 32) * size / 256, y + (this.location.worldY + 256 - 32) * size / 256, 50)
-        Renderer.rotate(rotation)
 
-        if (border != "none" || border == false) {
-            this.updatePlayerColor()
-            Renderer.drawRect(Renderer.color(this.playerColor[0] ?? 0, this.playerColor[1] ?? 0, this.playerColor[2] ?? 0, this.playerColor[3] ?? 255), -w / 2 - 1, -h / 2 - 1, w + 2, h + 2)
+        if (showIcons) {
+            h *= 1.4
         }
 
-        GlStateManager[m.enableBlend]()
-        Client.getMinecraft()[m.getTextureManager]()[m.bindTexture.TextureManager](this.networkPlayerInfo[m.getLocationSkin.NetworkPlayerInfo]())
-        GlStateManager[m.enableTexture2D]()
+        Renderer.translate(x + w / 2, y + h / 2, 50)
 
-        let tessellator = MCTessellator[m.getInstance.Tessellator]()
-        let worldRenderer = tessellator[m.getWorldRenderer]()
-        worldRenderer[m.begin](7, DefaultVertexFormats[f.POSITION_TEX])
+        Renderer.rotate(rotation)
 
-        worldRenderer[m.pos](-w / 2, h / 2, 0.0)[m.tex](8 / 64, 16 / 64)[m.endVertex]()
-        worldRenderer[m.pos](w / 2, h / 2, 0.0)[m.tex](16 / 64, 16 / 64)[m.endVertex]()
-        worldRenderer[m.pos](w / 2, -h / 2, 0.0)[m.tex](16 / 64, 8 / 64)[m.endVertex]()
-        worldRenderer[m.pos](-w / 2, -h / 2, 0.0)[m.tex](8 / 64, 8 / 64)[m.endVertex]()
-        tessellator[m.draw.Tessellator]()
+        if (showIcons) {
+            Renderer.drawImage(this.username === Player.getName() ? markerSelf : markerOther, -w / 2, -h / 2, w, h)
+        } else {
+            if (borderWidth) {
+                this.updatePlayerColor()
+                Renderer.drawRect(Renderer.color(this.playerColor[0] ?? 0, this.playerColor[1] ?? 0, this.playerColor[2] ?? 0, this.playerColor[3] ?? 255), -w / 2 - borderWidth * w / 30, -h / 2 - borderWidth * w / 30, w + borderWidth * 2 * w / 30, h + borderWidth * 2 * w / 30)
+            }
 
-        worldRenderer[m.begin](7, DefaultVertexFormats[f.POSITION_TEX])
+            GlStateManager[m.enableBlend]()
+            Client.getMinecraft()[m.getTextureManager]()[m.bindTexture.TextureManager](this.networkPlayerInfo[m.getLocationSkin.NetworkPlayerInfo]())
+            GlStateManager[m.enableTexture2D]()
 
-        worldRenderer[m.pos](-w / 2, h / 2, 0.0)[m.tex](40 / 64, 16 / 64)[m.endVertex]()
-        worldRenderer[m.pos](w / 2, h / 2, 0.0)[m.tex](48 / 64, 16 / 64)[m.endVertex]()
-        worldRenderer[m.pos](w / 2, -h / 2, 0.0)[m.tex](48 / 64, 8 / 64)[m.endVertex]()
-        worldRenderer[m.pos](-w / 2, -h / 2, 0.0)[m.tex](40 / 64, 8 / 64)[m.endVertex]()
-        tessellator[m.draw.Tessellator]()
+            let tessellator = MCTessellator[m.getInstance.Tessellator]()
+            let worldRenderer = tessellator[m.getWorldRenderer]()
+            worldRenderer[m.begin](7, DefaultVertexFormats[f.POSITION_TEX])
+
+            worldRenderer[m.pos](-w / 2, h / 2, 0.0)[m.tex](8 / 64, 16 / 64)[m.endVertex]()
+            worldRenderer[m.pos](w / 2, h / 2, 0.0)[m.tex](16 / 64, 16 / 64)[m.endVertex]()
+            worldRenderer[m.pos](w / 2, -h / 2, 0.0)[m.tex](16 / 64, 8 / 64)[m.endVertex]()
+            worldRenderer[m.pos](-w / 2, -h / 2, 0.0)[m.tex](8 / 64, 8 / 64)[m.endVertex]()
+            tessellator[m.draw.Tessellator]()
+
+            worldRenderer[m.begin](7, DefaultVertexFormats[f.POSITION_TEX])
+
+            worldRenderer[m.pos](-w / 2, h / 2, 0.0)[m.tex](40 / 64, 16 / 64)[m.endVertex]()
+            worldRenderer[m.pos](w / 2, h / 2, 0.0)[m.tex](48 / 64, 16 / 64)[m.endVertex]()
+            worldRenderer[m.pos](w / 2, -h / 2, 0.0)[m.tex](48 / 64, 8 / 64)[m.endVertex]()
+            worldRenderer[m.pos](-w / 2, -h / 2, 0.0)[m.tex](40 / 64, 8 / 64)[m.endVertex]()
+            tessellator[m.draw.Tessellator]()
+        }
         Renderer.retainTransforms(false)
         Tessellator.popMatrix()
     }
@@ -231,6 +246,7 @@ class MapPlayer {
      * @param {RenderContext} renderContext 
      */
     drawIcon(renderContext, dungeon, overrideX, overrideY) {
+        if (renderContext.showHeads === 'off') return;
         let { size, headScale } = renderContext.getMapDimensions()
 
         if (!dungeon) return
@@ -244,7 +260,7 @@ class MapPlayer {
         x2 = overrideX || x2
         y2 = overrideY || y2
 
-        this.drawAt(x2 + rx, y2 + ry, rw, rh, this.yaw.get(), renderContext.headBorder)
+        this.drawAt(x2 + rx, y2 + ry, rw, rh, renderContext.showHeads === "icons" || renderContext.showHeads === 'self-icon' && this.username === Player.getName(), this.yaw.get(), renderContext.headBorder !== 'none' ? renderContext.headBorderWidth : 0)
 
         let showNametag = renderContext.playerNames === "always"
 
@@ -313,3 +329,6 @@ function getPlayerSecrets(uuid, cacheMs, callback) {
         callback(secretsData.get(uuid)[1])
     })
 }
+
+const markerSelf = new Image("markerSelf.png", "https://i.imgur.com/mwpjgRz.png");
+const markerOther = new Image("markerOther.png", "https://i.imgur.com/xnoBx3p.png");

@@ -288,6 +288,7 @@ class DungeonMap {
         }
     }
 
+    /*
      * NOTE: the callback function will be given a boolean representing wether the user is using bettermap
      * TODO: Make a server side custom packet to get this info so it doesent require both players to be in a dungeon
      * 
@@ -581,7 +582,7 @@ class DungeonMap {
 
         if (!this.dungeonTopLeft) {
             // Find the top left pixel of the entrance room
-            let thing = mapColors.findIndex((a, i) => a == 30 && i+15 < mapColors.length && mapColors[i+15] == 30)
+            let thing = mapColors.findIndex((a, i) => a == 30 && i + 15 < mapColors.length && mapColors[i + 15] == 30)
             if (thing == -1) return
 
             // Get the room size
@@ -591,13 +592,13 @@ class DungeonMap {
             this.roomAndDoorWidth = this.widthRoomImageMap + 4
 
             // Find the corner of the top left most room on the map
-            let x = (thing%128) % this.roomAndDoorWidth
-            let y = Math.floor(thing/128) % this.roomAndDoorWidth
-            
+            let x = (thing % 128) % this.roomAndDoorWidth
+            let y = Math.floor(thing / 128) % this.roomAndDoorWidth
+
             // Adjust for Entrance and Floor 1's altered map position
             if ([0, 1].includes(this.floorNumber)) x += this.roomAndDoorWidth
             if (this.floorNumber == 0) y += this.roomAndDoorWidth
-            
+
             this.dungeonTopLeft = [x, y]
             this.fullRoomScaleMap = Math.floor(this.widthRoomImageMap * 5 / 4)
         }
@@ -613,7 +614,7 @@ class DungeonMap {
             74: Room.MINIBOSS,
             85: Room.UNKNOWN
         }
-        
+
         for (let y = 0; y < 6; y++) {// Scan top left of rooms looking for valid rooms
             for (let x = 0; x < 6; x++) {
                 let mapX = this.dungeonTopLeft[0] + this.roomAndDoorWidth * x
@@ -817,7 +818,7 @@ class DungeonMap {
         const puzStart = names.findIndex(a => a.removeFormatting().match(/^Puzzles: \(\d+\)$/))
         if (puzStart == -1) return
         // The five lines after the "Puzzles: (3)" line
-        const puzLines = names.slice(puzStart+1, puzStart+6).map(a => a.removeFormatting())
+        const puzLines = names.slice(puzStart + 1, puzStart + 6).map(a => a.removeFormatting())
         puzLines.forEach(line => {
             // https://regex101.com/r/qhNs78/1
             let match = line.match(/^ ([\w? ]+)+: \[(.)\] ?$/)
@@ -826,7 +827,7 @@ class DungeonMap {
             if (name == "???") return
             puzzleNamesList.push(name)
             if (status !== "✖") return
-            for (let room of this.roomsArr)  {
+            for (let room of this.roomsArr) {
                 if (room.data?.name?.toLowerCase() !== name.toLowerCase()) continue
                 room.checkmarkState = Room.FAILED
             }
@@ -857,7 +858,7 @@ class DungeonMap {
                     let ids = DungeonRoomData.getRoomIdsFromName(puzzleName)
                     room.roomId = ids[0];
                     this.identifiedRoomIds.addAll(...ids);
-                } 
+                }
             }
         }
         this.identifiedPuzzleCount = puzzleNamesList.length;
@@ -879,7 +880,7 @@ class DungeonMap {
         let requiredSecrets = getRequiredSecrets(parseInt(this.floor[this.floor.length - 1]) || 0, this.floor[0] === "M");
         let roomCompletion = getScoreboardInfo();
         let [secrets, crypts, deaths, unfinshedPuzzles, completedRoomsTab, collectedSecrets] = getTabListInfo();
-        let completedRooms = [...this.rooms.values()].reduce((a, b) => b.isCleared() ? a+1 : a, 0)
+        let completedRooms = [...this.rooms.values()].reduce((a, b) => b.isCleared() ? a + 1 : a, 0)
 
         // If map data is incomplete, it's worth using the higher number
         completedRooms = Math.max(completedRooms, completedRoomsTab);
@@ -984,7 +985,7 @@ class DungeonMap {
         let apiKey = settings.settings.apiKey
 
         const printSpiritMessage = () => {
-            if (this.firstDeathHadSpirit) return ChatLib.chat(`${MESSAGE_PREFIX}${username} ${username == "You" ? "do" : "does"} have a spirit pet.`) 
+            if (this.firstDeathHadSpirit) return ChatLib.chat(`${MESSAGE_PREFIX}${username} ${username == "You" ? "do" : "does"} have a spirit pet.`)
             ChatLib.chat(`${MESSAGE_PREFIX}${username} ${username == "You" ? "do" : "does"} not have a spirit pet.`)
         }
 
@@ -1335,8 +1336,9 @@ class DungeonMap {
                 break
         }
 
-        if (this.rooms.get(locstr)) { // Already a room there
-            let room = this.rooms.get(locstr)
+        let room = this.rooms.get(locstr);
+        if (room) { // Already a room there
+            room = this.rooms.get(locstr)
             room.setType(type)
             room.components = components
             room.rotation = room.findRotation();

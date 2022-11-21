@@ -206,7 +206,7 @@ class SettingGui {
             elm.addToggle("Show secret count over player heads", "tickStyle_secrets_overHead", this.currentSettings.tickStyle_secrets_overHead)
         })
         
-        this.addToggle("Center Checkmarks", "centerCheckmarks", this.defaultSettings.centerCheckmarks)
+        this.addToggle("Center Checkmarks", "centerCheckmarks", this.currentSettings.centerCheckmarks)
 
         this.addDropdown("Puzzle Style", {
             "none": "None",
@@ -699,6 +699,7 @@ class SettingGui {
         this.addSidebarElement(slider, 0.55, 0.2, 0.05)
         this.addSidebarElement(numberT, 0.8, 0.1, 0.05)
         return [[slider, numberT], this.addSidebarElement(new SoopyTextElement().setText("§0" + label).setMaxTextScale(2), 0.1, 0.35)]
+    }
 
     /**
      * 

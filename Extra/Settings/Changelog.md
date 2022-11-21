@@ -109,3 +109,9 @@ First released version!
 ! fix player head positions for ironman/bingo players + chroma cosmetics
 ! make api key input box show *'s instead of api key (for streamers)
 ```
+
+@ver v1.0.10
+```diff
++ added settings profiles (thenose2003)
++ added the ability to share settings profiles (thenose2003)
+```

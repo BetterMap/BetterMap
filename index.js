@@ -58,7 +58,8 @@ register("step", () => {
 
             if (mapData) {
                 currentDungeonMap.updateFromMap(mapData)
-            } else {
+            }
+            if (!mapData || !currentDungeonMap.dungeonTopLeft) {
                 currentDungeonMap.updateFromWorld();
             }
         }

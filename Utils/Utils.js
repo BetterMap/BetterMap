@@ -364,5 +364,5 @@ export const isBetween = (number, min, max) => (number - min) * (number - max) <
 
 export function getPlayerName(player) {
     if (!player) return '???';
-    return ChatLib.removeFormatting(player.getDisplayName()?.text || '???').replace(/[♲Ⓑ]/g, "").replace('§z', '').trim()
+    return ChatLib.removeFormatting(player.name ?? '???').replace(/[♲Ⓑ]/g, "").replace('§z', '').trim()
 }

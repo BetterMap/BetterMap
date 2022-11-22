@@ -110,7 +110,7 @@ First released version!
 ! make api key input box show *'s instead of api key (for streamers)
 ```
 
-@ver v1.0.10
+@ver v1.0.11
 ```diff
 + added settings profiles (thenose2003)
 + added the ability to share settings profiles (thenose2003)

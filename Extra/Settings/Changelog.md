@@ -110,5 +110,7 @@ First released version!
 
 @ver v1.0.11
 ```diff
-- Removed rat
+! Fixed some GUI elements being added to the wrong menu
+! Fixed map crashing for some players when trying to access playernames
+! Fixed map showing room tooltips if the map is in the top left corner
 ```

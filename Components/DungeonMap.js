@@ -124,8 +124,8 @@ class DungeonMap {
                 Client.scheduleTask(5 * 20, () => { // Wait 5 seconds (5*20tps)
                     ChatLib.chat(MESSAGE_PREFIX + "Cleared room counts:")
                     this.players.forEach(p => {
-                        let m = new Message()
-                        m.addTextComponent(new TextComponent(MESSAGE_PREFIX_SHORT + "&3" + p.username + "&7 cleared "))
+                        let mess = new Message()
+                        mess.addTextComponent(new TextComponent(MESSAGE_PREFIX_SHORT + "&3" + p.username + "&7 cleared "))
 
                         let roomLore = ""
                         p.roomsData.forEach(([players, room]) => {
@@ -138,17 +138,17 @@ class DungeonMap {
                             roomLore += `&${color}${name} (${type})${stackStr}\n`
                         })
 
-                        m.addTextComponent(new TextComponent("&6" + p.minRooms + "-" + p.maxRooms).setHover("show_text", roomLore.trim()))
+                        mess.addTextComponent(new TextComponent("&6" + p.minRooms + "-" + p.maxRooms).setHover("show_text", roomLore.trim()))
 
                         if (settings.settings.apiKey) {
-                            m.addTextComponent(new TextComponent("&7 rooms | &6" + p.secretsCollected + "&7 secrets"))
+                            mess.addTextComponent(new TextComponent("&7 rooms | &6" + p.secretsCollected + "&7 secrets"))
                         }
                         else {
-                            m.addTextComponent(new TextComponent("&7 rooms and got &c[NO API KEY]&7 secrets"))
+                            mess.addTextComponent(new TextComponent("&7 rooms and got &c[NO API KEY]&7 secrets"))
                         }
-                        m.addTextComponent(new TextComponent("&7 | &6" + p.deaths + "&7 deaths"))
+                        mess.addTextComponent(new TextComponent("&7 | &6" + p.deaths + "&7 deaths"))
 
-                        m.chat()
+                        mess.chat()
                     })
                 })
             }).setChatCriteria('&r&c${*}e Catacombs &r&8- &r&eFloor${end}').setContains())

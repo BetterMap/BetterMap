@@ -385,7 +385,7 @@ class DungeonMap {
             if (!p[m.getDisplayName.NetworkPlayerInfo]()) continue
             let line = p[m.getDisplayName.NetworkPlayerInfo]()[m.getUnformattedText]()
             // https://regex101.com/r/cUzJoK/3
-            line = name.replace(/§[a-fnmz0-9]/g, ''); //support dungeons guide custom name colors
+            line = line.replace(/§[a-fnmz0-9]/g, ''); //support dungeons guide custom name colors
             let match = line.match(/^\[(\d+)\] (?:\[\w+\] )*(\w+) [♲Ⓑ ]*\((\w+)(?: (\w+))*\)$/)
             if (!match) continue
             let [_, sbLevel, name, clazz, level] = match

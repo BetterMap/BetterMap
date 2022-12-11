@@ -461,7 +461,8 @@ class RenderContext {
         customRoomColorUnknown = [64, 64, 64, 255],
         customRoomColorWitherDoor = [0, 0, 0, 255],
         customRoomGapSize = 9,
-        customDoorSize = 15
+        customDoorSize = 15,
+        spinnyMap = false
     }) {
         return {
             showMap,
@@ -521,7 +522,8 @@ class RenderContext {
             customRoomColorUnknown,
             customRoomColorWitherDoor,
             customRoomGapSize,
-            customDoorSize
+            customDoorSize,
+            spinnyMap
         }
     }
 

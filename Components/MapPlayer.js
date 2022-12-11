@@ -175,15 +175,24 @@ class MapPlayer {
         if (context.showHeads === 'icons') {
             h *= 1.4
         }
-
+        Renderer.translate((context.settings.posX + context.paddingLeft + context.borderWidth + context.settings.size/2), (context.settings.posY + context.paddingLeft + context.borderWidth+ context.settings.size/2));
+        Renderer.rotate(Player.getYaw())
+        Renderer.translate(-(context.settings.posX + context.paddingLeft + context.borderWidth + context.settings.size/2), -(context.settings.posY + context.paddingLeft + context.borderWidth + context.settings.size/2));
         Renderer.translate(x + w / 2, y + h / 2, 50)
 
+        // rotates the head
         Renderer.rotate(rotation)
         if (context.showHeads === 'icons') {
             Renderer.drawImage(this.username === Player.getName() ? markerSelf : markerOther, -w / 2, -h / 2, w, h)
         } else {
             if (border != "none" || border == false) {
                 this.updatePlayerColor()
+
+                //Renderer.translate(-(w / 2), -(h / 2))
+
+                //Renderer.translate((context.settings.size) * Math.cos(Player.getYaw() * (3.1415 / 180.0)), (context.settings.size) * Math.sin(Player.getYaw() * (3.1415 / 180.0)))
+                //Renderer.rotate(Player.getYaw())
+
                 Renderer.drawRect(Renderer.color(this.playerColor[0] ?? 0, this.playerColor[1] ?? 0, this.playerColor[2] ?? 0, this.playerColor[3] ?? 255), -w / 2 - context.headBorderWidth * w / 30, -h / 2 - context.headBorderWidth * w / 30, w + context.headBorderWidth * 2 * w / 30, h + context.headBorderWidth * 2 * w / 30)
             }
 

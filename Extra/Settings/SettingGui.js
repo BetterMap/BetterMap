@@ -400,6 +400,8 @@ class SettingGui {
 
         this.addToggle("Show dev info", "devInfo", this.currentSettings.devInfo)
 
+        this.addToggle("Spinny map", "spinnyMap", this.currentSettings.spinnyMap)[1].setLore(["dont turn this on its cursed"])
+
         // END OF SETTINGS
 
         // ANIMATIONS!!!!

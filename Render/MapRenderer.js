@@ -35,9 +35,20 @@ class MapRenderer {
             }
         }
 
+        //renderContext.
+        //Renderer.translate(x, y)
+        // Spinnt map!
+        /*if (renderContext.settings.spinnyMap) {
+            Renderer.rotate(Player.getYaw())
+        } else {
+            Renderer.rotate(0)
+        }*/
+
+
         // BACKROUND COLOR
         Renderer.drawRect(Renderer.color(renderContext.settings.mapBackgroundColor[0] ?? 0, renderContext.settings.mapBackgroundColor[1] ?? 0, renderContext.settings.mapBackgroundColor[2] ?? 0, renderContext.settings.mapBackgroundColor[3] ?? 150), x, y, size, size)//background
 
+        // Render the map
         this.tabs[this.selectedTabIndex].draw(renderContext, dungeonMap, mouseX, mouseY)
 
         // THIS IS THE LEFT TOP AND RIGHT BORDER IN THAT ORDER

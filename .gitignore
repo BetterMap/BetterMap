@@ -1,2 +1,3 @@
 Data/roomdata.json
-/backupSettings
+out
+node_modules

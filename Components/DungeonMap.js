@@ -146,8 +146,11 @@ class DungeonMap {
                         else {
                             mess.addTextComponent(new TextComponent("&7 rooms and got &c[NO API KEY]&7 secrets"))
                         }
-                        mess.addTextComponent(new TextComponent("&7 | &6" + p.deaths + "&7 deaths"))
-
+                        
+                        if (p.deaths != 0) {
+                            mess.addTextComponent(new TextComponent("&7 | &c" + p.deaths + "&c deaths"))
+                        }
+                        
                         mess.chat()
                     })
                 })

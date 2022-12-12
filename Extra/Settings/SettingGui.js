@@ -389,6 +389,8 @@ class SettingGui {
 
         this.addToggle("Spirit leap overlay", "spiritLeapOverlay", this.currentSettings.spiritLeapOverlay)[1].setLore(["You can click on player heads in overlay!", "Most people probs wont like the design though."])
 
+        this.addToggle("Spinny map", "spinnyMap", this.currentSettings.spinnyMap)[1].setLore(["dont turn this on its cursed"])
+
         this.addSidebarElement(new ButtonWithArrow().setText("&0Load api key from other mods").addEvent(new SoopyMouseClickEvent().setHandler(() => {
             findKey(key => {
                 this.setApiKey(key)
@@ -399,8 +401,6 @@ class SettingGui {
         this.apiKeySetting = this.addString("Api key", "apiKey", this.currentSettings.apiKey)[0]
 
         this.addToggle("Show dev info", "devInfo", this.currentSettings.devInfo)
-
-        this.addToggle("Spinny map", "spinnyMap", this.currentSettings.spinnyMap)[1].setLore(["dont turn this on its cursed"])
 
         // END OF SETTINGS
 

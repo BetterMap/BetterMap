@@ -175,9 +175,12 @@ class MapPlayer {
         if (context.showHeads === 'icons') {
             h *= 1.4
         }
-        Renderer.translate((context.settings.posX + context.paddingLeft + context.borderWidth + context.settings.size/2), (context.settings.posY + context.paddingLeft + context.borderWidth+ context.settings.size/2));
-        Renderer.rotate(-(Player.getYaw()+180))
-        Renderer.translate(-(context.settings.posX + context.paddingLeft + context.borderWidth + context.settings.size/2), -(context.settings.posY + context.paddingLeft + context.borderWidth + context.settings.size/2));
+
+        if (context.settings.spinnyMap) {
+            Renderer.translate((context.settings.posX + context.paddingLeft + context.borderWidth + context.settings.size / 2), (context.settings.posY + context.paddingLeft + context.borderWidth + context.settings.size / 2));
+            Renderer.rotate(-(Player.getYaw() + 180))
+            Renderer.translate(-(context.settings.posX + context.paddingLeft + context.borderWidth + context.settings.size / 2), -(context.settings.posY + context.paddingLeft + context.borderWidth + context.settings.size / 2));
+        }
         Renderer.translate(x + w / 2, y + h / 2, 50)
 
         // rotates the head

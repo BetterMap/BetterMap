@@ -176,7 +176,7 @@ class MapPlayer {
             h *= 1.4
         }
         Renderer.translate((context.settings.posX + context.paddingLeft + context.borderWidth + context.settings.size/2), (context.settings.posY + context.paddingLeft + context.borderWidth+ context.settings.size/2));
-        Renderer.rotate(Player.getYaw())
+        Renderer.rotate(-(Player.getYaw()+180))
         Renderer.translate(-(context.settings.posX + context.paddingLeft + context.borderWidth + context.settings.size/2), -(context.settings.posY + context.paddingLeft + context.borderWidth + context.settings.size/2));
         Renderer.translate(x + w / 2, y + h / 2, 50)
 

@@ -30,7 +30,7 @@ class DungeonRenderer extends MapTab {
         graphics.translate(renderContext.paddingLeft + renderContext.borderWidth, renderContext.paddingTop + renderContext.borderWidth);
 
         //Renderer.drawRect(Renderer.color(0,0,0), renderContext.settings.posX+(renderContext.settings.size/2), renderContext.settings.posY+(renderContext.settings.size/2), 5, 5)
-        graphics.rotate(Player.getYaw()* (3.1415/180.0), (renderContext.settings.size + renderContext.paddingLeft + renderContext.borderWidth), (renderContext.settings.size + renderContext.paddingLeft + renderContext.borderWidth));
+        graphics.rotate(-(Player.getYaw()+180)* (3.1415/180.0), (renderContext.settings.size + renderContext.paddingLeft + renderContext.borderWidth), (renderContext.settings.size + renderContext.paddingLeft + renderContext.borderWidth));
 
         // Render all doors
         // Rendering before rooms that way rooms cover it as there is 1 specific situation where early dungeon will put a room in the middle of an L shape

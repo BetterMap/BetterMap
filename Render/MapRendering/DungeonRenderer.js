@@ -78,7 +78,9 @@ class DungeonRenderer extends MapTab {
             renderLibs.stopScizzor()
         }
 
-        if (true) {
+        if (!renderContext.image
+            || (renderContext.imageLastUpdate < dungeonMap.lastChanged)
+            || renderContext.settings.spinnyMap) {
             // Create image if not cached or cache outdated
             if (renderContext.image) renderContext.image.destroy()
             renderContext.image = new Image(this.createMapImage(dungeonMap, renderContext));

@@ -75,6 +75,7 @@ First released version!
 ! fix boss map images not showing on most floors
 ```
 
+
 @ver v1.0.10
 ```diff
 + make score change color based on score on simplified score style
@@ -91,10 +92,32 @@ First released version!
 + roomname tick style
 + border around head width setting
 + show playernames on spirit leap overlay
-+ add settings profile selection (thenose2003)
-+ add importing and exporting settings profiles (thenose2003)
++ center boss room map on player instead of stretching
++ made boss map zoom in p3 of f7 boss
++ added separate slider for text scale
++ added toggle to center checkmarks
 ! fix blood open detection for box around wither doors
 ! improve /bping [name]
 ! fix heads sometimes not showing on map
 ! fix early in rooms not syncing properly
+! fix map not showing on leap overlay if render map is disabled
+! fix early in L room rotation (multiple times)
+! fix incorrect secret waypoints being hidden for item + bat secrets
+! fix map crashing while detecting spawn room while loading into dungeons
+! fix player head positions for ironman/bingo players + chroma cosmetics
+! make api key input box show *'s instead of api key (for streamers)
+```
+
+@ver v1.0.11
+```diff
+! Fixed some GUI elements being added to the wrong menu
+! Fixed map crashing for some players when trying to access playernames
+! Fixed map showing room tooltips if the map is in the top left corner
+```
+
+@ver v1.0.12
+```diff
++ add settings profile selection (thenose2003)
++ add importing and exporting settings profiles (thenose2003)
++ add spinny map for all the nons (thenose2003)
 ```

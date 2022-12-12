@@ -24,7 +24,7 @@ import TextBox from "../../../guimanager/GuiElement/TextBox"
 import BoxWithGear from "../../../guimanager/GuiElement/BoxWithGear"
 import { MESSAGE_PREFIX } from "../../Utils/Utils"
 import Notification from "../../../guimanager/Notification"
-import { m } from "../../../mappings/mappings";
+import PasswordInput from "../../../guimanager/GuiElement/PasswordInput"
 
 class SettingGui {
     /**
@@ -127,7 +127,7 @@ class SettingGui {
             elm.addSidebarElement(new SoopyTextElement().setText("§0Profile Name").setMaxTextScale(2), 0.1, 0.35)
 
             elm.addSidebarElement(new ButtonWithArrow().setText("&0Export Profile").addEvent(new SoopyMouseClickEvent().setHandler(() => {
-                Java.type("net.minecraft.client.gui.GuiScreen")[m.setClipboardString](JSON.stringify(this.currentSettings.profiles[this.currentSettings.activeProfile]))
+                Java.type("net.minecraft.client.gui.GuiScreen")["func_146275_d"](JSON.stringify(this.currentSettings.profiles[this.currentSettings.activeProfile]))
                 new Notification("§aSuccess!", ["Profile successfully copied to clipboard."])
             })), 0.09, 0.4, 0.075)
             elm.addSidebarElement(new ButtonWithArrow().setText("&0Delete Profile").addEvent(new SoopyMouseClickEvent().setHandler(() => {
@@ -244,9 +244,11 @@ class SettingGui {
         }, "tickStyle", this.currentSettings.tickStyle)
 
         this.addGear(() => {
-            return this.currentSettings.tickStyle === "roomnames"
+            return true;
         }, (elm) => {
-            elm.addToggle("Show room names over player heads", "tickStyle_secrets_overHead", this.currentSettings.tickStyle_secrets_overHead)
+            elm.addToggle("Center Checkmarks", "centerCheckmarks", this.currentSettings.centerCheckmarks)
+            if (this.currentSettings.tickStyle === "roomnames")
+                elm.addToggle("Show room names over player heads", "tickStyle_secrets_overHead", this.currentSettings.tickStyle_secrets_overHead)
         })
 
         this.addDropdown("Secret Count instead of Checkmarks", {
@@ -268,7 +270,13 @@ class SettingGui {
             "icon": "Icon"
         }, "puzzleNames", this.currentSettings.puzzleNames)
 
-        //this.addToggle("Border around heads", "headBorder", this.defaultSettings.headBorder)
+        this.addGear(() => {
+            return this.currentSettings.puzzleNames === "text"
+        }, (elm) => {
+            elm.addToggle("Show puzzle name over player heads", "tickStyle_secrets_overHead", this.currentSettings.tickStyle_secrets_overHead)
+        })
+
+        // This.addToggle("Border around heads", "headBorder", this.defaultSettings.headBorder)
         Client.scheduleTask(0.5 * 20, () => {
             if (typeof renderContext.settings.headBorder === "boolean") {
                 if (renderContext.settings.headBorder)
@@ -281,16 +289,17 @@ class SettingGui {
         this.addDropdown("Player Heads", {
             "off": "None",
             "icons": "Arrows",
+            "self-icon": "Use Arrow for own Head",
             "heads": "Heads"
         }, "showHeads", this.currentSettings.showHeads);
 
         this.addGear(() => {
-            return this.currentSettings.showHeads === "heads" || this.currentSettings.showHeads === "icons"
+            return this.currentSettings.showHeads != 'off'
         }, (elm) => {
 
             elm.addSlider("Head Scale", "headScale", this.currentSettings.headScale || 8, 2, 15)
 
-            if (this.currentSettings.showHeads !== "heads") return this.currentSettings.headBorder
+            if (this.currentSettings.showHeads === "icons") return this.currentSettings.headBorder
 
             elm.addDropdown("Border around heads", {
                 "none": "None",
@@ -322,6 +331,7 @@ class SettingGui {
         }, "playerNames", this.currentSettings.playerNames)
 
         this.addSlider("Icon Scale", "iconScale", this.currentSettings.iconScale ?? 10, 2, 15)
+        this.addSlider("Text Scale", "textScale", this.currentSettings.textScale ?? 10, 2, 15)
 
         this.addColorSelector("Map Border Color", "mapBorderColor", this.currentSettings.mapBorderColor)
         this.addColorSelector("Map Color", "mapBackgroundColor", this.currentSettings.mapBackgroundColor)
@@ -396,9 +406,9 @@ class SettingGui {
                 this.setApiKey(key)
             })
         })), 0.3, 0.4, 0.075)
-        this.addSidebarElement() //adds a gap because the button diddnt auto add one
+        this.addSidebarElement() // Adds a gap because the button diddnt auto add one
 
-        this.apiKeySetting = this.addString("Api key", "apiKey", this.currentSettings.apiKey)[0]
+        this.apiKeySetting = this.addHiddenString("Api key", "apiKey", this.currentSettings.apiKey)[0]
 
         this.addToggle("Show dev info", "devInfo", this.currentSettings.devInfo)
 
@@ -450,7 +460,7 @@ class SettingGui {
             Renderer.drawRect(Renderer.color(0, 0, 0, this.backgroundOpacity.get()), 0, 0, Renderer.screen.getWidth(), Renderer.screen.getHeight())
         }
 
-        register("chat", (key, event) => { //Api key detection
+        register("chat", (key, event) => { // Api key detection
             ChatLib.chat(MESSAGE_PREFIX + "Copied api key!")
 
             this.setApiKey(key)
@@ -667,6 +677,22 @@ class SettingGui {
     }
 
     /**
+     * @param {String} label The text to go to the left of the dropdown
+     * @param {String} setting internal name of the setting to control
+     * @param {String} defau Default value
+     */
+    addHiddenString(label, setting, defau, addFun = this.addSidebarElement) {
+        let textBox = new PasswordInput().setText(this.currentSettings[setting] ?? defau)
+        textBox.text.addEvent(new SoopyContentChangeEvent().setHandler((val, prev, cancelFun) => {
+            this.changed(setting, val)
+        }))
+
+        addFun(textBox, 0.55, 0.35, 0.05)
+
+        return [textBox, addFun(new SoopyTextElement().setText("§0" + label).setMaxTextScale(2), 0.1, 0.35)]
+    }
+
+    /**
      * @param {String} label The text to go to the left of the slider
      * @param {String} setting internal name of the setting to control
      * @param {[r:Number, g:Number, b:Number, a:number]} defau Default value
@@ -722,7 +748,7 @@ class SettingGui {
 
         numberT.isNumber = (val) => {
             if (val.includes(".")) return false
-            val = "" + val; //coerce num to be a string
+            val = "" + val; // Coerce num to be a string
             return !isNaN(val) && !isNaN(parseInt(val));
         }
 
@@ -737,7 +763,7 @@ class SettingGui {
         addFun(slider, 0.55, 0.2, 0.05)
         addFun(numberT, 0.8, 0.1, 0.05)
         return [[slider, numberT], addFun(new SoopyTextElement().setText("§0" + label).setMaxTextScale(2), 0.1, 0.35)]
-    } //Cinda scuffed its a different return type, but trying to keep atleast semi-consistant
+    }
 
     /**
      * 
@@ -892,7 +918,7 @@ function findKey(callback = () => { }) {
 
 function isNumber(val) {
     if (val.includes(".")) return false
-    val = "" + val; //coerce num to be a string
+    val = "" + val; // Coerce num to be a string
     return !isNaN(val) && !isNaN(parseInt(val));
 }
 
@@ -953,6 +979,15 @@ class CustomSettingsBuilder {
      */
     addString(label, setting, defau) {
         return this.parent.addString(label, setting, defau, this.addSidebarElement)
+    }
+
+    /**
+     * @param {String} label The text to go to the left of the dropdown
+     * @param {String} setting internal name of the setting to control
+     * @param {String} defau Default value
+     */
+    addHiddenString(label, setting, defau) {
+        return this.parent.addHiddenString(label, setting, defau, this.addSidebarElement)
     }
 
     /**

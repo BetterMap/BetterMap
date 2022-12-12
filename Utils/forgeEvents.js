@@ -1,4 +1,4 @@
-importClass(net.minecraftforge.common.MinecraftForge) //i would have used the ct module but it is broken (line 78) (this is fixed verison)
+importClass(net.minecraftforge.common.MinecraftForge) // I would have used the ct module but it is broken (line 78) (this is fixed verison)
 importPackage(net.minecraftforge.fml.common.eventhandler)
 importPackage(org.objectweb.asm)
 importClass(java.lang.ClassLoader)
@@ -9,7 +9,7 @@ importClass(net.minecraftforge.fml.common.eventhandler.EventPriority)
 const L = s => `L${s};`
 const LoadedInsts = []
 
-function defineClassBytes(name, bytes) {//should support multymc? ty dawjaw https://canary.discord.com/channels/119493402902528000/688773480954855537/979959207124168744
+function defineClassBytes(name, bytes) {// Should support multymc? ty dawjaw https://canary.discord.com/channels/119493402902528000/688773480954855537/979959207124168744
   const classLoader = Packages.com.chattriggers.ctjs.CTJS.class.getClassLoader()
 
   let defClass;

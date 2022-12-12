@@ -179,7 +179,7 @@ class MapPlayer {
         return dungeon.rooms.get(x + ',' + y)
     }
 
-    drawAt(x, y, w, h, showIcons = false, rotation = 0, borderWidth = 2) {
+    drawAt(context, x, y, w, h, showIcons = false, rotation = 0, borderWidth = 2) {
         Tessellator.pushMatrix()
         Renderer.retainTransforms(true)
 
@@ -272,7 +272,7 @@ class MapPlayer {
         x2 = overrideX || x2
         y2 = overrideY || y2
 
-        this.drawAt(x2 + rx, y2 + ry, rw, rh, renderContext.showHeads === "icons" || renderContext.showHeads === 'self-icon' && this.username === Player.getName(), this.yaw.get(), renderContext.headBorder !== 'none' ? renderContext.headBorderWidth : 0)
+        this.drawAt(renderContext, x2 + rx, y2 + ry, rw, rh, renderContext.showHeads === "icons" || renderContext.showHeads === 'self-icon' && this.username === Player.getName(), this.yaw.get(), renderContext.headBorder !== 'none' ? renderContext.headBorderWidth : 0)
 
         let showNametag = renderContext.playerNames === "always"
 

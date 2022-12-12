@@ -302,7 +302,7 @@ class RoomRenderer {
                     Renderer.translate(-(context.settings.posX + context.paddingLeft + context.borderWidth + context.settings.size / 2), -(context.settings.posY + context.paddingLeft + context.borderWidth + context.settings.size / 2));
                 }
                 if (context.tickStyle_secrets_overHead) Renderer.translate(0, 0, 100)
-                renderLibs.drawStringCenteredShadow(text, x + scale, y - 4.5 * scale, scale)
+                renderLibs.drawStringCenteredShadow(text, x + textScale, y - 4.5 * textScale, textScale)
                 
                 if (context.settings.spinnyMap) {
                     Renderer.translate((context.settings.posX + context.paddingLeft + context.borderWidth + context.settings.size / 2), (context.settings.posY + context.paddingLeft + context.borderWidth + context.settings.size / 2));
@@ -310,7 +310,7 @@ class RoomRenderer {
                     Renderer.translate(-(context.settings.posX + context.paddingLeft + context.borderWidth + context.settings.size / 2), -(context.settings.posY + context.paddingLeft + context.borderWidth + context.settings.size / 2));
                 }
                 if (context.tickStyle_secrets_overHead) Renderer.translate(0, 0, 100)
-                renderLibs.drawStringCenteredShadow(text, x - scale, y - 4.5 * scale, scale)
+                renderLibs.drawStringCenteredShadow(text, x + textScale, y - 4.5 * textScale, textScale)
                 
                 if (context.settings.spinnyMap) {
                     Renderer.translate((context.settings.posX + context.paddingLeft + context.borderWidth + context.settings.size / 2), (context.settings.posY + context.paddingLeft + context.borderWidth + context.settings.size / 2));
@@ -318,7 +318,7 @@ class RoomRenderer {
                     Renderer.translate(-(context.settings.posX + context.paddingLeft + context.borderWidth + context.settings.size / 2), -(context.settings.posY + context.paddingLeft + context.borderWidth + context.settings.size / 2));
                 }
                 if (context.tickStyle_secrets_overHead) Renderer.translate(0, 0, 100)
-                renderLibs.drawStringCenteredShadow(text, x, y + scale - 4.5 * scale, scale)
+                renderLibs.drawStringCenteredShadow(text, x + textScale, y - 4.5 * textScale, textScale)
                 
                 if (context.settings.spinnyMap) {
                     Renderer.translate((context.settings.posX + context.paddingLeft + context.borderWidth + context.settings.size / 2), (context.settings.posY + context.paddingLeft + context.borderWidth + context.settings.size / 2));

@@ -202,12 +202,6 @@ class MapPlayer {
         } else {
             if (borderWidth) {
                 this.updatePlayerColor()
-
-                //Renderer.translate(-(w / 2), -(h / 2))
-
-                //Renderer.translate((context.settings.size) * Math.cos(Player.getYaw() * (3.1415 / 180.0)), (context.settings.size) * Math.sin(Player.getYaw() * (3.1415 / 180.0)))
-                //Renderer.rotate(Player.getYaw())
-
                 Renderer.drawRect(Renderer.color(this.playerColor[0] ?? 0, this.playerColor[1] ?? 0, this.playerColor[2] ?? 0, this.playerColor[3] ?? 255), -w / 2 - context.headBorderWidth * w / 30, -h / 2 - context.headBorderWidth * w / 30, w + context.headBorderWidth * 2 * w / 30, h + context.headBorderWidth * 2 * w / 30)
             }
 

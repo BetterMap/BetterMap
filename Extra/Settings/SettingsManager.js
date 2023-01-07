@@ -8,6 +8,7 @@ import RenderContext from "../../Render/RenderContext";
 import RenderContextManager from "../../Render/RenderContextManager";
 import Position from "../../Utils/Position";
 import SettingGui from "./SettingGui";
+import SettingsObj from "./SettingsObj";
 const AbstractClientPlayer = Java.type("net.minecraft.client.entity.AbstractClientPlayer")
 
 class SettingsManager {
@@ -18,7 +19,8 @@ class SettingsManager {
     constructor(renderContextManager) {
         this.renderContextManager = renderContextManager
 
-        this.currentSettings = RenderContext.addMissing(JSON.parse(FileLib.read("soopyAddonsData", "bettermapsettings.json") || "{}") || {})
+        this.currentSettings = new SettingsObj()
+        // this.currentSettings = RenderContext.addMissing(JSON.parse(FileLib.read("soopyAddonsData", "bettermapsettings.json") || "{}") || {})
 
         /**
          * @type {Map<RenderContext, Object>}
@@ -35,7 +37,7 @@ class SettingsManager {
         this.settingsGui = new SettingGui(this.currentSettings, this.fakeDungeon, this.renderContextManager.getRenderContextData(this.settingRenderContext), mapRenderer)
 
         this.settingsGui.changed = (key, val) => {
-            this.currentSettings[key] = val
+            this.currentSettings.change(key, val)
 
             this.saveSettings()
 
@@ -53,8 +55,8 @@ class SettingsManager {
         }
 
         this.settingsGui.changedArr = (key, index, val) => {
-            if (isNaN(val)) this.currentSettings[key][index] = 0;
-            else this.currentSettings[key][index] = val;
+            if (isNaN(val)) this.currentSettings.changeArr(key, index, 0);
+            else this.currentSettings.changeArr(key, index, val);
 
             this.saveSettings()
 
@@ -63,6 +65,9 @@ class SettingsManager {
 
                 let data = this.renderContextManager.getRenderContextData(context)
 
+                /*Object.entries(settingOverrides).forEach(([key, value]) => {
+                    data.settings[key] = value
+                })*/
                 data.setSettings({ ...this.currentSettings, ...settingOverrides })
 
                 data.markReRender()
@@ -82,7 +87,7 @@ class SettingsManager {
 
     saveSettings() {
         new Thread(() => {
-            FileLib.write("soopyAddonsData", "bettermapsettings.json", JSON.stringify(this.currentSettings))
+            this.currentSettings.save()
         }).start()
     }
 

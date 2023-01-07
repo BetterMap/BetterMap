@@ -1,0 +1,662 @@
+{
+    "apiKey": "3521add7-38cd-436f-b9b7-a45234de3ba1",
+    "activeProfile": "Profile 1",
+    "profiles": {
+        "Profile 1": {
+            "showMap": true,
+            "mapStyle": "custom",
+            "posX": 7,
+            "posY": 15,
+            "size": 131,
+            "showHeads": "heads",
+            "headScale": 7,
+            "iconScale": 9,
+            "tickStyle": "tenios",
+            "tickStyle_secrets_overHead": true,
+            "showSecretCount": "never",
+            "checkmarkCompleteRooms": false,
+            "puzzleNames": "text",
+            "headBorder": "class-color",
+            "headBorderWidth": 3,
+            "playerNames": "leap",
+            "currentRoomInfo": "none",
+            "scoreInfoUnderMap": "simplified",
+            "scoreInfoUnderMap_simplified_showMimicText": true,
+            "showScoreMessage": "automatic",
+            "custom270scoreMessage": "270 Score reached!",
+            "custom300scoreMessage": "300 Score reached!",
+            "tabCryptCount": true,
+            "tabSecretCount": true,
+            "tabMimic": true,
+            "fixScore": true,
+            "hideInBoss": false,
+            "showTabs": true,
+            "showSecrets": true,
+            "spiritLeapOverlay": true,
+            "forcePaul": false,
+            "clearedRoomInfo": true,
+            "devInfo": false,
+            "boxDoors": true,
+            "mapBorderColor": [
+                0,
+                0,
+                0,
+                255
+            ],
+            "mapBackgroundColor": [
+                0,
+                0,
+                0,
+                255
+            ],
+            "extraInfoBackroundColor": [
+                0,
+                0,
+                0,
+                255
+            ],
+            "healerColor": [
+                240,
+                70,
+                240,
+                255
+            ],
+            "mageColor": [
+                70,
+                210,
+                210,
+                255
+            ],
+            "bersColor": [
+                255,
+                0,
+                0,
+                255
+            ],
+            "archColor": [
+                30,
+                170,
+                50,
+                255
+            ],
+            "tankColor": [
+                150,
+                150,
+                150,
+                255
+            ],
+            "singleBorderColor": [
+                0,
+                0,
+                0,
+                255
+            ],
+            "singleBorderColorSelf": [
+                0,
+                0,
+                0,
+                255
+            ],
+            "customRoomColorNormal": [
+                114,
+                67,
+                27,
+                255
+            ],
+            "customRoomColorMini": [
+                114,
+                67,
+                27,
+                255
+            ],
+            "customRoomColorRare": [
+                114,
+                67,
+                27,
+                255
+            ],
+            "customRoomColorFairy": [
+                239,
+                126,
+                163,
+                255
+            ],
+            "customRoomColorBlood": [
+                255,
+                0,
+                0,
+                255
+            ],
+            "customRoomColorTrap": [
+                213,
+                126,
+                50,
+                255
+            ],
+            "customRoomColorSpawn": [
+                0,
+                123,
+                0,
+                255
+            ],
+            "customRoomColorGold": [
+                226,
+                226,
+                50,
+                255
+            ],
+            "customRoomColorPuzzle": [
+                176,
+                75,
+                213,
+                255
+            ],
+            "customRoomColorUnknown": [
+                64,
+                64,
+                64,
+                255
+            ],
+            "customRoomColorWitherDoor": [
+                0,
+                0,
+                0,
+                255
+            ],
+            "customRoomGapSize": 17,
+            "customDoorSize": 36
+        },
+        "Profile 2": {
+            "showMap": true,
+            "mapStyle": "custom",
+            "posX": 7,
+            "posY": 15,
+            "size": 131,
+            "showHeads": "heads",
+            "headScale": 7,
+            "iconScale": 9,
+            "tickStyle": "tenios",
+            "tickStyle_secrets_overHead": true,
+            "showSecretCount": "never",
+            "checkmarkCompleteRooms": false,
+            "puzzleNames": "text",
+            "headBorder": "class-color",
+            "headBorderWidth": 3,
+            "playerNames": "leap",
+            "currentRoomInfo": "none",
+            "scoreInfoUnderMap": "simplified",
+            "scoreInfoUnderMap_simplified_showMimicText": true,
+            "showScoreMessage": "automatic",
+            "custom270scoreMessage": "270 Score reached!",
+            "custom300scoreMessage": "300 Score reached!",
+            "tabCryptCount": true,
+            "tabSecretCount": true,
+            "tabMimic": true,
+            "fixScore": true,
+            "hideInBoss": false,
+            "showTabs": true,
+            "showSecrets": true,
+            "spiritLeapOverlay": true,
+            "forcePaul": false,
+            "clearedRoomInfo": true,
+            "devInfo": false,
+            "boxDoors": true,
+            "mapBorderColor": [
+                43,
+                186,
+                236,
+                170
+            ],
+            "mapBackgroundColor": [
+                66,
+                0,
+                93,
+                105
+            ],
+            "extraInfoBackroundColor": [
+                66,
+                0,
+                93,
+                105
+            ],
+            "healerColor": [
+                240,
+                70,
+                240,
+                255
+            ],
+            "mageColor": [
+                70,
+                210,
+                210,
+                255
+            ],
+            "bersColor": [
+                255,
+                0,
+                0,
+                255
+            ],
+            "archColor": [
+                30,
+                170,
+                50,
+                255
+            ],
+            "tankColor": [
+                150,
+                150,
+                150,
+                255
+            ],
+            "singleBorderColor": [
+                0,
+                0,
+                0,
+                255
+            ],
+            "singleBorderColorSelf": [
+                0,
+                0,
+                0,
+                255
+            ],
+            "customRoomColorNormal": [
+                114,
+                67,
+                27,
+                255
+            ],
+            "customRoomColorMini": [
+                114,
+                67,
+                27,
+                255
+            ],
+            "customRoomColorRare": [
+                114,
+                67,
+                27,
+                255
+            ],
+            "customRoomColorFairy": [
+                239,
+                126,
+                163,
+                255
+            ],
+            "customRoomColorBlood": [
+                255,
+                0,
+                0,
+                255
+            ],
+            "customRoomColorTrap": [
+                213,
+                126,
+                50,
+                255
+            ],
+            "customRoomColorSpawn": [
+                0,
+                123,
+                0,
+                255
+            ],
+            "customRoomColorGold": [
+                226,
+                226,
+                50,
+                255
+            ],
+            "customRoomColorPuzzle": [
+                176,
+                75,
+                213,
+                255
+            ],
+            "customRoomColorUnknown": [
+                64,
+                64,
+                64,
+                255
+            ],
+            "customRoomColorWitherDoor": [
+                0,
+                0,
+                0,
+                255
+            ],
+            "customRoomGapSize": 9,
+            "customDoorSize": 15
+        },
+        "random name profile": {
+            "showMap": true,
+            "mapStyle": "custom",
+            "posX": 7,
+            "posY": 15,
+            "size": 131,
+            "showHeads": "heads",
+            "headScale": 7,
+            "iconScale": 9,
+            "tickStyle": "tenios",
+            "tickStyle_secrets_overHead": true,
+            "showSecretCount": "never",
+            "checkmarkCompleteRooms": false,
+            "puzzleNames": "text",
+            "headBorder": "class-color",
+            "headBorderWidth": 3,
+            "playerNames": "leap",
+            "currentRoomInfo": "none",
+            "scoreInfoUnderMap": "simplified",
+            "scoreInfoUnderMap_simplified_showMimicText": true,
+            "showScoreMessage": "automatic",
+            "custom270scoreMessage": "270 Score reached!",
+            "custom300scoreMessage": "300 Score reached!",
+            "tabCryptCount": true,
+            "tabSecretCount": true,
+            "tabMimic": true,
+            "fixScore": true,
+            "hideInBoss": false,
+            "showTabs": true,
+            "showSecrets": true,
+            "spiritLeapOverlay": true,
+            "forcePaul": false,
+            "clearedRoomInfo": true,
+            "devInfo": false,
+            "boxDoors": true,
+            "mapBorderColor": [
+                43,
+                186,
+                236,
+                170
+            ],
+            "mapBackgroundColor": [
+                66,
+                0,
+                93,
+                105
+            ],
+            "extraInfoBackroundColor": [
+                66,
+                0,
+                93,
+                105
+            ],
+            "healerColor": [
+                240,
+                70,
+                240,
+                255
+            ],
+            "mageColor": [
+                70,
+                210,
+                210,
+                255
+            ],
+            "bersColor": [
+                255,
+                0,
+                0,
+                255
+            ],
+            "archColor": [
+                30,
+                170,
+                50,
+                255
+            ],
+            "tankColor": [
+                150,
+                150,
+                150,
+                255
+            ],
+            "singleBorderColor": [
+                0,
+                0,
+                0,
+                255
+            ],
+            "singleBorderColorSelf": [
+                0,
+                0,
+                0,
+                255
+            ],
+            "customRoomColorNormal": [
+                114,
+                67,
+                27,
+                255
+            ],
+            "customRoomColorMini": [
+                114,
+                67,
+                27,
+                255
+            ],
+            "customRoomColorRare": [
+                114,
+                67,
+                27,
+                255
+            ],
+            "customRoomColorFairy": [
+                239,
+                126,
+                163,
+                255
+            ],
+            "customRoomColorBlood": [
+                255,
+                0,
+                0,
+                255
+            ],
+            "customRoomColorTrap": [
+                213,
+                126,
+                50,
+                255
+            ],
+            "customRoomColorSpawn": [
+                0,
+                123,
+                0,
+                255
+            ],
+            "customRoomColorGold": [
+                226,
+                226,
+                50,
+                255
+            ],
+            "customRoomColorPuzzle": [
+                176,
+                75,
+                213,
+                255
+            ],
+            "customRoomColorUnknown": [
+                64,
+                64,
+                64,
+                255
+            ],
+            "customRoomColorWitherDoor": [
+                0,
+                0,
+                0,
+                255
+            ],
+            "customRoomGapSize": 9,
+            "customDoorSize": 15
+        },
+        "the coolest profile": {
+            "showMap": true,
+            "mapStyle": "custom",
+            "posX": 7,
+            "posY": 15,
+            "size": 131,
+            "showHeads": "heads",
+            "headScale": 7,
+            "iconScale": 15,
+            "tickStyle": "tenios",
+            "tickStyle_secrets_overHead": true,
+            "showSecretCount": "never",
+            "checkmarkCompleteRooms": false,
+            "puzzleNames": "text",
+            "headBorder": "class-color",
+            "headBorderWidth": 3,
+            "playerNames": "leap",
+            "currentRoomInfo": "none",
+            "scoreInfoUnderMap": "simplified",
+            "scoreInfoUnderMap_simplified_showMimicText": true,
+            "showScoreMessage": "automatic",
+            "custom270scoreMessage": "270 Score reached!",
+            "custom300scoreMessage": "300 Score reached!",
+            "tabCryptCount": true,
+            "tabSecretCount": true,
+            "tabMimic": true,
+            "fixScore": true,
+            "hideInBoss": false,
+            "showTabs": true,
+            "showSecrets": true,
+            "spiritLeapOverlay": true,
+            "forcePaul": false,
+            "clearedRoomInfo": true,
+            "devInfo": false,
+            "boxDoors": true,
+            "mapBorderColor": [
+                43,
+                186,
+                236,
+                0
+            ],
+            "mapBackgroundColor": [
+                66,
+                0,
+                93,
+                0
+            ],
+            "extraInfoBackroundColor": [
+                66,
+                0,
+                93,
+                0
+            ],
+            "healerColor": [
+                240,
+                70,
+                240,
+                255
+            ],
+            "mageColor": [
+                70,
+                210,
+                210,
+                255
+            ],
+            "bersColor": [
+                255,
+                0,
+                0,
+                255
+            ],
+            "archColor": [
+                30,
+                170,
+                50,
+                255
+            ],
+            "tankColor": [
+                150,
+                150,
+                150,
+                255
+            ],
+            "singleBorderColor": [
+                0,
+                0,
+                0,
+                255
+            ],
+            "singleBorderColorSelf": [
+                0,
+                0,
+                0,
+                255
+            ],
+            "customRoomColorNormal": [
+                114,
+                67,
+                27,
+                0
+            ],
+            "customRoomColorMini": [
+                114,
+                67,
+                27,
+                0
+            ],
+            "customRoomColorRare": [
+                114,
+                67,
+                27,
+                0
+            ],
+            "customRoomColorFairy": [
+                239,
+                126,
+                163,
+                0
+            ],
+            "customRoomColorBlood": [
+                255,
+                0,
+                0,
+                0
+            ],
+            "customRoomColorTrap": [
+                213,
+                126,
+                50,
+                0
+            ],
+            "customRoomColorSpawn": [
+                0,
+                123,
+                0,
+                0
+            ],
+            "customRoomColorGold": [
+                226,
+                226,
+                50,
+                0
+            ],
+            "customRoomColorPuzzle": [
+                176,
+                75,
+                213,
+                0
+            ],
+            "customRoomColorUnknown": [
+                64,
+                64,
+                64,
+                0
+            ],
+            "customRoomColorWitherDoor": [
+                0,
+                0,
+                0,
+                0
+            ],
+            "customRoomGapSize": 2,
+            "customDoorSize": 15
+        }
+    }
+}

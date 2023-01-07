@@ -29,6 +29,7 @@ class DungeonRenderer extends MapTab {
         // Shift border + padding so less math involved
         graphics.translate(renderContext.paddingLeft + renderContext.borderWidth, renderContext.paddingTop + renderContext.borderWidth);
 
+
         // Render all doors
         // Rendering before rooms that way rooms cover it as there is 1 specific situation where early dungeon will put a room in the middle of an L shape
         for (let door of dungeon.doors.values()) {
@@ -55,6 +56,12 @@ class DungeonRenderer extends MapTab {
 
         if (renderContext.image) {
             let { x, y, size } = renderContext.getMapDimensions()
+
+            if (renderContext.settings.spinnyMap) {
+                Renderer.translate((renderContext.settings.posX + renderContext.paddingLeft + renderContext.borderWidth + renderContext.settings.size / 2), (renderContext.settings.posY + renderContext.paddingLeft + renderContext.borderWidth + renderContext.settings.size / 2));
+                Renderer.rotate(-(Player.getYaw() + 180))
+                Renderer.translate(-(renderContext.settings.posX + renderContext.paddingLeft + renderContext.borderWidth + renderContext.settings.size / 2), -(renderContext.settings.posY + renderContext.paddingLeft + renderContext.borderWidth + renderContext.settings.size / 2));
+            }
 
             renderContext.image.draw(x + renderContext.borderWidth, y + renderContext.borderWidth, size, size - renderContext.borderWidth)
 

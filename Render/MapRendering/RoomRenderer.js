@@ -185,16 +185,44 @@ class RoomRenderer {
 
             let i = 0
             for (let line of text) {
-                let ly = y + 9 * textScale * (i - text.length / 2)
+                if (context.settings.spinnyMap) {
+                    Renderer.translate((context.settings.posX + context.paddingLeft + context.borderWidth + context.settings.size / 2), (context.settings.posY + context.paddingLeft + context.borderWidth + context.settings.size / 2));
+                    Renderer.rotate(-(Player.getYaw() + 180))
+                    Renderer.translate(-(context.settings.posX + context.paddingLeft + context.borderWidth + context.settings.size / 2), -(context.settings.posY + context.paddingLeft + context.borderWidth + context.settings.size / 2));
+                }
+                let ly = y + 9 * scale * (i - text.length / 2)
                 if (context.tickStyle_secrets_overHead) Renderer.translate(0, 0, 100)
-                renderLibs.drawStringCenteredShadow("&0" + line, x + textScale, ly, textScale)
+                renderLibs.drawStringCenteredShadow("&0" + line, x + scale, ly, scale)
+
+                if (context.settings.spinnyMap) {
+                    Renderer.translate((context.settings.posX + context.paddingLeft + context.borderWidth + context.settings.size / 2), (context.settings.posY + context.paddingLeft + context.borderWidth + context.settings.size / 2));
+                    Renderer.rotate(-(Player.getYaw() + 180))
+                    Renderer.translate(-(context.settings.posX + context.paddingLeft + context.borderWidth + context.settings.size / 2), -(context.settings.posY + context.paddingLeft + context.borderWidth + context.settings.size / 2));
+                }
                 if (context.tickStyle_secrets_overHead) Renderer.translate(0, 0, 100)
-                renderLibs.drawStringCenteredShadow("&0" + line, x - textScale, ly, textScale)
+                renderLibs.drawStringCenteredShadow("&0" + line, x - scale, ly, scale)
+
+                if (context.settings.spinnyMap) {
+                    Renderer.translate((context.settings.posX + context.paddingLeft + context.borderWidth + context.settings.size / 2), (context.settings.posY + context.paddingLeft + context.borderWidth + context.settings.size / 2));
+                    Renderer.rotate(-(Player.getYaw() + 180))
+                    Renderer.translate(-(context.settings.posX + context.paddingLeft + context.borderWidth + context.settings.size / 2), -(context.settings.posY + context.paddingLeft + context.borderWidth + context.settings.size / 2));
+                }
                 if (context.tickStyle_secrets_overHead) Renderer.translate(0, 0, 100)
-                renderLibs.drawStringCenteredShadow("&0" + line, x, ly + textScale, textScale)
+                renderLibs.drawStringCenteredShadow("&0" + line, x, ly + scale, scale)
+
+                if (context.settings.spinnyMap) {
+                    Renderer.translate((context.settings.posX + context.paddingLeft + context.borderWidth + context.settings.size / 2), (context.settings.posY + context.paddingLeft + context.borderWidth + context.settings.size / 2));
+                    Renderer.rotate(-(Player.getYaw() + 180))
+                    Renderer.translate(-(context.settings.posX + context.paddingLeft + context.borderWidth + context.settings.size / 2), -(context.settings.posY + context.paddingLeft + context.borderWidth + context.settings.size / 2));
+                }
                 if (context.tickStyle_secrets_overHead) Renderer.translate(0, 0, 100)
                 renderLibs.drawStringCenteredShadow("&0" + line, x, ly - textScale, textScale)
 
+                if (context.settings.spinnyMap) {
+                    Renderer.translate((context.settings.posX + context.paddingLeft + context.borderWidth + context.settings.size / 2), (context.settings.posY + context.paddingLeft + context.borderWidth + context.settings.size / 2));
+                    Renderer.rotate(-(Player.getYaw() + 180))
+                    Renderer.translate(-(context.settings.posX + context.paddingLeft + context.borderWidth + context.settings.size / 2), -(context.settings.posY + context.paddingLeft + context.borderWidth + context.settings.size / 2));
+                }
                 if (context.tickStyle_secrets_overHead) Renderer.translate(0, 0, 100)
                 renderLibs.drawStringCenteredShadow(textColor + line, x, ly, textScale)
 
@@ -205,6 +233,12 @@ class RoomRenderer {
             //dont draw icons if checkmark or fail
             if (room.checkmarkState === Room.FAILED || room.checkmarkState === Room.COMPLETED) return;
             let icon = puzzleItems[room.data?.name] || barrier_block_item
+
+            if (context.settings.spinnyMap) {
+                Renderer.translate((context.settings.posX + context.paddingLeft + context.borderWidth + context.settings.size / 2), (context.settings.posY + context.paddingLeft + context.borderWidth + context.settings.size / 2));
+                Renderer.rotate(-(Player.getYaw() + 180))
+                Renderer.translate(-(context.settings.posX + context.paddingLeft + context.borderWidth + context.settings.size / 2), -(context.settings.posY + context.paddingLeft + context.borderWidth + context.settings.size / 2));
+            }
 
             let iconScale = scale * 1.75
             icon.draw(x - 8 * iconScale, y - 8 * iconScale, iconScale)
@@ -262,14 +296,43 @@ class RoomRenderer {
             text = "&0" + text
 
             if (context.mapStyle !== 'teniosmap') {
+                if (context.settings.spinnyMap) {
+                    Renderer.translate((context.settings.posX + context.paddingLeft + context.borderWidth + context.settings.size / 2), (context.settings.posY + context.paddingLeft + context.borderWidth + context.settings.size / 2));
+                    Renderer.rotate(-(Player.getYaw() + 180))
+                    Renderer.translate(-(context.settings.posX + context.paddingLeft + context.borderWidth + context.settings.size / 2), -(context.settings.posY + context.paddingLeft + context.borderWidth + context.settings.size / 2));
+                }
                 if (context.tickStyle_secrets_overHead) Renderer.translate(0, 0, 100)
                 renderLibs.drawStringCenteredShadow(text, x + textScale, y - 4.5 * textScale, textScale)
+                
+                if (context.settings.spinnyMap) {
+                    Renderer.translate((context.settings.posX + context.paddingLeft + context.borderWidth + context.settings.size / 2), (context.settings.posY + context.paddingLeft + context.borderWidth + context.settings.size / 2));
+                    Renderer.rotate(-(Player.getYaw() + 180))
+                    Renderer.translate(-(context.settings.posX + context.paddingLeft + context.borderWidth + context.settings.size / 2), -(context.settings.posY + context.paddingLeft + context.borderWidth + context.settings.size / 2));
+                }
                 if (context.tickStyle_secrets_overHead) Renderer.translate(0, 0, 100)
-                renderLibs.drawStringCenteredShadow(text, x - textScale, y - 4.5 * textScale, textScale)
+                renderLibs.drawStringCenteredShadow(text, x + textScale, y - 4.5 * textScale, textScale)
+                
+                if (context.settings.spinnyMap) {
+                    Renderer.translate((context.settings.posX + context.paddingLeft + context.borderWidth + context.settings.size / 2), (context.settings.posY + context.paddingLeft + context.borderWidth + context.settings.size / 2));
+                    Renderer.rotate(-(Player.getYaw() + 180))
+                    Renderer.translate(-(context.settings.posX + context.paddingLeft + context.borderWidth + context.settings.size / 2), -(context.settings.posY + context.paddingLeft + context.borderWidth + context.settings.size / 2));
+                }
                 if (context.tickStyle_secrets_overHead) Renderer.translate(0, 0, 100)
-                renderLibs.drawStringCenteredShadow(text, x, y + textScale - 4.5 * textScale, textScale)
+                renderLibs.drawStringCenteredShadow(text, x + textScale, y - 4.5 * textScale, textScale)
+                
+                if (context.settings.spinnyMap) {
+                    Renderer.translate((context.settings.posX + context.paddingLeft + context.borderWidth + context.settings.size / 2), (context.settings.posY + context.paddingLeft + context.borderWidth + context.settings.size / 2));
+                    Renderer.rotate(-(Player.getYaw() + 180))
+                    Renderer.translate(-(context.settings.posX + context.paddingLeft + context.borderWidth + context.settings.size / 2), -(context.settings.posY + context.paddingLeft + context.borderWidth + context.settings.size / 2));
+                }
                 if (context.tickStyle_secrets_overHead) Renderer.translate(0, 0, 100)
                 renderLibs.drawStringCenteredShadow(text, x, y - textScale - 4.5 * textScale, textScale)
+            }
+            
+            if (context.settings.spinnyMap) {
+                Renderer.translate((context.settings.posX + context.paddingLeft + context.borderWidth + context.settings.size / 2), (context.settings.posY + context.paddingLeft + context.borderWidth + context.settings.size / 2));
+                Renderer.rotate(-(Player.getYaw() + 180))
+                Renderer.translate(-(context.settings.posX + context.paddingLeft + context.borderWidth + context.settings.size / 2), -(context.settings.posY + context.paddingLeft + context.borderWidth + context.settings.size / 2));
             }
             if (context.tickStyle_secrets_overHead) Renderer.translate(0, 0, 100)
             renderLibs.drawStringCenteredShadow(textColored, x, y - 4.5 * textScale, textScale)
@@ -312,15 +375,45 @@ class RoomRenderer {
             let i = 0
             for (let line of text) {
                 let ly = y + 9 * scale * (i - text.length / 2)
+                
+                if (context.settings.spinnyMap) {
+                    Renderer.translate((context.settings.posX + context.paddingLeft + context.borderWidth + context.settings.size / 2), (context.settings.posY + context.paddingLeft + context.borderWidth + context.settings.size / 2));
+                    Renderer.rotate(-(Player.getYaw() + 180))
+                    Renderer.translate(-(context.settings.posX + context.paddingLeft + context.borderWidth + context.settings.size / 2), -(context.settings.posY + context.paddingLeft + context.borderWidth + context.settings.size / 2));
+                }
                 if (context.tickStyle_secrets_overHead) Renderer.translate(0, 0, 100)
                 renderLibs.drawStringCenteredShadow("&0" + line, x + scale, ly, scale)
+                
+                if (context.settings.spinnyMap) {
+                    Renderer.translate((context.settings.posX + context.paddingLeft + context.borderWidth + context.settings.size / 2), (context.settings.posY + context.paddingLeft + context.borderWidth + context.settings.size / 2));
+                    Renderer.rotate(-(Player.getYaw() + 180))
+                    Renderer.translate(-(context.settings.posX + context.paddingLeft + context.borderWidth + context.settings.size / 2), -(context.settings.posY + context.paddingLeft + context.borderWidth + context.settings.size / 2));
+                }
                 if (context.tickStyle_secrets_overHead) Renderer.translate(0, 0, 100)
                 renderLibs.drawStringCenteredShadow("&0" + line, x - scale, ly, scale)
+                
+                if (context.settings.spinnyMap) {
+                    Renderer.translate((context.settings.posX + context.paddingLeft + context.borderWidth + context.settings.size / 2), (context.settings.posY + context.paddingLeft + context.borderWidth + context.settings.size / 2));
+                    Renderer.rotate(-(Player.getYaw() + 180))
+                    Renderer.translate(-(context.settings.posX + context.paddingLeft + context.borderWidth + context.settings.size / 2), -(context.settings.posY + context.paddingLeft + context.borderWidth + context.settings.size / 2));
+                }
                 if (context.tickStyle_secrets_overHead) Renderer.translate(0, 0, 100)
                 renderLibs.drawStringCenteredShadow("&0" + line, x, ly + scale, scale)
+                
+                if (context.settings.spinnyMap) {
+                    Renderer.translate((context.settings.posX + context.paddingLeft + context.borderWidth + context.settings.size / 2), (context.settings.posY + context.paddingLeft + context.borderWidth + context.settings.size / 2));
+                    Renderer.rotate(-(Player.getYaw() + 180))
+                    Renderer.translate(-(context.settings.posX + context.paddingLeft + context.borderWidth + context.settings.size / 2), -(context.settings.posY + context.paddingLeft + context.borderWidth + context.settings.size / 2));
+                }
                 if (context.tickStyle_secrets_overHead) Renderer.translate(0, 0, 100)
                 renderLibs.drawStringCenteredShadow("&0" + line, x, ly - scale, scale)
 
+                
+                if (context.settings.spinnyMap) {
+                    Renderer.translate((context.settings.posX + context.paddingLeft + context.borderWidth + context.settings.size / 2), (context.settings.posY + context.paddingLeft + context.borderWidth + context.settings.size / 2));
+                    Renderer.rotate(-(Player.getYaw() + 180))
+                    Renderer.translate(-(context.settings.posX + context.paddingLeft + context.borderWidth + context.settings.size / 2), -(context.settings.posY + context.paddingLeft + context.borderWidth + context.settings.size / 2));
+                }
                 if (context.tickStyle_secrets_overHead) Renderer.translate(0, 0, 100)
                 renderLibs.drawStringCenteredShadow(textColor + line, x, ly, scale)
 

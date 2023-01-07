@@ -117,5 +117,7 @@ First released version!
 
 @ver v1.0.12
 ```diff
-- Removed rat
++ add settings profile selection (thenose2003)
++ add importing and exporting settings profiles (thenose2003)
++ add spinny map for all the nons (thenose2003)
 ```

@@ -179,7 +179,7 @@ class MapPlayer {
         return dungeon.rooms.get(x + ',' + y)
     }
 
-    drawAt(x, y, w, h, showIcons = false, rotation = 0, borderWidth = 2) {
+    drawAt(context, x, y, w, h, showIcons = false, rotation = 0, borderWidth = 2) {
         Tessellator.pushMatrix()
         Renderer.retainTransforms(true)
 
@@ -187,8 +187,14 @@ class MapPlayer {
             h *= 1.4
         }
 
+        if (context.settings.spinnyMap) {
+            Renderer.translate((context.settings.posX + context.paddingLeft + context.borderWidth + context.settings.size / 2), (context.settings.posY + context.paddingLeft + context.borderWidth + context.settings.size / 2));
+            Renderer.rotate(-(Player.getYaw() + 180))
+            Renderer.translate(-(context.settings.posX + context.paddingLeft + context.borderWidth + context.settings.size / 2), -(context.settings.posY + context.paddingLeft + context.borderWidth + context.settings.size / 2));
+        }
         Renderer.translate(x + w / 2, y + h / 2, 50)
 
+        // rotates the head
         Renderer.rotate(rotation)
 
         if (showIcons) {
@@ -196,7 +202,7 @@ class MapPlayer {
         } else {
             if (borderWidth) {
                 this.updatePlayerColor()
-                Renderer.drawRect(Renderer.color(this.playerColor[0] ?? 0, this.playerColor[1] ?? 0, this.playerColor[2] ?? 0, this.playerColor[3] ?? 255), -w / 2 - borderWidth * w / 30, -h / 2 - borderWidth * w / 30, w + borderWidth * 2 * w / 30, h + borderWidth * 2 * w / 30)
+                Renderer.drawRect(Renderer.color(this.playerColor[0] ?? 0, this.playerColor[1] ?? 0, this.playerColor[2] ?? 0, this.playerColor[3] ?? 255), -w / 2 - context.headBorderWidth * w / 30, -h / 2 - context.headBorderWidth * w / 30, w + context.headBorderWidth * 2 * w / 30, h + context.headBorderWidth * 2 * w / 30)
             }
 
             GlStateManager[m.enableBlend]()
@@ -260,7 +266,7 @@ class MapPlayer {
         x2 = overrideX || x2
         y2 = overrideY || y2
 
-        this.drawAt(x2 + rx, y2 + ry, rw, rh, renderContext.showHeads === "icons" || renderContext.showHeads === 'self-icon' && this.username === Player.getName(), this.yaw.get(), renderContext.headBorder !== 'none' ? renderContext.headBorderWidth : 0)
+        this.drawAt(renderContext, x2 + rx, y2 + ry, rw, rh, renderContext.showHeads === "icons" || renderContext.showHeads === 'self-icon' && this.username === Player.getName(), this.yaw.get(), renderContext.headBorder !== 'none' ? renderContext.headBorderWidth : 0)
 
         let showNametag = renderContext.playerNames === "always"
 

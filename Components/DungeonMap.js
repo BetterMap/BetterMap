@@ -146,8 +146,11 @@ class DungeonMap {
                         else {
                             mess.addTextComponent(new TextComponent("&7 rooms and got &c[NO API KEY]&7 secrets"))
                         }
-                        mess.addTextComponent(new TextComponent("&7 | &6" + p.deaths + "&7 deaths"))
-
+                        
+                        if (p.deaths != 0) {
+                            mess.addTextComponent(new TextComponent("&7 | &c" + p.deaths + "&c deaths"))
+                        }
+                        
                         mess.chat()
                     })
                 })
@@ -385,10 +388,10 @@ class DungeonMap {
             if (!p[m.getDisplayName.NetworkPlayerInfo]()) continue
             let line = p[m.getDisplayName.NetworkPlayerInfo]()[m.getUnformattedText]()
             // https://regex101.com/r/cUzJoK/3
+            line = line.replace(/§[a-fnmz0-9]/g, ''); //support dungeons guide custom name colors
             let match = line.match(/^\[(\d+)\] (?:\[\w+\] )*(\w+) [♲Ⓑ ]*\((\w+)(?: (\w+))*\)$/)
             if (!match) continue
             let [_, sbLevel, name, clazz, level] = match
-            name = name.replace('§z', ''); //support sba chroma names
             sbLevel = parseInt(sbLevel)
             // This is a tab list line for a player
             let playerName = getPlayerName(Player)

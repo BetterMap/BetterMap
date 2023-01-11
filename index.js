@@ -34,6 +34,8 @@ CurrentSettings.settingsManager = settingsManager
 require("./Extra/LeapGui/leapGui.js")
 
 register("step", () => {
+    if (!MathLib) return // ?????????????
+
     if (DataLoader.isInDungeon && DataLoader.dungeonFloor || currentDungeonMap?.getCurrentRoomId() === "30,225") {
         if (!currentDungeonMap) { // Entered dungeon, create map data
             currentDungeonMap = new DungeonMap(DataLoader.dungeonFloor, deadPlayers)

@@ -47,6 +47,8 @@
  * @property {[r:Number, g:Number, b:Number, a:number]} tankColor - Border color for tank class
  * @property {[r:Number, g:Number, b:Number, a:number]} singleBorderColor - Border color for everyone
  * @property {[r:Number, g:Number, b:Number, a:number]} singleBorderColorSelf - Border color for self
+ * @property {Boolean} spinnyMap - Wether to spin map
+ * @property {Boolean} centeredMap - Wether to center map
  */
 
 const BufferedImage = Java.type("java.awt.image.BufferedImage")
@@ -104,11 +106,11 @@ class RenderContext {
     get tickStyle() {
         return this.settings.tickStyle
     }
-    
+
     get centerCheckmarks() {
         return this.settings.centerCheckmarks
     }
-    
+
     get tickStyle_secrets_overHead() {
         return this.settings.tickStyle_secrets_overHead
     }
@@ -304,6 +306,13 @@ class RenderContext {
         return this.settings.customDoorSize;
     }
 
+    get spinnyMap() {
+        return this.settings.spinnyMap;
+    }
+    get centeredMap() {
+        return this.settings.centeredMap;
+    }
+
     get roomGap() {
         switch (this.mapStyle) {
             case 'custom':
@@ -475,7 +484,8 @@ class RenderContext {
         customRoomColorWitherDoor = [0, 0, 0, 255],
         customRoomGapSize = 9,
         customDoorSize = 15,
-        spinnyMap = false
+        spinnyMap = false,
+        centeredMap = false,
     }) {
         return {
             showMap,
@@ -538,7 +548,8 @@ class RenderContext {
             customRoomColorWitherDoor,
             customRoomGapSize,
             customDoorSize,
-            spinnyMap
+            spinnyMap,
+            centeredMap
         }
     }
 

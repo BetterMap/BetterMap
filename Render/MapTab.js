@@ -64,6 +64,32 @@ class MapTab {
 
         return this.renderHeight.get()
     }
+
+    /**
+     * @param {import("../Render/RenderContext").default} context
+     * @param {import("../Components/DungeonMap").default} dungeonMap
+     */
+    translateRotateForSpinny(context, dungeonMap) {
+        let centerX = (context.settings.posX + context.paddingLeft + context.borderWidth + context.settings.size / 2)
+        let centerY = (context.settings.posY + context.paddingLeft + context.borderWidth + context.settings.size / 2)
+
+        if (context.centeredMap && context.spinnyMap) {
+            let [x, y] = dungeonMap.currentPlayer?.getRenderLocation(context, dungeonMap) || [centerX, centerY];
+            Renderer.translate(x, y)
+            Renderer.rotate(-(Player.getYaw() + 180))
+            Renderer.translate(-centerX, - centerY);
+            return
+        }
+        if (context.centeredMap) {
+            let [x, y] = dungeonMap.currentPlayer?.getRenderLocation(context, dungeonMap) || [centerX, centerY];
+            Renderer.translate(centerX - x, centerY - y)
+        }
+        if (context.spinnyMap) {
+            Renderer.translate(centerX, centerY);
+            Renderer.rotate(-(Player.getYaw() + 180))
+            Renderer.translate(-centerX, -centerY);
+        }
+    }
 }
 
 export default MapTab

@@ -6,6 +6,13 @@ const Color = Java.type('java.awt.Color');
 class DoorRenderer {
 
     /**
+     * @param {import("../MapTab").default} parent 
+     */
+    constructor(parent) {
+        this.parent = parent
+    }
+
+    /**
      * 
      * @param {RenderContext} renderContext 
      * @param {*} graphics 

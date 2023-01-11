@@ -53,10 +53,14 @@ class DungeonMap {
         this.dungeonTopLeft = undefined
 
         /**
-         * @type {Array<MapPlayer>}
+         * @type {MapPlayer[]}
          */
         this.players = []
         this.playersNameToId = {}
+        /**
+         * @type {MapPlayer}
+         */
+        this.currentPlayer = undefined
 
         this.cachedScore = {
             time: 0,
@@ -144,13 +148,13 @@ class DungeonMap {
                             mess.addTextComponent(new TextComponent("&7 rooms | &6" + p.secretsCollected + "&7 secrets"))
                         }
                         else {
-                            mess.addTextComponent(new TextComponent("&7 rooms and got &c[NO API KEY]&7 secrets"))
+                            mess.addTextComponent(new TextComponent("&7 rooms | &c[NO API KEY]&7 secrets"))
                         }
-                        
+
                         if (p.deaths != 0) {
                             mess.addTextComponent(new TextComponent("&7 | &c" + p.deaths + "&c deaths"))
                         }
-                        
+
                         mess.chat()
                     })
                 })
@@ -413,6 +417,8 @@ class DungeonMap {
             this.players[i].networkPlayerInfo = networkInfo
             this.playersNameToId[thePlayer[1]] = i
             this.players[i].updateTablistInfo(matchObject)
+
+            this.currentPlayer = this.players[i]
         }
 
         for (let player of this.players) {

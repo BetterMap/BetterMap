@@ -399,7 +399,9 @@ class SettingGui {
 
         this.addToggle("Spirit leap overlay", "spiritLeapOverlay", this.currentSettings.spiritLeapOverlay)[1].setLore(["You can click on player heads in overlay!", "Most people probs wont like the design though."])
 
-        this.addToggle("Spinny map", "spinnyMap", this.currentSettings.spinnyMap)[1].setLore(["dont turn this on its cursed"])
+        this.addToggle("Spinny map", "spinnyMap", this.currentSettings.spinnyMap)[1].setLore(["zzz spinny map users"])
+
+        this.addToggle("Centered map", "centeredMap", this.currentSettings.centeredMap)[1].setLore(["zzz centered map users"])
 
         this.addSidebarElement(new ButtonWithArrow().setText("&0Load api key from other mods").addEvent(new SoopyMouseClickEvent().setHandler(() => {
             findKey(key => {

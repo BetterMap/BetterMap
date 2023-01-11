@@ -11,8 +11,8 @@ class DungeonRenderer extends MapTab {
     constructor(mapRenderer) {
         super("Dungeon", mapRenderer)
 
-        this.roomRenderer = new RoomRenderer();
-        this.doorRenderer = new DoorRenderer();
+        this.roomRenderer = new RoomRenderer(this);
+        this.doorRenderer = new DoorRenderer(this);
     }
 
     /**
@@ -57,11 +57,11 @@ class DungeonRenderer extends MapTab {
         if (renderContext.image) {
             let { x, y, size } = renderContext.getMapDimensions()
 
-            if (renderContext.settings.spinnyMap) {
-                Renderer.translate((renderContext.settings.posX + renderContext.paddingLeft + renderContext.borderWidth + renderContext.settings.size / 2), (renderContext.settings.posY + renderContext.paddingLeft + renderContext.borderWidth + renderContext.settings.size / 2));
-                Renderer.rotate(-(Player.getYaw() + 180))
-                Renderer.translate(-(renderContext.settings.posX + renderContext.paddingLeft + renderContext.borderWidth + renderContext.settings.size / 2), -(renderContext.settings.posY + renderContext.paddingLeft + renderContext.borderWidth + renderContext.settings.size / 2));
-            }
+            renderLibs.scizzor(x + renderContext.borderWidth, y + renderContext.borderWidth, size - 2 * renderContext.borderWidth, size - renderContext.borderWidth)
+
+            Tessellator.pushMatrix()
+            this.translateRotateForSpinny(renderContext, dungeonMap)
+            Tessellator.pushMatrix()
 
             renderContext.image.draw(x + renderContext.borderWidth, y + renderContext.borderWidth, size, size - renderContext.borderWidth)
 
@@ -70,13 +70,15 @@ class DungeonRenderer extends MapTab {
                 this.roomRenderer.drawPuzzle(renderContext, room, dungeonMap)
                 this.roomRenderer.drawExtras(renderContext, room, dungeonMap)
             }
-
             // Render heads
-            renderLibs.scizzor(x + renderContext.borderWidth, y + renderContext.borderWidth, size - 2 * renderContext.borderWidth, size - renderContext.borderWidth)
             for (let player of dungeonMap.players) {
                 if (dungeonMap.deadPlayers.has(player.username.toLowerCase())) continue
-                player.drawIcon(renderContext, dungeonMap)
+                player.drawIcon(renderContext, dungeonMap, undefined, undefined)
             }
+
+            Tessellator.popMatrix()
+            Tessellator.popMatrix()
+
             renderLibs.stopScizzor()
         }
 

@@ -416,6 +416,8 @@ class SettingsManager {
             player.dungeonClass = "Healer"
             player.classLevel = "20"
             player.skyblockLevel = "400"
+
+            dungeon.currentPlayer = player
         }
         {
             let player = new MapPlayer(info, dungeon, "Minikloon")

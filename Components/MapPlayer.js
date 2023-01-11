@@ -231,6 +231,9 @@ class MapPlayer {
         Tessellator.popMatrix()
     }
 
+    /**
+     * @param {RenderContext} renderContext 
+     */
     getRenderLocation(renderContext, dungeon) {
         let { x, y } = renderContext.getMapDimensions()
 

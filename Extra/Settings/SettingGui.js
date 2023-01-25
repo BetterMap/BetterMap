@@ -348,7 +348,7 @@ class SettingGui {
         this.addGear(() => {
             return this.currentSettings.scoreInfoUnderMap === "simplified"
         }, (elm) => {
-            elm.addToggle("Show 'Mimic' text before cross/tick", "scoreInfoUnderMap_simplified_showMimicText", this.currentSettings.scoreInfoUnderMap_simplified_showMimicText)[1].setLore(["If this is disabled it will still show wether mimic has been killed", "It just wont show the text before the indicator"])
+            elm.addToggle("Show 'Mimic' text before cross/tick", "scoreInfoUnderMap_simplified_showMimicText", this.currentSettings.scoreInfoUnderMap_simplified_showMimicText)[1].setLore(["If this is disabled it will still show whether mimic has been killed", "It just wont show the text before the indicator"])
         })
 
         this.addToggle("Fix Score in Scoreboard", "fixScore", this.currentSettings.fixScore)[1].setLore(["Replaces the score in the Sidebar-Scoreboard with the correct score"])

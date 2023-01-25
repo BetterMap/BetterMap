@@ -71,6 +71,10 @@ class DungeonMap {
         this.firstDeath = false
         this.firstDeathHadSpirit = false
 
+        /**
+         * Map from LOWERCASE username to uuid
+         * its lowercase to simplify casing if user inputs the name
+         */
         this.nameToUuid = {
             "you": Player.getUUID().toString()
         }
@@ -524,7 +528,7 @@ class DungeonMap {
             p.setY(player.getZ())
             p.setRotate(player.getYaw() + 180)
             p.locallyUpdated = Date.now()
-            this.nameToUuid[name] = player.getUUID().toString()
+            this.nameToUuid[name.toLowerCase()] = player.getUUID().toString()
 
             this.sendSocketData({
                 type: "playerLocation",

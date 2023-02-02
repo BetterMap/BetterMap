@@ -123,9 +123,16 @@ class DungeonMap {
 
                 Client.scheduleTask(5 * 20, () => { // Wait 5 seconds (5*20tps)
                     ChatLib.chat(MESSAGE_PREFIX + "Cleared room counts:")
+
+                    let largestWidth = 0
+                    largestWidth = Math.max(largestWidth, ...this.players.map(p => Renderer.getStringWidth(p.username)))
+
                     this.players.forEach(p => {
                         let mess = new Message()
-                        mess.addTextComponent(new TextComponent(MESSAGE_PREFIX_SHORT + "&3" + p.username + "&7 cleared "))
+                        let padding = ""
+                        while (Renderer.getStringWidth(padding) < largestWidth - Renderer.getStringWidth(p.username) + 5) padding += " "
+
+                        mess.addTextComponent(new TextComponent(MESSAGE_PREFIX_SHORT + "&3" + p.username + padding + "&7 cleared "))
 
                         let roomLore = ""
                         p.roomsData.forEach(([players, room]) => {

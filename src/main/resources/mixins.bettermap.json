@@ -1,0 +1,8 @@
+{
+  "minVersion": "0.6",
+  "compatibilityLevel": "JAVA_8",
+  "package": "bettermap.mixins",
+  "refmap": "mixins.${modid}.refmap.json",
+  "client": [
+  ]
+}

@@ -1,12 +1,18 @@
 package bettermap
 
 import bettermap.commands.BetterMapCommands
+import bettermap.components.roomdata.DungeonRoomData
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.asCoroutineDispatcher
 import net.minecraft.client.Minecraft
 import net.minecraftforge.client.ClientCommandHandler
 import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.common.event.FMLInitializationEvent
 import net.minecraftforge.fml.common.event.FMLLoadCompleteEvent
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent
+import java.util.concurrent.Executors
 
 @Mod(
     modid = BetterMap.MOD_ID, name = BetterMap.MOD_NAME, version = BetterMap.MOD_VERSION
@@ -19,6 +25,7 @@ class BetterMap {
     @Mod.EventHandler
     fun onInit(event: FMLInitializationEvent) {
         ClientCommandHandler.instance.registerCommand((BetterMapCommands()))
+        DungeonRoomData // Initialize loading room data
     }
 
     @Mod.EventHandler
@@ -31,5 +38,7 @@ class BetterMap {
         const val MOD_VERSION = "1.0-forge"
 
         val mc: Minecraft = Minecraft.getMinecraft()
+        val gson: Gson = GsonBuilder().disableHtmlEscaping().setPrettyPrinting().create()
+        val scope = CoroutineScope(Executors.newFixedThreadPool(4).asCoroutineDispatcher())
     }
 }

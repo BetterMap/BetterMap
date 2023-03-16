@@ -10,6 +10,7 @@ class Room(val type: RoomType, val components: List<Position>, val roomID: Strin
             }
             field = value
         }
+
     fun findShape(): String {
         val xTiles = components.groupBy { it.worldX }.size
         val yTiles = components.groupBy { it.worldY }.size

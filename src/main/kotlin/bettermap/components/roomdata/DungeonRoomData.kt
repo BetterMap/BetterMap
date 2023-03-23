@@ -5,8 +5,8 @@ import bettermap.BetterMap.Companion.mc
 import bettermap.utils.APIUtils
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
 
 object DungeonRoomData {
@@ -18,7 +18,7 @@ object DungeonRoomData {
         BetterMap.scope.launch(Dispatchers.IO) {
             try {
                 // Read data from API
-                val apiData = BetterMap.scope.async { APIUtils.fetch(API_URL) }.await()
+                val apiData = withContext(Dispatchers.IO) { APIUtils.fetch(API_URL) }
                 loadFromString(apiData)
 
                 // Save data locally if parsed without exception
@@ -49,7 +49,7 @@ object DungeonRoomData {
 
     fun loadFromAPI() {
         BetterMap.scope.launch(Dispatchers.IO) {
-            loadFromString(BetterMap.scope.async { APIUtils.fetch(API_URL) }.await())
+            loadFromString(withContext(Dispatchers.IO) { APIUtils.fetch(API_URL) })
         }
     }
 

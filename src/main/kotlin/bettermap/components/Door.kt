@@ -1,3 +1,7 @@
 package bettermap.components
 
-class Door(val type: RoomType, val position: Position, val horizontal: Boolean)
+class Door(
+    override var type: RoomType,
+    override val position: Position,
+    val horizontal: Boolean
+) : Tile()

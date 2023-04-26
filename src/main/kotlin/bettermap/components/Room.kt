@@ -1,8 +1,15 @@
 package bettermap.components
 
-class Room(val type: RoomType, val components: List<Position>, val roomID: String? = null) {
+class Room(
+    override var type: RoomType,
+    override val position: Position,
+    val components: MutableList<Pair<Int, Int>> = mutableListOf(),
+    var roomID: String? = null,
+) : Tile() {
     val doors: List<Door> = listOf()
     val shape: RoomShape = findShape()
+    var currentSecrets = 0
+    var maxSecrets = 10
     var state: RoomState = RoomState.UNOPENED
         set(value) {
             if (value != field) {
@@ -12,8 +19,8 @@ class Room(val type: RoomType, val components: List<Position>, val roomID: Strin
         }
 
     fun findShape(): RoomShape {
-        val xTiles = components.groupBy { it.worldX }.size
-        val yTiles = components.groupBy { it.worldY }.size
+        val xTiles = components.groupBy { it.first }.size
+        val yTiles = components.groupBy { it.second }.size
 
         return when {
             xTiles == 1 || yTiles == 1 -> RoomShape.valueOf("S1x${components.size}")

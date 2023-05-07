@@ -79,7 +79,7 @@ class DataLoader {
     }
 
     step() { // 2fps
-        this.isInSkyblock = Scoreboard.getTitle()?.removeFormatting().includes("SKYBLOCK")
+        this.isInSkyblock = Scoreboard.getTitle()?.removeFormatting().includes("SKYBLOCK") || Scoreboard.getTitle()?.removeFormatting().includes("SKIBLOCK")
 
         if (!this.isInSkyblock) {
             this.stats = {}

@@ -114,3 +114,10 @@ First released version!
 ! Fixed map crashing for some players when trying to access playernames
 ! Fixed map showing room tooltips if the map is in the top left corner
 ```
+
+@ver v1.0.12
+```diff
+! Fixed 300 score message never sending
+! Fixed incompatible dg cosmetics breaking stuff
+! Fixed last years april fools for next year
+```

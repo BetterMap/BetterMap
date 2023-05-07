@@ -948,7 +948,7 @@ class DungeonMap {
 
         if (total < 270 && this.broadcast270message === 0)
             this.broadcast270message = 1;
-        if (total < 300 && this.broadcast270message === 0)
+        if (total < 300 && this.broadcast300message === 0)
             this.broadcast300message = 1;
 
         this.cachedScore = {

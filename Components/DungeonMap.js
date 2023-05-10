@@ -147,7 +147,13 @@ class DungeonMap {
                             mess.addTextComponent(new TextComponent("&7 rooms and got &c[NO API KEY]&7 secrets"))
                         }
                         mess.addTextComponent(new TextComponent("&7 | &6" + p.deaths + "&7 deaths"))
-
+						let ignoreList = ['']
+						if (p.username != Player.getName() && !ignoreList.includes(p.username)) {
+							mess.addTextComponent(new TextComponent("&a [K]").setClick("suggest_command", "/p kick " + p.username))
+						}
+						if (p.username != Player.getName() && !ignoreList.includes(p.username)) {
+							mess.addTextComponent(new TextComponent("&c [I]").setClick("suggest_command", "/ignore add " + p.username))
+						}
                         mess.chat()
                     })
                 })

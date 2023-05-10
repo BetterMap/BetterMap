@@ -182,6 +182,21 @@ class DungeonMap {
                 }
             }))
 
+			this.triggers.push(register("guiKey", (char, code, eventgui, event) => {
+				if (Client.currentGui.getClassName() === "GuiChest" && true) {
+					let guiChest = Client.currentGui.get();
+					let inventory = guiChest.field_147015_w; // .upperChestInventory
+					let inventoryName = inventory.func_145748_c_().func_150260_c(); // .getDisplayName().getUnformattedText()
+					let chestNames = ['Chest', 'Large Chest']
+					let rewardNames = ['Wood Chest', 'Gold Chest', 'Diamond Chest', 'Emerald Chest', 'Obsidian Chest', 'Bedrock Chest']
+					chestNames = chestNames.concat(rewardNames)
+					if (chestNames.includes(inventoryName)) {
+						Client.currentGui.close()
+					}
+
+				}
+			}))
+
             this.triggers.push(register("chat", (info) => {
                 let player = ChatLib.removeFormatting(info).split(" ")[0]
 

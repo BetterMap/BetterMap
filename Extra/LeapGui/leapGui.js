@@ -102,7 +102,6 @@ class SpiritLeapOverlay {
 
                     let button = new ButtonWithArrow().setText((name2 === lastDoorOpener ? "&4" : "&2") + "[" + pClass + "] " + name2).addEvent(new SoopyMouseClickEvent().setHandler(() => {
                         Player.getContainer().click(itemsNew[name])
-                        ChatLib.chat("Leaping to " + name)
                     })).setLocation((i % 2) * 0.5, Math.floor(i / 2) * 0.5, 0.5, 0.5)
                     button.text.setLocation(0.5, 0, 0.4, 1)
                     button.addEvent(new SoopyRenderEvent().setHandler(() => {

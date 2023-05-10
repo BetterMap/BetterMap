@@ -9,7 +9,7 @@ import RenderContextManager from "./Render/RenderContextManager"
 import DataLoader from "./Utils/DataLoader"
 import betterMapServer from "./socketConnection"
 import SettingsManager from "./Extra/Settings/SettingsManager"
-import DungeonRoomData from "./Data/DungeonRoomData.js"
+// import DungeonRoomData from "./Data/DungeonRoomData.js"
 import CurrentSettings from "./Extra/Settings/CurrentSettings"
 import eventManager from "./Extra/Events/EventManager"
 import { MESSAGE_PREFIX } from "./Utils/Utils"
@@ -123,6 +123,60 @@ register("command", () => {
         })
     })
 }).setName("bpingp", true)
+
+register("command", () => {
+    if (!currentDungeonMap) {
+      ChatLib.chat(MESSAGE_PREFIX + "You must be in a dungeon to run this command.");
+      return;
+    }
+    const scores = [
+      {
+        rank: 'S+',
+        min: 300,
+        max: 999
+      },
+      {
+        rank: 'S',
+        min: 270,
+        max: 299
+      },
+      {
+        rank: 'A',
+        min: 230,
+        max: 269
+      },
+      {
+        rank: 'B',
+        min: 160,
+        max: 229
+      },
+      {
+        rank: 'C',
+        min: 100,
+        max: 159
+      },
+      {
+        rank: 'D',
+        min: 0,
+        max: 99
+      }
+    ];
+  
+    const currentScore = currentDungeonMap.getScore().total;
+    let currentRank = null;
+    let nextRank = null;
+  
+    for (let item of scores) {
+      if (currentScore >= item.min) {
+        currentRank = item;
+        break;
+      }
+      nextRank = item;
+    }
+  
+    const suffix = nextRank != null ? `, next Rank is ${nextRank.rank} in ${nextRank.min - currentScore} Score!` : '!';
+    ChatLib.command('pc' + ` Current Rank is ${currentRank.rank} (${currentScore})` + suffix);
+  }).setName("bscore", true);
 
 register("renderOverlay", () => {
     if (dungeonMapRenderContext && currentDungeonMap) {

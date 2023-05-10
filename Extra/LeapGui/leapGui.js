@@ -155,7 +155,6 @@ class soopyGuiMapRendererThing extends SoopyGuiElement {
                         if (item && item.getID() !== 160) {
                             if (ChatLib.removeFormatting(item.getName()) === closestPlayer.username) {
                                 Player.getContainer().click(i)
-                                ChatLib.chat("Leaping to " + closestPlayer.username)
                             }
                         }
                     }

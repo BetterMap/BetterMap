@@ -339,9 +339,13 @@ class SettingGui {
 
         this.addToggle("Dungeon clear breakdown", "clearedRoomInfo", this.currentSettings.clearedRoomInfo)[1].setLore(["Shows the cleared room count and specific rooms in chat when the dungeon ends"])
 
+        this.addToggle("Advanced breakdown", "advancedClearedRooms", this.currentSettings.advancedClearedRooms)[1].setLore(["Add shortcuts to /p kick and /ignore add per Player in the breakdown"])
+
         this.addToggle("Show secret waypoints (scuffed)", "showSecrets", this.currentSettings.showSecrets)[1].setLore(["Syncs between bettermap users"])
 
         this.addToggle("Spirit leap overlay", "spiritLeapOverlay", this.currentSettings.spiritLeapOverlay)[1].setLore(["You can click on player heads in overlay!", "Most people probs wont like the design though."])
+
+        this.addToggle("Close Secret chests by moving", "movingClosesChests", this.currentSettings.movingClosesChests)[1].setLore(["Using any movement key should close any Container (secrets/ Dungeon rewards)"])
 
         this.addSidebarElement(new ButtonWithArrow().setText("&0Load api key from other mods").addEvent(new SoopyMouseClickEvent().setHandler(() => {
             findKey(key => {

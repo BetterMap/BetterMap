@@ -28,6 +28,7 @@
  * @property {"never"|"at270"|"at300"|"automatic"|"always"} showScoreMessage - Broadcast a score message after reaching a specific score
  * @property {String} custom270scoreMessage - Allows the player to set a custom message for 270 score
  * @property {String} custom300scoreMessage - Allows the player to set a custom message for 300 score
+ * @property {Boolean} staticSecretsLeft - Disable the modification of min Secrets with bonus/ death score increase
  * @property {Boolean} hideInBoss - Hide the map in boss entirely 
  * @property {Boolean} showTabs - Show tabs at the top of the map 
  * @property {Boolean} showSecrets - Show waypoints for secrets in the dungeon
@@ -160,6 +161,10 @@ class RenderContext {
 
     get custom300scoreMessage() {
         return this.settings.custom300scoreMessage;
+    }
+
+    get staticSecretsLeft() {
+        return this.settings.staticSecretsLeft;
     }
 
     get hideInBoss() {
@@ -448,6 +453,7 @@ class RenderContext {
         showScoreMessage = 'never',
         custom270scoreMessage = '270 Score reached!',
         custom300scoreMessage = '300 Score reached!',
+        staticSecretsLeft = false,
         tabSecretCount = false,
         tabCryptCount = false,
         tabMimic = false,
@@ -512,6 +518,7 @@ class RenderContext {
             showScoreMessage,
             custom270scoreMessage,
             custom300scoreMessage,
+            staticSecretsLeft,
             tabCryptCount,
             tabSecretCount,
             tabMimic,

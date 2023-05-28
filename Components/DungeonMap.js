@@ -950,7 +950,7 @@ class DungeonMap {
 
         let deathPenalty = deaths * 2 - this.firstDeathHadSpirit // FirstDeathHadSpirit gets coerced to number (0 or 1)
 
-        let minSecrets = Math.ceil(totalSecrets * requiredSecrets / 100 * ((40 - bonus + deathPenalty) / 40))
+        let minSecrets = Math.ceil(totalSecrets * requiredSecrets / 100 * (settings.settings.staticSecretsLeft ? 1: ((40 - bonus + deathPenalty) / 40)))
 
         let total = skill + exploration + time + bonus;
 

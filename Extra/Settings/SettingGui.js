@@ -316,6 +316,8 @@ class SettingGui {
                 elm.addString("300 Score Message", "custom300scoreMessage", this.currentSettings.custom300scoreMessage)
         })
 
+        this.addToggle("Disbale min secret modification", "staticSecretsLeft", this.currentSettings.staticSecretsLeft)[1].setLore(["When enabled, do not subtract bonus/ add deathscore from min Secrets"])
+
         this.addCategory("Tab Info")
 
         this.addToggle("Show current Secret total", "tabSecretCount", this.currentSettings.tabSecretCount)[1].setLore(["Change the secrets found number in tab to also show total secrets in dungeon", "&cMAY CONFLICT WITH OTHER MODS (DG)"])

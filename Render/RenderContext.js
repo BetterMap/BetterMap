@@ -38,6 +38,7 @@
  * @property {Boolean} forcePaul - Wether to force enable the +10 score for paul (eg if jerry mayor)
  * @property {Boolean} clearedRoomInfo - Show a summory of what rooms people cleared after run finishes
  * @property {Boolean} advancedClearedRooms - add ignore add and p kick in clearedRoomInfo
+ * @property {String} breakdownIgnoreList - List to ignore Players from advanced breakdown button adding
  * @property {String} apiKey - The user's api key, or "" if unknown
  * @property {Boolean} devInfo - Wether to show def info in various places in the map
  * @property {[r:Number, g:Number, b:Number, a:number]} mapBorderColor - The RGBO value of the map border color
@@ -212,6 +213,10 @@ class RenderContext {
 
     get advancedClearedRooms() {
         return this.settings.advancedClearedRooms
+    }
+
+    get breakdownIgnoreList() {
+        return this.settings.breakdownIgnoreList
     }
 
     get boxDoors() {
@@ -466,6 +471,7 @@ class RenderContext {
         forcePaul = false,
         clearedRoomInfo = true,
         advancedClearedRooms = false,
+        breakdownIgnoreList = "Name1 Name2 Name3 ...",
         apiKey = "",
         devInfo = false,
         boxDoors = true,
@@ -531,6 +537,7 @@ class RenderContext {
             forcePaul,
             clearedRoomInfo,
             advancedClearedRooms,
+            breakdownIgnoreList,
             apiKey,
             devInfo,
             boxDoors,

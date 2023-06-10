@@ -149,7 +149,7 @@ class DungeonMap {
                         mess.addTextComponent(new TextComponent("&7 | &6" + p.deaths + "&7 deaths"))
                         if (settings.settings.advancedClearedRooms) {
                             let ignoreList = settings.settings.breakdownIgnoreList.toLowerCase().split(" ")
-                            if (p.username != Player.getName().toLowerCase() && !ignoreList.includes(p.username.toLowerCase())) {
+                            if (p.username != Player.getName() && !ignoreList.includes(p.username.toLowerCase())) {
                                 mess.addTextComponent(new TextComponent("&a [K]").setClick("suggest_command", "/p kick " + p.username))
                                 mess.addTextComponent(new TextComponent("&c [I]").setClick("suggest_command", "/ignore add " + p.username))
                             }

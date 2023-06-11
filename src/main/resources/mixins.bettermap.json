@@ -4,5 +4,6 @@
   "package": "bettermap.mixins",
   "refmap": "mixins.${modid}.refmap.json",
   "client": [
+    "NetworkManagerMixin"
   ]
 }

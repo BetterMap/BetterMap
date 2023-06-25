@@ -39,6 +39,7 @@
  * @property {Boolean} clearedRoomInfo - Show a summory of what rooms people cleared after run finishes
  * @property {Boolean} advancedClearedRooms - add ignore add and p kick in clearedRoomInfo
  * @property {String} breakdownIgnoreList - List to ignore Players from advanced breakdown button adding
+ * @property {"none"|"Just RARE REWARD"|"Just Dungeon Treasure"|"both"} rewardAnnounceHider - Which DH Rewards to hide
  * @property {String} apiKey - The user's api key, or "" if unknown
  * @property {Boolean} devInfo - Wether to show def info in various places in the map
  * @property {[r:Number, g:Number, b:Number, a:number]} mapBorderColor - The RGBO value of the map border color
@@ -217,6 +218,10 @@ class RenderContext {
 
     get breakdownIgnoreList() {
         return this.settings.breakdownIgnoreList
+    }
+
+    get rewardAnnounceHider() {
+        return this.settings.rewardAnnounceHider
     }
 
     get boxDoors() {
@@ -472,6 +477,7 @@ class RenderContext {
         clearedRoomInfo = true,
         advancedClearedRooms = false,
         breakdownIgnoreList = "Name1 Name2 Name3 ...",
+        rewardAnnounceHider = "none",
         apiKey = "",
         devInfo = false,
         boxDoors = true,
@@ -538,6 +544,7 @@ class RenderContext {
             clearedRoomInfo,
             advancedClearedRooms,
             breakdownIgnoreList,
+            rewardAnnounceHider,
             apiKey,
             devInfo,
             boxDoors,

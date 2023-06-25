@@ -351,6 +351,13 @@ class SettingGui {
 
         this.addToggle("Close Secret chests by moving", "movingClosesChests", this.currentSettings.movingClosesChests)[1].setLore(["Using any movement key should close any Container (secrets/ Dungeon rewards)"])
 
+        this.addDropdown("Hide DH Reward Chest messages", {
+            "none": "Off",
+            "Just RARE REWARD": "Hide the chest opening",
+            "Just Dungeon Treasure": "Hide the item pickup",
+            "both": "Hide both messages",
+        }, "rewardAnnounceHider", this.currentSettings.rewardAnnounceHider);
+
         this.addSidebarElement(new ButtonWithArrow().setText("&0Load api key from other mods").addEvent(new SoopyMouseClickEvent().setHandler(() => {
             findKey(key => {
                 this.setApiKey(key)

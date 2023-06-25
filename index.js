@@ -248,6 +248,18 @@ register("chat", (info) => {
     deadPlayers.delete(player.toLowerCase())
 }).setChatCriteria("&r&a ❣ &r${info} was revived${*}!&r")
 
+register("chat", (player, reward, chest, event) => {
+    if (settings.settings.rewardAnnounceHider === 'Just RARE REWARD' || settings.settings.rewardAnnounceHider === 'both') cancel(event)
+  }).setChatCriteria("RARE REWARD! ${player} found a ${reward} in their ${chest}!")
+  
+  register("chat", (player, reward, event) => {
+    if (settings.settings.rewardAnnounceHider === 'Just Dungeon Treasure' || settings.settings.rewardAnnounceHider === 'both') cancel(event)
+  }).setChatCriteria("${player}&r&f &r&eunlocked ${reward} &r&efrom a dungeon treasure!&r")
+
+// &r&f&r&6&lRARE REWARD! ${player} &r&efound a ${reward} &r&ein their ${chest}&r&e!&r
+// ${player}&r&f &r&eunlocked ${reward} &r&efrom a dungeon treasure!&r
+
+
 register('command', () => {
     currentDungeonMap?.regenRooms()
 }).setName('reloadmap', true);

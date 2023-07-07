@@ -116,13 +116,14 @@ class DungeonMap {
             this.triggers.push(register("chat", (end, e) => {
                 if (end.includes("Stats")) return
 
+                let currentScore = this.getScore()
+                let playerSecrets = 0
                 this.dungeonFinished = true
 
                 if (!settings.settings.clearedRoomInfo) return
                 this.players.forEach(p => p.updateCurrentSecrets())
 
                 Client.scheduleTask(5 * 20, () => { // Wait 5 seconds (5*20tps)
-                    ChatLib.chat(MESSAGE_PREFIX + "Cleared room counts:")
                     this.players.forEach(p => {
                         let mess = new Message()
                         mess.addTextComponent(new TextComponent(MESSAGE_PREFIX_SHORT + "&3" + p.username + "&7 cleared "))
@@ -142,6 +143,7 @@ class DungeonMap {
 
                         if (settings.settings.apiKey) {
                             mess.addTextComponent(new TextComponent("&7 rooms | &6" + p.secretsCollected + "&7 secrets"))
+                            playerSecrets += Number(p.secretsCollected)
                         }
                         else {
                             mess.addTextComponent(new TextComponent("&7 rooms and got &c[NO API KEY]&7 secrets"))
@@ -156,6 +158,16 @@ class DungeonMap {
                         }
                         mess.chat()
                     })
+                    if (settings.settings.showSecretsBreakdown) {
+                        let secretMess = new Message()
+                        secretMess.addTextComponent(new TextComponent(`${MESSAGE_PREFIX} Secret Stats:`))
+                        secretMess.addTextComponent(new TextComponent(` &6${playerSecrets} &7/`).setHover('show_text', "Player collected"))
+                        secretMess.addTextComponent(new TextComponent(` &6${currentScore.secretsFound} &7/`).setHover('show_text', "Secrets found"))
+                        secretMess.addTextComponent(new TextComponent(` &6${currentScore.minSecrets} &7/`).setHover('show_text', "Minimum required"))
+                        secretMess.addTextComponent(new TextComponent(` &6${currentScore.totalSecrets}`).setHover('show_text', "Total secrets"))
+                        secretMess.addTextComponent(new TextComponent(` &7(&6${currentScore.secretsFound - playerSecrets}&7)`).setHover('show_text', "Unaccounted (Secrets found - Player collected)"))
+                        secretMess.chat()
+                    }
                 })
             }).setChatCriteria('&r&c${*}e Catacombs &r&8- &r&eFloor${end}').setContains())
             //&r&r&r                     &r&cThe Catacombs &r&8- &r&eFloor I Stats&r

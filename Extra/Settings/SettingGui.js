@@ -345,6 +345,8 @@ class SettingGui {
 
         this.addString("Advanced breakdown ignore list", "breakdownIgnoreList", this.currentSettings.breakdownIgnoreList)[1].setLore(["Space separated List of users to not show shortcuts for","eg Name1 Name2 Name3"])
 
+        this.addToggle("Secrets breakdown", "showSecretsBreakdown", this.currentSettings.showSecretsBreakdown[1].setLore(["Adds a Secret summary after the breakdown", "Player collected / Secrets found / Minimum required / Total secrets (Unaccounted)"]))
+
         this.addToggle("Show secret waypoints (scuffed)", "showSecrets", this.currentSettings.showSecrets)[1].setLore(["Syncs between bettermap users"])
 
         this.addToggle("Spirit leap overlay", "spiritLeapOverlay", this.currentSettings.spiritLeapOverlay)[1].setLore(["You can click on player heads in overlay!", "Most people probs wont like the design though."])

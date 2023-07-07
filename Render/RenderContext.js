@@ -38,6 +38,7 @@
  * @property {Boolean} forcePaul - Wether to force enable the +10 score for paul (eg if jerry mayor)
  * @property {Boolean} clearedRoomInfo - Show a summory of what rooms people cleared after run finishes
  * @property {Boolean} advancedClearedRooms - add ignore add and p kick in clearedRoomInfo
+ * @property {Boolean} showSecretsBreakdown - add ignore add and p kick in clearedRoomInfo
  * @property {String} breakdownIgnoreList - List to ignore Players from advanced breakdown button adding
  * @property {"none"|"Just RARE REWARD"|"Just Dungeon Treasure"|"both"} rewardAnnounceHider - Which DH Rewards to hide
  * @property {String} apiKey - The user's api key, or "" if unknown
@@ -214,6 +215,10 @@ class RenderContext {
 
     get advancedClearedRooms() {
         return this.settings.advancedClearedRooms
+    }
+
+    get showSecretsBreakdown() {
+        return this.settings.showSecretsBreakdown
     }
 
     get breakdownIgnoreList() {
@@ -476,6 +481,7 @@ class RenderContext {
         forcePaul = false,
         clearedRoomInfo = true,
         advancedClearedRooms = false,
+        showSecretsBreakdown = false,
         breakdownIgnoreList = "Name1 Name2 Name3 ...",
         rewardAnnounceHider = "none",
         apiKey = "",
@@ -543,6 +549,7 @@ class RenderContext {
             forcePaul,
             clearedRoomInfo,
             advancedClearedRooms,
+            showSecretsBreakdown,
             breakdownIgnoreList,
             rewardAnnounceHider,
             apiKey,

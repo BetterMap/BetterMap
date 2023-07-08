@@ -907,6 +907,34 @@ class DungeonMap {
     }
 
     /**
+     * @returns {"deduction": number}
+     */
+    calcTimeDeduction() {
+        if (this.floor.includes("E")) return 0
+        let currentFloor = null
+        const floorTimes = [
+            {"time": 600, "floor": "F1"},
+            {"time": 600, "floor": "F2"},
+            {"time": 600, "floor": "F3"},
+            {"time": 720, "floor": "F4"},
+            {"time": 600, "floor": "F5"},
+            {"time": 720, "floor": "F6"},
+            {"time": 840, "floor": "F7"},
+            {"time": 480, "floor": "M1"},
+            {"time": 480, "floor": "M2"},
+            {"time": 480, "floor": "M3"},
+            {"time": 480, "floor": "M4"},
+            {"time": 480, "floor": "M5"},
+            {"time": 600, "floor": "M6"},
+            {"time": 840, "floor": "M7"},
+        ]
+
+        currentFloor = floorTimes[floorTimes.findIndex((v) => v.floor.includes(this.floor))]
+        ChatLib.chat(`${currentFloor.floor} - ${currentFloor.time} - ${DataLoader.runTime}`)
+        return 0
+    }
+
+    /**
      * @returns {{"skill": Number,"exploration": Number,"time": Number,"bonus": Number,"total": Number,"mimic": Boolean,"secretsFound": Number, "crypts": Numbers, "deathPenalty": Number, "totalSecrets": Number, "minSecrets": Number, "totalCrypts": Number}}
      */
     getScore() {
@@ -935,7 +963,7 @@ class DungeonMap {
         exploration += Math.min(60, ~~(completedRooms / totalRoomEstimate * 60));
 
         // Time
-        // NOPE
+        time - this.calcTimeDeduction()
 
         // Skill
         skill += ~~(completedRooms / totalRoomEstimate * 80) - unfinshedPuzzles * 10;

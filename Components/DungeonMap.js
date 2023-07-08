@@ -929,9 +929,37 @@ class DungeonMap {
             {"time": 840, "floor": "M7"},
         ]
 
+        const timeBrackets = [
+            {"percLow": 0, "percHigh": 20, "loss": 2},
+            {"percLow": 20, "percHigh": 40, "loss": 4},
+            {"percLow": 40, "percHigh": 50, "loss": 5},
+            {"percLow": 50, "percHigh": 60, "loss": 6},
+            {"percLow": 60, "percHigh": 10000, "loss": 7},
+        ]
+
         currentFloor = floorTimes[floorTimes.findIndex((v) => v.floor.includes(this.floor))]
-        ChatLib.chat(`${currentFloor.floor} - ${currentFloor.time} - ${DataLoader.runTime}`)
-        return 0
+
+        if (DataLoader.runTime < currentFloor.time) return 0
+
+        let overtimePerc = ((DataLoader.runTime / currentFloor.time) - 1.0) * 100
+
+        let deduction = 0
+        let overtimeCat = -1
+
+        for (let i = 0; i < timeBrackets.length; i++) {
+            if (overtimePerc > timeBrackets[i].percLow && overtimePerc <= timeBrackets[i].percHigh) {
+                overtimeCat = i
+            } else if (overtimePerc > timeBrackets[i].percHigh) {
+                deduction += (timeBrackets[i].percHigh - timeBrackets[i].percLow) / timeBrackets[i].loss
+            }
+        }
+
+        if (overtimeCat !== -1) {
+            deduction += ((overtimePerc - timeBrackets[overtimeCat].percLow) / timeBrackets[overtimeCat].loss)
+        }
+
+        ChatLib.chat(`${currentFloor.floor} - ${currentFloor.time} - ${DataLoader.runTime} - ${deduction}`)
+        return Math.floor(deduction)
     }
 
     /**

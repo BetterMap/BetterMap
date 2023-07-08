@@ -14,6 +14,7 @@ class DataLoader {
         this.isInSkyblock = false
 
         this.dungeonPercentCleared = 0
+        this.runTime = 0
 
         register("step", this.step.bind(this)).setFps(2)
         register("worldLoad", this.worldLoad.bind(this))
@@ -130,6 +131,17 @@ class DataLoader {
             }
             if (name.startsWith("Cleared: ")) {
                 this.dungeonPercentCleared = parseInt(name.split(" ")[1]) / 100
+            }
+            if (name.startsWith("Time Elapsed: ")) {
+                let time;
+                if (name.includes("m ")) {
+                    let minutes = parseInt(name.split("Time Elapsed: ")[1].split(" ")[0])
+                    let seconds = parseInt(name.split("Time Elapsed: ")[1].split(" ")[1])
+                    this.runTime = (minutes * 60) + seconds
+                }
+                else{
+                    this.runTime = parseInt(name.split("Time Elapsed: ")[1].split(" ")[0])
+                }
             }
         })
 

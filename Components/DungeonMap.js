@@ -907,6 +907,60 @@ class DungeonMap {
     }
 
     /**
+     * @returns {"deduction": number}
+     */
+    calcTimeDeduction() {
+        if (this.floor.includes("E")) return 0
+        let currentFloor = null
+        const floorTimes = [
+            {"time": 600, "floor": "F1"},
+            {"time": 600, "floor": "F2"},
+            {"time": 600, "floor": "F3"},
+            {"time": 720, "floor": "F4"},
+            {"time": 600, "floor": "F5"},
+            {"time": 720, "floor": "F6"},
+            {"time": 840, "floor": "F7"},
+            {"time": 480, "floor": "M1"},
+            {"time": 480, "floor": "M2"},
+            {"time": 480, "floor": "M3"},
+            {"time": 480, "floor": "M4"},
+            {"time": 480, "floor": "M5"},
+            {"time": 600, "floor": "M6"},
+            {"time": 840, "floor": "M7"},
+        ]
+
+        const timeBrackets = [
+            {"percLow": 0, "percHigh": 20, "loss": 2},
+            {"percLow": 20, "percHigh": 40, "loss": 4},
+            {"percLow": 40, "percHigh": 50, "loss": 5},
+            {"percLow": 50, "percHigh": 60, "loss": 6},
+            {"percLow": 60, "percHigh": 10000, "loss": 7},
+        ]
+
+        currentFloor = floorTimes[floorTimes.findIndex((v) => v.floor.includes(this.floor))]
+
+        if (DataLoader.runTime < currentFloor.time) return 0
+
+        let overtimePerc = ((DataLoader.runTime / currentFloor.time) - 1.0) * 100
+
+        let deduction = 0
+        let overtimeCat = -1
+
+        for (let i = 0; i < timeBrackets.length; i++) {
+            if (overtimePerc > timeBrackets[i].percLow && overtimePerc <= timeBrackets[i].percHigh) {
+                overtimeCat = i
+            } else if (overtimePerc > timeBrackets[i].percHigh) {
+                deduction += (timeBrackets[i].percHigh - timeBrackets[i].percLow) / timeBrackets[i].loss
+            }
+        }
+
+        if (overtimeCat !== -1) {
+            deduction += ((overtimePerc - timeBrackets[overtimeCat].percLow) / timeBrackets[overtimeCat].loss)
+        }
+        return Math.floor(deduction)
+    }
+
+    /**
      * @returns {{"skill": Number,"exploration": Number,"time": Number,"bonus": Number,"total": Number,"mimic": Boolean,"secretsFound": Number, "crypts": Numbers, "deathPenalty": Number, "totalSecrets": Number, "minSecrets": Number, "totalCrypts": Number}}
      */
     getScore() {
@@ -935,7 +989,7 @@ class DungeonMap {
         exploration += Math.min(60, ~~(completedRooms / totalRoomEstimate * 60));
 
         // Time
-        // NOPE
+        time = time - this.calcTimeDeduction()
 
         // Skill
         skill += ~~(completedRooms / totalRoomEstimate * 80) - unfinshedPuzzles * 10;

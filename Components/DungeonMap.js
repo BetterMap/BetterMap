@@ -1052,10 +1052,10 @@ class DungeonMap {
 
         if (shouldAllow300Title && total >= 300 && this.show300title === 1) {
             this.show300title = 2;
-            Client.showTitle(`&4${settings.settings.custom300scoreTitle}`, "", 0, 20, 0);
+            Client.showTitle(`&4${settings.settings.custom300scoreTitle}`, "", 0, 60, 0);
         } else if (shouldAllow270Title && total >= 270 && this.show270title === 1) {
             this.show270title = 2;
-            Client.showTitle(`&4${settings.settings.custom270scoreTitle}`, "", 0, 20, 0);
+            Client.showTitle(`&4${settings.settings.custom270scoreTitle}`, "", 0, 60, 0);
         }
 
         if (total < 270 && this.show270title === 0)

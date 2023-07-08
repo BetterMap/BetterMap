@@ -957,8 +957,6 @@ class DungeonMap {
         if (overtimeCat !== -1) {
             deduction += ((overtimePerc - timeBrackets[overtimeCat].percLow) / timeBrackets[overtimeCat].loss)
         }
-
-        ChatLib.chat(`${currentFloor.floor} - ${currentFloor.time} - ${DataLoader.runTime} - ${deduction}`)
         return Math.floor(deduction)
     }
 
@@ -991,7 +989,7 @@ class DungeonMap {
         exploration += Math.min(60, ~~(completedRooms / totalRoomEstimate * 60));
 
         // Time
-        time - this.calcTimeDeduction()
+        time = time - this.calcTimeDeduction()
 
         // Skill
         skill += ~~(completedRooms / totalRoomEstimate * 80) - unfinshedPuzzles * 10;

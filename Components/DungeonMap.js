@@ -104,6 +104,9 @@ class DungeonMap {
         this.broadcast270message = 0;
         this.broadcast300message = 0;
 
+        this.show270title = 0;
+        this.show300title = 0;
+
         let mimicDeadMessages = ["$SKYTILS-DUNGEON-SCORE-MIMIC$", "Mimic Killed!", "Mimic Dead!", "Mimic dead!"]
 
         this.triggers = []
@@ -1038,6 +1041,27 @@ class DungeonMap {
             this.broadcast270message = 1;
         if (total < 300 && this.broadcast300message === 0)
             this.broadcast300message = 1;
+
+        let shouldAllow270Title = settings.settings.showScoreTitle === "at270" || settings.settings.showScoreTitle === "always"
+        let shouldAllow300Title = settings.settings.showScoreTitle === "at300" || settings.settings.showScoreTitle === "always"
+
+        if (settings.settings.showScoreTitle === "automatic") {
+            shouldAllow270Title = this.floorNumber <= 5
+            shouldAllow300Title = this.floorNumber >= 5 || this.floor === "M4"
+        }
+
+        if (shouldAllow300Title && total >= 300 && this.show300title === 1) {
+            this.show300title = 2;
+            Client.showTitle(`&4${settings.settings.custom300scoreTitle}`, "", 0, 20, 0);
+        } else if (shouldAllow270Title && total >= 270 && this.show270title === 1) {
+            this.show270title = 2;
+            Client.showTitle(`&4${settings.settings.custom270scoreTitle}`, "", 0, 20, 0);
+        }
+
+        if (total < 270 && this.show270title === 0)
+            this.show270title = 1;
+        if (total < 300 && this.show300title === 0)
+            this.show300title = 1;
 
         this.cachedScore = {
             time: Date.now(),

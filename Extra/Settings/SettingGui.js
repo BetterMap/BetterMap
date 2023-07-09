@@ -316,6 +316,23 @@ class SettingGui {
                 elm.addString("300 Score Message", "custom300scoreMessage", this.currentSettings.custom300scoreMessage)
         })
 
+        this.addDropdown("Show score title", {
+            "never": "Off",
+            "automatic": "Relevant score depending on your floor",
+            "at270": "After reaching 270 score",
+            "at300": "After reaching 300 score",
+            "always": "Both 270 and 300",
+        }, "showScoreTitle", this.currentSettings.showScoreTitle);
+
+        this.addGear(() => {
+            return this.currentSettings.showScoreTitle !== "never"
+        }, (elm) => {
+            if (this.currentSettings.showScoreTitle !== "at300")
+                elm.addString("270 Score Title", "custom270scoreTitle", this.currentSettings.custom270scoreTitle)
+            if (this.currentSettings.showScoreTitle !== "at270")
+                elm.addString("300 Score Title", "custom300scoreTitle", this.currentSettings.custom300scoreTitle)
+        })
+
         this.addToggle("Disbale min secret modification", "staticSecretsLeft", this.currentSettings.staticSecretsLeft)[1].setLore(["When enabled, do not subtract bonus/ add deathscore from min Secrets"])
 
         this.addCategory("Tab Info")

@@ -28,6 +28,9 @@
  * @property {"never"|"at270"|"at300"|"automatic"|"always"} showScoreMessage - Broadcast a score message after reaching a specific score
  * @property {String} custom270scoreMessage - Allows the player to set a custom message for 270 score
  * @property {String} custom300scoreMessage - Allows the player to set a custom message for 300 score
+ * @property {"never"|"at270"|"at300"|"automatic"|"always"} showScoreTitle - Show a score title after reaching a specific score
+ * @property {String} custom270scoreTitle - Allows the player to set a custom title for 270 score
+ * @property {String} custom300scoreTitle - Allows the player to set a custom title for 300 score
  * @property {Boolean} staticSecretsLeft - Disable the modification of min Secrets with bonus/ death score increase
  * @property {Boolean} hideInBoss - Hide the map in boss entirely 
  * @property {Boolean} showTabs - Show tabs at the top of the map 
@@ -161,9 +164,21 @@ class RenderContext {
     get custom270scoreMessage() {
         return this.settings.custom270scoreMessage;
     }
-
+    
     get custom300scoreMessage() {
         return this.settings.custom300scoreMessage;
+    }
+    
+    get showScoreTitle() {
+        return this.settings.showScoreTitle;
+    }
+
+    get custom270scoreTitle() {
+        return this.settings.custom270scoreTitle;
+    }
+
+    get custom300scoreTitle() {
+        return this.settings.custom300scoreTitle;
     }
 
     get staticSecretsLeft() {
@@ -468,6 +483,9 @@ class RenderContext {
         showScoreMessage = 'never',
         custom270scoreMessage = '270 Score reached!',
         custom300scoreMessage = '300 Score reached!',
+        showScoreTitle = 'never',
+        custom270scoreTitle = '270 Score',
+        custom300scoreTitle = '300 Score',
         staticSecretsLeft = false,
         tabSecretCount = false,
         tabCryptCount = false,
@@ -536,6 +554,9 @@ class RenderContext {
             showScoreMessage,
             custom270scoreMessage,
             custom300scoreMessage,
+            showScoreTitle,
+            custom270scoreTitle,
+            custom300scoreTitle,
             staticSecretsLeft,
             tabCryptCount,
             tabSecretCount,

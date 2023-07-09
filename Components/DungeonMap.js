@@ -1055,6 +1055,7 @@ class DungeonMap {
             Client.showTitle(`&4${settings.settings.custom300scoreTitle}`, "", 0, 60, 0);
         } else if (shouldAllow270Title && total >= 270 && this.show270title === 1) {
             this.show270title = 2;
+            Client.showTitle(`&4${settings.settings.custom270scoreTitle}`, "", 0, 1, 0); //this is dumb, but else the title wont show... (╯‵□′)╯︵┻━┻
             Client.showTitle(`&4${settings.settings.custom270scoreTitle}`, "", 0, 60, 0);
         }
 

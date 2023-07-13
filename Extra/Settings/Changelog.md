@@ -126,3 +126,8 @@ First released version!
 ```diff
 ! Internal fix
 ```
+
+@ver v1.0.14
+```diff
+! Fixed new sb level icons breaking player heads 
+```

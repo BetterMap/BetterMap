@@ -564,7 +564,7 @@ class SettingGui {
 
         this.addSidebarElement(new ButtonWithArrow().setText("&0Test selected 270 Score sound").addEvent(new SoopyMouseClickEvent().setHandler(() => {
             testSound270()
-        })), 0.6, 0.3, 0.075)
+        })), 0.55, 0.35, 0.075)
 
         this.addSidebarElement()
 
@@ -798,7 +798,7 @@ class SettingGui {
 
         this.addSidebarElement(new ButtonWithArrow().setText("&0Test selected 300 Score sound").addEvent(new SoopyMouseClickEvent().setHandler(() => {
             testSound300()
-        })), 0.6, 0.3, 0.075)
+        })), 0.55, 0.35, 0.075)
 
         this.addSidebarElement()
 

@@ -31,6 +31,13 @@
  * @property {"never"|"at270"|"at300"|"automatic"|"always"} showScoreTitle - Show a score title after reaching a specific score
  * @property {String} custom270scoreTitle - Allows the player to set a custom title for 270 score
  * @property {String} custom300scoreTitle - Allows the player to set a custom title for 300 score
+ * @property {Boolean} customSound - Toggles the custom sound for 270 && 300 score
+ * @property {"none"|"game.player.hurt.fall.big"|"game.neutral.hurt.fall.big"|"game.hostile.hurt.fall.big"|"game.player.hurt.fall.small"|"game.neutral.hurt.fall.small"|"game.hostile.hurt.fall.small"|"game.player.hurt"|"game.neutral.hurt"|"game.hostile.hurt"|"game.player.die"|"game.neutral.die"|"game.hostile.die"|"dig.cloth"|"dig.glass"|"game.potion.smash"|"dig.grass"|"dig.gravel"|"dig.sand"|"dig.snow"|"dig.stone"|"dig.wood"|"fire.fire"|"fire.ignite"|"item.fireCharge.use"|"fireworks.blast"|"fireworks.blast_far"|"fireworks.largeBlast"|"fireworks.largeBlast_far"|"fireworks.launch"|"fireworks.twinkle"|"fireworks.twinkle_far"|"game.player.swim.splash"|"game.neutral.swim.splash"|"game.hostile.swim.splash"|"game.player.swim"|"game.neutral.swim"|"game.hostile.swim"|"liquid.lava"|"liquid.lavapop"|"liquid.water"|"minecart.base"|"minecart.inside"|"note.bass"|"note.bassattack"|"note.bd"|"note.harp"|"note.hat"|"note.pling"|"note.snare"|"portal.portal"|"portal.travel"|"portal.trigger"|"random.anvil_break"|"random.anvil_land"|"random.anvil_use"|"random.bow"|"random.bowhit"|"random.break"|"random.burp"|"random.chestclosed"|"random.chestopen"|"gui.button.press"|"random.click"|"random.door_open"|"random.door_close"|"random.drink"|"random.eat"|"random.explode"|"random.fizz"|"game.tnt.primed"|"creeper.primed"|"random.levelup"|"random.orb"|"random.pop"|"random.splash"|"random.successful_hit"|"random.wood_click"|"step.cloth"|"step.grass"|"step.gravel"|"step.ladder"|"step.sand"|"step.snow"|"step.stone"|"step.wood"|"tile.piston.in"|"tile.piston.out"|"mob.bat.death"|"mob.bat.hurt"|"mob.bat.idle"|"mob.bat.loop"|"mob.bat.takeoff"|"mob.blaze.breathe"|"mob.blaze.death"|"mob.blaze.hit"|"mob.cat.hiss"|"mob.cat.hitt"|"mob.cat.meow"|"mob.cat.purr"|"mob.cat.purreow"|"mob.chicken.hurt"|"mob.chicken.plop"|"mob.chicken.say"|"mob.chicken.step"|"mob.cow.hurt"|"mob.cow.say"|"mob.cow.step"|"mob.creeper.death"|"mob.creeper.say"|"mob.enderdragon.end"|"mob.enderdragon.growl"|"mob.enderdragon.hit"|"mob.enderdragon.wings"|"mob.endermen.death"|"mob.endermen.hit"|"mob.endermen.idle"|"mob.endermen.portal"|"mob.endermen.scream"|"mob.endermen.stare"|"mob.ghast.affectionate_scream"|"mob.ghast.charge"|"mob.ghast.death"|"mob.ghast.fireball"|"mob.ghast.moan"|"mob.ghast.scream"|"mob.guardian.hit"|"mob.guardian.idle"|"mob.guardian.death"|"mob.guardian.elder.hit"|"mob.guardian.elder.idle"|"mob.guardian.elder.death"|"mob.guardian.land.hit"|"mob.guardian.land.idle"|"mob.guardian.land.death"|"mob.guardian.curse"|"mob.guardian.attack"|"mob.guardian.flop"|"mob.horse.angry"|"mob.horse.armor"|"mob.horse.breathe"|"mob.horse.death"|"mob.horse.donkey.angry"|"mob.horse.donkey.death"|"mob.horse.donkey.hit"|"mob.horse.donkey.idle"|"mob.horse.gallop"|"mob.horse.hit"|"mob.horse.idle"|"mob.horse.jump"|"mob.horse.land"|"mob.horse.leather"|"mob.horse.skeleton.death"|"mob.horse.skeleton.hit"|"mob.horse.skeleton.idle"|"mob.horse.soft"|"mob.horse.wood"|"mob.horse.zombie.death"|"mob.horse.zombie.hit"|"mob.horse.zombie.idle"|"mob.irongolem.death"|"mob.irongolem.hit"|"mob.irongolem.throw"|"mob.irongolem.walk"|"mob.magmacube.big"|"mob.magmacube.jump"|"mob.magmacube.small"|"mob.pig.death"|"mob.pig.say"|"mob.pig.step"|"mob.rabbit.hurt"|"mob.rabbit.idle"|"mob.rabbit.hop"|"mob.rabbit.death"|"mob.sheep.say"|"mob.sheep.shear"|"mob.sheep.step"|"mob.silverfish.hit"|"mob.silverfish.kill"|"mob.silverfish.say"|"mob.silverfish.step"|"mob.skeleton.death"|"mob.skeleton.hurt"|"mob.skeleton.say"|"mob.skeleton.step"|"mob.slime.attack"|"mob.slime.big"|"mob.slime.small"|"mob.spider.death"|"mob.spider.say"|"mob.spider.step"|"mob.villager.death"|"mob.villager.haggle"|"mob.villager.hit"|"mob.villager.idle"|"mob.villager.no"|"mob.villager.yes"|"mob.wither.death"|"mob.wither.hurt"|"mob.wither.idle"|"mob.wither.shoot"|"mob.wither.spawn"|"mob.wolf.bark"|"mob.wolf.death"|"mob.wolf.growl"|"mob.wolf.howl"|"mob.wolf.hurt"|"mob.wolf.panting"|"mob.wolf.shake"|"mob.wolf.step"|"mob.wolf.whine"|"mob.zombie.death"|"mob.zombie.hurt"|"mob.zombie.infect"|"mob.zombie.metal"|"mob.zombie.remedy"|"mob.zombie.say"|"mob.zombie.step"|"mob.zombie.unfect"|"mob.zombie.wood"|"mob.zombie.woodbreak"|"mob.zombiepig.zpig"|"mob.zombiepig.zpigangry"|"mob.zombiepig.zpigdeath"|"mob.zombiepig.zpighurt"} custom270scoreSound - Allows the player to set a custom sound for 270 score
+ * @property {"none"|"game.player.hurt.fall.big"|"game.neutral.hurt.fall.big"|"game.hostile.hurt.fall.big"|"game.player.hurt.fall.small"|"game.neutral.hurt.fall.small"|"game.hostile.hurt.fall.small"|"game.player.hurt"|"game.neutral.hurt"|"game.hostile.hurt"|"game.player.die"|"game.neutral.die"|"game.hostile.die"|"dig.cloth"|"dig.glass"|"game.potion.smash"|"dig.grass"|"dig.gravel"|"dig.sand"|"dig.snow"|"dig.stone"|"dig.wood"|"fire.fire"|"fire.ignite"|"item.fireCharge.use"|"fireworks.blast"|"fireworks.blast_far"|"fireworks.largeBlast"|"fireworks.largeBlast_far"|"fireworks.launch"|"fireworks.twinkle"|"fireworks.twinkle_far"|"game.player.swim.splash"|"game.neutral.swim.splash"|"game.hostile.swim.splash"|"game.player.swim"|"game.neutral.swim"|"game.hostile.swim"|"liquid.lava"|"liquid.lavapop"|"liquid.water"|"minecart.base"|"minecart.inside"|"note.bass"|"note.bassattack"|"note.bd"|"note.harp"|"note.hat"|"note.pling"|"note.snare"|"portal.portal"|"portal.travel"|"portal.trigger"|"random.anvil_break"|"random.anvil_land"|"random.anvil_use"|"random.bow"|"random.bowhit"|"random.break"|"random.burp"|"random.chestclosed"|"random.chestopen"|"gui.button.press"|"random.click"|"random.door_open"|"random.door_close"|"random.drink"|"random.eat"|"random.explode"|"random.fizz"|"game.tnt.primed"|"creeper.primed"|"random.levelup"|"random.orb"|"random.pop"|"random.splash"|"random.successful_hit"|"random.wood_click"|"step.cloth"|"step.grass"|"step.gravel"|"step.ladder"|"step.sand"|"step.snow"|"step.stone"|"step.wood"|"tile.piston.in"|"tile.piston.out"|"mob.bat.death"|"mob.bat.hurt"|"mob.bat.idle"|"mob.bat.loop"|"mob.bat.takeoff"|"mob.blaze.breathe"|"mob.blaze.death"|"mob.blaze.hit"|"mob.cat.hiss"|"mob.cat.hitt"|"mob.cat.meow"|"mob.cat.purr"|"mob.cat.purreow"|"mob.chicken.hurt"|"mob.chicken.plop"|"mob.chicken.say"|"mob.chicken.step"|"mob.cow.hurt"|"mob.cow.say"|"mob.cow.step"|"mob.creeper.death"|"mob.creeper.say"|"mob.enderdragon.end"|"mob.enderdragon.growl"|"mob.enderdragon.hit"|"mob.enderdragon.wings"|"mob.endermen.death"|"mob.endermen.hit"|"mob.endermen.idle"|"mob.endermen.portal"|"mob.endermen.scream"|"mob.endermen.stare"|"mob.ghast.affectionate_scream"|"mob.ghast.charge"|"mob.ghast.death"|"mob.ghast.fireball"|"mob.ghast.moan"|"mob.ghast.scream"|"mob.guardian.hit"|"mob.guardian.idle"|"mob.guardian.death"|"mob.guardian.elder.hit"|"mob.guardian.elder.idle"|"mob.guardian.elder.death"|"mob.guardian.land.hit"|"mob.guardian.land.idle"|"mob.guardian.land.death"|"mob.guardian.curse"|"mob.guardian.attack"|"mob.guardian.flop"|"mob.horse.angry"|"mob.horse.armor"|"mob.horse.breathe"|"mob.horse.death"|"mob.horse.donkey.angry"|"mob.horse.donkey.death"|"mob.horse.donkey.hit"|"mob.horse.donkey.idle"|"mob.horse.gallop"|"mob.horse.hit"|"mob.horse.idle"|"mob.horse.jump"|"mob.horse.land"|"mob.horse.leather"|"mob.horse.skeleton.death"|"mob.horse.skeleton.hit"|"mob.horse.skeleton.idle"|"mob.horse.soft"|"mob.horse.wood"|"mob.horse.zombie.death"|"mob.horse.zombie.hit"|"mob.horse.zombie.idle"|"mob.irongolem.death"|"mob.irongolem.hit"|"mob.irongolem.throw"|"mob.irongolem.walk"|"mob.magmacube.big"|"mob.magmacube.jump"|"mob.magmacube.small"|"mob.pig.death"|"mob.pig.say"|"mob.pig.step"|"mob.rabbit.hurt"|"mob.rabbit.idle"|"mob.rabbit.hop"|"mob.rabbit.death"|"mob.sheep.say"|"mob.sheep.shear"|"mob.sheep.step"|"mob.silverfish.hit"|"mob.silverfish.kill"|"mob.silverfish.say"|"mob.silverfish.step"|"mob.skeleton.death"|"mob.skeleton.hurt"|"mob.skeleton.say"|"mob.skeleton.step"|"mob.slime.attack"|"mob.slime.big"|"mob.slime.small"|"mob.spider.death"|"mob.spider.say"|"mob.spider.step"|"mob.villager.death"|"mob.villager.haggle"|"mob.villager.hit"|"mob.villager.idle"|"mob.villager.no"|"mob.villager.yes"|"mob.wither.death"|"mob.wither.hurt"|"mob.wither.idle"|"mob.wither.shoot"|"mob.wither.spawn"|"mob.wolf.bark"|"mob.wolf.death"|"mob.wolf.growl"|"mob.wolf.howl"|"mob.wolf.hurt"|"mob.wolf.panting"|"mob.wolf.shake"|"mob.wolf.step"|"mob.wolf.whine"|"mob.zombie.death"|"mob.zombie.hurt"|"mob.zombie.infect"|"mob.zombie.metal"|"mob.zombie.remedy"|"mob.zombie.say"|"mob.zombie.step"|"mob.zombie.unfect"|"mob.zombie.wood"|"mob.zombie.woodbreak"|"mob.zombiepig.zpig"|"mob.zombiepig.zpigangry"|"mob.zombiepig.zpigdeath"|"mob.zombiepig.zpighurt"} custom300scoreSound - Allows the player to set a custom sound for 300 score
+ * @property {Number} custom270scoreVolume - Allows the player to set a custom sound volume for 270 score
+ * @property {Number} custom300scoreVolume - Allows the player to set a custom sound volume for 300 score
+ * @property {Number} custom270scorePitch - Allows the player to set a custom sound pitch for 270 score
+ * @property {Number} custom300scorePitch - Allows the player to set a custom sound pitch for 300 score
  * @property {Boolean} staticSecretsLeft - Disable the modification of min Secrets with bonus/ death score increase
  * @property {Boolean} hideInBoss - Hide the map in boss entirely 
  * @property {Boolean} showTabs - Show tabs at the top of the map 
@@ -179,6 +186,34 @@ class RenderContext {
 
     get custom300scoreTitle() {
         return this.settings.custom300scoreTitle;
+    }
+
+    get customSound() {
+        return this.settings.customSound;
+    }
+    
+    get custom270scoreSound() {
+        return this.settings.custom270scoreSound;
+    }
+    
+    get custom300scoreSound() {
+        return this.settings.custom300scoreSound;
+    }
+    
+    get custom270scoreVolume() {
+        return this.settings.custom270scoreVolume;
+    }
+    
+    get custom300scoreVolume() {
+        return this.settings.custom300scoreVolume;
+    }
+    
+    get custom270scorePitch() {
+        return this.settings.custom270scorePitch;
+    }
+    
+    get custom300scorePitch() {
+        return this.settings.custom300scorePitch;
     }
 
     get staticSecretsLeft() {
@@ -486,6 +521,13 @@ class RenderContext {
         showScoreTitle = 'never',
         custom270scoreTitle = '270 Score',
         custom300scoreTitle = '300 Score',
+        customSound = false,
+        custom270scoreSound = 'none',
+        custom300scoreSound = 'none',
+        custom270scoreVolume = 1,
+        custom300scoreVolume = 1,
+        custom270scorePitch = 1,
+        custom300scorePitch = 1,
         staticSecretsLeft = false,
         tabSecretCount = false,
         tabCryptCount = false,
@@ -557,6 +599,13 @@ class RenderContext {
             showScoreTitle,
             custom270scoreTitle,
             custom300scoreTitle,
+            customSound,
+            custom270scoreSound,
+            custom300scoreSound,
+            custom270scoreVolume,
+            custom300scoreVolume,
+            custom270scorePitch,
+            custom300scorePitch,
             staticSecretsLeft,
             tabCryptCount,
             tabSecretCount,

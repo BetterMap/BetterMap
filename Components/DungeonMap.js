@@ -1052,11 +1052,11 @@ class DungeonMap {
 
         if (shouldAllow300Title && total >= 300 && this.show300title === 1) {
             this.show300title = 2;
-            if (settings.settings.custom270scoreSound !== 'none') World.playSound(settings.settings.custom270scoreSound, settings.settings.custom270scoreVolume, settings.settings.custom270scorePitch)
+            if (settings.settings.custom270scoreSound !== 'none') World.playSound(settings.settings.custom270scoreSound, 1, 1)
             Client.showTitle(`&4${settings.settings.custom300scoreTitle}`, "", 0, 60, 0);
         } else if (shouldAllow270Title && total >= 270 && this.show270title === 1) {
             this.show270title = 2;
-            if (settings.settings.custom300scoreSound !== 'none') World.playSound(settings.settings.custom300scoreSound, settings.settings.custom300scoreVolume, settings.settings.custom300scorePitch)
+            if (settings.settings.custom300scoreSound !== 'none') World.playSound(settings.settings.custom300scoreSound, 1, 1)
             Client.showTitle(`&4${settings.settings.custom270scoreTitle}`, "", 0, 1, 0); //this is dumb, but else the title wont show... (╯‵□′)╯︵┻━┻
             Client.showTitle(`&4${settings.settings.custom270scoreTitle}`, "", 0, 60, 0);
         }

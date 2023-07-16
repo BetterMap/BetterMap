@@ -562,17 +562,11 @@ class SettingGui {
             "tile.piston.out": "tile.piston.out"
         }, "custom270scoreSound", this.currentSettings.custom270scoreSound);
 
-        this.addGear(() => {
-            return this.currentSettings.custom270scoreSound !== "none"
-        }, (elm) => {
-            elm.addSlider("270 Score Sound volume", "custom270scoreVolume", this.currentSettings.custom270scoreVolume || 1, 0, 10)
-            elm.addString("270 Score Sound pitch", "custom270scorePitch", this.currentSettings.custom270scorePitch || 1, 0, 2)
-        })
         this.addSidebarElement(new ButtonWithArrow().setText("&0Test selected 270 Score sound").addEvent(new SoopyMouseClickEvent().setHandler(() => {
             testSound270()
-        })), 0.7, 0.2, 0.075)
-        this.addSidebarElement()
+        })), 0.7, 0.3, 0.075)
 
+        this.addSidebarElement()
 
         this.addDropdown("Custom 300 Score sound", {
             "none": "none",
@@ -802,15 +796,10 @@ class SettingGui {
             "tile.piston.out": "tile.piston.out"
         }, "custom300scoreSound", this.currentSettings.custom300scoreSound);
 
-        this.addGear(() => {
-            return this.currentSettings.custom270scoreSound !== "none"
-        }, (elm) => {
-            elm.addSlider("300 Score Sound volume", "custom300scoreVolume", this.currentSettings.custom300scoreVolume || 1, 0, 10)
-            elm.addString("300 Score Sound pitch", "custom300scorePitch", this.currentSettings.custom300scorePitch || 1, 0, 2)
-        })
         this.addSidebarElement(new ButtonWithArrow().setText("&0Test selected 300 Score sound").addEvent(new SoopyMouseClickEvent().setHandler(() => {
             testSound300()
-        })), 0.7, 0.2, 0.075)
+        })), 0.7, 0.3, 0.075)
+
         this.addSidebarElement()
 
         this.addToggle("Disbale min secret modification", "staticSecretsLeft", this.currentSettings.staticSecretsLeft)[1].setLore(["When enabled, do not subtract bonus/ add deathscore from min Secrets"])
@@ -1373,11 +1362,11 @@ function findKey(callback = () => { }) {
 }
 
 function testSound270() {
-    if (settings.settings.custom270scoreSound !== 'none') World.playSound(settings.settings.custom270scoreSound, settings.settings.custom270scoreVolume, settings.settings.custom270scorePitch)
+    if (settings.settings.custom270scoreSound !== 'none') World.playSound(settings.settings.custom270scoreSound, 1, 1)
 }
 
 function testSound300() {
-    if (settings.settings.custom300scoreSound !== 'none') World.playSound(settings.settings.custom300scoreSound, settings.settings.custom300scoreVolume, settings.settings.custom300scorePitch)
+    if (settings.settings.custom300scoreSound !== 'none') World.playSound(settings.settings.custom300scoreSound, 1, 1)
 }
 
 function isNumber(val) {

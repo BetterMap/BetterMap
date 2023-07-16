@@ -571,6 +571,7 @@ class SettingGui {
         this.addSidebarElement(new ButtonWithArrow().setText("&0Test selected 270 Score sound").addEvent(new SoopyMouseClickEvent().setHandler(() => {
             testSound270()
         })), 0.7, 0.2, 0.075)
+        this.addSidebarElement()
 
 
         this.addDropdown("Custom 300 Score sound", {
@@ -810,6 +811,7 @@ class SettingGui {
         this.addSidebarElement(new ButtonWithArrow().setText("&0Test selected 300 Score sound").addEvent(new SoopyMouseClickEvent().setHandler(() => {
             testSound300()
         })), 0.7, 0.2, 0.075)
+        this.addSidebarElement()
 
         this.addToggle("Disbale min secret modification", "staticSecretsLeft", this.currentSettings.staticSecretsLeft)[1].setLore(["When enabled, do not subtract bonus/ add deathscore from min Secrets"])
 

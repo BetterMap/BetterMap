@@ -131,3 +131,8 @@ First released version!
 ```diff
 ! Fixed new sb level icons breaking player heads 
 ```
+
+@ver v1.0.15
+```diff
+! Fixed score calc breaking from changed tab list
+```

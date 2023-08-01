@@ -49,8 +49,8 @@ function getTabListInfo() {
         } else if (cleanedLine.includes('Crypts:')) {
             let cryptString = cleanedLine.split(' ')[1]
             crypts = parseInt(cryptString)
-        } else if (cleanedLine.includes('Deaths:')) {
-            let deathString = cleanedLine.split(' ')[1];
+        } else if (cleanedLine.includes('Team Deaths:')) {
+            let deathString = cleanedLine.split(' ')[2];
             deathString = deathString.substring(1, deathString.length - 1);
             deaths = parseInt(deathString);
         } else if (cleanedLine.includes('Completed Rooms:')) {

@@ -185,3 +185,4 @@ gradle-app.setting
 *.hprof
 
 # End of https://www.toptal.com/developers/gitignore/api/forgegradle,gradle,java,kotlin,intellij
+/.vscode/launch.json

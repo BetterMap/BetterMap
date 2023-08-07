@@ -2,12 +2,15 @@ package bettermap
 
 import bettermap.commands.BetterMapCommands
 import bettermap.components.roomdata.DungeonRoomData
+import bettermap.dungeon.Dungeon
+import bettermap.utils.Location
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.asCoroutineDispatcher
 import net.minecraft.client.Minecraft
 import net.minecraftforge.client.ClientCommandHandler
+import net.minecraftforge.common.MinecraftForge
 import net.minecraftforge.fml.common.Mod
 import net.minecraftforge.fml.common.event.FMLInitializationEvent
 import net.minecraftforge.fml.common.event.FMLLoadCompleteEvent
@@ -25,6 +28,9 @@ class BetterMap {
     @Mod.EventHandler
     fun onInit(event: FMLInitializationEvent) {
         ClientCommandHandler.instance.registerCommand((BetterMapCommands()))
+        listOf(
+            Dungeon, Location
+        ).forEach(MinecraftForge.EVENT_BUS::register)
         DungeonRoomData // Initialize loading room data
     }
 

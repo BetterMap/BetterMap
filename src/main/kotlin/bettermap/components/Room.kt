@@ -1,13 +1,16 @@
 package bettermap.components
 
+import bettermap.components.roomdata.RoomData
+
 class Room(
     override var type: RoomType,
     override val position: Position,
     val components: MutableList<Pair<Int, Int>> = mutableListOf(),
     var roomID: String? = null,
 ) : Tile() {
-    val doors: List<Door> = listOf()
+    val doors: MutableList<Door> = mutableListOf()
     val shape: RoomShape = findShape()
+    var data: RoomData? = null
     var currentSecrets = 0
     var maxSecrets = 10
     var state: RoomState = RoomState.UNOPENED

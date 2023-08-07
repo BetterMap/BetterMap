@@ -8,6 +8,7 @@ import bettermap.components.Room
 import bettermap.components.roomdata.DungeonRoomData
 import bettermap.events.ReceivePacketEvent
 import bettermap.utils.Location.inDungeons
+import net.minecraft.network.play.server.S02PacketChat
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent
@@ -55,6 +56,18 @@ object Dungeon {
         renderMap = map
         MapScan.updateRoomsFromMap(map)
         updateCurrentRoom()
+    }
+
+    @SubscribeEvent
+    fun onChatPacket(event: ReceivePacketEvent) {
+        if (event.packet !is S02PacketChat) return
+        if (event.packet.type.toInt() == 2 || !inDungeons) return
+        when (event.packet.chatComponent.unformattedText) {
+            "Starting in 4 seconds." -> PlayerUpdate.preloadHeads()
+            "[NPC] Mort: Here, I found this map when I first entered the dungeon." -> {
+                PlayerUpdate.getPlayers()
+            }
+        }
     }
 
     fun updateCurrentRoom() {

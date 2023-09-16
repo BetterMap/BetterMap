@@ -343,6 +343,8 @@ class SettingGui {
 
         this.addToggle("Spirit leap overlay", "spiritLeapOverlay", this.currentSettings.spiritLeapOverlay)[1].setLore(["You can click on player heads in overlay!", "Most people probs wont like the design though."])
 
+        this.addToggle("Close Secret chests by moving", "movingClosesChests", this.currentSettings.movingClosesChests)[1].setLore(["Using any movement key should close any Container (Secrets/ Dungeon reward Chests)"])
+
         this.addSidebarElement(new ButtonWithArrow().setText("&0Load api key from other mods").addEvent(new SoopyMouseClickEvent().setHandler(() => {
             findKey(key => {
                 this.setApiKey(key)

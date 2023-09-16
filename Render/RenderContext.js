@@ -33,7 +33,7 @@
  * @property {Boolean} showSecrets - Show waypoints for secrets in the dungeon
  * @property {Boolean} boxDoors - Put a box around wither doors
  * @property {Boolean} spiritLeapOverlay - Show an overlay on the spirit leap gui
- * @property {Boolean} movingClosesChests - Close Containers in Dungeon with moveing
+ * @property {Boolean} movingClosesChests - Close Containers in Dungeon with movement keys
  * @property {Boolean} forcePaul - Wether to force enable the +10 score for paul (eg if jerry mayor)
  * @property {Boolean} clearedRoomInfo - Show a summory of what rooms people cleared after run finishes
  * @property {String} apiKey - The user's api key, or "" if unknown

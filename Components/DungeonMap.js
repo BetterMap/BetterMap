@@ -140,12 +140,8 @@ class DungeonMap {
 
                         mess.addTextComponent(new TextComponent("&6" + p.minRooms + "-" + p.maxRooms).setHover("show_text", roomLore.trim()))
 
-                        if (settings.settings.apiKey) {
-                            mess.addTextComponent(new TextComponent("&7 rooms | &6" + p.secretsCollected + "&7 secrets"))
-                        }
-                        else {
-                            mess.addTextComponent(new TextComponent("&7 rooms and got &c[NO API KEY]&7 secrets"))
-                        }
+                        mess.addTextComponent(new TextComponent("&7 rooms | &6" + p.secretsCollected + "&7 secrets"))
+
                         mess.addTextComponent(new TextComponent("&7 | &6" + p.deaths + "&7 deaths"))
 
                         mess.chat()
@@ -183,16 +179,15 @@ class DungeonMap {
             }))
 
             this.triggers.push(register("chat", (info) => {
-                let player = ChatLib.removeFormatting(info).split(" ")[0]
-
+                let player = ChatLib.removeFormatting(info).split(" ")[0];
                 for (let p of this.players) {
-                    if (p.username === player) {
-                        p.deaths++
-                    }
+                  if (p.username === player || p.username == Player.getName() && player.toLowerCase() === 'you') {
+                    p.deaths++;
+                  }
                 }
-
-                this.scanFirstDeathForSpiritPet(player)
-            }).setChatCriteria("&r&c ☠ ${info} and became a ghost&r&7.&r"))
+        
+                this.scanFirstDeathForSpiritPet(player);
+              }).setChatCriteria("&r&c ☠ ${info} became a ghost&r&7.&r"));
 
             this.triggers.push(register("chat", (info) => {
                 this.roomsArr.forEach(r => {
@@ -984,37 +979,22 @@ class DungeonMap {
     }
 
     scanFirstDeathForSpiritPet(username) {
-        if (this.firstDeath) return
-        this.firstDeath = true
-
-        if (!this.nameToUuid[username.toLowerCase()]) return
-        let uuid = this.nameToUuid[username.toLowerCase()]?.replace(/-/g, "")
-
-        let apiKey = settings.settings.apiKey
-
+        if (this.firstDeath) return;
+        this.firstDeath = true;
+    
+        if (!this.nameToUuid[username.toLowerCase()]) return;
+        let uuid = this.nameToUuid[username.toLowerCase()]?.replace(/-/g, "");
+    
         const printSpiritMessage = () => {
-            if (this.firstDeathHadSpirit) return ChatLib.chat(`${MESSAGE_PREFIX}${username} ${username == "You" ? "do" : "does"} have a spirit pet.`)
-            ChatLib.chat(`${MESSAGE_PREFIX}${username} ${username == "You" ? "do" : "does"} not have a spirit pet.`)
-        }
-
-        if (apiKey) {
-            fetch(`https://api.hypixel.net/skyblock/profiles?key=${apiKey}&uuid=${uuid}`).json(data => {
-                if (!data.success) return
-                let latestProfile = data.profiles.find(a => a.selected)
-                if (!latestProfile) return // This shouldn't happen
-                this.firstDeathHadSpirit = latestProfile.members[uuid].pets.some(pet => pet.type === "SPIRIT" && pet.tier === "LEGENDARY")
-                printSpiritMessage()
-            })
-        }
-        else {
-            // Works without api key, api key still recommended though for secrets tracking
-            fetch(`https://soopy.dev/api/v2/player_skyblock/${uuid}`).json(data => {
-                if (!data.success) return
-                this.firstDeathHadSpirit = data.data.profiles[data.data.stats.currentProfileId].members[uuid].pets.some(pet => pet.type === "SPIRIT" && pet.tier === "LEGENDARY")
-                printSpiritMessage()
-            })
-        }
-    }
+          if (this.firstDeathHadSpirit) return ChatLib.chat(`${MESSAGE_PREFIX}${username} ${username == "You" ? "do" : "does"} have a spirit pet.`);
+          ChatLib.chat(`${MESSAGE_PREFIX}${username} ${username == "You" ? "do" : "does"} not have a spirit pet.`);
+        };
+    
+        fetch(`https://api.tenios.dev/spiritPet/${uuid}`).json((spirit) => {
+          this.firstDeathHadSpirit = spirit
+          printSpiritMessage();
+        });
+      }
 
     secretCountActionBar(min, max) {
         if (!this.canUpdateRoom()) return

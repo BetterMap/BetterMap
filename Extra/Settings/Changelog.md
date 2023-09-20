@@ -136,3 +136,9 @@ First released version!
 ```diff
 ! Fixed score calc breaking from changed tab list
 ```
+
+@ver v1.0.16
+```diff
+! Migrated secret count api
+! Fixed death counts for own player not working
+```

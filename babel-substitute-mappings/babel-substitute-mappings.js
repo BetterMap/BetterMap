@@ -1,3 +1,5 @@
+const request = require("sync-request")
+
 let [m, f] = createMappings()
 
 module.exports = function ({ types: t }) {
@@ -65,7 +67,7 @@ function replaceMappings(mainPath, t, f, m) {
 
 	return isImported
 }
-const request = require("sync-request");
+
 function createMappings() {
 	let m = {}
 	let f = {}

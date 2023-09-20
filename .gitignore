@@ -1,3 +1,7 @@
 Data/roomdata.json
 out
 node_modules
+.gradle
+.idea
+build
+.vscode

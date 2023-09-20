@@ -35,7 +35,6 @@
  * @property {Boolean} spiritLeapOverlay - Show an overlay on the spirit leap gui
  * @property {Boolean} forcePaul - Wether to force enable the +10 score for paul (eg if jerry mayor)
  * @property {Boolean} clearedRoomInfo - Show a summory of what rooms people cleared after run finishes
- * @property {String} apiKey - The user's api key, or "" if unknown
  * @property {Boolean} devInfo - Wether to show def info in various places in the map
  * @property {[r:Number, g:Number, b:Number, a:number]} mapBorderColor - The RGBO value of the map border color
  * @property {[r:Number, g:Number, b:Number, a:number]} mapBackgroundColor - The RGBO value of the map backround color
@@ -202,10 +201,6 @@ class RenderContext {
 
     get boxDoors() {
         return this.settings.boxDoors
-    }
-
-    get apiKey() {
-        return this.settings.apiKey
     }
 
     get devInfo() {
@@ -449,7 +444,6 @@ class RenderContext {
         spiritLeapOverlay = false,
         forcePaul = false,
         clearedRoomInfo = true,
-        apiKey = "",
         devInfo = false,
         boxDoors = true,
         mapBorderColor = [0, 0, 0, 255],
@@ -511,7 +505,6 @@ class RenderContext {
             spiritLeapOverlay,
             forcePaul,
             clearedRoomInfo,
-            apiKey,
             devInfo,
             boxDoors,
             mapBorderColor,

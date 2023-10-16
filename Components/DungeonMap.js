@@ -47,6 +47,7 @@ class DungeonMap {
         this.floorNumber = this.floor == "E" ? 0 : parseInt(this.floor[this.floor.length - 1])
 
         this.deadPlayers = deadPlayers
+        this.playerNick = null;
 
         this.lastChanged = Date.now()
 
@@ -181,13 +182,13 @@ class DungeonMap {
             this.triggers.push(register("chat", (info) => {
                 let player = ChatLib.removeFormatting(info).split(" ")[0];
                 for (let p of this.players) {
-                  if (p.username === player || p.username == Player.getName() && player.toLowerCase() === 'you') {
-                    p.deaths++;
-                  }
+                    if (p.username === player || p.username == Player.getName() && player.toLowerCase() === 'you') {
+                        p.deaths++;
+                    }
                 }
-        
+
                 this.scanFirstDeathForSpiritPet(player);
-              }).setChatCriteria("&r&c ☠ ${info} became a ghost&r&7.&r"));
+            }).setChatCriteria("&r&c ☠ ${info} became a ghost&r&7.&r"));
 
             this.triggers.push(register("chat", (info) => {
                 this.roomsArr.forEach(r => {
@@ -370,49 +371,58 @@ class DungeonMap {
      * Update players from tab list, also sends locations of players in render distance to other players
      */
     updatePlayers() {
-        if (!Player.getPlayer()) return //How tf is this null sometimes wtf 
-        let pl = Player.getPlayer()[f.sendQueue.EntityPlayerSP][m.getPlayerInfoMap]().sort((a, b) => sorter.compare(a, b))  // Tab player list
+        if (!Player.getPlayer()) return; //How tf is this null sometimes wtf 
+        let pl = Player.getPlayer()["field_71174_a"]["func_175106_d"]().sort((a, b) => sorter.compare(a, b)); // Tab player list
 
-        let i = 0
+        let i = 0;
 
-        let thePlayer = undefined
+        let thePlayer = undefined;
         for (let p of pl) {
-            if (!p[m.getDisplayName.NetworkPlayerInfo]()) continue
-            let line = p[m.getDisplayName.NetworkPlayerInfo]()[m.getUnformattedText]()
+            if (!p["func_178854_k"]()) continue;
+            let line = p["func_178854_k"]()["func_150260_c"]();
             // https://regex101.com/r/cUzJoK/3
             line = line.replace(/§[a-fnmz0-9r]/g, ''); //support dungeons guide custom name colors
             let match = line.match(/^\[(\d+)\] (?:\[\w+\] )*(\w+) (?:.)*?\((\w+)(?: (\w+))*\)$/);
-            if (!match) continue
-            let [_, sbLevel, name, clazz, level] = match
-            sbLevel = parseInt(sbLevel)
+            if (!match) continue;
+            let [_, sbLevel, name, clazz, level] = match;
+            sbLevel = parseInt(sbLevel);
             // This is a tab list line for a player
-            let playerName = getPlayerName(Player)
-            if (name === playerName) { // Move the current player to end of list
-                thePlayer = [p, name, match]
-                continue
+            let playerName = getPlayerName(Player);
+            if (name === playerName || name === this.playerNick) {// Move the current player to end of list
+                thePlayer = [p, name, match];
+                continue;
             }
-            if (!this.players[i]) this.players[i] = new MapPlayer(p, this, name)
-            this.players[i].networkPlayerInfo = p
-            this.playersNameToId[name] = i
-            this.players[i].updateTablistInfo(match)
+            if (!this.players[i]) this.players[i] = new MapPlayer(p, this, name);
+            this.players[i].networkPlayerInfo = p;
+            this.playersNameToId[name] = i;
+            this.players[i].updateTablistInfo(match);
 
-            i++
+            i++;
         }
 
-        if (thePlayer) { // Move current player to end of list
-            let [networkInfo, name, matchObject] = thePlayer
-            if (!this.players[i]) this.players[i] = new MapPlayer(networkInfo, this, name)
-            this.players[i].networkPlayerInfo = networkInfo
-            this.playersNameToId[thePlayer[1]] = i
-            this.players[i].updateTablistInfo(matchObject)
+        if (thePlayer) {// Move current player to end of list
+            let [networkInfo, name, matchObject] = thePlayer;
+            if (!this.players[i]) this.players[i] = new MapPlayer(networkInfo, this, name);
+            this.players[i].networkPlayerInfo = networkInfo;
+            this.playersNameToId[thePlayer[1]] = i;
+            if (this.playerNick)
+                this.playersNameToId[Player.getName()] = i;
+            this.players[i].updateTablistInfo(matchObject);
+        } else if (!this.playerNick) {
+            //find the players nick
+            pl.forEach(playerInfo => {
+                if (playerInfo.func_178845_a().getId() == Player.getUUID()) {
+                    this.playerNick = playerInfo.func_178845_a().getName();
+                }
+            })
         }
 
         for (let player of this.players) {
             let room = player.getRoom(this);
-            if (player.currentRoomCache == room) continue
-            if (player.currentRoomCache) player.currentRoomCache.addEvent(RoomEvents.PLAYER_EXIT, player)
-            player.currentRoomCache = room
-            room?.addEvent(RoomEvents.PLAYER_ENTER, player)
+            if (player.currentRoomCache == room) continue;
+            if (player.currentRoomCache) player.currentRoomCache.addEvent(RoomEvents.PLAYER_EXIT, player);
+            player.currentRoomCache = room;
+            room?.addEvent(RoomEvents.PLAYER_ENTER, player);
         }
     }
 
@@ -981,20 +991,20 @@ class DungeonMap {
     scanFirstDeathForSpiritPet(username) {
         if (this.firstDeath) return;
         this.firstDeath = true;
-    
+
         if (!this.nameToUuid[username.toLowerCase()]) return;
         let uuid = this.nameToUuid[username.toLowerCase()]?.replace(/-/g, "");
-    
+
         const printSpiritMessage = () => {
-          if (this.firstDeathHadSpirit) return ChatLib.chat(`${MESSAGE_PREFIX}${username} ${username == "You" ? "do" : "does"} have a spirit pet.`);
-          ChatLib.chat(`${MESSAGE_PREFIX}${username} ${username == "You" ? "do" : "does"} not have a spirit pet.`);
+            if (this.firstDeathHadSpirit) return ChatLib.chat(`${MESSAGE_PREFIX}${username} ${username == "You" ? "do" : "does"} have a spirit pet.`);
+            ChatLib.chat(`${MESSAGE_PREFIX}${username} ${username == "You" ? "do" : "does"} not have a spirit pet.`);
         };
-    
+
         fetch(`https://api.tenios.dev/spiritPet/${uuid}`).json((spirit) => {
-          this.firstDeathHadSpirit = spirit
-          printSpiritMessage();
+            this.firstDeathHadSpirit = spirit
+            printSpiritMessage();
         });
-      }
+    }
 
     secretCountActionBar(min, max) {
         if (!this.canUpdateRoom()) return

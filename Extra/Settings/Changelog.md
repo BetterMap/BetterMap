@@ -142,3 +142,8 @@ First released version!
 ! Migrated secret count api
 ! Fixed death counts for own player not working
 ```
+
+@ver v1.0.17
+```diff
+! Fixed player heads being wonky when the player is nicked
+```

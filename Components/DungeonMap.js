@@ -1561,10 +1561,10 @@ class DungeonMap {
             x -= 32
             width += 32
         }
-        while (width > 30 && height > 30
-            && this.getBlockIdAt(x + 32 - 1, roofY, y + 32 - 1) === 0
-            && this.getBlockIdAt(x + 32 - 1, roofY, y + 32) !== 0
-            && this.getBlockIdAt(x + 32, roofY, y + 32 - 1) !== 0) { // Forth iteration incase of L shape
+        while (width > 30 && height > 30 &&
+            this.getBlockIdAt(x + 32 - 1, roofY, y + 32 - 1) === 0 &&
+            this.getBlockIdAt(x + 32 - 1, roofY, y + 32) !== 0 &&
+            this.getBlockIdAt(x + 32, roofY, y + 32 - 1) !== 0) { // Forth iteration incase of L shape
             y += 32
         }
 

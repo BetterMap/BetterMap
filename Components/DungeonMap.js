@@ -1475,7 +1475,7 @@ class DungeonMap {
     }
 
     /**
-     * @returns {[Number, Number]} the x and y location of the rooms 'location' (top left of all rooms, shifted down by 1 if needed to in L)
+     * @returns {[Number, Number]} the x and y location of the rooms 'location' (top left of all rooms, shifted right by 1 if needed to in L)
      */
     getRoomXYWorld() {
         let roomData = this.getRoomWorldData()

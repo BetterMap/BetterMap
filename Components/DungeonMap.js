@@ -1475,11 +1475,10 @@ class DungeonMap {
     }
 
     /**
-     * @returns {[Number, Number]} the x and y location of the rooms 'location' (top left of all rooms, shifting down by 1 if needed to in L)
+     * @returns {[Number, Number]} the x and y location of the rooms 'location' (top left of all rooms, shifted down by 1 if needed to in L)
      */
     getRoomXYWorld() {
         let roomData = this.getRoomWorldData()
-        if (roomData.rotation === 4) return [roomData.x, roomData.y + 32]
         return [roomData.x, roomData.y]
     }
 
@@ -1561,6 +1560,12 @@ class DungeonMap {
             && this.getBlockIdAt(x - 1 + (width === 30 ? 0 : 32), roofY, y + height) !== 0) { // Third iteration incase of L shape
             x -= 32
             width += 32
+        }
+        while (width > 30 && height > 30
+            && this.getBlockIdAt(x + 32 - 1, roofY, y + 32 - 1) === 0
+            && this.getBlockIdAt(x + 32 - 1, roofY, y + 32) !== 0
+            && this.getBlockIdAt(x + 32, roofY, y + 32 - 1) !== 0) { // Forth iteration incase of L shape
+            y += 32
         }
 
         let rotation = this.getRotation(x, y, width, height, roofY);

@@ -93,9 +93,7 @@ class SpiritLeapOverlay {
                     return pClass
                 }
 
-                Object.keys(this.items).sort((a, b) => {
-                    return getClass(ChatLib.removeFormatting(a)).codePointAt(0) - getClass(ChatLib.removeFormatting(b)).codePointAt(0)
-                }).forEach((name, i) => {
+                Object.keys(this.items).sort().forEach((name, i) => {
 
                     let name2 = ChatLib.removeFormatting(name)
                     let pClass = getClass(name2)

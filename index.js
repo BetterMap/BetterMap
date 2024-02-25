@@ -16,7 +16,6 @@ import { MESSAGE_PREFIX } from "./Utils/Utils"
 import { drawBoxAtBlock } from "./Utils/renderUtils"
 import settings from "./Extra/Settings/CurrentSettings"
 import socketConnection from "./socketConnection"
-require("./Extra/Events/SecretTracker.js")
 
 /**@type {DungeonMap} */
 let currentDungeonMap = undefined
@@ -31,7 +30,10 @@ let dungeonMapRenderContext = settingsManager.createRenderContext();
 CurrentSettings.renderContext = renderContextManager.getRenderContextData(dungeonMapRenderContext)
 CurrentSettings.settingsManager = settingsManager
 
+require("./Extra/Events/SecretTracker.js")
 require("./Extra/LeapGui/leapGui.js")
+require('./Routes/RouteManager.js')
+
 
 register("step", () => {
     if (DataLoader.isInDungeon && DataLoader.dungeonFloor || currentDungeonMap?.getCurrentRoomId() === "30,225") {

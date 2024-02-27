@@ -22,6 +22,9 @@ export default class Replay {
         } else {
             this.fakePlayer.moveToPosition(state);
         }
+        if(state.swinging) this.fakePlayer.swing();
+        this.fakePlayer.setHeldItem(state.heldItem);
+        this.fakePlayer.setSneaking(state.isSneaking);
         //increment replay position
         this.replayIndex++;
         return this.replayIndex >= this.states.length;

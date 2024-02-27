@@ -3,6 +3,8 @@ const GameProfile = Java.type('com.mojang.authlib.GameProfile');
 const UUID = Java.type('java.util.UUID');
 const BigInteger = Java.type('java.math.BigInteger');
 const ScoreBoard = Java.type('net.minecraft.scoreboard.Scoreboard');
+const ItemStack = Java.type('net.minecraft.item.ItemStack');
+const ItemType = Java.type('net.minecraft.item.Item')
 
 const emptyScoreboard = new ScoreBoard();
 
@@ -11,7 +13,7 @@ export default class PlayerGhost {
     //define players state
     constructor(entityId = -1, name = "Fake Player", playerUUID = null) {
         this.entityId = entityId;
-        
+
         let id = '134f5e80393c47199cce985f6191ba90';
         this.uuid_ = new UUID(
             new BigInteger(id.substring(0, 16), 16).longValue(),
@@ -43,14 +45,29 @@ export default class PlayerGhost {
         this.fakePlayer.func_70080_a(state.x, state.y, state.z, state.yaw, state.pitch);
         this.fakePlayer.field_70125_A = state.head;
         this.fakePlayer.func_82142_c(true);
-        this.inWorld=true;
+        this.inWorld = true;
         World.getWorld().func_73027_a(this.entityId, this.fakePlayer);
     }
 
-    removeFromWorld(){
-       World.getWorld().func_73028_b(this.entityId);
+    removeFromWorld() {
+        World.getWorld().func_73028_b(this.entityId);
     }
 
+    swing() {
+        this.fakePlayer.func_71038_i();
+    }
+
+    setSneaking(sneaking) {
+        this.fakePlayer.func_70095_a(sneaking);
+    }
+
+    setHeldItem(id) {
+        if (id === 0) {
+            this.fakePlayer.field_71071_by.field_70462_a[this.fakePlayer.field_71071_by.field_70461_c] = null;
+        } else {
+            this.fakePlayer.field_71071_by.field_70462_a[this.fakePlayer.field_71071_by.field_70461_c] = new ItemStack(ItemType.func_150899_d(id), 1, 0);
+        }
+    }
 
 }
 

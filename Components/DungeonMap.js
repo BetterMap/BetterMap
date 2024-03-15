@@ -1,18 +1,17 @@
 import { f, m } from "../../mappings/mappings.js"
 import Position from "../Utils/Position.js"
-import MapPlayer from "./MapPlayer.js"
 import Room from "./Room.js"
 
 import { getScoreboardInfo, getTabListInfo, getRequiredSecrets } from "../Utils/Score"
 import Door from "./Door.js"
 import DungeonRoomData from "../Data/DungeonRoomData.js"
 import { changeScoreboardLine, dungeonOffsetX, dungeonOffsetY, MESSAGE_PREFIX, MESSAGE_PREFIX_SHORT, renderLore, getPlayerName } from "../Utils/Utils.js"
-import socketConnection from "../socketConnection.js"
 import DataLoader from "../Utils/DataLoader.js"
 import { fetch } from "../Utils/networkUtils.js"
 import renderLibs from "../../guimanager/renderLibs.js"
 import settings from "../Extra/Settings/CurrentSettings.js"
 import { RoomEvents, toDisplayString } from "./RoomEvent.js"
+import RecordManager from "../Routes/find proper name/RecordManager.js"
 
 let PlayerComparator = Java.type("net.minecraft.client.gui.GuiPlayerTabOverlay").PlayerComparator
 let c = PlayerComparator.class.getDeclaredConstructor()
@@ -53,11 +52,7 @@ class DungeonMap {
 
         this.dungeonTopLeft = undefined
 
-        /**
-         * @type {Array<MapPlayer>}
-         */
-        this.players = []
-        this.playersNameToId = {}
+        this.recordManager = new RecordManager();
 
         this.cachedScore = {
             time: 0,
@@ -105,191 +100,7 @@ class DungeonMap {
         this.broadcast270message = 0;
         this.broadcast300message = 0;
 
-        let mimicDeadMessages = ["$SKYTILS-DUNGEON-SCORE-MIMIC$", "Mimic Killed!", "Mimic Dead!", "Mimic dead!"]
 
-        this.triggers = []
-        if (registerEvents) {
-            this.triggers.push(register("chat", (msg) => {
-                mimicDeadMessages.forEach(dmsg => {
-                    if (msg.includes(dmsg)) this.mimicKilled = true
-                })
-            }).setChatCriteria("&r&9Party &8> ${msg}"))
-            this.triggers.push(register("chat", (end, e) => {
-                if (end.includes("Stats")) return
-
-                this.dungeonFinished = true
-
-                if (!settings.settings.clearedRoomInfo) return
-                this.players.forEach(p => p.updateCurrentSecrets())
-
-                Client.scheduleTask(5 * 20, () => { // Wait 5 seconds (5*20tps)
-                    ChatLib.chat(MESSAGE_PREFIX + "Cleared room counts:")
-                    this.players.forEach(p => {
-                        let mess = new Message()
-                        mess.addTextComponent(new TextComponent(MESSAGE_PREFIX_SHORT + "&3" + p.username + "&7 cleared "))
-
-                        let roomLore = ""
-                        p.roomsData.forEach(([players, room]) => {
-                            let name = room.data?.name ?? room.shape
-                            let type = room.typeToName()
-                            let color = room.typeToColor()
-
-                            let stackStr = players.length === 1 ? "" : " Stacked with " + players.filter(pl => pl !== p).map(p => p.username).join(", ")
-
-                            roomLore += `&${color}${name} (${type})${stackStr}\n`
-                        })
-
-                        mess.addTextComponent(new TextComponent("&6" + p.minRooms + "-" + p.maxRooms).setHover("show_text", roomLore.trim()))
-
-                        mess.addTextComponent(new TextComponent("&7 rooms | &6" + p.secretsCollected + "&7 secrets"))
-
-                        mess.addTextComponent(new TextComponent("&7 | &6" + p.deaths + "&7 deaths"))
-
-                        mess.chat()
-                    })
-                })
-            }).setChatCriteria('&r&c${*}e Catacombs &r&8- &r&eFloor${end}').setContains())
-            //&r&r&r                     &r&cThe Catacombs &r&8- &r&eFloor I Stats&r
-            //&r&r&r               &r&cMaster Mode Catacombs &r&8- &r&eFloor III Stats&r
-            //&r&r&r                         &r&cThe Catacombs &r&8- &r&eFloor V&r
-
-            this.triggers.push(register("entityDeath", (entity) => {
-                if (entity.getClassName() !== "EntityBlaze") return
-                this.deadBlazes++;
-                if (this.deadBlazes === 10) {
-                    this.roomsArr.forEach(room => {
-                        if (room.data?.name?.toLowerCase() === 'higher or lower') {
-                            room.checkmarkState = room.currentSecrets ? Room.COMPLETED : Room.CLEARED;
-                        }
-                    })
-
-                    this.sendSocketData({ type: "blazeDone" })
-                }
-            }))
-            this.triggers.push(register("entityDeath", (entity) => {
-                if (entity.getClassName() !== "EntityZombie") return
-                let e = entity.getEntity()
-                if (!e.func_70631_g_()) return // .isChild()
-
-                // Check all armor slots, if they are all null then mimic is die!
-                if ([0, 1, 2, 3].every(a => e.func_82169_q(a) === null)) {
-                    // ChatLib.chat("Mimic Kapow!")
-                    this.mimicKilled = true
-                    this.sendSocketData({ type: "mimicKilled" })
-                }
-            }))
-
-            this.triggers.push(register("chat", (info) => {
-                let player = ChatLib.removeFormatting(info).split(" ")[0];
-                for (let p of this.players) {
-                    if (p.username === player || p.username == Player.getName() && player.toLowerCase() === 'you') {
-                        p.deaths++;
-                    }
-                }
-
-                this.scanFirstDeathForSpiritPet(player);
-            }).setChatCriteria("&r&c ☠ ${info} became a ghost&r&7.&r"));
-
-            this.triggers.push(register("chat", (info) => {
-                this.roomsArr.forEach(r => {
-                    if (r.type === Room.BLOOD) {
-                        r.checkmarkState = Room.CLEARED
-                        this.markChanged()
-                    }
-                })
-            }).setChatCriteria("[BOSS] The Watcher: That will be enough for now."))
-
-            this.triggers.push(register("step", () => {
-                this.pingIdFuncs.forEach(([timestamp, callback], id) => {
-                    if (Date.now() - timestamp < 5000) return
-
-                    callback(false)
-                    this.pingIdFuncs.delete(id)
-                })
-            }).setFps(1))
-
-            // On dungeon start
-            // this.triggers.push(register("chat", () => {
-            //     // wait 2 secs
-            //     Client.scheduleTask(2 * 20, () => {
-            //         // update all player classes
-            //         this.players.forEach(p => {
-            //             p.updateDungeonClass().updatePlayerColor()
-            //         })
-            //     })
-            // }).setChatCriteria("&r&aDungeon starts in 1 second.&r"))
-
-            this.triggers.push(register("chat", () => {
-                this.bloodOpen = true
-                this.keys--
-            }).setChatCriteria("&r&cThe &r&c&lBLOOD DOOR&r&c has been opened!&r"))
-
-            this.triggers.push(register("chat", () => {
-                this.keys++
-            }).setChatCriteria("${*} &r&ehas obtained &r&a&r&${*} Key&r&e!&r"))
-
-            this.triggers.push(register("chat", () => {
-                this.keys++
-            }).setChatCriteria("&r&eA &r&a&r&${*} Key&r&e was picked up!&r"))
-
-            this.triggers.push(register("chat", () => {
-                this.keys--
-            }).setChatCriteria("&r&a${player}&r&a opened a &r&8&lWITHER &r&adoor!&r"))
-        }
-    }
-
-    socketData(data) {
-        switch (data.type) {
-            case "playerLocation":
-                let p = this.players[this.playersNameToId[data.username]]
-                if (!p) return
-
-                p.setXAnimate(data.x, 350)
-                p.setYAnimate(data.z, 350)
-                p.setRotateAnimate(data.yaw, 350)
-                p.locallyUpdated = Date.now()
-                break;
-            case "roomSecrets":
-                let currentRoom = this.rooms.get(data.x + ',' + data.y);
-
-                if (!currentRoom || currentRoom.type === Room.UNKNOWN) return; // Current room not loaded yet
-
-                if (currentRoom.currentSecrets !== data.min) {
-                    currentRoom.currentSecrets = data.min
-                    currentRoom.maxSecrets = data.max
-
-                    this.markChanged() // Re-render map incase of a secret count specific texturing
-                }
-                break;
-            case "doorLocation":
-                this.setDoor(data.x, data.y, data.ishorizontal, false, data.doorType)
-                break;
-            case "roomLocation":
-                this.setRoom(data.x, data.y, data.rotation, data.roomId, false)
-                break;
-            case "roomId":
-                let currentRoom2 = this.rooms.get(data.x + ',' + data.y);
-
-                if (!currentRoom2 || currentRoom2.roomId || currentRoom2.type === Room.UNKNOWN) return; // Current room not loaded yet, or already loaded id
-
-                currentRoom2.roomId = data.roomId;
-
-                this.markChanged() // Re-render map incase of a room-id specific texturing
-                break;
-            case "mimicKilled":
-                this.mimicKilled = true
-                break;
-            case "blazeDone":
-                this.roomsArr.forEach(room => {
-                    if (room.data?.name?.toLowerCase() === 'higher or lower') {
-                        room.checkmarkState = room.currentSecrets ? Room.COMPLETED : Room.CLEARED;
-                    }
-                })
-                break;
-            case "secretCollect":
-                this.collectedSecrets.add(data.location)
-                break;
-        }
     }
 
     /*
@@ -346,10 +157,6 @@ class DungeonMap {
             if (downRoom) downRoom.addDoor(door);
         }
 
-    }
-
-    sendSocketData(data) {
-        socketConnection.sendDungeonData({ data, players: this.players.map(a => a.username) })
     }
 
     destroy() {
@@ -421,6 +228,9 @@ class DungeonMap {
             let room = player.getRoom(this);
             if (player.currentRoomCache == room) continue;
             if (player.currentRoomCache) player.currentRoomCache.addEvent(RoomEvents.PLAYER_EXIT, player);
+            if(player.getName() === Player.getName()) {
+                this.recordManager.
+            }
             player.currentRoomCache = room;
             room?.addEvent(RoomEvents.PLAYER_ENTER, player);
         }
@@ -507,31 +317,6 @@ class DungeonMap {
         })
     }
 
-    syncPlayersThruSocket() {
-        this.players.forEach(p => p.checkUpdateUUID())
-
-        World.getAllPlayers().forEach(player => {
-            let name = getPlayerName(player)
-            if (!this.playersNameToId[name]) return
-            let p = this.players[name]
-            if (!p) return
-
-            p.setX(player.getX())
-            p.setY(player.getZ())
-            p.setRotate(player.getYaw() + 180)
-            p.locallyUpdated = Date.now()
-            this.nameToUuid[name] = player.getUUID().toString()
-
-            this.sendSocketData({
-                type: "playerLocation",
-                username: name,
-                x: player.getX(),
-                y: player.getY(),
-                z: player.getZ(),
-                yaw: player.getYaw() + 180
-            })
-        })
-    }
 
     /**
      * Update players within render distance
@@ -1188,69 +973,6 @@ class DungeonMap {
         return Date.now() - this.lastChange > 1000
     }
 
-    // ==============================
-    // UPDATING FROM WORLD CODE
-    // ==============================
-    updateFromWorld() {
-        let roomid = this.getCurrentRoomId()
-        if (!roomid) return // No roomid eg inbetween 2 rooms
-        if (!this.getCurrentRoomData()) return
-
-        let x = Math.floor((Player.getX() + 8) / 32) * 32 - 9 // Top left of current 1x1 that players in
-        let y = Math.floor((Player.getZ() + 8) / 32) * 32 - 9
-
-        let playerMapX = ~~((Player.getX() + 200) / 32);
-        let playerMapY = ~~((Player.getZ() + 200) / 32);
-        let currentRoom = this.rooms.get(playerMapX + ',' + playerMapY);
-
-        if (!currentRoom || !currentRoom.roomId || currentRoom.type === Room.UNKNOWN) { // Current room not already identified
-            if (roomid !== this.lastRoomId && this.canUpdateRoom()) { // Room id changed, check current room
-                this.lastRoomId = roomid
-
-                let roomWorldData = this.getRoomWorldData()
-
-                let rotation = roomWorldData.width > roomWorldData.height ? 0 : 1
-
-                // L shape rooms only rooms that 'need' rotation all others can be 0 -> horizontal or 1-> verticle
-
-                if (this.getCurrentRoomData().shape === "L") rotation = roomWorldData.rotation
-                if (this.getCurrentRoomData().type === "spawn") {
-                    roomWorldData.x = x + 1
-                    roomWorldData.y = y + 1
-
-                    this.setAirLocs.add((x - 1) + "," + (y - 1))
-                    this.setAirLocs.add((x) + "," + (y - 1))
-                    this.setAirLocs.add((x - 1) + "," + (y))
-
-                    this.setAirLocs.add((x + 32) + "," + (y - 1))
-                    this.setAirLocs.add((x + 32 - 1) + "," + (y - 1))
-                    this.setAirLocs.add((x + 32) + "," + (y))
-
-                    this.setAirLocs.add((x - 1) + "," + (y + 32))
-                    this.setAirLocs.add((x - 1) + "," + (y - 1 + 32))
-                    this.setAirLocs.add((x) + "," + (y + 32))
-
-                    this.setAirLocs.add((x + 32) + "," + (y + 32))
-                    this.setAirLocs.add((x + 32 - 1) + "," + (y + 32))
-                    this.setAirLocs.add((x + 32) + "," + (y - 1 + 32))
-                }
-
-                this.setRoom(roomWorldData.x, roomWorldData.y, rotation, roomid, true)
-                this.identifiedRoomIds.add(roomid);
-            }
-        }
-
-
-        if (this.lastXY !== x + "," + y) {
-            this.lastXY = x + "," + y
-
-            // Checking for doors on all sides of room
-            if (this.getBlockAt(x + 16, 73, y)) this.setDoor(x + 16, y, 0, true)
-            if (this.getBlockAt(x, 73, y + 16)) this.setDoor(x, y + 16, 1, true)
-            if (this.getBlockAt(x + 16, 73, y + 32)) this.setDoor(x + 16, y + 32, 0, true)
-            if (this.getBlockAt(x + 32, 73, y + 16)) this.setDoor(x + 32, y + 16, 1, true)
-        }
-    }
     setRoom(x, y, rotation, roomId, locallyFound) {
         if (!roomId) return
         if (locallyFound) {
@@ -1459,141 +1181,6 @@ class DungeonMap {
                 x, y, ishorizontal, doorType: type
             })
         }
-    }
-
-    /**
-     * NOTE: check for roomid is falsy before using
-     * @returns {String} the current room id
-     */
-    getCurrentRoomId() {
-        if (Scoreboard.getLines().length === 0) return undefined
-        let id = Scoreboard.getLineByIndex(Scoreboard.getLines().length - 1).getName().trim().split(" ").pop()
-
-        if (!id.includes(",")) return undefined  // Not id, eg id not on scoreboard
-
-        return id
-    }
-
-    /**
-     * @returns {[Number, Number]} the x and y location of the rooms 'location' (top left of all rooms, shifting down by 1 if needed to in L)
-     */
-    getRoomXYWorld() {
-        let roomData = this.getRoomWorldData()
-        if (roomData.rotation === 4) return [roomData.x, roomData.y + 32]
-        return [roomData.x, roomData.y]
-    }
-
-    getCurrentRoomData() {
-        let id = this.getCurrentRoomId()
-        if (!id) return undefined// No room id
-        return DungeonRoomData.getDataFromId(id)
-    }
-
-    getRotation(x, y, width, height, roofY) {
-        let currRoomData = this.getCurrentRoomData()
-        if (!currRoomData) return -1
-
-        if (currRoomData.shape !== "L") {
-            if (this.getTopBlockAt(x, y, roofY) === 11) return 0
-            if (this.getTopBlockAt(x + width, y, roofY) === 11) return 1
-            if (this.getTopBlockAt(x + width, y + height, roofY) === 11) return 2
-            if (this.getTopBlockAt(x, y + height, roofY) === 11) return 3
-        }
-        else {
-            let one = this.getTopBlockAt2(x + width / 2 + 1, y + height / 2, roofY)
-            let two = this.getTopBlockAt2(x + width / 2 - 1, y + height / 2, roofY)
-            let three = this.getTopBlockAt2(x + width / 2, y + height / 2 + 1, roofY)
-            let four = this.getTopBlockAt2(x + width / 2, y + height / 2 - 1, roofY)
-
-            if (one === 0 && three === 0) return 0
-            if (two === 0 && three === 0) return 1
-            if (one === 0 && four === 0) return 3
-            if (two === 0 && four === 0) return 2// 3 IS SO TOXIK HGOLY HEL I HATE L SHAPE ROOMS WHY DO THIS TO ME
-        }
-
-        return -1
-    }
-
-    getBlockIdAt(x, y, z) {
-        if (this.setAirLocs?.has(x + "," + z)) return 0
-
-        return World.getBlockAt(new BlockPos(x, y, z)).type.getID()
-    }
-
-    getRoomWorldData() {
-        let x = Math.floor((Player.getX() + 8) / 32) * 32 - 8
-        let y = Math.floor((Player.getZ() + 8) / 32) * 32 - 8
-        let width = 30
-        let height = 30
-
-        let roofY = this.getRoofAt(x, y)
-
-        while (this.getBlockIdAt(x - 1, roofY, y) !== 0) {
-            x -= 32
-            width += 32
-        }
-        while (this.getBlockIdAt(x, roofY, y - 1) !== 0) {
-            y -= 32
-            height += 32
-        }
-        while (this.getBlockIdAt(x - 1, roofY, y) !== 0) { // Second iteration incase of L shape
-            x -= 32
-            width += 32
-        }
-        while (this.getBlockIdAt(x + width + 1, roofY, y) !== 0) {
-            width += 32
-        }
-        while (this.getBlockIdAt(x, roofY, y + height + 1) !== 0) {
-            height += 32
-        }
-        while (this.getBlockIdAt(x + width, roofY, y + height + 1) !== 0) { // Second iteration incase of L shape
-            height += 32
-        }
-        while (this.getBlockIdAt(x + width + 1, roofY, y + height) !== 0) { // Second iteration incase of L shape
-            width += 32
-        }
-        while (this.getBlockIdAt(x + width, roofY, y - 1) !== 0
-            && this.getBlockIdAt(x + width, roofY, y - 1 + (height === 30 ? 0 : 32)) !== 0) {// Second iteration incase of L shape
-            y -= 32
-            height += 32
-        }
-        while (this.getBlockIdAt(x - 1, roofY, y + height) !== 0
-            && this.getBlockIdAt(x - 1 + (width === 30 ? 0 : 32), roofY, y + height) !== 0) { // Third iteration incase of L shape
-            x -= 32
-            width += 32
-        }
-
-        let rotation = this.getRotation(x, y, width, height, roofY);
-        return {
-            x,
-            y,
-            width,
-            height,
-            cx: x + width / 2,
-            cy: y + height / 2,
-            rotation: rotation
-        }
-    }
-
-    getRoofAt(x, z) {
-        let y = 255
-        while (y > 0 && World.getBlockAt(new BlockPos(x, y, z)).type.getID() === 0) y--
-
-        return y
-    }
-
-    getTopBlockAt(x, z, y) {
-        if (!y) y = this.getRoofAt(x, z)
-
-        return World.getBlockAt(new BlockPos(x, y, z)).getMetadata()
-    }
-    getBlockAt(x, y, z) {
-        return World.getBlockAt(new BlockPos(x, y, z)).type.getID()
-    }
-    getTopBlockAt2(x, z, y) {
-        if (!y) y = this.getRoofAt(x, z)
-
-        return World.getBlockAt(new BlockPos(x, y, z)).type.getID()
     }
 
     onSecretCollect(type, x, y, z) {

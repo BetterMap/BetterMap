@@ -11,6 +11,4 @@ export default class PlayerState {
         this.heldItem = player.getHeldItem()?.getID() ?? 0;
         this.isSneaking = player.isSneaking();
     }
-
-
 }

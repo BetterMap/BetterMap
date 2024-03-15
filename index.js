@@ -16,6 +16,7 @@ import { MESSAGE_PREFIX } from "./Utils/Utils"
 import { drawBoxAtBlock } from "./Utils/renderUtils"
 import settings from "./Extra/Settings/CurrentSettings"
 import socketConnection from "./socketConnection"
+let MapData = Java.type("net.minecraft.world.storage.MapData")
 require("./Extra/Events/SecretTracker.js")
 
 /**@type {DungeonMap} */
@@ -53,7 +54,13 @@ register("step", () => {
             try {
                 let item = Player.getInventory().getStackInSlot(8)
                 mapData = item.getItem()[m.getMapData](item.getItemStack(), World.getWorld())
+                if (mapData && !currentDungeonMap.mapId) {
+                    currentDungeonMap.mapId = item.getMetadata()
+                }
             } catch (error) {
+                if (currentDungeonMap.mapId) {
+                    mapData = World.getWorld()[m.loadItemData](MapData.class, "map_" + currentDungeonMap.mapId)
+                }
             }
 
             if (mapData) {
@@ -68,6 +75,12 @@ register("step", () => {
         currentDungeonMap.updateTabInfo();
     }
 }).setFps(5)
+
+register("packetReceived", (packet) => {
+    if (currentDungeonMap && !currentDungeonMap.mapId) {
+        currentDungeonMap.mapId = packet[m.getMapId]()
+    }
+}).setFilteredClasses([net.minecraft.network.play.server.S34PacketMaps])
 
 register("step", () => {
     if (!currentDungeonMap)

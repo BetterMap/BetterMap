@@ -101,6 +101,9 @@ class DungeonMap {
         this.keys = 0
         this.bloodOpen = false
 
+        // The MapID that represents this dungeon, looked for if the player doesn't have a map in the hotbar.
+        this.mapId = undefined;
+
         //initialize with 0, only if score is below threshold will they get set to 1 then set to 2 after said
         this.broadcast270message = 0;
         this.broadcast300message = 0;

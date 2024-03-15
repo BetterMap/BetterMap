@@ -147,3 +147,9 @@ First released version!
 ```diff
 ! Fixed player heads being wonky when the player is nicked
 ```
+
+@ver v1.0.18
+```diff
+! Fixed map not loading while holding a bow (Credits @Desco1)
+! Fixed some users being unable to load assets
+```

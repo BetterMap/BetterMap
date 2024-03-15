@@ -326,5 +326,5 @@ function getPlayerSecrets(uuid, cacheMs, callback) {
     });
 }
 
-const markerSelf = new Image("markerSelf.png", "https://i.imgur.com/mwpjgRz.png");
-const markerOther = new Image("markerOther.png", "https://i.imgur.com/xnoBx3p.png");
+const markerSelf = Image.fromAsset("markerSelf.png");
+const markerOther = Image.fromAsset("markerOther.png");

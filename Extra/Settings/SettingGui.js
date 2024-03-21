@@ -319,12 +319,12 @@ class SettingGui {
         this.addCategory("Tab Info")
 
         this.addToggle("Show current Secret total", "tabSecretCount", this.currentSettings.tabSecretCount)[1].setLore(["Change the secrets found number in tab to also show total secrets in dungeon", "&cMAY CONFLICT WITH OTHER MODS (DG)"])
+        this.addToggle("Show minimum secrets required","tabMinSecrets", this.currentSettings.tabMinSecrets)[1].setLore(["Shows the minimum secrets required to get the max score in the tab menu","('Show current Secret total' has to be enabled for this to work)"])
 
         this.addToggle("Show current Crypt total", "tabCryptCount", this.currentSettings.tabCryptCount)[1].setLore(["Change the crypts found number in tab to also show total crypts in dungeon", "&cMAY CONFLICT WITH OTHER MODS (DG)"])
 
         this.addToggle("Show Mimic Status", "tabMimic", this.currentSettings.tabMimic)[1].setLore(["Add a line to tab displaying wether the minic has been killed"])
 
-        this.addToggle("Show minimum secrets required","tabMinSecrets", this.currentSettings.tabMinSecrets)[1].setLore(["Shows the minimum secrets required to get the max score in the tab menu"])
 
         this.addCategory("Other Settings")
 

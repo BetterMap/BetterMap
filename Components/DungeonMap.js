@@ -468,7 +468,8 @@ class DungeonMap {
             }
             if (!modifiedSecrets && displayName.includes('Secrets Found:') && !displayName.includes('%')) {
                 modifiedSecrets = true;
-                const totalSecretCount = this.getScore().totalSecrets || "?"// This.roomsArr.reduce((prev, room) => prev + (room.maxSecrets || 0), 0);
+                const score = this.getScore();
+                const totalSecretCount = score.totalSecrets || "?"// This.roomsArr.reduce((prev, room) => prev + (room.maxSecrets || 0), 0);
                 if (displayName.includes('/' + totalSecretCount)) return;
                 var newTabLine;
                 if (displayName.includes('/')) {
@@ -477,6 +478,7 @@ class DungeonMap {
                 else {
                     newTabLine = displayName + '§b/' + totalSecretCount;
                 }
+                if (settings.settings.tabMinSecrets) newTabLine+=" §c(min " + String(score.minSecrets || "?") + ")";
                 playerInfo.func_178859_a(new ChatComponentText(newTabLine));
             }
         })

@@ -324,6 +324,8 @@ class SettingGui {
 
         this.addToggle("Show Mimic Status", "tabMimic", this.currentSettings.tabMimic)[1].setLore(["Add a line to tab displaying wether the minic has been killed"])
 
+        this.addToggle("Show minimum secrets required","tabMinSecrets", this.currentSettings.tabMinSecrets)[1].setLore(["Shows the minimum secrets required to get the max score in the tab menu"])
+
         this.addCategory("Other Settings")
 
         this.addToggle("Hide map in Boss", "hideInBoss", this.currentSettings.hideInBoss)

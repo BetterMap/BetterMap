@@ -17,7 +17,7 @@
  * @property {"none"|"text"|"icon"} puzzleNames - Render style of puzzle names
  * @property {"none"|"single"|"class-color"} headBorder - Wether to put a black border around heads on the map
  * @property {Number} headBorderWidth - Width of the head border
- * @property {"never"|"leap"|"always"} playerNames - When to show player names on map
+ * @property {"never"|"leap"|"haunt"|"leap-haunt"|"always"} playerNames - When to show player names on map
  * @property {"none"|"left"|"right"} currentRoomInfo - Render current room hover info on side of map
  * @property {"none"|"legalmap"|"simplified"} scoreInfoUnderMap - Render score info under the map
  * @property {Boolean} scoreInfoUnderMap_simplified_showMimicText - Wether to show 'mimic' before the tick/cross
@@ -103,11 +103,11 @@ class RenderContext {
     get tickStyle() {
         return this.settings.tickStyle
     }
-    
+
     get centerCheckmarks() {
         return this.settings.centerCheckmarks
     }
-    
+
     get tickStyle_secrets_overHead() {
         return this.settings.tickStyle_secrets_overHead
     }

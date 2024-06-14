@@ -63,6 +63,15 @@ class Position {
         if (!this.dungeonMap.dungeonTopLeft) return 0
         return MathLib.map(this.worldY, -200, -8, 0, 1)
     }
+    
+    get posIndex() {
+        // 200 + 0.5 to make transition between rooms smoother
+        // 32 is the size of each room including the door
+        const arrX = Math.floor((this.worldX + 200.5) / 32)
+        const arrY = Math.floor((this.worldY + 200.5) / 32)
+        
+        return arrX + arrY * 6
+    }
 }
 
 export default Position

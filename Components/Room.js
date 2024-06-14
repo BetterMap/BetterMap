@@ -50,6 +50,8 @@ class Room {
         this.shape = this.findShape()
         this.rotation = this.findRotation();
 
+        this.cores = []
+
         /**
          * -1 -> failed
          * 0 -> not opened / not on the map yet
@@ -143,140 +145,7 @@ class Room {
     }
 
     findRotation() {
-        if (this.type === Room.FAIRY) return 1;
-
-        // Commented out stuff gets the room rotation differently to whatever soopy decided on for his rotations ):
-        // Rotates the room the same way Hypixel does, getting the same result as if you were to scan the ceiling.
-
-        // let components = this.components.map(a => [a.arrayX, a.arrayY])
-        // const x = this.components.map(a => a.arrayX)
-        // const y = this.components.map(a => a.arrayY)
-        // const uniqueX = new Set(x).size
-        // const uniqueY = new Set(y).size
-
-        // // 2x2's never rotate
-        // if (this.shape == "2x2") return 1
-
-        // // Flat long room = not rotated, vertical = rotated 270 degrees
-        // if (["1x4", "1x3", "1x2"].includes(this.shape)) {
-        //     if (uniqueX == 1) return 1
-        //     if (uniqueY == 1) return 3
-        // }
-
-
-        // // L rooms
-        // if (this.shape == "L") {
-        //     // Finds the component with two adjacent components. The corner of the L.
-        //     let corner = components.find(([x1, y1]) => components.filter(([x2, y2])=>(y1 == y2 && (x1 == x2+1 || x1 == x2-1)) || (x1 == x2 && (y1 == y2+1 || y1 == y2-1))).length == 2)
-        //     let [cx, cy] = corner
-
-        //     const minx = Math.min(...x)
-        //     const maxx = Math.max(...x)
-        //     const miny = Math.min(...y)
-        //     const maxy = Math.max(...y)
-
-        //     if (cx == minx && cy == maxy) return 1 // Bottom Left
-        //     if (cx == maxx&& cy == maxy) return 2 // Bottom Right
-        //     if (cx == maxx&& cy == miny) return 3 // Top Right
-        //     if (cx == minx && cy == miny) return 4 // Top Left
-        // }
-
-        // // Only 1x1's left, not done yet
-
-        // if (this.shape == "1x1") {
-        //     // a
-        // }
-
-        // -------------------------
-
-
-        let minX = -1, maxX = -1, minY = -1, maxY = -1;
-        this.components.forEach((c) => {
-
-            if (minX < 0 || c.arrayX < minX) minX = c.arrayX;
-            if (maxX < 0 || c.arrayX > maxX) maxX = c.arrayX;
-            if (minY < 0 || c.arrayY < minY) minY = c.arrayY;
-            if (maxY < 0 || c.arrayY > maxY) maxY = c.arrayY;
-
-            if (!this.minX || this.minX > c.worldX) this.minX = c.worldX;
-            if (!this.minY || this.minY > c.worldY) this.minY = c.worldY;
-        });
-
-        let dx = maxX - minX;
-        let dy = maxY - minY;
-
-        this.width = 30 + 32 * dx;
-        this.height = 30 + 32 * dy;
-
-        if (dx > 0 && dy > 0) {
-            // 2x2
-            if (this.components.length === 4) return 1
-            if (this.components.length === 3) {
-                let parts = this.components.reduce((a, b) => [...a, b.arrayX + ',' + b.arrayY], [])
-
-                if (!parts.includes(minX + ',' + minY)) return 0
-                if (!parts.includes(minX + ',' + maxY)) return 3
-                if (!parts.includes(maxX + ',' + minY)) return 1
-                if (!parts.includes(maxX + ',' + maxY)) return 2
-                return -1;
-                // OH IT'S AN L ROOM
-            }
-        }
-        if (dx > 0) return 1
-        if (dy > 0) return 2
-        let roomX = minX;
-        let roomY = minY;
-        let doorLocations = this.adjacentDoors.map(a => `${a.position.arrayX},${a.position.arrayY}`)
-        let up = doorLocations.includes((roomX + 0.5) + ',' + (roomY));
-        let down = doorLocations.includes((roomX + 0.5) + ',' + (roomY + 1));
-        let right = doorLocations.includes((roomX + 1) + ',' + (roomY + 0.5));
-        let left = doorLocations.includes((roomX) + ',' + (roomY + 0.5));
-        // 1x1s, check door positions
-        // Do not ask me why
-        if (this.adjacentDoors.length === 4) return 1
-        if (this.adjacentDoors.length === 3) {
-            if (!left) return 3;
-            if (!right) return 1;
-            if (!up) return 0;
-            if (!down) return 2;
-        }
-        if (this.adjacentDoors.length === 1) {
-            // Dead end 
-            if (right) return 2;
-            else if (left) return 0;
-            else if (down) return 3;
-            else if (up) return 1;
-        }
-
-        if (up && down) return 2;
-        if (left && right) return 1;
-        if (left && down) return 1;
-        if (up && left) return 2;
-        if (up && right) return 3;
-        if (right && down) return 0
-
-        return -1;
-    }
-
-    get roomId() {
-        return this._roomId
-    }
-    /**@param {String} value */
-    set roomId(value) {
-        if (!value) return
-
-        this._roomId = value.trim()
-        this.data = DungeonRoomData.getDataFromId(value.trim())
-
-        if (!this.data) return
-        let oldMax = this.maxSecrets
-
-        this.maxSecrets = this.data.secrets
-        this.currentSecrets = this.currentSecrets || 0
-
-        if (this.maxSecrets !== oldMax) {
-            this.addEvent(RoomEvents.SECRET_COUNT_CHANGE, (this.currentSecrets || 0) + "/" + (oldMax || "???"), (this.currentSecrets || 0) + "/" + this.maxSecrets)
-        }
+        
     }
 
     /**

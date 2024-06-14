@@ -31,15 +31,21 @@ class DungeonRoomStaticData {
         this.fullRoomData = JSON.parse(FileLib.read("BetterMap", "Data/roomdata.json"))
 
         this.idMap = new Map()
-        this.fullRoomData?.forEach((d, i) => {
-            d.id.forEach(id => {
-                this.idMap.set(id, i)
+        this.coreMap = new Map() // "CORE": "ROOMDATA"
+
+        this.fullRoomData?.forEach((roomData, i) => {
+            roomData.id.forEach(roomId => {
+                this.idMap.set(roomId, i)
             })
-            this.idMap.set(d.index, i)
+            this.idMap.set(roomData.index, i)
+
+            for (let core of roomData.cores) {
+                this.coreMap.set(core, roomData)
+            }
         })
 
         fetch("https://soopy.dev/api/bettermap/roomdata").json(data => {
-            FileLib.write("BetterMap", "Data/roomdata.json", JSON.stringify(data, null, 4))
+            // FileLib.write("BetterMap", "Data/roomdata.json", JSON.stringify(data, null, 4))
 
             this.fullRoomData = data
             this.idMap = new Map()
@@ -64,6 +70,10 @@ class DungeonRoomStaticData {
     getDataFromId(id) {
         if(!this.fullRoomData) return;
         return this.fullRoomData[this.idMap.get(id)]
+    }
+
+    getDataFromCore(core) {
+
     }
 
     /**

@@ -6,7 +6,7 @@ import Room from "./Room.js"
 import { getScoreboardInfo, getTabListInfo, getRequiredSecrets } from "../Utils/Score"
 import Door from "./Door.js"
 import DungeonRoomData from "../Data/DungeonRoomData.js"
-import { changeScoreboardLine, dungeonOffsetX, dungeonOffsetY, MESSAGE_PREFIX, MESSAGE_PREFIX_SHORT, renderLore, getPlayerName } from "../Utils/Utils.js"
+import { changeScoreboardLine, dungeonOffsetX, dungeonOffsetY, MESSAGE_PREFIX, MESSAGE_PREFIX_SHORT, renderLore, getPlayerName, getComponentAt, getCore, getHighestBlock } from "../Utils/Utils.js"
 import socketConnection from "../socketConnection.js"
 import DataLoader from "../Utils/DataLoader.js"
 import { fetch } from "../Utils/networkUtils.js"
@@ -25,6 +25,17 @@ class DungeonMap {
          * @type {Map<String, Room>} The string is in form x,y eg 102,134 and will correspond to the top left corner of a room component
          */
         this.rooms = new Map()
+        this.roomPositionArray = []
+
+        // Initialize the array of Positions
+        for (let i = 0; i < 36; i++) {
+            let x = i%6
+            let z = Math.floor(i/6)
+            let rx = -185 + x * 32
+            let rz = -185 + z * 32
+            let pos = new Position(rx, rz, this)
+            this.roomPositionArray.push(pos)
+        }
         /**
          * @type {Map<String, Door>} The string is in form x,y eg 102,134 and will correspond to the top left corner of a door
          */
@@ -81,6 +92,7 @@ class DungeonMap {
         this.lastChange = 0
         this.roomXY = "0,0"
         this.lastXY = undefined
+        this.lastStandingPos = null // Position of where the player was last standing
 
         // Simulate changing bloccks to air to fix green room not having air border around it
         this.setAirLocs = new Set()
@@ -111,134 +123,176 @@ class DungeonMap {
         let mimicDeadMessages = ["$SKYTILS-DUNGEON-SCORE-MIMIC$", "Mimic Killed!", "Mimic Dead!", "Mimic dead!"]
 
         this.triggers = []
-        if (registerEvents) {
-            this.triggers.push(register("chat", (msg) => {
-                mimicDeadMessages.forEach(dmsg => {
-                    if (msg.includes(dmsg)) this.mimicKilled = true
-                })
-            }).setChatCriteria("&r&9Party &8> ${msg}"))
-            this.triggers.push(register("chat", (end, e) => {
-                if (end.includes("Stats")) return
+        if (!registerEvents) return
 
-                this.dungeonFinished = true
+        this.triggers.push(register("chat", (msg) => {
+            mimicDeadMessages.forEach(dmsg => {
+                if (msg.includes(dmsg)) this.mimicKilled = true
+            })
+        }).setChatCriteria("&r&9Party &8> ${msg}"))
 
-                if (!settings.settings.clearedRoomInfo) return
-                this.players.forEach(p => p.updateCurrentSecrets())
+        this.triggers.push(register("chat", () => {
+            this.dungeonFinished = true
 
-                Client.scheduleTask(5 * 20, () => { // Wait 5 seconds (5*20tps)
-                    ChatLib.chat(MESSAGE_PREFIX + "Cleared room counts:")
-                    this.players.forEach(p => {
-                        let mess = new Message()
-                        mess.addTextComponent(new TextComponent(MESSAGE_PREFIX_SHORT + "&3" + p.username + "&7 cleared "))
+            if (!settings.settings.clearedRoomInfo) return
+            this.players.forEach(p => p.updateCurrentSecrets())
 
-                        let roomLore = ""
-                        p.roomsData.forEach(([players, room]) => {
-                            let name = room.data?.name ?? room.shape
-                            let type = room.typeToName()
-                            let color = room.typeToColor()
+            Client.scheduleTask(5 * 20, () => { // Wait 5 seconds (5*20tps)
+                ChatLib.chat(MESSAGE_PREFIX + "Cleared room counts:")
+                this.players.forEach(p => {
+                    let mess = new Message()
+                    mess.addTextComponent(new TextComponent(MESSAGE_PREFIX_SHORT + "&3" + p.username + "&7 cleared "))
 
-                            let stackStr = players.length === 1 ? "" : " Stacked with " + players.filter(pl => pl !== p).map(p => p.username).join(", ")
+                    let roomLore = ""
+                    p.roomsData.forEach(([players, room]) => {
+                        let name = room.data?.name ?? room.shape
+                        let type = room.typeToName()
+                        let color = room.typeToColor()
 
-                            roomLore += `&${color}${name} (${type})${stackStr}\n`
-                        })
+                        let stackStr = players.length === 1 ? "" : " Stacked with " + players.filter(pl => pl !== p).map(p => p.username).join(", ")
 
-                        mess.addTextComponent(new TextComponent("&6" + p.minRooms + "-" + p.maxRooms).setHover("show_text", roomLore.trim()))
-
-                        mess.addTextComponent(new TextComponent("&7 rooms | &6" + p.secretsCollected + "&7 secrets"))
-
-                        mess.addTextComponent(new TextComponent("&7 | &6" + p.deaths + "&7 deaths"))
-
-                        mess.chat()
-                    })
-                })
-            }).setChatCriteria('&r&c${*}e Catacombs &r&8- &r&eFloor${end}').setContains())
-            //&r&r&r                     &r&cThe Catacombs &r&8- &r&eFloor I Stats&r
-            //&r&r&r               &r&cMaster Mode Catacombs &r&8- &r&eFloor III Stats&r
-            //&r&r&r                         &r&cThe Catacombs &r&8- &r&eFloor V&r
-
-            this.triggers.push(register("entityDeath", (entity) => {
-                if (entity.getClassName() !== "EntityBlaze") return
-                this.deadBlazes++;
-                if (this.deadBlazes === 10) {
-                    this.roomsArr.forEach(room => {
-                        if (room.data?.name?.toLowerCase() === 'higher or lower') {
-                            room.checkmarkState = room.currentSecrets ? Room.COMPLETED : Room.CLEARED;
-                        }
+                        roomLore += `&${color}${name} (${type})${stackStr}\n`
                     })
 
-                    this.sendSocketData({ type: "blazeDone" })
-                }
-            }))
-            this.triggers.push(register("entityDeath", (entity) => {
-                if (entity.getClassName() !== "EntityZombie") return
-                let e = entity.getEntity()
-                if (!e.func_70631_g_()) return // .isChild()
+                    mess.addTextComponent(new TextComponent("&6" + p.minRooms + "-" + p.maxRooms).setHover("show_text", roomLore.trim()))
 
-                // Check all armor slots, if they are all null then mimic is die!
-                if ([0, 1, 2, 3].every(a => e.func_82169_q(a) === null)) {
-                    // ChatLib.chat("Mimic Kapow!")
-                    this.mimicKilled = true
-                    this.sendSocketData({ type: "mimicKilled" })
-                }
-            }))
+                    mess.addTextComponent(new TextComponent("&7 rooms | &6" + p.secretsCollected + "&7 secrets"))
 
-            this.triggers.push(register("chat", (info) => {
-                let player = ChatLib.removeFormatting(info).split(" ")[0];
-                for (let p of this.players) {
-                    if (p.username === player || p.username == Player.getName() && player.toLowerCase() === 'you') {
-                        p.deaths++;
-                    }
-                }
+                    mess.addTextComponent(new TextComponent("&7 | &6" + p.deaths + "&7 deaths"))
 
-                this.scanFirstDeathForSpiritPet(player);
-            }).setChatCriteria("&r&c ☠ ${info} became a ghost&r&7.&r"));
+                    mess.chat()
+                })
+            })
+        }).setChatCriteria(/^\s*(Master Mode)?(?:The)? Catacombs - Floor (.{1,3})$/)) // https://regex101.com/r/W4UjWQ/1
+        //&r&r&r                     &r&cThe Catacombs &r&8- &r&eFloor I Stats&r
+        //&r&r&r               &r&cMaster Mode Catacombs &r&8- &r&eFloor III Stats&r
+        //&r&r&r                         &r&cThe Catacombs &r&8- &r&eFloor V&r
 
-            this.triggers.push(register("chat", (info) => {
-                this.roomsArr.forEach(r => {
-                    if (r.type === Room.BLOOD) {
-                        r.checkmarkState = Room.CLEARED
-                        this.markChanged()
+        this.triggers.push(register("entityDeath", (entity) => {
+            if (entity.getClassName() !== "EntityBlaze") return
+            this.deadBlazes++;
+            if (this.deadBlazes === 10) {
+                this.roomsArr.forEach(room => {
+                    if (room.data?.name?.toLowerCase() === 'higher or lower') {
+                        room.checkmarkState = room.currentSecrets ? Room.COMPLETED : Room.CLEARED;
                     }
                 })
-            }).setChatCriteria("[BOSS] The Watcher: That will be enough for now."))
 
-            this.triggers.push(register("step", () => {
-                this.pingIdFuncs.forEach(([timestamp, callback], id) => {
-                    if (Date.now() - timestamp < 5000) return
+                this.sendSocketData({ type: "blazeDone" })
+            }
+        }))
+        this.triggers.push(register("entityDeath", (entity) => {
+            if (entity.getClassName() !== "EntityZombie") return
+            let e = entity.getEntity()
+            if (!e.func_70631_g_()) return // .isChild()
 
-                    callback(false)
-                    this.pingIdFuncs.delete(id)
-                })
-            }).setFps(1))
+            // Check all armor slots, if they are all null then mimic is die!
+            if ([0, 1, 2, 3].every(a => e.func_82169_q(a) === null)) {
+                // ChatLib.chat("Mimic Kapow!")
+                this.mimicKilled = true
+                this.sendSocketData({ type: "mimicKilled" })
+            }
+        }))
 
-            // On dungeon start
-            // this.triggers.push(register("chat", () => {
-            //     // wait 2 secs
-            //     Client.scheduleTask(2 * 20, () => {
-            //         // update all player classes
-            //         this.players.forEach(p => {
-            //             p.updateDungeonClass().updatePlayerColor()
-            //         })
-            //     })
-            // }).setChatCriteria("&r&aDungeon starts in 1 second.&r"))
+        this.triggers.push(register("chat", (info) => {
+            let player = ChatLib.removeFormatting(info).split(" ")[0];
+            for (let p of this.players) {
+                if (p.username === player || p.username == Player.getName() && player.toLowerCase() === 'you') {
+                    p.deaths++;
+                }
+            }
 
-            this.triggers.push(register("chat", () => {
-                this.bloodOpen = true
-                this.keys--
-            }).setChatCriteria("&r&cThe &r&c&lBLOOD DOOR&r&c has been opened!&r"))
+            this.scanFirstDeathForSpiritPet(player);
+        }).setChatCriteria("&r&c ☠ ${info} became a ghost&r&7.&r"));
 
-            this.triggers.push(register("chat", () => {
-                this.keys++
-            }).setChatCriteria("${*} &r&ehas obtained &r&a&r&${*} Key&r&e!&r"))
+        this.triggers.push(register("chat", (info) => {
+            this.roomsArr.forEach(r => {
+                if (r.type === Room.BLOOD) {
+                    r.checkmarkState = Room.CLEARED
+                    this.markChanged()
+                }
+            })
+        }).setChatCriteria("[BOSS] The Watcher: That will be enough for now."))
 
-            this.triggers.push(register("chat", () => {
-                this.keys++
-            }).setChatCriteria("&r&eA &r&a&r&${*} Key&r&e was picked up!&r"))
+        this.triggers.push(register("step", () => {
+            this.pingIdFuncs.forEach(([timestamp, callback], id) => {
+                if (Date.now() - timestamp < 5000) return
 
-            this.triggers.push(register("chat", () => {
-                this.keys--
-            }).setChatCriteria("&r&a${player}&r&a opened a &r&8&lWITHER &r&adoor!&r"))
+                callback(false)
+                this.pingIdFuncs.delete(id)
+            })
+        }).setFps(1))
+
+        this.triggers.push(register("tick", () => {
+            const currPos = this.getPositionAt(Player.getX(), Player.getZ())
+            // Not in the main dungeon area or in same spot as before
+            if (!currPos || currPos == this.lastStandingPos) return
+            // Walked into a new component in the dungeon
+            
+            this.lastStandingPos = currPos
+
+            this.scanCurrentRoom()
+        }))
+
+        this.triggers.push(register("chat", () => {
+            this.bloodOpen = true
+            this.keys--
+        }).setChatCriteria("&r&cThe &r&c&lBLOOD DOOR&r&c has been opened!&r"))
+
+        this.triggers.push(register("chat", () => {
+            this.keys++
+        }).setChatCriteria("${*} &r&ehas obtained &r&a&r&${*} Key&r&e!&r"))
+
+        this.triggers.push(register("chat", () => {
+            this.keys++
+        }).setChatCriteria("&r&eA &r&a&r&${*} Key&r&e was picked up!&r"))
+
+        this.triggers.push(register("chat", () => {
+            this.keys--
+        }).setChatCriteria("&r&a${player}&r&a opened a &r&8&lWITHER &r&adoor!&r"))
+    }
+
+    scanCurrentRoom() {
+        const directions = [
+            [0, -16], // Up
+            [16, 0], // Right
+            [0, 16], // Down
+            [-16, 0] // Left
+        ]
+
+        const currPos = this.getPositionAt(Player.getX(), Player.getZ())
+        if (!currPos) return ChatLib.chat(`Could not scan: Invalid position`)
+
+        const posQueue = [currPos]
+        while (posQueue.length) {
+            let pos = posQueue.shift()
+
+            let worldX = pos.worldX
+            let worldY = pos.worldY
+
+            let roofHeight = getHighestBlock(worldX, worldY)
+            if (!roofHeight) continue // There is only air here
+
+            let core = getCore(worldX, worldY)
+
+            ChatLib.chat(`Scanned ${worldX} ${worldY} with core ${core}`)
         }
+    }
+
+    /**
+     * Gets the Position at the given worldX and worldZ coordinate assuming they are inside of the dungeon area
+     * will return null if the coord is not inside of the dungeon
+     * @param {Number} worldX 
+     * @param {Number} worldZ 
+     * @returns {Position | null}
+     */
+    getPositionAt(worldX, worldZ) {
+        const [x, z] = getComponentAt(worldX, worldZ)
+        const index = x + z*6
+
+        if (index < 0 || index > 35) return null
+
+        return this.roomPositionArray[index]
     }
 
     socketData(data) {
@@ -586,6 +640,36 @@ class DungeonMap {
     }
 
     /**
+     * Tries to find the top left of the dungeon map, returns true if successful or false if it fails to find it
+     * @param {Number[]} mapColords 
+     * @returns 
+     */
+    loadDungeonTopLeft(mapColors) {
+        // Find the top left pixel of the entrance room, the first green pixel which has another green pixel 15 to the right and 15 down
+        let thing = mapColors.findIndex((a, i) => a == 30 && i + 15 < mapColors.length && mapColors[i + 7] == 30 && mapColors[i + 15] == 30)
+        if (thing == -1) return false
+
+        // Get the room size
+        let i = 0
+        while (mapColors[thing + i] == 30) i++
+        this.widthRoomImageMap = i
+        this.roomAndDoorWidth = this.widthRoomImageMap + 4
+
+        // Find the corner of the top left most room on the map
+        let x = (thing % 128) % this.roomAndDoorWidth
+        let y = Math.floor(thing / 128) % this.roomAndDoorWidth
+
+        // Adjust for Entrance and Floor 1's altered map position
+        if ([0, 1].includes(this.floorNumber)) x += this.roomAndDoorWidth
+        if (this.floorNumber == 0) y += this.roomAndDoorWidth
+
+        this.dungeonTopLeft = [x, y]
+        this.fullRoomScaleMap = Math.floor(this.widthRoomImageMap * 5 / 4)
+
+        return true
+    }
+
+    /**
      * Update dungeon from map data
      * @param {Object} mapData 
      * @returns 
@@ -597,30 +681,7 @@ class DungeonMap {
 
         let mapColors = mapData[f.colors.MapData]
 
-        if (!this.dungeonTopLeft) {
-            // Find the top left pixel of the entrance room
-            let thing = mapColors.findIndex((a, i) => a == 30 && i + 15 < mapColors.length && mapColors[i + 7] == 30 && mapColors[i + 15] == 30)
-            if (thing == -1) return
-
-            // Get the room size
-            let i = 0
-            while (mapColors[thing + i] == 30) i++
-            this.widthRoomImageMap = i
-            this.roomAndDoorWidth = this.widthRoomImageMap + 4
-
-            // Find the corner of the top left most room on the map
-            let x = (thing % 128) % this.roomAndDoorWidth
-            let y = Math.floor(thing / 128) % this.roomAndDoorWidth
-
-            // Adjust for Entrance and Floor 1's altered map position
-            if ([0, 1].includes(this.floorNumber)) x += this.roomAndDoorWidth
-            if (this.floorNumber == 0) y += this.roomAndDoorWidth
-
-            this.dungeonTopLeft = [x, y]
-            this.fullRoomScaleMap = Math.floor(this.widthRoomImageMap * 5 / 4)
-        }
-
-        if (!this.dungeonTopLeft) return
+        if (!this.dungeonTopLeft && !this.loadDungeonTopLeft(mapColors)) return
 
         let roomColors = {
             30: Room.SPAWN,

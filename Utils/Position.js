@@ -72,6 +72,10 @@ class Position {
         
         return arrX + arrY * 6
     }
+
+    toString() {
+        return `Position[${this.arrayX}, ${this.arrayY}]`
+    }
 }
 
 export default Position

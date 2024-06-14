@@ -106,7 +106,7 @@ class Room {
     get currentSecrets() {
         return this._currentSecrets
     }
-
+    
     addComponents(newComponents) {
 
         let parts = []

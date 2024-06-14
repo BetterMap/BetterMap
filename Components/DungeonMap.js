@@ -276,7 +276,7 @@ class DungeonMap {
             // ChatLib.chat(`Roof Height: ${roofHeight}`)
             if (!roofHeight) continue // There is only air here
 
-            // Check for existing rooms
+            // Branch outwards looking for extensions of this room
             for (let dir of directions) {
                 let [dx, dy] = dir
                 let block = World.getBlockAt(worldX+dx, roofHeight, worldY+dy)
@@ -293,8 +293,6 @@ class DungeonMap {
                 posQueue.push(newPos)
             }
 
-
-            // This is a new room
             let core = getCore(worldX, worldY)
             let roomData = DungeonRoomData.getDataFromCore(core)
 
@@ -305,14 +303,27 @@ class DungeonMap {
 
             let scoreboardId = roomData.id[0]
             let existingRoom = this.rooms.get(scoreboardId)
-            if (!existingRoom) {
-                existingRoom = new Room(this, Room.NORMAL, [], scoreboardId)
-                existingRoom.data = roomData
+            
+            // Room exists already
+            if (existingRoom) {
+                // Component not added to room yet
+                if (!existingRoom.components.includes(pos)) {
+                    ChatLib.chat(`&aAdding component to ${existingRoom.data.name}`)
+                    existingRoom.addComponents(pos)
+                }
+                ChatLib.chat(`Room: ${existingRoom}`)
+                continue
             }
             
-            ChatLib.chat(`Room: ${existingRoom}`)
+            ChatLib.chat(`&eRoom doesn't exist, creating it.`)
+            existingRoom = new Room(this, Room.NORMAL, [pos], scoreboardId)
+            existingRoom.data = roomData
             
-
+            // Add the room to the dungeon
+            this.roomsArr.add(existingRoom)
+            this.rooms.set(scoreboardId, existingRoom)
+            
+            ChatLib.chat(`Room: ${existingRoom}`)
             // ChatLib.chat(`Scanned ${worldX} ${worldY} with core ${core}`)
 
         }

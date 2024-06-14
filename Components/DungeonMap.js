@@ -263,19 +263,58 @@ class DungeonMap {
         const currPos = this.getPositionAt(Player.getX(), Player.getZ())
         if (!currPos) return ChatLib.chat(`Could not scan: Invalid position`)
 
+        const searched = new Set()
         const posQueue = [currPos]
         while (posQueue.length) {
             let pos = posQueue.shift()
+            searched.add(pos)
 
             let worldX = pos.worldX
             let worldY = pos.worldY
 
             let roofHeight = getHighestBlock(worldX, worldY)
+            // ChatLib.chat(`Roof Height: ${roofHeight}`)
             if (!roofHeight) continue // There is only air here
 
-            let core = getCore(worldX, worldY)
+            // Check for existing rooms
+            for (let dir of directions) {
+                let [dx, dy] = dir
+                let block = World.getBlockAt(worldX+dx, roofHeight, worldY+dy)
+                let block2 = World.getBlockAt(worldX+dx, roofHeight+1, worldY+dy)
 
-            ChatLib.chat(`Scanned ${worldX} ${worldY} with core ${core}`)
+                // The block at the same roof level must be a solid block whereas the block above must be air
+                // This means that there is no gap or height difference, so it must be the same room extended outwards
+                if (block.type.getID() == 0 || block2.type.getID() !== 0) continue
+
+                // Extend outwards fully into the center of the next room
+                let newPos = this.getPositionAt(worldX+dx*2, worldY+dy*2)
+                if (!newPos || searched.has(newPos)) continue
+
+                posQueue.push(newPos)
+            }
+
+
+            // This is a new room
+            let core = getCore(worldX, worldY)
+            let roomData = DungeonRoomData.getDataFromCore(core)
+
+            if (!roomData) {
+                ChatLib.chat(`Unknown core: ${core}`)
+                continue
+            }
+
+            let scoreboardId = roomData.id[0]
+            let existingRoom = this.rooms.get(scoreboardId)
+            if (!existingRoom) {
+                existingRoom = new Room(this, Room.NORMAL, [], scoreboardId)
+                existingRoom.data = roomData
+            }
+            
+            ChatLib.chat(`Room: ${existingRoom}`)
+            
+
+            // ChatLib.chat(`Scanned ${worldX} ${worldY} with core ${core}`)
+
         }
     }
 

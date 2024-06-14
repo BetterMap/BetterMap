@@ -33,28 +33,27 @@ class DungeonRoomStaticData {
         this.idMap = new Map()
         this.coreMap = new Map() // "CORE": "ROOMDATA"
 
+        this.update(this.fullRoomData)
+
+        fetch("https://soopy.dev/api/bettermap/roomdata").json(data => {
+            // FileLib.write("BetterMap", "Data/roomdata.json", JSON.stringify(data, null, 4))
+
+            this.fullRoomData = data
+            this.update()
+        })
+    }
+
+    update() {
         this.fullRoomData?.forEach((roomData, i) => {
             roomData.id.forEach(roomId => {
                 this.idMap.set(roomId, i)
             })
             this.idMap.set(roomData.index, i)
 
+            // Map cores to room IDs
             for (let core of roomData.cores) {
                 this.coreMap.set(core, roomData)
             }
-        })
-
-        fetch("https://soopy.dev/api/bettermap/roomdata").json(data => {
-            // FileLib.write("BetterMap", "Data/roomdata.json", JSON.stringify(data, null, 4))
-
-            this.fullRoomData = data
-            this.idMap = new Map()
-            this.fullRoomData.forEach((d, i) => {
-                d.id.forEach(id => {
-                    this.idMap.set(id, i)
-                })
-                this.idMap.set(d.index, i)
-            })
         })
     }
 
@@ -72,8 +71,13 @@ class DungeonRoomStaticData {
         return this.fullRoomData[this.idMap.get(id)]
     }
 
+    /**
+     * 
+     * @param {*} core 
+     * @returns 
+     */
     getDataFromCore(core) {
-
+        return this.coreMap.get(core) ?? null
     }
 
     /**

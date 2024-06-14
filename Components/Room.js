@@ -317,6 +317,10 @@ class Room {
     static typeToColor(type) {
         return typeColor.get(type)
     }
+
+    toString() {
+        return `Room[name=${this.data?.name || "Unknown"}, components=${this.components}]`
+    }
 }
 
 let checkmarkStateName = new Map()

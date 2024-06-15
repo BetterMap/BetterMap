@@ -2,11 +2,12 @@ import settings from "../Extra/Settings/CurrentSettings.js"
 import CurrentSettings from "../Extra/Settings/CurrentSettings.js"
 import { drawBoxAtBlock } from "../Utils/renderUtils.js"
 import RoomComponent from "../Utils/RoomComponent.js"
-import { firstLetterCapital } from "../Utils/Utils.js"
+import { Checkmark, firstLetterCapital } from "../Utils/Utils.js"
 import { createEvent, RoomEvents, toDisplayString } from "./RoomEvent.js"
 
 class Room {
 
+    // Room and Door Types
     static SPAWN = 0
     static NORMAL = 1
     static PUZZLE = 2
@@ -17,12 +18,13 @@ class Room {
     static TRAP = 7
     static BLACK = 8 // For wither door only
 
-    static FAILED = -1;
-    static UNOPENED = 0;
-    static ADJACENT = 1;
-    static OPENED = 2;
-    static CLEARED = 3;
-    static COMPLETED = 4;
+    // Checkmarks
+    // static FAILED = -1;
+    // static UNOPENED = 0;
+    // static ADJACENT = 1;
+    // static OPENED = 2;
+    // static CLEARED = 3;
+    // static COMPLETED = 4;
 
     /**
      * Creates a room based on a type, components, and a room id
@@ -41,6 +43,8 @@ class Room {
 
         this.type = type
         this.components = components
+        this.components.forEach(component => this.dungeon.rooms.set(component, this))
+
         this.width = 30;
         this.height = 30;
         this.minX = null;
@@ -58,7 +62,7 @@ class Room {
          * 3 -> white tick
          * 4 -> green tick
          */
-        this._checkmarkState = 0
+        this._checkmarkState = Checkmark.NONE
 
         this.maxSecrets = undefined
         this._currentSecrets = undefined
@@ -73,8 +77,8 @@ class Room {
         if (this.checkmarkState !== val) {
             this.addEvent(RoomEvents.CHECKMARK_STATE_CHANGE, this.checkmarkState, val)
 
-            if ((this._checkmarkState === Room.OPENED || this._checkmarkState === Room.UNOPENED)
-                && (val === Room.CLEARED || val === Room.COMPLETED)
+            if ((this._checkmarkState === Checkmark.NONE || this._checkmarkState === Checkmark.GRAY)
+                && (val === Checkmark.WHITE || val === Checkmark.GREEN)
                 && this.type !== Room.FAIRY && this.type !== Room.SPAWN) {
                 let players = this.getPlayersInRoom()
 
@@ -117,11 +121,11 @@ class Room {
         this.dungeon.rooms.set(component, this)
     }
 
-    addDoor(newDoor) {
-        this.adjacentDoors.push(newDoor);
-        this.shape = this.findShape()
-        this.rotation = this.findRotation()
-    }
+    // addDoor(newDoor) {
+    //     this.adjacentDoors.push(newDoor);
+    //     this.shape = this.findShape()
+    //     this.rotation = this.findRotation()
+    // }
 
     /**
      * Finds the shape of the room and updates the room's 'shape' field.
@@ -338,19 +342,17 @@ class Room {
     }
 
     toString() {
-        const components = this.components.map(v => `[${v.arrayX}, ${v.arrayY}]`).join(", ")
-        return `Room[name=${this.data?.name || "Unknown"}, components=${components}, type=${this.data?.type}]`
+        return `Room["${this.data?.name || "Unknown"}", [${this.components.map(a => a.toString()).join(",")}], ${this.type}]`
     }
 }
 
 let checkmarkStateName = new Map()
 
-checkmarkStateName.set(Room.FAILED, "FAILED")
-checkmarkStateName.set(Room.UNOPENED, "UNOPENED")
-checkmarkStateName.set(Room.ADJACENT, "ADJACENT")
-checkmarkStateName.set(Room.OPENED, "OPENED")
-checkmarkStateName.set(Room.CLEARED, "CLEARED")
-checkmarkStateName.set(Room.COMPLETED, "COMPLETED")
+checkmarkStateName.set(Checkmark.FAILED, "FAILED")
+checkmarkStateName.set(Checkmark.GRAY, "GRAY")
+checkmarkStateName.set(Checkmark.NONE, "NONE")
+checkmarkStateName.set(Checkmark.WHITE, "WHITE")
+checkmarkStateName.set(Checkmark.GREEN, "GREEN")
 
 let typeName = new Map()
 typeName.set(Room.SPAWN, "SPAWN")

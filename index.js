@@ -69,10 +69,6 @@ register("step", () => {
         if (mapData) {
             currentDungeonMap.updateFromMap(mapData)
         }
-        if (!mapData || !currentDungeonMap.dungeonTopLeft) {
-            // currentDungeonMap.updateFromWorld();
-            currentDungeonMap.scanCurrentRoom()
-        }
     }
 
     currentDungeonMap.updatePuzzles();
@@ -83,17 +79,16 @@ register("packetReceived", (packet) => {
     if (currentDungeonMap && !currentDungeonMap.mapId) {
         currentDungeonMap.mapId = packet[m.getMapId]()
     }
-}).setFilteredClasses([net.minecraft.network.play.server.S34PacketMaps])
+}).setFilteredClass(net.minecraft.network.play.server.S34PacketMaps)
 
 register("step", () => {
     if (!currentDungeonMap)
         return;
     currentDungeonMap.updatePlayers()
-    currentDungeonMap.identifyCurrentRoom();
 }).setFps(1)
+
 register("step", () => {
-    if (!currentDungeonMap)
-        return;
+    if (!currentDungeonMap) return;
     currentDungeonMap.syncPlayersThruSocket()
 }).setFps(3)
 

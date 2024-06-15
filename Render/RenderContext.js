@@ -581,7 +581,7 @@ let roomHash = {
     UNKNOWN: 6,
     TRAP: 7,
     BLACK: 8, // For rendering wither doors
-    NORMAL_CONNECTION: 9 // For rendering connections between normal rooms
+    NORMAL_CONNECTION: 9, // For rendering connections between normal rooms
 }
 
 const Color = Java.type("java.awt.Color")

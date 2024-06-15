@@ -7,6 +7,7 @@ import MapRenderer from "../../Render/MapRenderer";
 import RenderContext from "../../Render/RenderContext";
 import RenderContextManager from "../../Render/RenderContextManager";
 import Position from "../../Utils/Position";
+import { Checkmark } from "../../Utils/Utils";
 import SettingGui from "./SettingGui";
 const AbstractClientPlayer = Java.type("net.minecraft.client.entity.AbstractClientPlayer")
 
@@ -114,27 +115,27 @@ class SettingsManager {
         let dungeon = new DungeonMap("F7", new Set(), false);
         // [Room, secrets, checkmarkState]
         const rooms = [
-            [new Room(dungeon, Room.SPAWN, [new Position(-168, -200)], "102,66"), 0, Room.COMPLETED],
-            [new Room(dungeon, Room.NORMAL, [new Position(-168, -168), new Position(-168, -136), new Position(-136, -136)], "1050,-524"), 2, Room.CLEARED],
-            [new Room(dungeon, Room.NORMAL, [new Position(-136, -104)], "498,-240"), 0, Room.CLEARED],
-            [new Room(dungeon, Room.PUZZLE, [new Position(-104, -136)], "-60,-600"), 0, Room.COMPLETED],
-            [new Room(dungeon, Room.NORMAL, [new Position(-104, -104)], "246,-60"), 0, Room.OPENED],
-            [new Room(dungeon, Room.FAIRY, [new Position(-136, -72)], "462,-312"), 0, Room.COMPLETED],
-            [new Room(dungeon, Room.BLOOD, [new Position(-200, -72)], undefined), undefined, Room.OPENED],
-            [new Room(dungeon, Room.NORMAL, [new Position(-200, -40), new Position(-168, -40), new Position(-136, -40)], "530,-420"), 0, Room.CLEARED],
-            [new Room(dungeon, Room.NORMAL, [new Position(-136, -200), new Position(-104, -200), new Position(-136, -168), new Position(-104, -168)], "166,-592"), 1, Room.CLEARED],
-            [new Room(dungeon, Room.NORMAL, [new Position(-72, -168)], "66,-276"), 1, Room.COMPLETED],
-            [new Room(dungeon, Room.PUZZLE, [new Position(-72, -200)], "-96,-168"), 0, Room.OPENED],
-            [new Room(dungeon, Room.NORMAL, [new Position(-40, -168)], "66,-240"), 0, Room.CLEARED],
-            [new Room(dungeon, Room.PUZZLE, [new Position(-40, -200)], "-60,-564"), 0, Room.ADJACENT],
-            [new Room(dungeon, Room.NORMAL, [new Position(-72, -136), new Position(-40, -136)], "574,-384"), 3, Room.COMPLETED],
-            [new Room(dungeon, Room.NORMAL, [new Position(-72, -104), new Position(-72, -72), new Position(-104, -72)], "438,-524"), 0, Room.OPENED],
-            [new Room(dungeon, Room.NORMAL, [new Position(-40, -104), new Position(-40, -72), new Position(-40, -40)]), 0, Room.CLEARED],
-            [new Room(dungeon, Room.UNKNOWN, [new Position(-104, -40)], undefined), undefined, Room.ADJACENT],
-            [new Room(dungeon, Room.MINIBOSS, [new Position(-72, -40)], "174,66"), 0, Room.COMPLETED],
-            [new Room(dungeon, Room.NORMAL, [new Position(-200, -200), new Position(-200, -168), new Position(-200, -136), new Position(-200, -104)], "30,-456"), 0, Room.CLEARED],
-            [new Room(dungeon, Room.NORMAL, [new Position(-168, -104)], "174,-132"), 0, Room.CLEARED],
-            [new Room(dungeon, Room.TRAP, [new Position(-168, -72)], "-312,30"), 1, Room.CLEARED],
+            [new Room(dungeon, Room.SPAWN, [new Position(-168, -200)], "102,66"), 0, Checkmark.GREEN],
+            [new Room(dungeon, Room.NORMAL, [new Position(-168, -168), new Position(-168, -136), new Position(-136, -136)], "1050,-524"), 2, Checkmark.WHITE],
+            [new Room(dungeon, Room.NORMAL, [new Position(-136, -104)], "498,-240"), 0, Checkmark.WHITE],
+            [new Room(dungeon, Room.PUZZLE, [new Position(-104, -136)], "-60,-600"), 0, Checkmark.GREEN],
+            [new Room(dungeon, Room.NORMAL, [new Position(-104, -104)], "246,-60"), 0, Checkmark.NONE],
+            [new Room(dungeon, Room.FAIRY, [new Position(-136, -72)], "462,-312"), 0, Checkmark.GREEN],
+            [new Room(dungeon, Room.BLOOD, [new Position(-200, -72)], undefined), undefined, Checkmark.NONE],
+            [new Room(dungeon, Room.NORMAL, [new Position(-200, -40), new Position(-168, -40), new Position(-136, -40)], "530,-420"), 0, Checkmark.WHITE],
+            [new Room(dungeon, Room.NORMAL, [new Position(-136, -200), new Position(-104, -200), new Position(-136, -168), new Position(-104, -168)], "166,-592"), 1, Checkmark.WHITE],
+            [new Room(dungeon, Room.NORMAL, [new Position(-72, -168)], "66,-276"), 1, Checkmark.GREEN],
+            [new Room(dungeon, Room.PUZZLE, [new Position(-72, -200)], "-96,-168"), 0, Checkmark.NONE],
+            [new Room(dungeon, Room.NORMAL, [new Position(-40, -168)], "66,-240"), 0, Checkmark.WHITE],
+            [new Room(dungeon, Room.PUZZLE, [new Position(-40, -200)], "-60,-564"), 0, Checkmark.NONE],
+            [new Room(dungeon, Room.NORMAL, [new Position(-72, -136), new Position(-40, -136)], "574,-384"), 3, Checkmark.GREEN],
+            [new Room(dungeon, Room.NORMAL, [new Position(-72, -104), new Position(-72, -72), new Position(-104, -72)], "438,-524"), 0, Checkmark.NONE],
+            [new Room(dungeon, Room.NORMAL, [new Position(-40, -104), new Position(-40, -72), new Position(-40, -40)]), 0, Checkmark.WHITE],
+            [new Room(dungeon, Room.UNKNOWN, [new Position(-104, -40)], undefined), undefined, Checkmark.GRAY],
+            [new Room(dungeon, Room.MINIBOSS, [new Position(-72, -40)], "174,66"), 0, Checkmark.GREEN],
+            [new Room(dungeon, Room.NORMAL, [new Position(-200, -200), new Position(-200, -168), new Position(-200, -136), new Position(-200, -104)], "30,-456"), 0, Checkmark.WHITE],
+            [new Room(dungeon, Room.NORMAL, [new Position(-168, -104)], "174,-132"), 0, Checkmark.WHITE],
+            [new Room(dungeon, Room.TRAP, [new Position(-168, -72)], "-312,30"), 1, Checkmark.WHITE],
         ]
         rooms.forEach(([room, secrets, checkmarkState]) => {
             room.secrets = secrets

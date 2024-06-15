@@ -436,3 +436,11 @@ export const getCore = (x, z) => {
 
     return hashCode(blockIds)
 }
+
+export const Checkmark = {
+    NONE: 0,
+    GRAY: 1,
+    FAILED: 2,
+    WHITE: 3,
+    GREEN: 4
+}

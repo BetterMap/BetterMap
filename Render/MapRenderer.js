@@ -128,7 +128,7 @@ class MapRenderer {
         }
 
         if (renderContext.currentRoomInfo !== "none") {
-            let roomInfo = dungeonMap.getPlayerRoom()?.getLore()
+            let roomInfo = dungeonMap.getCurrentRoom()?.getLore()
 
             if (roomInfo) {
                 let rx

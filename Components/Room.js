@@ -1,8 +1,7 @@
-import { m } from "../../mappings/mappings.js"
-import DungeonRoomData from "../Data/DungeonRoomData.js"
 import settings from "../Extra/Settings/CurrentSettings.js"
 import CurrentSettings from "../Extra/Settings/CurrentSettings.js"
 import { drawBoxAtBlock } from "../Utils/renderUtils.js"
+import RoomComponent from "../Utils/RoomComponent.js"
 import { firstLetterCapital } from "../Utils/Utils.js"
 import { createEvent, RoomEvents, toDisplayString } from "./RoomEvent.js"
 
@@ -29,7 +28,7 @@ class Room {
      * Creates a room based on a type, components, and a room id
      * @param {Any} dungeon 
      * @param {Number} type 
-     * @param {Array<Position>} components 
+     * @param {Array<RoomComponent>} components 
      * @param {String} roomId 
      */
     constructor(dungeon, type, components, roomId) {
@@ -107,12 +106,13 @@ class Room {
         return this._currentSecrets
     }
     
-    addComponents(newComponents) {
+    /**
+     * 
+     * @param {RoomComponent} component 
+     */
+    addComponent(component) {
 
-        let parts = []
-        this.components.forEach(c => parts.push(c.arrayX + ',' + c.arrayY));
-
-        this.components.push(newComponents)
+        this.components.push(component)
         this.shape = this.findShape()
         this.rotation = this.findRotation();
     }

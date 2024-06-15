@@ -72,8 +72,8 @@ class DungeonRoomStaticData {
     }
 
     /**
-     * 
-     * @param {*} core 
+     * Gets room data given a room's core
+     * @param {Number} core 
      * @returns 
      */
     getDataFromCore(core) {

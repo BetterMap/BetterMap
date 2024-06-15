@@ -6,13 +6,14 @@ import Room from "./Room.js"
 import { getScoreboardInfo, getTabListInfo, getRequiredSecrets } from "../Utils/Score"
 import Door from "./Door.js"
 import DungeonRoomData from "../Data/DungeonRoomData.js"
-import { changeScoreboardLine, dungeonOffsetX, dungeonOffsetY, MESSAGE_PREFIX, MESSAGE_PREFIX_SHORT, renderLore, getPlayerName, getComponentAt, getCore, getHighestBlock } from "../Utils/Utils.js"
+import { changeScoreboardLine, dungeonOffsetX, dungeonOffsetY, MESSAGE_PREFIX, MESSAGE_PREFIX_SHORT, renderLore, getPlayerName, getCore, getHighestBlock, getComponentFromPos } from "../Utils/Utils.js"
 import socketConnection from "../socketConnection.js"
 import DataLoader from "../Utils/DataLoader.js"
 import { fetch } from "../Utils/networkUtils.js"
 import renderLibs from "../../guimanager/renderLibs.js"
 import settings from "../Extra/Settings/CurrentSettings.js"
 import { RoomEvents, toDisplayString } from "./RoomEvent.js"
+import RoomComponent from "../Utils/RoomComponent.js"
 
 let PlayerComparator = Java.type("net.minecraft.client.gui.GuiPlayerTabOverlay").PlayerComparator
 let c = PlayerComparator.class.getDeclaredConstructor()
@@ -25,16 +26,16 @@ class DungeonMap {
          * @type {Map<String, Room>} The string is in form x,y eg 102,134 and will correspond to the top left corner of a room component
          */
         this.rooms = new Map()
-        this.roomPositionArray = []
+        this.roomComponentArray = []
 
-        // Initialize the array of Positions
+        // Initialize the array of Positions, every spot in the 6x6 area where a room can be
         for (let i = 0; i < 36; i++) {
             let x = i%6
             let z = Math.floor(i/6)
             let rx = -185 + x * 32
             let rz = -185 + z * 32
-            let pos = new Position(rx, rz, this)
-            this.roomPositionArray.push(pos)
+            let component = new RoomComponent(rx, rz, this)
+            this.roomComponentArray.push(component)
         }
         /**
          * @type {Map<String, Door>} The string is in form x,y eg 102,134 and will correspond to the top left corner of a door
@@ -164,22 +165,19 @@ class DungeonMap {
                 })
             })
         }).setChatCriteria(/^\s*(Master Mode)?(?:The)? Catacombs - Floor (.{1,3})$/)) // https://regex101.com/r/W4UjWQ/1
-        //&r&r&r                     &r&cThe Catacombs &r&8- &r&eFloor I Stats&r
-        //&r&r&r               &r&cMaster Mode Catacombs &r&8- &r&eFloor III Stats&r
-        //&r&r&r                         &r&cThe Catacombs &r&8- &r&eFloor V&r
 
         this.triggers.push(register("entityDeath", (entity) => {
             if (entity.getClassName() !== "EntityBlaze") return
             this.deadBlazes++;
-            if (this.deadBlazes === 10) {
-                this.roomsArr.forEach(room => {
-                    if (room.data?.name?.toLowerCase() === 'higher or lower') {
-                        room.checkmarkState = room.currentSecrets ? Room.COMPLETED : Room.CLEARED;
-                    }
-                })
+            
+            if (this.deadBlazes !== 10) return
 
-                this.sendSocketData({ type: "blazeDone" })
-            }
+            this.roomsArr.forEach(room => {
+                if (room.data?.name?.toLowerCase() !== 'higher or lower') return
+                room.checkmarkState = room.currentSecrets ? Room.COMPLETED : Room.CLEARED;
+            })
+
+            this.sendSocketData({ type: "blazeDone" })
         }))
         this.triggers.push(register("entityDeath", (entity) => {
             if (entity.getClassName() !== "EntityZombie") return
@@ -207,10 +205,10 @@ class DungeonMap {
 
         this.triggers.push(register("chat", (info) => {
             this.roomsArr.forEach(r => {
-                if (r.type === Room.BLOOD) {
-                    r.checkmarkState = Room.CLEARED
-                    this.markChanged()
-                }
+                if (r.type !== Room.BLOOD) return
+
+                r.checkmarkState = Room.CLEARED
+                this.markChanged()
             })
         }).setChatCriteria("[BOSS] The Watcher: That will be enough for now."))
 
@@ -224,7 +222,7 @@ class DungeonMap {
         }).setFps(1))
 
         this.triggers.push(register("tick", () => {
-            const currPos = this.getPositionAt(Player.getX(), Player.getZ())
+            const currPos = this.getComponentAt(Player.getX(), Player.getZ())
             // Not in the main dungeon area or in same spot as before
             if (!currPos || currPos == this.lastStandingPos) return
             // Walked into a new component in the dungeon
@@ -252,6 +250,38 @@ class DungeonMap {
         }).setChatCriteria("&r&a${player}&r&a opened a &r&8&lWITHER &r&adoor!&r"))
     }
 
+    getRoomAt(worldX, worldZ) {
+        const [x, z] = getComponentFromPos(worldX, worldZ)
+
+        return this.rooms.get(`${x},${z}`)
+    }
+
+    /**
+     * Adds the room to this dungeon and handles all of the backend shit
+     * @param {Room} room 
+     */
+    addRoom(room) {
+        this.roomsArr.add(room)
+        room.components.forEach(component => {
+            this.rooms.set(component.arrayStr, room)
+        })
+    }
+
+    /**
+     * 
+     * @param {Room} room 
+     */
+    deleteRoom(room) {
+        this.roomsArr.delete(room)
+        room.components.forEach(component => {
+            const str = component.arrayStr
+            // Might've been overwritten with another room, don't wanna delete it!
+            if (this.rooms.get(str) !== room) return
+
+            this.rooms.delete(str)
+        })
+    }
+
     scanCurrentRoom() {
         const directions = [
             [0, -16], // Up
@@ -260,9 +290,10 @@ class DungeonMap {
             [-16, 0] // Left
         ]
 
-        const currPos = this.getPositionAt(Player.getX(), Player.getZ())
+        const currPos = this.getComponentAt(Player.getX(), Player.getZ())
         if (!currPos) return ChatLib.chat(`Could not scan: Invalid position`)
 
+        // BFS outwards to try and load the entire room
         const searched = new Set()
         const posQueue = [currPos]
         while (posQueue.length) {
@@ -287,7 +318,7 @@ class DungeonMap {
                 if (block.type.getID() == 0 || block2.type.getID() !== 0) continue
 
                 // Extend outwards fully into the center of the next room
-                let newPos = this.getPositionAt(worldX+dx*2, worldY+dy*2)
+                let newPos = this.getComponentAt(worldX+dx*2, worldY+dy*2)
                 if (!newPos || searched.has(newPos)) continue
 
                 posQueue.push(newPos)
@@ -309,8 +340,9 @@ class DungeonMap {
                 // Component not added to room yet
                 if (!existingRoom.components.includes(pos)) {
                     ChatLib.chat(`&aAdding component to ${existingRoom.data.name}`)
-                    existingRoom.addComponents(pos)
+                    existingRoom.addComponent(pos)
                 }
+                
                 ChatLib.chat(`Room: ${existingRoom}`)
                 continue
             }
@@ -320,6 +352,7 @@ class DungeonMap {
             existingRoom.data = roomData
             
             // Add the room to the dungeon
+            ChatLib.chat(`Adding room...`)
             this.roomsArr.add(existingRoom)
             this.rooms.set(scoreboardId, existingRoom)
             
@@ -336,13 +369,13 @@ class DungeonMap {
      * @param {Number} worldZ 
      * @returns {Position | null}
      */
-    getPositionAt(worldX, worldZ) {
-        const [x, z] = getComponentAt(worldX, worldZ)
+    getComponentAt(worldX, worldZ) {
+        const [x, z] = getComponentFromPos(worldX, worldZ)
         const index = x + z*6
 
         if (index < 0 || index > 35) return null
 
-        return this.roomPositionArray[index]
+        return this.roomComponentArray[index]
     }
 
     socketData(data) {
@@ -813,21 +846,21 @@ class DungeonMap {
                         // Need to merge left
                         if (currRoomLeft && currRoom !== currRoomLeft && currRoomLeft.type === Room.NORMAL && !currRoomLeft.components.some(a => position.equals(a))) {
                             if (currRoom) this.roomsArr.delete(currRoom)
-                            currRoomLeft.addComponents(position)
+                            currRoomLeft.addComponent(position)
                             this.rooms.set(x + "," + y, currRoomLeft)
                             this.markChanged()
                         }
                         // Need to merge up
                         if (currRoomTop && currRoom !== currRoomTop && currRoomTop.type === Room.NORMAL && !currRoomTop.components.some(a => position.equals(a))) {
                             if (currRoom) this.roomsArr.delete(currRoom)
-                            currRoomTop.addComponents(position)
+                            currRoomTop.addComponent(position)
                             this.rooms.set(x + "," + y, currRoomTop)
                             this.markChanged()
                         }
                         // Need to merge up
                         if (currRoomTopRight && currRoom !== currRoomTopRight && currRoomTopRight.type === Room.NORMAL && !currRoomTopRight.components.some(a => position.equals(a))) {
                             if (currRoom) this.roomsArr.delete(currRoom)
-                            currRoomTopRight.addComponents(position)
+                            currRoomTopRight.addComponent(position)
                             this.rooms.set(x + "," + y, currRoomTopRight)
                             this.markChanged()
                         }
@@ -1091,17 +1124,6 @@ class DungeonMap {
         return this.cachedScore.data
     }
 
-    /**
-     * Gets the current room the player is standing in
-     * @returns {Room}
-     */
-    getPlayerRoom() {
-        let x = ~~((Player.getX() + dungeonOffsetX) / 32);
-        let y = ~~((Player.getZ() + dungeonOffsetY) / 32);
-
-        return this.rooms.get(x + ',' + y);
-    }
-
     scanFirstDeathForSpiritPet(username) {
         if (this.firstDeath) return;
         this.firstDeath = true;
@@ -1121,28 +1143,26 @@ class DungeonMap {
     }
 
     secretCountActionBar(min, max) {
-        if (!this.canUpdateRoom()) return
-        let x = ~~((Player.getX() + dungeonOffsetX) / 32);
-        let y = ~~((Player.getZ() + dungeonOffsetY) / 32);
+        // if (!this.canUpdateRoom()) return
+        // let currentRoom = this.getCurrentRoom()
 
-        let currentRoom = this.rooms.get(x + ',' + y);
+        // if (!currentRoom || currentRoom.type === Room.UNKNOWN) return; // Current room not loaded yet
 
-        if (!currentRoom || currentRoom.type === Room.UNKNOWN) return; // Current room not loaded yet
-        if (currentRoom.currentSecrets !== min && (currentRoom.maxSecrets === max || !currentRoom.roomId)) {
-            currentRoom.currentSecrets = min
-            currentRoom.maxSecrets = max
-            if (currentRoom.checkmarkState === Room.CLEARED && currentRoom.currentSecrets >= currentRoom.maxSecrets) currentRoom.checkmarkState = Room.COMPLETED;
+        // if (currentRoom.currentSecrets !== min && (currentRoom.maxSecrets === max || !currentRoom.roomId)) {
+        //     currentRoom.currentSecrets = min
+        //     currentRoom.maxSecrets = max
+        //     if (currentRoom.checkmarkState === Room.CLEARED && currentRoom.currentSecrets >= currentRoom.maxSecrets) currentRoom.checkmarkState = Room.COMPLETED;
 
-            this.markChanged() // Re-render map incase of a secret count specific texturing
+        //     this.markChanged() // Re-render map incase of a secret count specific texturing
 
-            this.sendSocketData({
-                type: 'roomSecrets',
-                min,
-                max,
-                x,
-                y
-            })
-        }
+        //     this.sendSocketData({
+        //         type: 'roomSecrets',
+        //         min,
+        //         max,
+        //         x,
+        //         y
+        //     })
+        // }
     }
 
     /**
@@ -1152,43 +1172,31 @@ class DungeonMap {
      * @param {Number} z 
      */
     toRelativeCoords(x, y, z) {
-        let px = ~~((x + dungeonOffsetX) / 32);
-        let py = ~~((z + dungeonOffsetY) / 32);
-        let room = this.rooms.get(px + ',' + py);
+        let room = this.getRoomAt(x, z)
         if (!room) return null;
         return room.getRelativeCoords(x, y, z);
     }
 
     getCurrentRoom() {
-        let x = ~~((Player.getX() + dungeonOffsetX) / 32);
-        let y = ~~((Player.getZ() + dungeonOffsetY) / 32);
-
-        return this.rooms.get(x + ',' + y);
+        return this.getRoomAt(Player.getX(), Player.getZ())
     }
 
     identifyCurrentRoom() {
-        if (!this.canUpdateRoom()) return
-        let x = ~~((Player.getX() + dungeonOffsetX) / 32);
-        let y = ~~((Player.getZ() + dungeonOffsetY) / 32);
+        // if (!this.canUpdateRoom()) return
 
-        let roomId = this.getCurrentRoomId();
+        // let currentRoom = this.getCurrentRoom()
 
-        if (!roomId) return; // Room id not loaded or inbetween 2 rooms
-        if (this.identifiedRoomIds.has(roomId)) return; // Already loaded room
+        // if (!currentRoom || currentRoom.roomId || currentRoom.type === Room.UNKNOWN) return; // Current room not loaded yet, or already loaded id
 
-        let currentRoom = this.rooms.get(x + ',' + y);
+        // currentRoom.roomId = roomId;
+        // this.identifiedRoomIds.add(roomId);
 
-        if (!currentRoom || currentRoom.roomId || currentRoom.type === Room.UNKNOWN) return; // Current room not loaded yet, or already loaded id
+        // this.markChanged() // Re-render map incase of a room-id specific texturing
 
-        currentRoom.roomId = roomId;
-        this.identifiedRoomIds.add(roomId);
-
-        this.markChanged() // Re-render map incase of a room-id specific texturing
-
-        this.sendSocketData({
-            type: "roomId",
-            x, y, roomId
-        })
+        // this.sendSocketData({
+        //     type: "roomId",
+        //     x, y, roomId
+        // })
     }
 
     roomGuiClicked(context, cursorX, cursorY, button, isPress) {
@@ -1306,16 +1314,15 @@ class DungeonMap {
     // UPDATING FROM WORLD CODE
     // ==============================
     updateFromWorld() {
-        let roomid = this.getCurrentRoomId()
+        // let roomid = this.getCurrentRoomId()
+        let roomid = null
         if (!roomid) return // No roomid eg inbetween 2 rooms
         if (!this.getCurrentRoomData()) return
 
         let x = Math.floor((Player.getX() + 8) / 32) * 32 - 9 // Top left of current 1x1 that players in
         let y = Math.floor((Player.getZ() + 8) / 32) * 32 - 9
 
-        let playerMapX = ~~((Player.getX() + 200) / 32);
-        let playerMapY = ~~((Player.getZ() + 200) / 32);
-        let currentRoom = this.rooms.get(playerMapX + ',' + playerMapY);
+        let currentRoom = this.getCurrentRoom()
 
         if (!currentRoom || !currentRoom.roomId || currentRoom.type === Room.UNKNOWN) { // Current room not already identified
             if (roomid !== this.lastRoomId && this.canUpdateRoom()) { // Room id changed, check current room
@@ -1576,19 +1583,6 @@ class DungeonMap {
     }
 
     /**
-     * NOTE: check for roomid is falsy before using
-     * @returns {String} the current room id
-     */
-    getCurrentRoomId() {
-        if (Scoreboard.getLines().length === 0) return undefined
-        let id = Scoreboard.getLineByIndex(Scoreboard.getLines().length - 1).getName().trim().split(" ").pop()
-
-        if (!id.includes(",")) return undefined  // Not id, eg id not on scoreboard
-
-        return id
-    }
-
-    /**
      * @returns {[Number, Number]} the x and y location of the rooms 'location' (top left of all rooms, shifting down by 1 if needed to in L)
      */
     getRoomXYWorld() {
@@ -1598,9 +1592,10 @@ class DungeonMap {
     }
 
     getCurrentRoomData() {
-        let id = this.getCurrentRoomId()
-        if (!id) return undefined// No room id
-        return DungeonRoomData.getDataFromId(id)
+        const room = this.getCurrentRoom()
+        if (!room) return null
+
+        return room.data
     }
 
     getRotation(x, y, width, height, roofY) {

@@ -4,6 +4,7 @@ import { f, m } from "../../mappings/mappings.js"
 import settings from "../Extra/Settings/CurrentSettings.js"
 import RenderContext from "../Render/RenderContext.js"
 import Position from "../Utils/Position.js"
+import RoomComponent from "../Utils/RoomComponent.js"
 import { dungeonOffsetX, dungeonOffsetY, getSBID } from "../Utils/Utils.js"
 import { fetch } from "../Utils/networkUtils.js"
 
@@ -19,7 +20,7 @@ class MapPlayer {
         this.networkPlayerInfo = networkPlayerInfo
         this.dungeonMap = dungeonMap
 
-        this.location = new Position(0, 0, dungeonMap)
+        this.location = new RoomComponent(0, 0, dungeonMap)
         this.location.worldXRaw.setAnimMode("linea")
         this.location.worldYRaw.setAnimMode("linea")
 

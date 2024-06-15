@@ -46,6 +46,11 @@ class Position {
     get arrayY() {
         return Math.round((this.worldY + 200) / 32 * 2) / 2
     }
+
+    get arrayStr() {
+        return `${this.arrayX},${this.arrayY}`
+    }
+
     set mapX(val) {
         if (!this.dungeonMap.dungeonTopLeft) return 0
         this.worldX = MathLib.map(val, this.dungeonMap.dungeonTopLeft[0], this.dungeonMap.dungeonTopLeft[0] + this.dungeonMap.fullRoomScaleMap * 6, -200, -8)

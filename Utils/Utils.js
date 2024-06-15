@@ -76,7 +76,7 @@ export function renderLore(x, y, lore) {
  * @param {Number} worldY
  * @returns 
  */
-export const getComponentAt = (worldX, worldZ) => {
+export const getComponentFromPos = (worldX, worldZ) => {
     return [
         Math.floor((worldX + 200.5) / 32),
         Math.floor((worldZ + 200.5) / 32)

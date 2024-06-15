@@ -54,7 +54,7 @@ class Room {
         this.rotation = null
         this.roofHeight = roofHeight
         
-        this.findRotation();
+        this.findRotationAndCorner();
 
         this.cores = []
 
@@ -68,13 +68,19 @@ class Room {
          */
         this._checkmarkState = Checkmark.NONE
 
-        this.maxSecrets = undefined
+        this.maxSecrets = 0
         this._currentSecrets = undefined
+        this.currentSecrets = 0
+        
 
 
         // Room data from the room id
         this.data = undefined
 
+    }
+
+    loadRoomData(roomData) {
+        // this.type = 
     }
 
     set checkmarkState(val) {
@@ -126,7 +132,7 @@ class Room {
         this.sortComponents()
 
         this.shape = this.findShape()
-        this.findRotation();
+        this.findRotationAndCorner();
 
         this.dungeon.rooms.set(component, this)
     }
@@ -152,10 +158,9 @@ class Room {
         return "L"
     }
 
-    findRotation() {
+    findRotationAndCorner() {
+        // Roof height is needed to find stained clay
         if (!this.roofHeight) return
-
-        ChatLib.chat(`Finding rotation for ${this}`)
 
         const offsets = [
             [-15, -15],
@@ -184,7 +189,7 @@ class Room {
                 if (block.type.getID() !== 159 || block.getMetadata() !== 11) continue
 
                 this.rotation = i
-                ChatLib.chat(`${this} rotation is now ${this.rotation}`)
+                // ChatLib.chat(`Rotation for ${this} is ${i}`)
                 this.corner = [x+dx+0.5, 0, z+dz+0.5]
                 return
             }
@@ -241,7 +246,7 @@ class Room {
         if (this.data) {
             roomLore.push(this.data?.name || '???')
             // roomLore.push("&8" + (this.roomId || ""))
-            if (CurrentSettings.settings.devInfo) roomLore.push('&9Rotation: ' + (this.rotation || 'NONE'));
+            if (CurrentSettings.settings.devInfo) roomLore.push('&9Rotation: ' + (this.rotation ?? 'NONE'));
             if (this.data && this.data?.soul) roomLore.push("&dFAIRY SOUL!")
             if (this.maxSecrets) roomLore.push("Secrets: " + this.currentSecrets + ' / ' + this.maxSecrets)
             if (this.data?.crypts !== undefined && (this.type === Room.NORMAL || this.type === Room.MINIBOSS || this.type === Room.TRAP)) roomLore.push("Crypts: " + this.data.crypts)
@@ -297,45 +302,6 @@ class Room {
 
     }
 
-    // toRoomCoords(px, py, pz) {
-    //     let { x, y, z } = this.rotateCoords(px, py, pz);
-    //     return { x: this.minX + x, y: y, z: this.minY + z };
-    // }
-
-    // getRelativeCoords(x, y, z) {
-    //     let dx = x - this.minX
-    //     let dy = y;
-    //     let dz = z - this.minY;
-
-    //     // Rotate opposite direction
-    //     switch (this.rotation) {
-    //         case 2:
-    //             return { x: dz, y: dy, z: this.width - dx };
-    //         case 3:
-    //             return { x: this.width - dx, y: dy, z: this.height - dz };;
-    //         case 0:
-    //             return { x: this.height - dz, y: dy, z: dx };;
-    //         case 1:
-    //         default:
-    //             return { x: dx, y: dy, z: dz };
-    //     }
-    // }
-
-    // rotateCoords(x, y, z) {
-    //     switch (this.rotation) {
-    //         case 2:
-    //             return { x: this.width - z, y: y, z: x };
-    //         case 3:
-    //             return { x: this.width - x, y: y, z: this.height - z };
-    //         case 0:
-    //             return { x: z, y: y, z: this.height - x };
-    //         case 1:
-    //         // No break, default rotation
-    //         default:
-    //             return { x: x, y: y, z: z };
-    //     }
-    // }
-
     drawRoomSecrets() {
         if (!settings.settings.showSecrets) return
         if (!this.data || !this.corner) return
@@ -361,36 +327,6 @@ class Room {
             });
         })
 
-        // this.data.secret_coords?.chest?.forEach(([rx, ry, rz]) => {
-        //     let { x, y, z } = this.toRoomCoords(rx, ry, rz);
-
-        //     if (this.dungeon.collectedSecrets.has(x + "," + y + "," + z)) return
-        //     drawBoxAtBlock(x, y, z, 0, 1, 0, 1, 1)
-        // });
-        // this.data.secret_coords?.item?.forEach(([rx, ry, rz]) => {
-        //     let { x, y, z } = this.toRoomCoords(rx, ry, rz);
-
-        //     if (this.dungeon.collectedSecrets.has(x + "," + y + "," + z)) return
-        //     drawBoxAtBlock(x + 0.25, y, z + 0.25, 0, 0, 1, 0.5, 0.5)
-        // });
-        // this.data.secret_coords?.wither?.forEach(([rx, ry, rz]) => {
-        //     let { x, y, z } = this.toRoomCoords(rx, ry, rz);
-
-        //     if (this.dungeon.collectedSecrets.has(x + "," + y + "," + z)) return
-        //     drawBoxAtBlock(x + 0.25, y, z + 0.25, 1, 0, 1, 0.5, 0.5)
-        // });
-        // this.data.secret_coords?.bat?.forEach(([rx, ry, rz]) => {
-        //     let { x, y, z } = this.toRoomCoords(rx, ry, rz);
-
-        //     if (this.dungeon.collectedSecrets.has(x + "," + y + "," + z)) return
-        //     drawBoxAtBlock(x + 0.25, y + 0.25, z + 0.25, 0, 1, 0, 0.5, 0.5)
-        // });
-        // this.data.secret_coords?.redstone_key?.forEach(([rx, ry, rz]) => {
-        //     let { x, y, z } = this.toRoomCoords(rx, ry, rz);
-
-        //     if (this.dungeon.collectedSecrets.has(x + "," + y + "," + z)) return
-        //     drawBoxAtBlock(x + 0.25, y, z + 0.25, 1, 0, 0, 0.5, 0.5)
-        // });
     }
 
     checkmarkStateToName(state = this.checkmarkState) {

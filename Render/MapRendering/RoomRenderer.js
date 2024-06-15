@@ -81,6 +81,7 @@ class RoomRenderer {
     drawCheckmark(context, graphics, room) {
         //spawn room wont get checkmarked
         if (room.type === Room.SPAWN) return;
+        if (room.type == Room.BLOOD && room.checkmarkState == Checkmark.FAILED) return
         //puzzle checkmarks are drawn in drawPuzzle
         if (room.type === Room.PUZZLE) {
             if (context.puzzleNames === 'text') return;

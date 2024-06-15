@@ -95,6 +95,7 @@ class DungeonMap {
         this.roomXY = "0,0"
         this.lastXY = undefined
         this.lastStandingPos = null // Position of where the player was last standing
+        this.lastRoomChange = null // Time the player last walked into a new room component
 
         // Simulate changing bloccks to air to fix green room not having air border around it
         this.setAirLocs = new Set()
@@ -335,9 +336,10 @@ class DungeonMap {
             [-16, 0, true] // Left
         ]
 
+        // Check to see if this room has already been scanned, and get its rotation if needed
         let room = this.getRoomAtComponent(currPos)
         if (room && room.roofHeight && room.data) {
-            if (!room.corner) room.findRotation()
+            if (!room.corner) room.findRotationAndCorner()
             return
         }
         
@@ -345,6 +347,7 @@ class DungeonMap {
         // Walked into a new component in the dungeon, scan the current room
         
         this.lastStandingPos = currPos
+        this.lastRoomChange = Date.now()
 
         const searched = new Set()
         const queue = [currPos]
@@ -1137,31 +1140,34 @@ class DungeonMap {
         });
     }
 
-    secretCountActionBar(min, max) {
-        if (!this.canUpdateRoom()) return
-        let currentRoom = this.getCurrentRoom()
+    canUpdateRoom() {
+        return Date.now() - this.lastRoomChange > 1000
+    }
 
+    secretCountActionBar(found, total) {
+        if (!this.canUpdateRoom()) return
+
+        let currentRoom = this.getCurrentRoom()
         if (!currentRoom || currentRoom.type === Room.UNKNOWN) return; // Current room not loaded yet
 
-        if (currentRoom.currentSecrets !== min && (currentRoom.maxSecrets === max || !currentRoom.roomId)) {
-            currentRoom.currentSecrets = min
-            currentRoom.maxSecrets = max
-            if (currentRoom.checkmarkState === Room.CLEARED && currentRoom.currentSecrets >= currentRoom.maxSecrets) currentRoom.checkmarkState = Room.COMPLETED;
+        currentRoom.maxSecrets = total
+        currentRoom.currentSecrets = found
 
-            this.markChanged() // Re-render map incase of a secret count specific texturing
+        if (currentRoom.checkmarkState === Room.CLEARED && currentRoom.currentSecrets >= currentRoom.maxSecrets) currentRoom.checkmarkState = Room.COMPLETED;
 
-            const currentComponent = this.getComponentAt(Player.getX(), Player.getZ())
-            const x = currentComponent.arrayX
-            const y = currentComponent.arrayY
+        this.markChanged() // Re-render map incase of a secret count specific texturing
 
-            this.sendSocketData({
-                type: 'roomSecrets',
-                min,
-                max,
-                x,
-                y
-            })
-        }
+        const currentComponent = this.getComponentAt(Player.getX(), Player.getZ())
+        const x = currentComponent.arrayX
+        const y = currentComponent.arrayY
+
+        this.sendSocketData({
+            type: 'roomSecrets',
+            min: found,
+            max: total,
+            x,
+            y
+        })
     }
 
     /**
@@ -1285,136 +1291,11 @@ class DungeonMap {
 
     }
 
-    canUpdateRoom() {
-        let currRoom = this.getRoomXYWorld().join(",")
-        if (this.roomXY !== currRoom) {
-            this.roomXY = currRoom
-            this.lastChange = Date.now() // Add delay between checking for rooms if switch room
-        }
-        return Date.now() - this.lastChange > 1000
-    }
-
-    /**
-     * @returns {[Number, Number]} the x and y location of the rooms 'location' (top left of all rooms, shifting down by 1 if needed to in L)
-     */
-    getRoomXYWorld() {
-        let roomData = this.getRoomWorldData()
-        if (roomData.rotation === 4) return [roomData.x, roomData.y + 32]
-        return [roomData.x, roomData.y]
-    }
-
     getCurrentRoomData() {
         const room = this.getCurrentRoom()
         if (!room) return null
 
         return room.data
-    }
-
-    getRotation(x, y, width, height, roofY) {
-        let currRoomData = this.getCurrentRoomData()
-        if (!currRoomData) return -1
-
-        if (currRoomData.shape !== "L") {
-            if (this.getTopBlockAt(x, y, roofY) === 11) return 0
-            if (this.getTopBlockAt(x + width, y, roofY) === 11) return 1
-            if (this.getTopBlockAt(x + width, y + height, roofY) === 11) return 2
-            if (this.getTopBlockAt(x, y + height, roofY) === 11) return 3
-        }
-        else {
-            let one = this.getTopBlockAt2(x + width / 2 + 1, y + height / 2, roofY)
-            let two = this.getTopBlockAt2(x + width / 2 - 1, y + height / 2, roofY)
-            let three = this.getTopBlockAt2(x + width / 2, y + height / 2 + 1, roofY)
-            let four = this.getTopBlockAt2(x + width / 2, y + height / 2 - 1, roofY)
-
-            if (one === 0 && three === 0) return 0
-            if (two === 0 && three === 0) return 1
-            if (one === 0 && four === 0) return 3
-            if (two === 0 && four === 0) return 2// 3 IS SO TOXIK HGOLY HEL I HATE L SHAPE ROOMS WHY DO THIS TO ME
-        }
-
-        return -1
-    }
-
-    getBlockIdAt(x, y, z) {
-        if (this.setAirLocs?.has(x + "," + z)) return 0
-
-        return World.getBlockAt(new BlockPos(x, y, z)).type.getID()
-    }
-
-    getRoomWorldData() {
-        let x = Math.floor((Player.getX() + 8) / 32) * 32 - 8
-        let y = Math.floor((Player.getZ() + 8) / 32) * 32 - 8
-        let width = 30
-        let height = 30
-
-        let roofY = this.getRoofAt(x, y)
-
-        while (this.getBlockIdAt(x - 1, roofY, y) !== 0) {
-            x -= 32
-            width += 32
-        }
-        while (this.getBlockIdAt(x, roofY, y - 1) !== 0) {
-            y -= 32
-            height += 32
-        }
-        while (this.getBlockIdAt(x - 1, roofY, y) !== 0) { // Second iteration incase of L shape
-            x -= 32
-            width += 32
-        }
-        while (this.getBlockIdAt(x + width + 1, roofY, y) !== 0) {
-            width += 32
-        }
-        while (this.getBlockIdAt(x, roofY, y + height + 1) !== 0) {
-            height += 32
-        }
-        while (this.getBlockIdAt(x + width, roofY, y + height + 1) !== 0) { // Second iteration incase of L shape
-            height += 32
-        }
-        while (this.getBlockIdAt(x + width + 1, roofY, y + height) !== 0) { // Second iteration incase of L shape
-            width += 32
-        }
-        while (this.getBlockIdAt(x + width, roofY, y - 1) !== 0
-            && this.getBlockIdAt(x + width, roofY, y - 1 + (height === 30 ? 0 : 32)) !== 0) {// Second iteration incase of L shape
-            y -= 32
-            height += 32
-        }
-        while (this.getBlockIdAt(x - 1, roofY, y + height) !== 0
-            && this.getBlockIdAt(x - 1 + (width === 30 ? 0 : 32), roofY, y + height) !== 0) { // Third iteration incase of L shape
-            x -= 32
-            width += 32
-        }
-
-        let rotation = this.getRotation(x, y, width, height, roofY);
-        return {
-            x,
-            y,
-            width,
-            height,
-            cx: x + width / 2,
-            cy: y + height / 2,
-            rotation: rotation
-        }
-    }
-
-    getRoofAt(x, z) {
-        let y = 255
-        while (y > 0 && World.getBlockAt(new BlockPos(x, y, z)).type.getID() === 0) y--
-
-        return y
-    }
-
-    getTopBlockAt(x, z, y) {
-        if (!y) y = this.getRoofAt(x, z)
-
-        return World.getBlockAt(new BlockPos(x, y, z)).getMetadata()
-    }
-    getBlockAt(x, y, z) {
-        return World.getBlockAt(new BlockPos(x, y, z)).type.getID()
-    }
-    getTopBlockAt2(x, z, y) {
-        if (!y) y = this.getRoofAt(x, z)
-
-        return World.getBlockAt(new BlockPos(x, y, z)).type.getID()
     }
 
     onSecretCollect(type, x, y, z) {
@@ -1423,8 +1304,8 @@ class DungeonMap {
         let currentRoom = this.getCurrentRoom()
         if (type === "bat" && currentRoom?.data) {
             let closestD = Infinity
-            currentRoom.data.secret_coords?.bat?.forEach(([rx, ry, rz]) => {
-                let { x: x2, y: y2, z: z2 } = currentRoom.toRoomCoords(rx, ry, rz);
+            currentRoom.data.secret_coords?.bat?.forEach((pos) => {
+                let [x2, y2, z2] = currentRoom.getRealCoord(pos)
 
                 if (this.collectedSecrets.has(x2 + "," + y2 + "," + z2)) return
                 let distance = (x2 - x) ** 2 + (y2 - y) ** 2 + (z2 - z) ** 2
@@ -1437,8 +1318,8 @@ class DungeonMap {
         if (type === "item" && currentRoom?.data) {
             let closestD = 25
 
-            currentRoom.data.secret_coords?.item?.forEach(([rx, ry, rz]) => {
-                let { x: x2, y: y2, z: z2 } = currentRoom.toRoomCoords(rx, ry, rz);
+            currentRoom.data.secret_coords?.item?.forEach((pos) => {
+                let [x2, y2, z2] = currentRoom.getRealCoord(pos)
 
                 if (this.collectedSecrets.has(x2 + "," + y2 + "," + z2)) return
                 let distance = (x2 - x) ** 2 + (y2 - y) ** 2 + (z2 - z) ** 2

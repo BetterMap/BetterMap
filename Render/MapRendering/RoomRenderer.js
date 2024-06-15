@@ -360,7 +360,8 @@ class RoomRenderer {
     getRenderColor(context, room) {
         if (context.mapStyle === 'teniosmap') {
             return context.colorMap.get(room.data?.type || teniosRoomMap[room.type])
-        } else if (context.mapStyle === 'custom') {
+        }
+        if (context.mapStyle === 'custom') {
             switch (room.data?.type || teniosRoomMap[room.type]) {
                 case 'spawn': return new Color(Renderer.color(...context.customRoomColorSpawn), true);
                 case 'mobs': return new Color(Renderer.color(...context.customRoomColorNormal), true);
@@ -376,9 +377,10 @@ class RoomRenderer {
                 case 'unknown': return new Color(Renderer.color(...context.customRoomColorUnknown), true);
             }
         }
-        else {
-            return context.colorMap.get(room.type)
-        }
+
+        if (!context.colorMap.has(room.type)) return new Color(Renderer.color(107, 58, 17, 255))
+
+        return context.colorMap.get(room.type)
     }
 
 }

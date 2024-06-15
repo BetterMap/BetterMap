@@ -29,9 +29,8 @@ class Room {
      * @param {Any} dungeon 
      * @param {Number} type 
      * @param {Array<RoomComponent>} components 
-     * @param {String} roomId 
      */
-    constructor(dungeon, type, components, roomId) {
+    constructor(dungeon, type, components) {
         /**
          * @type {Array<Door>}
          */
@@ -68,8 +67,6 @@ class Room {
         // Room data from the room id
         this.data = undefined
 
-        this._roomId = undefined
-        this.roomId = roomId
     }
 
     set checkmarkState(val) {
@@ -111,10 +108,13 @@ class Room {
      * @param {RoomComponent} component 
      */
     addComponent(component) {
+        if (this.components.includes(component)) return
 
         this.components.push(component)
         this.shape = this.findShape()
         this.rotation = this.findRotation();
+
+        this.dungeon.rooms.set(component, this)
     }
 
     addDoor(newDoor) {
@@ -156,8 +156,26 @@ class Room {
         this.roomEvents.push(createEvent(event, ...args))
     }
 
+    getTypeFromString(typeString) {
+        const types = {
+            "spawn": Room.SPAWN,
+            "normal": Room.NORMAL,
+            "mobs": Room.NORMAL,
+            "miniboss": Room.NORMAL,
+            "puzzle": Room.PUZZLE,
+            "gold": Room.MINIBOSS,
+            "fairy": Room.FAIRY,
+            "blood": Room.BLOOD,
+            "unknown": Room.UNKNOWN,
+            "trap": Room.TRAP,
+        }
+        
+        if (!(typeString in types)) return null
+
+        return types[typeString]
+    }
+
     setType(type) {
-        if (this.roomId) return
         this.type = type
     }
     /**
@@ -176,9 +194,10 @@ class Room {
 
     getLore() {
         let roomLore = []
-        if (this.roomId) {
+
+        if (this.data) {
             roomLore.push(this.data?.name || '???')
-            roomLore.push("&8" + (this.roomId || ""))
+            // roomLore.push("&8" + (this.roomId || ""))
             if (CurrentSettings.settings.devInfo) roomLore.push('&9Rotation: ' + (this.rotation || 'NONE'));
             if (this.data && this.data?.soul) roomLore.push("&dFAIRY SOUL!")
             if (this.maxSecrets) roomLore.push("Secrets: " + this.currentSecrets + ' / ' + this.maxSecrets)
@@ -319,7 +338,8 @@ class Room {
     }
 
     toString() {
-        return `Room[name=${this.data?.name || "Unknown"}, components=${this.components}]`
+        const components = this.components.map(v => `[${v.arrayX}, ${v.arrayY}]`).join(", ")
+        return `Room[name=${this.data?.name || "Unknown"}, components=${components}, type=${this.data?.type}]`
     }
 }
 

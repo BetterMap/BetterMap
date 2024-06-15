@@ -48,33 +48,35 @@ register("step", () => {
         }
     }
 
-    if (currentDungeonMap) {
-        if (Player.getX() < 0 && Player.getZ() < 0) { // Ensuring they are not in boss room
-            let mapData
-            try {
-                let item = Player.getInventory().getStackInSlot(8)
-                mapData = item.getItem()[m.getMapData](item.getItemStack(), World.getWorld())
-                if (mapData && !currentDungeonMap.mapId) {
-                    currentDungeonMap.mapId = item.getMetadata()
-                }
-            } catch (error) {
-                if (currentDungeonMap.mapId) {
-                    mapData = World.getWorld()[m.loadItemData](MapData.class, "map_" + currentDungeonMap.mapId)
-                }
-            }
+    if (!currentDungeonMap) return
 
-            if (mapData) {
-                currentDungeonMap.updateFromMap(mapData)
+    if (Player.getX() < 0 && Player.getZ() < 0) { // Ensuring they are not in boss room
+        
+        let mapData = null
+
+        try {
+            let item = Player.getInventory().getStackInSlot(8)
+            mapData = item.getItem()[m.getMapData](item.getItemStack(), World.getWorld())
+            if (mapData && !currentDungeonMap.mapId) {
+                currentDungeonMap.mapId = item.getMetadata()
             }
-            if (!mapData || !currentDungeonMap.dungeonTopLeft) {
-                // currentDungeonMap.updateFromWorld();
-                currentDungeonMap.scanCurrentRoom()
+        } catch (error) {
+            if (currentDungeonMap.mapId) {
+                mapData = World.getWorld()[m.loadItemData](MapData.class, "map_" + currentDungeonMap.mapId)
             }
         }
 
-        currentDungeonMap.updatePuzzles();
-        currentDungeonMap.updateTabInfo();
+        if (mapData) {
+            currentDungeonMap.updateFromMap(mapData)
+        }
+        if (!mapData || !currentDungeonMap.dungeonTopLeft) {
+            // currentDungeonMap.updateFromWorld();
+            currentDungeonMap.scanCurrentRoom()
+        }
     }
+
+    currentDungeonMap.updatePuzzles();
+    currentDungeonMap.updateTabInfo();
 }).setFps(5)
 
 register("packetReceived", (packet) => {

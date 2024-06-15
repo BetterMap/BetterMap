@@ -228,13 +228,6 @@ class DungeonMap {
         }).setFps(1))
 
         this.triggers.push(register("tick", () => {
-            const currPos = this.getComponentAt(Player.getX(), Player.getZ())
-            // Not in the main dungeon area or in same spot as before
-            if (!currPos || currPos == this.lastStandingPos) return
-            // Walked into a new component in the dungeon
-            
-            this.lastStandingPos = currPos
-
             this.scanCurrentRoom()
         }))
 
@@ -331,7 +324,10 @@ class DungeonMap {
     }
 
     scanCurrentRoom() {
-        // [dx, dy, horizontal]
+        const currPos = this.getComponentAt(Player.getX(), Player.getZ())
+        if (!currPos) return
+
+        // [dx, dy, horizontal (for doors)]
         const directions = [
             [0, -16, false], // Up
             [16, 0, true], // Right
@@ -339,11 +335,16 @@ class DungeonMap {
             [-16, 0, true] // Left
         ]
 
-        const currPos = this.getComponentAt(Player.getX(), Player.getZ())
-        if (!currPos) return
-
         let room = this.getRoomAtComponent(currPos)
-        if (room && room.data) return
+        if (room && room.roofHeight && room.data) {
+            if (!room.corner) room.findRotation()
+            return
+        }
+        
+        if (currPos == this.lastStandingPos) return
+        // Walked into a new component in the dungeon, scan the current room
+        
+        this.lastStandingPos = currPos
 
         const searched = new Set()
         const queue = [currPos]
@@ -360,11 +361,11 @@ class DungeonMap {
             if (!highestBlock) continue
 
             if (!room) {
-                room = new Room(this, Room.UNKNOWN, [component])
-                ChatLib.chat(`Created ${room}`)
+                room = new Room(this, Room.UNKNOWN, [component], highestBlock)
                 this.addRoom(room)
             }
 
+            room.roofHeight = highestBlock
 
             let core = getCore(worldX, worldZ)
             let roomData = DungeonRoomData.getDataFromCore(core)
@@ -375,7 +376,7 @@ class DungeonMap {
                 
                 this.markChanged()
 
-                ChatLib.chat(`Updated roomdata for ${room.data.name}: ${roomData.type}`)
+                // ChatLib.chat(`Updated roomdata for ${room.data.name}: ${roomData.type}`)
 
             }
             // Entrance is always a 1x1
@@ -405,20 +406,27 @@ class DungeonMap {
                     
                     if (doorBlockId == 0 || doorBlockId == 166) door.type = Room.UNKNOWN
                     else if (doorBlockId == 97) door.type = Room.SPAWN
-                    else if (doorBlockId == 173) door.type = Room.BLACK
-                    else if (doorBlockId == 159) door.type = Room.BLOOD
+                    else if (doorBlockId == 173) {
+                        door.type = Room.BLACK
+                        this.witherDoors.add(door)
+                    }
+                    else if (doorBlockId == 159) {
+                        door.type = Room.BLOOD
+                        this.witherDoors.add(door)
+                    }
 
                     this.addDoor(door)
 
                     // Also add a gray room here if nothing exists already
                     if (this.getRoomAtComponent(newComponent)) continue
 
-                    let newRoom = new Room(this, Room.UNKNOWN, [newComponent])
+                    let newRoom = new Room(this, Room.UNKNOWN, [newComponent], highest)
                     newRoom.checkmarkState = Checkmark.GRAY
                     this.addRoom(newRoom)
                     continue
                 }   
 
+                // Otherwise this is just a room extension, so extend the room outwards!
 
                 room.addComponent(newComponent)
                 this.markChanged()
@@ -426,6 +434,11 @@ class DungeonMap {
                 queue.push(newComponent)
             }
         }
+
+        // this.sendSocketData({
+        //     type: "roomLocation",
+        //     x, y, rotation, roomId
+        // })
 
     }
 
@@ -471,10 +484,10 @@ class DungeonMap {
                 }
                 break;
             case "doorLocation":
-                this.setDoor(data.x, data.y, data.ishorizontal, false, data.doorType)
+                // this.setDoor(data.x, data.y, data.ishorizontal, false, data.doorType)
                 break;
             case "roomLocation":
-                this.setRoom(data.x, data.y, data.rotation, data.roomId, false)
+                // this.setRoom(data.x, data.y, data.rotation, data.roomId, false)
                 break;
             case "roomId":
                 let currentRoom2 = this.rooms.get(data.x + ',' + data.y);
@@ -869,7 +882,7 @@ class DungeonMap {
             if (!room) {
                 room = new Room(this, newType, [component])
                 room.checkmarkState = newCheck
-                ChatLib.chat(`&bCreated new room &3${room}`)
+                // ChatLib.chat(`&bCreated new room &3${room}`)
                 this.addRoom(room)
             }
 
@@ -913,7 +926,10 @@ class DungeonMap {
                         continue
                     }
                     
-                    this.addDoor(new Door(roomColors[axisColor], position, horizontal))
+                    let door = new Door(roomColors[axisColor], position, horizontal)
+                    this.addDoor(door)
+                    if (door.type == Room.BLACK) this.witherDoors.add(door)
+
                     continue
                 }
 
@@ -925,20 +941,20 @@ class DungeonMap {
 
                 if (existingRoom && existingRoom == room) continue
 
-                ChatLib.chat(`${component} -> ${newComponent}: ${existingRoom}`)
+                // ChatLib.chat(`${component} -> ${newComponent}: ${existingRoom}`)
 
                 if (!existingRoom) {
-                    ChatLib.chat(`Adding component`)
+                    // ChatLib.chat(`Adding component`)
                     room.addComponent(newComponent)
-                    ChatLib.chat(`Added: ${room}`)
+                    // ChatLib.chat(`Added: ${room}`)
                     this.markChanged()
                     continue
                 }
 
-                let msg = `&aMerging &b${room} &aand &b${existingRoom}`
+                // let msg = `&aMerging &b${room} &aand &b${existingRoom}`
                 this.mergeRooms(existingRoom, room)
-                msg += ` -> ${existingRoom}`
-                ChatLib.chat(msg)
+                // msg += ` -> ${existingRoom}`
+                // ChatLib.chat(msg)
                 continue
             }
         }
@@ -1276,216 +1292,6 @@ class DungeonMap {
             this.lastChange = Date.now() // Add delay between checking for rooms if switch room
         }
         return Date.now() - this.lastChange > 1000
-    }
-
-    setRoom(x, y, rotation, roomId, locallyFound) {
-        // if (!roomId) return
-        // if (locallyFound) {
-        //     if (this.identifiedRoomIds.has(roomId)) return
-        //     this.identifiedRoomIds.add(roomId);
-        // }
-
-        // let coordsX = ~~((x + 200) / 32)
-        // let coordsY = ~~((y + 200) / 32)
-
-        // let locstr = coordsX + "," + coordsY
-
-        // let roomData = DungeonRoomData.getDataFromId(roomId)
-        // let type = Room.NORMAL
-
-        // const types = {
-        //     "mobs": Room.NORMAL,
-        //     "miniboss": Room.NORMAL,
-        //     "rare": Room.NORMAL,
-        //     "spawn": Room.SPAWN,
-        //     "puzzle": Room.PUZZLE,
-        //     "gold": Room.MINIBOSS,
-        //     "fairy": Room.FAIRY,
-        //     "blood": Room.BLOOD,
-        //     "trap": Room.TRAP
-        // }
-        // if (roomData.type in types) type = types[roomData.type]
-
-        // let components = []
-
-        // switch (roomData.shape) { // Add room components based on shape
-        //     case "1x1":
-        //         components.push(new Position(x, y))
-        //         break
-        //     case "1x2":
-        //         components.push(new Position(x, y))
-        //         if (rotation === 0) {
-        //             components.push(new Position(x + 32, y))
-        //         }
-        //         else {
-        //             components.push(new Position(x, y + 32))
-        //         }
-        //         break
-        //     case "1x3":
-        //         components.push(new Position(x, y))
-        //         if (rotation === 0) {
-        //             components.push(new Position(x + 32, y))
-        //             components.push(new Position(x + 64, y))
-        //         }
-        //         else {
-        //             components.push(new Position(x, y + 32))
-        //             components.push(new Position(x, y + 64))
-        //         }
-        //         break
-        //     case "1x4":
-        //         components.push(new Position(x, y))
-        //         if (rotation === 0) {
-        //             components.push(new Position(x + 32, y))
-        //             components.push(new Position(x + 64, y))
-        //             components.push(new Position(x + 96, y))
-        //         }
-        //         else {
-        //             components.push(new Position(x, y + 32))
-        //             components.push(new Position(x, y + 64))
-        //             components.push(new Position(x, y + 96))
-        //         }
-        //         break
-        //     case "2x2":
-        //         components.push(new Position(x, y))
-        //         components.push(new Position(x + 32, y))
-        //         components.push(new Position(x, y + 32))
-        //         components.push(new Position(x + 32, y + 32))
-        //         break
-        //     case "L":
-        //         if (rotation !== 2) components.push(new Position(x, y))
-        //         if (rotation !== 1) components.push(new Position(x, y + 32))
-        //         if (rotation !== 3) components.push(new Position(x + 32, y))
-        //         if (rotation !== 0) components.push(new Position(x + 32, y + 32))
-        //         //top left isnt inside of the L room 
-        //         if (rotation === 2) locstr = x + ',' + (y + 32);
-        //         break
-        // }
-
-        // let room = this.rooms.get(locstr);
-        // if (room) { // Already a room there
-        //     room = this.rooms.get(locstr)
-        //     room.setType(type)
-        //     room.components = components
-        //     room.rotation = room.findRotation();
-        //     room.roomId = roomId
-        // } else {
-        //     room = new Room(this, type, components, roomId)
-        // }
-
-        // room.checkmarkState = 1
-
-        // room.components.forEach(c => {
-        //     this.roomsArr.delete(this.rooms.get(c.arrayX + "," + c.arrayY))
-        //     this.rooms.set(c.arrayX + "," + c.arrayY, room)
-        // })
-        // this.roomsArr.add(room)
-        // this.markChanged()
-
-        // if (locallyFound) {
-        //     this.sendSocketData({
-        //         type: "roomLocation",
-        //         x, y, rotation, roomId
-        //     })
-        // }
-    }
-
-    setDoor(x, y, ishorizontal, locallyFound, type = -1) {
-        // let rx = x - 4 // Offset xy of room placed in world so it matches nicely with rendering
-        // let ry = y - 4
-        // let pos = new Position(rx, ry);
-        // if (this.doors.get(pos.arrayX + "," + pos.arrayY)) return // Already door loaded there
-        // let id = World.getBlockAt(new BlockPos(x, 69, y)).type.getID() //get type of door
-
-        // if (type === -1) {
-        //     if (id === 0) type = Room.UNKNOWN
-        //     else if (id === 97) type = Room.NORMAL
-        //     else if (id === 173) type = Room.BLACK
-        //     else if (id === 159) type = Room.BLOOD
-        //     else return // Return if door issnt made of those blocks (maby its not actually a door, eg back of green room)
-        // }
-
-        // if (ishorizontal) {
-        //     {
-        //         // Add Room.UNKNOWN to the right if needed
-
-        //         let x2 = Math.floor((x + 15 + 8) / 32) * 32 - 8
-        //         let y2 = Math.floor((y + 8) / 32) * 32 - 8
-
-        //         let mapCoordX = ~~((x2 + dungeonOffsetX) / 32);
-        //         let mapCoordY = ~~((y2 + dungeonOffsetY) / 32);
-
-        //         if (!this.rooms.get(mapCoordX + "," + mapCoordY)) {
-        //             let room = new Room(this, Room.UNKNOWN, [new Position(x2, y2)], undefined)
-        //             room.checkmarkState = 1 // 1 -> adjacent/not opened
-        //             this.rooms.set(mapCoordX + "," + mapCoordY, room)
-        //             this.roomsArr.add(room)
-        //         }
-        //     }
-        //     {
-        //         // Add Room.UNKNOWN to the left if needed
-
-        //         let x2 = Math.floor((x - 15 + 8) / 32) * 32 - 8
-        //         let y2 = Math.floor((y + 8) / 32) * 32 - 8
-
-        //         let mapCoordX = ~~((x2 + dungeonOffsetX) / 32);
-        //         let mapCoordY = ~~((y2 + dungeonOffsetY) / 32);
-
-        //         if (!this.rooms.get(mapCoordX + "," + mapCoordY)) {
-        //             let room = new Room(this, Room.UNKNOWN, [new Position(x2, y2)], undefined)
-        //             room.checkmarkState = 1// 1 -> adjacent/not opened
-        //             this.rooms.set(mapCoordX + "," + mapCoordY, room)
-        //             this.roomsArr.add(room)
-        //         }
-        //     }
-        // }
-        // else {
-        //     {
-        //         // Add Room.UNKNOWN to the top if needed
-
-        //         let x2 = Math.floor((x + 8) / 32) * 32 - 8
-        //         let y2 = Math.floor((y + 15 + 8) / 32) * 32 - 8
-
-        //         let mapCoordX = ~~((x2 + dungeonOffsetX) / 32);
-        //         let mapCoordY = ~~((y2 + dungeonOffsetY) / 32);
-
-        //         if (!this.rooms.get(mapCoordX + "," + mapCoordY)) {
-        //             let room = new Room(this, Room.UNKNOWN, [new Position(x2, y2)], undefined)
-        //             room.checkmarkState = 1// 1 -> adjacent/not opened
-        //             this.rooms.set(mapCoordX + "," + mapCoordY, room)
-        //             this.roomsArr.add(room)
-        //         }
-        //     }
-        //     {
-        //         // Add Room.UNKNOWN to the bottom if needed
-
-        //         let x2 = Math.floor((x + 8) / 32) * 32 - 8
-        //         let y2 = Math.floor((y - 15 + 8) / 32) * 32 - 8
-
-        //         let mapCoordX = ~~((x2 + dungeonOffsetX) / 32);
-        //         let mapCoordY = ~~((y2 + dungeonOffsetY) / 32);
-
-        //         if (!this.rooms.get(mapCoordX + "," + mapCoordY)) {
-        //             let room = new Room(this, Room.UNKNOWN, [new Position(x2, y2)], undefined)
-        //             room.checkmarkState = 1// 1 -> adjacent/not opened
-        //             this.rooms.set(mapCoordX + "," + mapCoordY, room)
-        //             this.roomsArr.add(room)
-        //         }
-        //     }
-        // }
-
-        // let door = new Door(type, pos, ishorizontal)
-        // this.addDoorToAdjacentRooms(door);
-        // this.doors.set(pos.arrayX + "," + pos.arrayY, door)
-        // if (type === Room.BLACK || type === Room.BLOOD) { this.witherDoors.add(door) }
-        // else { this.witherDoors.delete(door) }
-        // this.markChanged()
-
-        // if (locallyFound) {
-        //     this.sendSocketData({
-        //         type: "doorLocation",
-        //         x, y, ishorizontal, doorType: type
-        //     })
-        // }
     }
 
     /**

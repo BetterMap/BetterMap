@@ -2,7 +2,7 @@ import settings from "../Extra/Settings/CurrentSettings.js"
 import CurrentSettings from "../Extra/Settings/CurrentSettings.js"
 import { drawBoxAtBlock } from "../Utils/renderUtils.js"
 import RoomComponent from "../Utils/RoomComponent.js"
-import { Checkmark, firstLetterCapital } from "../Utils/Utils.js"
+import { Checkmark, firstLetterCapital, rotateCoords } from "../Utils/Utils.js"
 import { createEvent, RoomEvents, toDisplayString } from "./RoomEvent.js"
 
 class Room {
@@ -32,7 +32,7 @@ class Room {
      * @param {Number} type 
      * @param {Array<RoomComponent>} components 
      */
-    constructor(dungeon, type, components) {
+    constructor(dungeon, type, components, roofHeight=null) {
         /**
          * @type {Array<Door>}
          */
@@ -43,6 +43,7 @@ class Room {
 
         this.type = type
         this.components = components
+        this.sortComponents()
         this.components.forEach(component => this.dungeon.rooms.set(component, this))
 
         this.width = 30;
@@ -50,7 +51,10 @@ class Room {
         this.minX = null;
         this.minY = null;
         this.shape = this.findShape()
-        this.rotation = this.findRotation();
+        this.rotation = null
+        this.roofHeight = roofHeight
+        
+        this.findRotation();
 
         this.cores = []
 
@@ -106,6 +110,10 @@ class Room {
     get currentSecrets() {
         return this._currentSecrets
     }
+
+    sortComponents() {
+        this.components.sort((a, b) => a.posIndex - b.posIndex)
+    }
     
     /**
      * 
@@ -115,17 +123,13 @@ class Room {
         if (this.components.includes(component)) return
 
         this.components.push(component)
+        this.sortComponents()
+
         this.shape = this.findShape()
-        this.rotation = this.findRotation();
+        this.findRotation();
 
         this.dungeon.rooms.set(component, this)
     }
-
-    // addDoor(newDoor) {
-    //     this.adjacentDoors.push(newDoor);
-    //     this.shape = this.findShape()
-    //     this.rotation = this.findRotation()
-    // }
 
     /**
      * Finds the shape of the room and updates the room's 'shape' field.
@@ -149,7 +153,42 @@ class Room {
     }
 
     findRotation() {
-        
+        if (!this.roofHeight) return
+
+        ChatLib.chat(`Finding rotation for ${this}`)
+
+        const offsets = [
+            [-15, -15],
+            [15, -15],
+            [15, 15],
+            [-15, 15]
+        ]
+
+        if (this.type == Room.FAIRY) {
+            this.rotation = 0
+            let x = this.components[0].worldX
+            let z = this.components[0].worldY
+
+            this.corner = [x-15.5, 0, z-15.5]
+            return
+        }
+
+        for (let component of this.components) {
+            let x = component.worldX
+            let z = component.worldY
+
+            for (let i = 0; i < offsets.length; i++) {
+                let [dx, dz] = offsets[i]
+                let block = World.getBlockAt(x+dx, this.roofHeight, z+dz)
+                // Looking for blue stained hardened clay
+                if (block.type.getID() !== 159 || block.getMetadata() !== 11) continue
+
+                this.rotation = i
+                ChatLib.chat(`${this} rotation is now ${this.rotation}`)
+                this.corner = [x+dx+0.5, 0, z+dz+0.5]
+                return
+            }
+        }
     }
 
     /**
@@ -224,57 +263,94 @@ class Room {
         return roomLore
     }
 
-    toRoomCoords(px, py, pz) {
-        let { x, y, z } = this.rotateCoords(px, py, pz);
-        return { x: this.minX + x, y: y, z: this.minY + z };
+    /**
+     * Converts coordinates from the real world into relative, rotated room coordinates
+     * @param {[Number, Number, Number]} coord 
+     * @returns 
+     */
+    getRoomCoord(coord, ints=true) {
+        if (this.rotation == null || !this.corner) return null
+
+        const cornerCoord = ints ? this.corner.map(Math.floor) : this.corner
+        const roomCoord = rotateCoords(coord.map((v, i) => v - cornerCoord[i]), this.rotation)
+
+        if (ints) return roomCoord.map(Math.floor)
+        
+        return roomCoord
     }
 
-    getRelativeCoords(x, y, z) {
-        let dx = x - this.minX
-        let dy = y;
-        let dz = z - this.minY;
+    /**
+     * Converts relative room coords and inversely rotates and translates them to real world coordinates
+     * @param {[Number, Number, Number]} coord 
+     * @returns 
+     */
+    getRealCoord(coord, ints=true) {
+        if (this.rotation == null || !this.corner) return null
+    
+        const rotated = rotateCoords(coord, 4 - this.rotation)
+        const roomCorner = ints ? this.corner.map(Math.floor) : this.corner
+        const realCoord = rotated.map((v, i) => v + roomCorner[i])
+    
+        if (ints) return realCoord.map(Math.floor)
+    
+        return realCoord
 
-        // Rotate opposite direction
-        switch (this.rotation) {
-            case 2:
-                return { x: dz, y: dy, z: this.width - dx };
-            case 3:
-                return { x: this.width - dx, y: dy, z: this.height - dz };;
-            case 0:
-                return { x: this.height - dz, y: dy, z: dx };;
-            case 1:
-            default:
-                return { x: dx, y: dy, z: dz };
-        }
     }
 
-    rotateCoords(x, y, z) {
-        switch (this.rotation) {
-            case 2:
-                return { x: this.width - z, y: y, z: x };
-            case 3:
-                return { x: this.width - x, y: y, z: this.height - z };
-            case 0:
-                return { x: z, y: y, z: this.height - x };
-            case 1:
-            // No break, default rotation
-            default:
-                return { x: x, y: y, z: z };
-        }
-    }
+    // toRoomCoords(px, py, pz) {
+    //     let { x, y, z } = this.rotateCoords(px, py, pz);
+    //     return { x: this.minX + x, y: y, z: this.minY + z };
+    // }
+
+    // getRelativeCoords(x, y, z) {
+    //     let dx = x - this.minX
+    //     let dy = y;
+    //     let dz = z - this.minY;
+
+    //     // Rotate opposite direction
+    //     switch (this.rotation) {
+    //         case 2:
+    //             return { x: dz, y: dy, z: this.width - dx };
+    //         case 3:
+    //             return { x: this.width - dx, y: dy, z: this.height - dz };;
+    //         case 0:
+    //             return { x: this.height - dz, y: dy, z: dx };;
+    //         case 1:
+    //         default:
+    //             return { x: dx, y: dy, z: dz };
+    //     }
+    // }
+
+    // rotateCoords(x, y, z) {
+    //     switch (this.rotation) {
+    //         case 2:
+    //             return { x: this.width - z, y: y, z: x };
+    //         case 3:
+    //             return { x: this.width - x, y: y, z: this.height - z };
+    //         case 0:
+    //             return { x: z, y: y, z: this.height - x };
+    //         case 1:
+    //         // No break, default rotation
+    //         default:
+    //             return { x: x, y: y, z: z };
+    //     }
+    // }
 
     drawRoomSecrets() {
         if (!settings.settings.showSecrets) return
-        if (!this.data) return
+        if (!this.data || !this.corner) return
         // TODO: account for 3/1 room
-        if (this.currentSecrets === this.maxSecrets) return
+        if (this.currentSecrets >= this.maxSecrets) return
         if (!("secret_coords" in this.data)) return //ChatLib.chat("No Data!")
 
         // Every secret type in the room
         Object.entries(this.data.secret_coords).forEach(([type, secrets]) => {
             // Loop over every secret
-            secrets.forEach(([rx, ry, rz]) => {
-                let { x, y, z } = this.toRoomCoords(rx, ry, rz)
+            secrets.forEach((pos) => {
+                const secretPos = this.getRealCoord(pos)
+                if (!secretPos) return
+                let [ x, y, z ] = secretPos
+
                 if (this.dungeon.collectedSecrets.has(x + "," + y + "," + z)) return;
 
                 if (type == "chest") drawBoxAtBlock(x, y, z, 0, 1, 0, 1, 1)
@@ -342,7 +418,7 @@ class Room {
     }
 
     toString() {
-        return `Room["${this.data?.name || "Unknown"}", [${this.components.map(a => a.toString()).join(",")}], ${this.type}]`
+        return `Room["${this.data?.name || "Unknown"}", [${this.components.map(a => a.toString()).join(",")}], ${this.type}, rot=${this.rotation}]`
     }
 }
 

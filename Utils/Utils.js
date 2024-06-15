@@ -444,3 +444,20 @@ export const Checkmark = {
     WHITE: 3,
     GREEN: 4
 }
+
+/**
+ * Rotates a set of coordinates clockwise.
+ * @param {[Number, Number, Number]} coordinates 
+ * @param {Number} degree - Angle in indexes, eg 90 degrees = 1, 270 degrees = 3
+ * @returns 
+ */
+export const rotateCoords = ([x, y, z], degree) => {
+    if (degree < 0) degree = degree + 4
+
+    if (degree == 0) return [x, y, z]
+    if (degree == 1) return [z, y, -x]
+    if (degree == 2) return [-x, y, -z]
+    if (degree == 3) return [-z, y, x]
+    
+    return [x, y, z]
+}

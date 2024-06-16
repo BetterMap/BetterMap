@@ -330,6 +330,24 @@ class DungeonMap {
         this.markChanged()
     }
 
+    /**
+     * Checks to see whether both sides of a door have opened rooms
+     * @param {Door} door
+     */
+    shouldDoorBeGray(door) {
+        let dx = 0
+        let dz = 16
+        if (door.horizontal) {
+            dx = 16
+            dz = 0
+        }
+
+        let room1 = this.getRoomAt(door.getX()+dx, door.getZ()+dz)
+        let room2 = this.getRoomAt(door.getX()-dx, door.getZ()-dz)
+
+        return !room1 || room1.type == Room.UNKNOWN || !room2 || room2.type == Room.UNKNOWN
+    }
+
     scanCurrentRoom() {
         const currPos = this.getComponentAt(Player.getX(), Player.getZ())
         if (!currPos) return
@@ -355,6 +373,7 @@ class DungeonMap {
             if (!room.corner) room.findRotationAndCorner()
             return
         }
+
         
         const searched = new Set()
         const queue = [currPos]
@@ -386,8 +405,7 @@ class DungeonMap {
                 // ChatLib.chat(`Updated roomdata for ${room.data.name}: ${roomData.type}`)
 
             }
-            // Entrance is always a 1x1
-            if (room.type == Room.SPAWN) return
+            
             if (room.checkmarkState == Checkmark.GRAY) room.checkmarkState = Checkmark.NONE
 
             for (let dir of directions) {
@@ -402,15 +420,21 @@ class DungeonMap {
                 let block = World.getBlockAt(worldX+dx, highestBlock, worldZ+dz)
                 let block2 = World.getBlockAt(worldX+dx, highestBlock+1, worldZ+dz)
 
-                // The block at the same roof level must be a solid block whereas the block above must be air
-                // This means that there is no gap or height difference, so it must be the same room extended outwards
-                // If the roof height is not the same, then there is a door here
-                if (block.type.getID() == 0 || block2.type.getID() !== 0) {
+                // There is a door here, roof heights do not match
+                if (block.type.getID() == 0 || block2.type.getID() !== 0 || room.type == Room.SPAWN) {
                     let doorPos = new Position(worldX+dx, worldZ+dz, this)
                     let doorBlockId = World.getBlockAt(doorPos.worldX, 69, doorPos.worldY).type.getID()
-                    let door = new Door(Room.NORMAL, doorPos, horizontal)
-                    
-                    if (doorBlockId == 0 || doorBlockId == 166) door.type = Room.UNKNOWN
+                    let door = this.doors.get(doorPos.arrayStr) ?? new Door(Room.UNKNOWN, doorPos, horizontal)
+
+                    // Add a gray room here if nothing exists already
+                    if (!this.getRoomAtComponent(newComponent)) {
+                        let newRoom = new Room(this, Room.UNKNOWN, [newComponent], highest)
+                        newRoom.checkmarkState = Checkmark.GRAY
+                        this.addRoom(newRoom)
+                    }
+
+                    // Air or barrier blocks
+                    if ((doorBlockId == 0 || doorBlockId == 166) && !this.shouldDoorBeGray(door)) door.type = Room.NORMAL
                     else if (doorBlockId == 97) door.type = Room.SPAWN
                     else if (doorBlockId == 173) {
                         door.type = Room.BLACK
@@ -422,13 +446,6 @@ class DungeonMap {
                     }
 
                     this.addDoor(door)
-
-                    // Also add a gray room here if nothing exists already
-                    if (this.getRoomAtComponent(newComponent)) continue
-
-                    let newRoom = new Room(this, Room.UNKNOWN, [newComponent], highest)
-                    newRoom.checkmarkState = Checkmark.GRAY
-                    this.addRoom(newRoom)
                     continue
                 }   
 
@@ -440,6 +457,10 @@ class DungeonMap {
                 queue.push(newComponent)
             }
         }
+
+        // this.doors.forEach(door => {
+        //     ChatLib.chat(door.toString())
+        // })
 
         // this.sendSocketData({
         //     type: "roomLocation",
@@ -465,7 +486,7 @@ class DungeonMap {
     }
 
     socketData(data) {
-        return
+        // ChatLib.chat(`SOCKET DATA: ${JSON.stringify(data)}`)
 
         switch (data.type) {
             case "playerLocation":
@@ -576,16 +597,16 @@ class DungeonMap {
      */
     updatePlayers() {
         if (!Player.getPlayer()) return; //How tf is this null sometimes wtf 
-        let pl = Player.getPlayer()["field_71174_a"]["func_175106_d"]().sort((a, b) => sorter.compare(a, b)); // Tab player list
+        let pl = Player.getPlayer().field_71174_a.func_175106_d().sort((a, b) => sorter.compare(a, b)); // Tab player list
 
         let i = 0;
 
         let thePlayer = undefined;
         for (let p of pl) {
-            if (!p["func_178854_k"]()) continue;
-            let line = p["func_178854_k"]()["func_150260_c"]();
+            if (!p.func_178854_k()) continue;
+            let line = p.func_178854_k().func_150260_c();
             // https://regex101.com/r/cUzJoK/3
-            line = line.replace(/§[a-fnmz0-9r]/g, ''); //support dungeons guide custom name colors
+            line = line.replace(/§./g, ''); //support dungeons guide custom name colors
             let match = line.match(/^\[(\d+)\] (?:\[\w+\] )*(\w+) (?:.)*?\((\w+)(?: (\w+))*\)$/);
             if (!match) continue;
             let [_, sbLevel, name, clazz, level] = match;
@@ -880,7 +901,6 @@ class DungeonMap {
             // ChatLib.chat(`Checking ${component.arrayX}, ${component.arrayY}`)
 
             let room = this.getRoomAtComponent(component)
-            let roomExisted = !!room
 
             let newType = roomColors[roomColor]
             let newCheck = checkColor in checkmarkColors ? checkmarkColors[checkColor] : Checkmark.NONE
@@ -901,6 +921,9 @@ class DungeonMap {
             // Room type changed
             if (newType !== room.type && newType !== Room.UNKNOWN) {
                 room.type = newType
+
+                if (newType == Room.PUZZLE && !room.data) this.unknownPuzzles.add(room)
+                    
                 this.markChanged()
             }
 
@@ -919,6 +942,8 @@ class DungeonMap {
 
                 if (!axisColor || !(axisColor in roomColors)) continue // Nothing here
 
+                let doorType = roomColors[axisColor]
+
                 // Door should go here!
                 if (axisColor && !offsetColor) {
                     let worldX = component.worldX + Math.sign(dx) * 16
@@ -927,12 +952,12 @@ class DungeonMap {
                     // Check if door exists, and update its type (For wither doors)
                     let existingDoor = this.doors.get(position.arrayStr)
                     if (existingDoor) {
-                        existingDoor.type = roomColors[axisColor]
+                        if (doorType !== Room.UNKNOWN) existingDoor.type = doorType
                         this.markChanged()
                         continue
                     }
                     
-                    let door = new Door(roomColors[axisColor], position, horizontal)
+                    let door = new Door(doorType, position, horizontal)
                     this.addDoor(door)
                     if (door.type == Room.BLACK) this.witherDoors.add(door)
 
@@ -945,22 +970,16 @@ class DungeonMap {
                 let newComponent = this.getComponentAt(newWorldX, newWorldZ)
                 let existingRoom = this.getRoomAtComponent(newComponent)
 
+                // This extension is already part of this room
                 if (existingRoom && existingRoom == room) continue
 
-                // ChatLib.chat(`${component} -> ${newComponent}: ${existingRoom}`)
-
                 if (!existingRoom) {
-                    // ChatLib.chat(`Adding component`)
                     room.addComponent(newComponent)
-                    // ChatLib.chat(`Added: ${room}`)
                     this.markChanged()
                     continue
                 }
 
-                // let msg = `&aMerging &b${room} &aand &b${existingRoom}`
                 this.mergeRooms(existingRoom, room)
-                // msg += ` -> ${existingRoom}`
-                // ChatLib.chat(msg)
                 continue
             }
         }
@@ -979,10 +998,9 @@ class DungeonMap {
         }
         const puzStart = names.findIndex(a => a.removeFormatting().match(/^Puzzles: \(\d+\)$/))
         if (puzStart == -1) return ChatLib.chat(`No puz!`)
-            ChatLib.chat("a")
         
         const replacements = {
-            "Higher or Lower": "Blaze"
+            "Higher Or Lower": "Blaze"
         }
         
         let unknownPuzArr = [...this.unknownPuzzles]

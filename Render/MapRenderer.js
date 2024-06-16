@@ -110,8 +110,8 @@ class MapRenderer {
             let mapLine1 = `${dSecrets}    ${dCrypts}    ${dMimic}`.trim()
             let mapLine2 = `${minSecrets}    ${dDeaths}    ${dScore}`.trim()
 
-            renderLibs.drawStringCenteredShadow(mapLine1, x + size / 2, y + size + 1, size / 220)
-            renderLibs.drawStringCenteredShadow(mapLine2, x + size / 2, y + size + 1 + 10 * size / 200, size / 220)
+            renderLibs.drawStringCenteredShadow(mapLine1, x + size / 2, y + size - 1, size / 220)
+            renderLibs.drawStringCenteredShadow(mapLine2, x + size / 2, y + size - 1 + 10 * size / 200, size / 220)
 
             Renderer.drawRect(Renderer.color(renderContext.settings.mapBorderColor[0] ?? 0, renderContext.settings.mapBorderColor[1] ?? 0, renderContext.settings.mapBorderColor[2] ?? 0, renderContext.settings.mapBorderColor[3]), x, y + size, renderContext.borderWidth, scoreInfoHeight) // Border of score info
             Renderer.drawRect(Renderer.color(renderContext.settings.mapBorderColor[0] ?? 0, renderContext.settings.mapBorderColor[1] ?? 0, renderContext.settings.mapBorderColor[2] ?? 0, renderContext.settings.mapBorderColor[3]), x + size - renderContext.borderWidth, y + size, renderContext.borderWidth, scoreInfoHeight)

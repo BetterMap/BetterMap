@@ -134,9 +134,9 @@ class DungeonMap {
             })
         }).setChatCriteria("&r&9Party &8> ${msg}"))
 
-        this.triggers.push(register("command", () => {
-            this.roomsArr.forEach(room => ChatLib.chat(room.toString()))
-        }).setName("sayrooms"))
+        // this.triggers.push(register("command", () => {
+        //     this.roomsArr.forEach(room => ChatLib.chat(room.toString()))
+        // }).setName("sayrooms"))
 
         this.triggers.push(register("chat", () => {
             this.dungeonFinished = true
@@ -336,6 +336,13 @@ class DungeonMap {
             [-16, 0, true] // Left
         ]
 
+        // Walked into a new component in the dungeon, scan the current room
+        if (currPos !== this.lastStandingPos) {
+            this.lastStandingPos = currPos
+            this.lastRoomChange = Date.now()
+        }
+        
+        
         // Check to see if this room has already been scanned, and get its rotation if needed
         let room = this.getRoomAtComponent(currPos)
         if (room && room.roofHeight && room.data) {
@@ -343,12 +350,6 @@ class DungeonMap {
             return
         }
         
-        if (currPos == this.lastStandingPos) return
-        // Walked into a new component in the dungeon, scan the current room
-        
-        this.lastStandingPos = currPos
-        this.lastRoomChange = Date.now()
-
         const searched = new Set()
         const queue = [currPos]
 

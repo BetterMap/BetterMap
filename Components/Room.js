@@ -319,7 +319,7 @@ class Room {
 
                 if (this.dungeon.collectedSecrets.has(x + "," + y + "," + z)) return;
 
-                if (type == "chest") drawBoxAtBlock(x, y, z, 0, 1, 0, 0.9375, 0.9375)
+                if (type == "chest") drawBoxAtBlock(x+0.0625, y, z+0.0625, 0, 1, 0, 0.875, 0.875)
                 if (type == "item") drawBoxAtBlock(x + 0.25, y, z + 0.25, 0, 0, 1, 0.5, 0.5)
                 if (type == "wither") drawBoxAtBlock(x + 0.25, y, z + 0.25, 1, 0, 1, 0.5, 0.5)
                 if (type == "bat") drawBoxAtBlock(x + 0.25, y + 0.25, z + 0.25, 0, 1, 0, 0.5, 0.5)

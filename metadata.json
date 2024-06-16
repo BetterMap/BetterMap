@@ -5,11 +5,12 @@
   "entry": "index.js",
   "description": "Better Map !!!",
   "name": "BetterMap",
-  "version": "1.0.18",
+  "version": "1.1.0",
   "requires": [
     "soopyApis",
     "guimanager",
     "soopyAddonsData",
-    "BeaconBeam"
+    "BeaconBeam",
+    "mappings"
   ]
 }

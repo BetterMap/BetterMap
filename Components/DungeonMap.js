@@ -380,7 +380,6 @@ class DungeonMap {
 
         while (queue.length) {
             let component = queue.shift()
-            if (searched.has(component)) continue
             searched.add(component)
 
             let worldX = component.worldX
@@ -421,7 +420,7 @@ class DungeonMap {
                 let block2 = World.getBlockAt(worldX+dx, highestBlock+1, worldZ+dz)
 
                 // There is a door here, roof heights do not match
-                if (block.type.getID() == 0 || block2.type.getID() !== 0 || room.type == Room.SPAWN) {
+                if (block.type.getID() == 0 || block2.type.getID() !== 0) {
                     let doorPos = new Position(worldX+dx, worldZ+dz, this)
                     let doorBlockId = World.getBlockAt(doorPos.worldX, 69, doorPos.worldY).type.getID()
                     let door = this.doors.get(doorPos.arrayStr) ?? new Door(Room.UNKNOWN, doorPos, horizontal)
@@ -432,6 +431,8 @@ class DungeonMap {
                         newRoom.checkmarkState = Checkmark.GRAY
                         this.addRoom(newRoom)
                     }
+
+                    // ChatLib.chat(`Door block ${room.name}: ${doorBlockId}`)
 
                     // Air or barrier blocks
                     if ((doorBlockId == 0 || doorBlockId == 166) && !this.shouldDoorBeGray(door)) door.type = Room.NORMAL
@@ -445,22 +446,24 @@ class DungeonMap {
                         this.witherDoors.add(door)
                     }
 
+                    // ChatLib.chat(`Added door ${door}`)
                     this.addDoor(door)
                     continue
                 }   
 
+                // ChatLib.chat(`Adding ${newComponent} to ${room}`)
+                
+                // Don't want an extra long entrance room
+                if (room.type == Room.SPAWN) continue
+                
                 // Otherwise this is just a room extension, so extend the room outwards!
-
                 room.addComponent(newComponent)
                 this.markChanged()
 
+                if (searched.has(component)) continue
                 queue.push(newComponent)
             }
         }
-
-        // this.doors.forEach(door => {
-        //     ChatLib.chat(door.toString())
-        // })
 
         // this.sendSocketData({
         //     type: "roomLocation",

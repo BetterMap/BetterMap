@@ -28,6 +28,7 @@ class DungeonMap {
          */
         this.rooms = new Map()
         this.roomComponentArray = []
+        this.unknownPuzzles = new Set() // Set of Rooms which are Room.PUZZLE and have no room data
 
         // Initialize the array of Positions, every spot in the 6x6 area where a room can be
         for (let i = 0; i < 36; i++) {
@@ -152,7 +153,7 @@ class DungeonMap {
 
                     let roomLore = ""
                     p.roomsData.forEach(([players, room]) => {
-                        let name = room.data?.name ?? room.shape
+                        let name = room.name ?? room.shape
                         let type = room.typeToName()
                         let color = room.typeToColor()
 
@@ -179,7 +180,7 @@ class DungeonMap {
             if (this.deadBlazes !== 10) return
 
             this.roomsArr.forEach(room => {
-                if (room.data?.name?.toLowerCase() !== 'higher or lower') return
+                if (room.name !== 'Blaze') return
                 room.checkmarkState = room.currentSecrets ? Checkmark.GREEN : Checkmark.WHITE;
             })
 
@@ -289,6 +290,11 @@ class DungeonMap {
         room.components.forEach(component => {
             this.rooms.set(component, room)
         })
+
+        if (room.type == Room.PUZZLE && !room.data) {
+            this.unknownPuzzles.add(room)
+        }
+
         this.markChanged()
     }
 
@@ -375,17 +381,13 @@ class DungeonMap {
             let roomData = DungeonRoomData.getDataFromCore(core)
 
             if (roomData && !room.data) {
-                room.data = roomData
-                room.setType(room.getTypeFromString(roomData.type))
-                
+                room.setRoomData(roomData)
                 this.markChanged()
-
                 // ChatLib.chat(`Updated roomdata for ${room.data.name}: ${roomData.type}`)
 
             }
             // Entrance is always a 1x1
             if (room.type == Room.SPAWN) return
-
             if (room.checkmarkState == Checkmark.GRAY) room.checkmarkState = Checkmark.NONE
 
             for (let dir of directions) {
@@ -507,7 +509,7 @@ class DungeonMap {
                 break;
             case "blazeDone":
                 this.roomsArr.forEach(room => {
-                    if (room.data?.name?.toLowerCase() === 'higher or lower') {
+                    if (room.name === 'Blaze') {
                         room.checkmarkState = room.currentSecrets ? Checkmark.GRAY : Checkmark.WHITE;
                     }
                 })
@@ -965,9 +967,10 @@ class DungeonMap {
     }
 
     updatePuzzles() {
-        let puzzleNamesList = [];
-        let identifiedPuzzleList = [];
-        if (!TabList) return;
+        if (!this.unknownPuzzles.size) return
+        // let puzzleNames = []
+        if (!TabList) return
+        
         let names = []
         try {
             names = TabList.getNames() // Sometimes this has a null pointer exception inside the function?
@@ -975,52 +978,40 @@ class DungeonMap {
             return
         }
         const puzStart = names.findIndex(a => a.removeFormatting().match(/^Puzzles: \(\d+\)$/))
-        if (puzStart == -1) return
+        if (puzStart == -1) return ChatLib.chat(`No puz!`)
+            ChatLib.chat("a")
+        
+        const replacements = {
+            "Higher or Lower": "Blaze"
+        }
+        
+        let unknownPuzArr = [...this.unknownPuzzles]
+
         // The five lines after the "Puzzles: (3)" line
         const puzLines = names.slice(puzStart + 1, puzStart + 6).map(a => a.removeFormatting())
         puzLines.forEach(line => {
             // https://regex101.com/r/qhNs78/1
             let match = line.match(/^ ([\w? ]+)+: \[(.)\] (?:\(.+\))?$/)
             if (!match) return
+            
             let [_, name, status] = match
             if (name == "???") return
-            puzzleNamesList.push(name)
-            if (status !== "✖") return
+            if (name in replacements) name = replacements[name]
+
+            let found = false
             for (let room of this.roomsArr) {
-                if (room.data?.name?.toLowerCase() !== name.toLowerCase()) continue
-                room.checkmarkState = Checkmark.FAILED
-            }
-        });
-        let puzzleCount = 0
-        // this.roomsArr.forEach((room) => {
-        //     if (room.type === Room.PUZZLE && room.checkmarkState !== Checkmark.NONE) {
-        //         if (room.roomId)
-        //             identifiedPuzzleList.push(room.data?.name?.toLowerCase() || '???');
-        //         puzzleCount++;
-        //     }
-        // })
-        if (puzzleNamesList.length <= this.identifiedPuzzleCount) {
-            return
-        };
-        if (puzzleNamesList.length != puzzleCount) {
-            return;
-        }
-        puzzleNamesList = puzzleNamesList.filter(e => !identifiedPuzzleList.includes(e.toLowerCase()));
-        for (let i = 0; i < 6; i++) {
-            for (let j = 0; j < 6; j++) {
-                let coords = i + ',' + j;
-                let room = this.rooms.get(coords);
-                if (!room) continue;
-                if (room.type == Room.PUZZLE && !room.roomId) {
-                    let puzzleName = puzzleNamesList.shift();
-                    if (!puzzleName) continue;
-                    let ids = DungeonRoomData.getRoomIdsFromName(puzzleName)
-                    room.roomId = ids[0];
-                    this.identifiedRoomIds.addAll(...ids);
+                // This puzzle has already been identified
+                if (room.name == name) {
+                    found = true
+                    break
                 }
             }
-        }
-        this.identifiedPuzzleCount = puzzleNamesList.length;
+            if (!found) {
+                let identifiedPuz = unknownPuzArr.shift()
+                identifiedPuz.name = name
+                this.unknownPuzzles.delete(identifiedPuz)
+            }
+        })
     }
 
     /**

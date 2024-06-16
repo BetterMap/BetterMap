@@ -6,7 +6,7 @@ import RenderContext from "./../RenderContext.js"
 const barrier_block_item = new Item("minecraft:barrier")
 const puzzleItems = {
     "Water Board": new Item("minecraft:water_bucket"),
-    "Higher Or Lower": new Item("minecraft:blaze_powder"),
+    "Blaze": new Item("minecraft:blaze_powder"),
     "Quiz": new Item("minecraft:book"),
     "Three Weirdos": new Item("minecraft:chest"),
     "Tic Tac Toe": new Item("minecraft:shears"),
@@ -168,7 +168,7 @@ class RoomRenderer {
         let scale = context.size / 250 * context.iconScale / 8
         let textScale = context.size / 250 * context.textScale / 8
         if (context.puzzleNames === "text" || (context.puzzleNames === 'icon' && context.tickStyle === 'roomnames' && (room.checkmarkState === Checkmark.GREEN || room.checkmarkState === Checkmark.FAILED)) || context.puzzleNames === 'none' && context.tickStyle === 'roomnames') {
-            let text = room.data?.name?.split(" ") || ["???"]
+            let text = room.name?.split(" ") || ["???"]
             let textColor = ""
             switch (room.checkmarkState) {
                 case Checkmark.WHITE:
@@ -206,7 +206,7 @@ class RoomRenderer {
             if (context.tickStyle === 'secrets') return;
             //dont draw icons if checkmark or fail
             if (room.checkmarkState === Checkmark.FAILED || room.checkmarkState === Checkmark.GREEN) return;
-            let icon = puzzleItems[room.data?.name] || barrier_block_item
+            let icon = puzzleItems[room.name] || barrier_block_item
 
             let iconScale = scale * 1.75
             icon.draw(x - 8 * iconScale, y - 8 * iconScale, iconScale)
@@ -294,7 +294,7 @@ class RoomRenderer {
             y = context.posY + y * (context.size - context.borderWidth) + context.borderWidth
 
             let scale = context.size / 250 * context.textScale / 8
-            let text = room.data?.name?.split(" ") || ["???"]
+            let text = room.name?.split(" ") || ["???"]
             let textColor = ""
             switch (room.checkmarkState) {
                 case Checkmark.WHITE:

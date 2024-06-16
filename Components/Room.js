@@ -41,6 +41,7 @@ class Room {
 
         this.dungeon = dungeon
 
+        this.name = null
         this.type = type
         this.components = components
         this.sortComponents()
@@ -55,8 +56,6 @@ class Room {
         this.roofHeight = roofHeight
         
         this.findRotationAndCorner();
-
-        this.cores = []
 
         /**
          * -1 -> failed
@@ -79,8 +78,11 @@ class Room {
 
     }
 
-    loadRoomData(roomData) {
-        // this.type = 
+    setRoomData(roomData) {
+        this.data = roomData
+        this.name = roomData.name
+        this.type = this.getTypeFromString(this.data.type)
+        this.maxSecrets = this.data.secrets
     }
 
     set checkmarkState(val) {
@@ -244,7 +246,7 @@ class Room {
         let roomLore = []
 
         if (this.data) {
-            roomLore.push(this.data?.name || '???')
+            roomLore.push(this.name ?? '???')
             // roomLore.push("&8" + (this.roomId || ""))
             if (CurrentSettings.settings.devInfo) roomLore.push('&9Rotation: ' + (this.rotation ?? 'NONE'));
             if (this.data && this.data?.soul) roomLore.push("&dFAIRY SOUL!")
@@ -253,7 +255,7 @@ class Room {
             if (this.type === Room.NORMAL) roomLore.push("Ceiling Spiders: " + (this.data?.spiders ? "Yes" : "No"))
         }
         else {
-            roomLore.push('Unknown room!')
+            roomLore.push(this.name ?? 'Unknown room!')
             if (CurrentSettings.settings.devInfo) roomLore.push('&9Rotation: ' + (this.rotation > -1 ? this.rotation : 'NONE'));
         }
 
@@ -354,7 +356,7 @@ class Room {
     }
 
     toString() {
-        return `Room["${this.data?.name || "Unknown"}", [${this.components.map(a => a.toString()).join(",")}], ${this.type}, rot=${this.rotation}]`
+        return `Room["${this.name || "Unknown"}", [${this.components.map(a => a.toString()).join(",")}], ${this.type}, rot=${this.rotation}]`
     }
 }
 

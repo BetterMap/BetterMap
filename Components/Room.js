@@ -1,3 +1,4 @@
+import DungeonRoomData from "../Data/DungeonRoomData.js"
 import settings from "../Extra/Settings/CurrentSettings.js"
 import CurrentSettings from "../Extra/Settings/CurrentSettings.js"
 import { drawBoxAtBlock } from "../Utils/renderUtils.js"
@@ -54,6 +55,7 @@ class Room {
         this.shape = this.findShape()
         this.rotation = null
         this.roofHeight = roofHeight
+        this.cores = []
         
         this.findRotationAndCorner();
 
@@ -78,11 +80,28 @@ class Room {
 
     }
 
+    /**
+     * Loads this room's room data
+     * @param {Object} roomData 
+     */
     setRoomData(roomData) {
         this.data = roomData
         this.name = roomData.name
         this.type = this.getTypeFromString(this.data.type)
         this.maxSecrets = this.data.secrets
+        this.cores = roomData.cores
+    }
+
+    /**
+     * Loads the room data for this room from it's core
+     * @param {Number} core 
+     * @returns 
+     */
+    loadFromCore(core) {
+        let roomData = DungeonRoomData.getDataFromCore(core)
+        if (!roomData) return
+
+        this.setRoomData(roomData)
     }
 
     set checkmarkState(val) {

@@ -274,6 +274,19 @@ class DungeonMap {
 
     /**
      * 
+     * @param {Number} arrayX - 0-5
+     * @param {Number} arrayY - 0-5
+     * @returns {Room | null}
+     */
+    getRoomAtArrayPos(arrayX, arrayY) {
+        const index = arrayX + arrayY * 6
+        if (index < 0 || index > 35) return null
+
+        return this.getRoomAtComponent(this.roomComponentArray[index])
+    }
+
+    /**
+     * 
      * @param {Door} door 
      */
     addDoor(door) {
@@ -374,6 +387,8 @@ class DungeonMap {
             return
         }
 
+        const scannedRooms = [] // To send via socket after scanning is done
+        const scannedDoors = []
         
         const searched = new Set()
         const queue = [currPos]
@@ -381,6 +396,7 @@ class DungeonMap {
         while (queue.length) {
             let component = queue.shift()
             searched.add(component)
+            // ChatLib.chat(`Searching ${component}`)
 
             let worldX = component.worldX
             let worldZ = component.worldY
@@ -390,6 +406,8 @@ class DungeonMap {
 
             if (!room) {
                 room = new Room(this, Room.UNKNOWN, [component], highestBlock)
+                scannedRooms.push(room)
+                // ChatLib.chat(`Created room ${room}`)
                 this.addRoom(room)
             }
 
@@ -423,11 +441,15 @@ class DungeonMap {
                 if (block.type.getID() == 0 || block2.type.getID() !== 0) {
                     let doorPos = new Position(worldX+dx, worldZ+dz, this)
                     let doorBlockId = World.getBlockAt(doorPos.worldX, 69, doorPos.worldY).type.getID()
-                    let door = this.doors.get(doorPos.arrayStr) ?? new Door(Room.UNKNOWN, doorPos, horizontal)
+                    let door = this.doors.get(doorPos.arrayStr)
+                    if (!door) {
+                        door = new Door(Room.UNKNOWN, doorPos, horizontal)
+                    }
 
                     // Add a gray room here if nothing exists already
                     if (!this.getRoomAtComponent(newComponent)) {
                         let newRoom = new Room(this, Room.UNKNOWN, [newComponent], highest)
+                        scannedRooms.push(newRoom)
                         newRoom.checkmarkState = Checkmark.GRAY
                         this.addRoom(newRoom)
                     }
@@ -446,7 +468,8 @@ class DungeonMap {
                         this.witherDoors.add(door)
                     }
 
-                    // ChatLib.chat(`Added door ${door}`)
+                    // ChatLib.chat(`Added door ${door} from ${room}`)
+                    scannedDoors.push(door)
                     this.addDoor(door)
                     continue
                 }   
@@ -458,12 +481,37 @@ class DungeonMap {
                 
                 // Otherwise this is just a room extension, so extend the room outwards!
                 room.addComponent(newComponent)
+                // ChatLib.chat(`Added ${newComponent} to ${room}`)
                 this.markChanged()
 
-                if (searched.has(component)) continue
+                if (searched.has(newComponent)) {
+                    // ChatLib.chat(`Already searched ${newComponent}`)
+                    continue
+                }
                 queue.push(newComponent)
+                // ChatLib.chat(`QUEUE ${newComponent}`)
             }
         }
+
+        scannedRooms.forEach(room => {
+            this.sendSocketData({
+                type: "newRoom",
+                components: room.components.map(a => [a.arrayX, a.arrayY]),
+                roomType: room.type,
+                cores: room.cores,
+                roofHeight: room.roofHeight
+            })
+        })
+
+        scannedDoors.forEach(door => {
+            this.sendSocketData({
+                type: "newDoor",
+                x: door.getX(),
+                z: door.getZ(),
+                doorType: door.type,
+                horizontal: door.horizontal
+            })
+        })
 
         // this.sendSocketData({
         //     type: "roomLocation",
@@ -472,6 +520,14 @@ class DungeonMap {
 
     }
 
+    getComponentAtArrayPos(x, z) {
+        const index = x + z*6
+        
+        if (index < 0 || index > 35) return null
+        
+        return this.roomComponentArray[index]
+    }
+    
     /**
      * Gets the Position at the given worldX and worldZ coordinate assuming they are inside of the dungeon area
      * will return null if the coord is not inside of the dungeon
@@ -481,56 +537,68 @@ class DungeonMap {
      */
     getComponentAt(worldX, worldZ) {
         const [x, z] = getComponentFromPos(worldX, worldZ)
-        const index = x + z*6
-
-        if (index < 0 || index > 35) return null
-
-        return this.roomComponentArray[index]
+        
+        return this.getComponentAtArrayPos(x, z)
     }
-
+    
     socketData(data) {
         // ChatLib.chat(`SOCKET DATA: ${JSON.stringify(data)}`)
 
         switch (data.type) {
             case "playerLocation":
-                let p = this.players[this.playersNameToId[data.username]]
-                if (!p) return
+                let player = this.players[this.playersNameToId[data.username]]
+                if (!player) return
 
-                p.setXAnimate(data.x, 350)
-                p.setYAnimate(data.z, 350)
-                p.setRotateAnimate(data.yaw, 350)
-                p.locallyUpdated = Date.now()
+                player.setXAnimate(data.x, 350)
+                player.setYAnimate(data.z, 350)
+                player.setRotateAnimate(data.yaw, 350)
+                player.locallyUpdated = Date.now()
                 break;
+
             case "roomSecrets":
-                let currentRoom = this.rooms.get(data.x + ',' + data.y);
+                let room = this.getRoomAtArrayPos(data.x, data.y)
 
-                if (!currentRoom || currentRoom.type === Room.UNKNOWN) return; // Current room not loaded yet
+                if (!room || room.type === Room.UNKNOWN) return // Current room not loaded yet
 
-                if (currentRoom.currentSecrets !== data.min) {
-                    currentRoom.currentSecrets = data.min
-                    currentRoom.maxSecrets = data.max
+                if (room.currentSecrets !== data.min) {
+                    room.currentSecrets = data.min
+                    room.maxSecrets = data.max
 
                     this.markChanged() // Re-render map incase of a secret count specific texturing
                 }
                 break;
-            case "doorLocation":
-                // this.setDoor(data.x, data.y, data.ishorizontal, false, data.doorType)
-                break;
-            case "roomLocation":
-                // this.setRoom(data.x, data.y, data.rotation, data.roomId, false)
-                break;
-            case "roomId":
-                let currentRoom2 = this.rooms.get(data.x + ',' + data.y);
 
-                if (!currentRoom2 || currentRoom2.roomId || currentRoom2.type === Room.UNKNOWN) return; // Current room not loaded yet, or already loaded id
+            case "newDoor":
+                // {type: Door.NORMAL, worldX: 69, worldZ: 69, horizontal: true}
+                let { type, doorType, x, z, horizontal } = data
 
-                currentRoom2.roomId = data.roomId;
-
-                this.markChanged() // Re-render map incase of a room-id specific texturing
+                let doorPos = new Position(x, z, this)
+                let door = new Door(doorType, doorPos, horizontal)
+                this.addDoor(door)
                 break;
+
+            case "newRoom":
+                {
+                    let { components, roomType, core, roofHeight } = data
+                    
+                    let componentArr = components.map(([x, y]) => this.getComponentAtArrayPos(x, y))
+                    if (componentArr.some(a => a == null)) return
+                    
+                    let room = new Room(this, roomType, componentArr, roofHeight)
+                    if (roomType == Room.UNKNOWN) room.checkmarkState = Checkmark.GRAY
+                    
+                    if (core) room.loadFromCore(core)
+
+                    // ChatLib.chat(`Adding room from socket: ${room}`)
+                        
+                    this.addRoom(room)
+                }
+                break;
+                
             case "mimicKilled":
                 this.mimicKilled = true
                 break;
+                
             case "blazeDone":
                 this.roomsArr.forEach(room => {
                     if (room.name === 'Blaze') {
@@ -538,6 +606,7 @@ class DungeonMap {
                     }
                 })
                 break;
+                
             case "secretCollect":
                 this.collectedSecrets.add(data.location)
                 break;
@@ -577,6 +646,7 @@ class DungeonMap {
     }
 
     sendSocketData(data) {
+        // ChatLib.chat(`Sending socket data: ${JSON.stringify(data)}`)
         socketConnection.sendDungeonData({ data, players: this.players.map(a => a.username) })
     }
 
@@ -1000,7 +1070,7 @@ class DungeonMap {
             return
         }
         const puzStart = names.findIndex(a => a.removeFormatting().match(/^Puzzles: \(\d+\)$/))
-        if (puzStart == -1) return ChatLib.chat(`No puz!`)
+        if (puzStart == -1) return
         
         const replacements = {
             "Higher Or Lower": "Blaze"
@@ -1162,6 +1232,9 @@ class DungeonMap {
 
         let currentRoom = this.getCurrentRoom()
         if (!currentRoom || currentRoom.type === Room.UNKNOWN) return; // Current room not loaded yet
+
+        // Secret count is already updated for this room
+        if (currentRoom.currentSecrets == found && currentRoom.maxSecrets == total) return
 
         currentRoom.maxSecrets = total
         currentRoom.currentSecrets = found

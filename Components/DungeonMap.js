@@ -1415,10 +1415,15 @@ class DungeonMap {
         let loc = `${x},${y},${z}`
 
         let currentRoom = this.getCurrentRoom()
+        if (!currentRoom || !currentRoom.corner) return
+
         if (type === "bat" && currentRoom?.data) {
             let closestD = Infinity
             currentRoom.data.secret_coords?.bat?.forEach((pos) => {
-                let [x2, y2, z2] = currentRoom.getRealCoord(pos)
+                let actualPos = currentRoom.getRealCoord(pos)
+                if (!actualPos) return
+
+                let [x2, y2, z2] = actualPos
 
                 if (this.collectedSecrets.has(x2 + "," + y2 + "," + z2)) return
                 let distance = (x2 - x) ** 2 + (y2 - y) ** 2 + (z2 - z) ** 2
@@ -1432,7 +1437,10 @@ class DungeonMap {
             let closestD = 25
 
             currentRoom.data.secret_coords?.item?.forEach((pos) => {
-                let [x2, y2, z2] = currentRoom.getRealCoord(pos)
+                let actualPos = currentRoom.getRealCoord(pos)
+                if (!actualPos) return
+
+                let [x2, y2, z2] = actualPos
 
                 if (this.collectedSecrets.has(x2 + "," + y2 + "," + z2)) return
                 let distance = (x2 - x) ** 2 + (y2 - y) ** 2 + (z2 - z) ** 2

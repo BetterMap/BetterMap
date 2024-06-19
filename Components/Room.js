@@ -99,9 +99,10 @@ class Room {
      */
     loadFromCore(core) {
         let roomData = DungeonRoomData.getDataFromCore(core)
-        if (!roomData) return
+        if (!roomData) return false
 
         this.setRoomData(roomData)
+        return true
     }
 
     set checkmarkState(val) {

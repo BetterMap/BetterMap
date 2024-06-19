@@ -333,13 +333,14 @@ class DungeonMap {
     mergeRooms(room1, room2) {
         this.deleteRoom(room2)
 
-        if (room2.data) room1.data = room2.data
         if (room2.type) room1.type = room2.type
 
+        if (room2.data) {
+            room1.setRoomData(room2.data)
+        }
+
         room2.components.forEach(component => room1.addComponent(component))
-        room1.components.forEach(component => {
-            this.rooms.set(component, room1)
-        })
+
         this.markChanged()
     }
 
@@ -387,8 +388,8 @@ class DungeonMap {
             return
         }
 
-        const scannedRooms = [] // To send via socket after scanning is done
-        const scannedDoors = []
+        // const scannedRooms = new Set() // To send via socket after scanning is done
+        // const scannedDoors = new Set()
         
         const searched = new Set()
         const queue = [currPos]
@@ -406,7 +407,7 @@ class DungeonMap {
 
             if (!room) {
                 room = new Room(this, Room.UNKNOWN, [component], highestBlock)
-                scannedRooms.push(room)
+                // scannedRooms.add(room)
                 // ChatLib.chat(`Created room ${room}`)
                 this.addRoom(room)
             }
@@ -437,10 +438,12 @@ class DungeonMap {
                 let block = World.getBlockAt(worldX+dx, highestBlock, worldZ+dz)
                 let block2 = World.getBlockAt(worldX+dx, highestBlock+1, worldZ+dz)
 
-                // There is a door here, roof heights do not match
-                if (block.type.getID() == 0 || block2.type.getID() !== 0) {
-                    let doorPos = new Position(worldX+dx, worldZ+dz, this)
-                    let doorBlockId = World.getBlockAt(doorPos.worldX, 69, doorPos.worldY).type.getID()
+                let doorPos = new Position(worldX+dx, worldZ+dz, this)
+                let doorBlock = World.getBlockAt(doorPos.worldX, 69, doorPos.worldY)
+                let doorBlockId = doorBlock.type.getID()
+
+                // There is a door here, roof heights do not match, or the block where the door should be is infested stonebrick (Spawn door)
+                if (block.type.getID() == 0 || block2.type.getID() !== 0 || (doorBlockId == 97 && doorBlock.getMetaData() == 5)) {
                     let door = this.doors.get(doorPos.arrayStr)
                     if (!door) {
                         door = new Door(Room.UNKNOWN, doorPos, horizontal)
@@ -449,7 +452,7 @@ class DungeonMap {
                     // Add a gray room here if nothing exists already
                     if (!this.getRoomAtComponent(newComponent)) {
                         let newRoom = new Room(this, Room.UNKNOWN, [newComponent], highest)
-                        scannedRooms.push(newRoom)
+                        // scannedRooms.add(newRoom)
                         newRoom.checkmarkState = Checkmark.GRAY
                         this.addRoom(newRoom)
                     }
@@ -469,7 +472,7 @@ class DungeonMap {
                     }
 
                     // ChatLib.chat(`Added door ${door} from ${room}`)
-                    scannedDoors.push(door)
+                    // scannedDoors.add(door)
                     this.addDoor(door)
                     continue
                 }   
@@ -481,6 +484,7 @@ class DungeonMap {
                 
                 // Otherwise this is just a room extension, so extend the room outwards!
                 room.addComponent(newComponent)
+                // scannedRooms.add(room)
                 // ChatLib.chat(`Added ${newComponent} to ${room}`)
                 this.markChanged()
 
@@ -493,25 +497,29 @@ class DungeonMap {
             }
         }
 
-        scannedRooms.forEach(room => {
-            this.sendSocketData({
-                type: "newRoom",
-                components: room.components.map(a => [a.arrayX, a.arrayY]),
-                roomType: room.type,
-                cores: room.cores,
-                roofHeight: room.roofHeight
-            })
-        })
+        // scannedRooms.forEach(room => {
+        //     let data = {
+        //         type: "newRoom",
+        //         components: room.components.map(a => [a.arrayX, a.arrayY]),
+        //         roomType: room.type,
+        //         cores: room.cores,
+        //         roofHeight: room.roofHeight
+        //     }
+        //     this.sendSocketData(data)
+        //     this.socketData(data)
+        // })
 
-        scannedDoors.forEach(door => {
-            this.sendSocketData({
-                type: "newDoor",
-                x: door.getX(),
-                z: door.getZ(),
-                doorType: door.type,
-                horizontal: door.horizontal
-            })
-        })
+        // scannedDoors.forEach(door => {
+        //     let data = {
+        //         type: "newDoor",
+        //         x: door.getX(),
+        //         z: door.getZ(),
+        //         doorType: door.type,
+        //         horizontal: door.horizontal
+        //     }
+        //     this.sendSocketData(data)
+        //     this.socketData(data)
+        // })
 
         // this.sendSocketData({
         //     type: "roomLocation",
@@ -578,21 +586,38 @@ class DungeonMap {
                 break;
 
             case "newRoom":
-                {
-                    let { components, roomType, core, roofHeight } = data
+                // {
+                //     let { components, roomType, cores, roofHeight } = data
                     
-                    let componentArr = components.map(([x, y]) => this.getComponentAtArrayPos(x, y))
-                    if (componentArr.some(a => a == null)) return
-                    
-                    let room = new Room(this, roomType, componentArr, roofHeight)
-                    if (roomType == Room.UNKNOWN) room.checkmarkState = Checkmark.GRAY
-                    
-                    if (core) room.loadFromCore(core)
+                //     let componentArr = components.map(([x, y]) => this.getComponentAtArrayPos(x, y))
+                //     if (componentArr.some(a => a == null)) return
 
-                    // ChatLib.chat(`Adding room from socket: ${room}`)
+                    
+                //     let room = new Room(this, roomType, componentArr, roofHeight)
+                //     if (roomType == Room.UNKNOWN) room.checkmarkState = Checkmark.GRAY
+
+                //     if (cores) {
+                //         for (let core of cores) {
+                //             if (room.loadFromCore(core)) break
+                //         }
+                //     }
+                    
+                //     // Delete existing rooms in this area
+                //     componentArr.forEach(component => {
+                //         let existingRoom = this.getRoomAtComponent(component)
+                //         if (existingRoom) {
+                //             this.deleteRoom(existingRoom)
+                //             // ChatLib.chat(`&eMerging ${existingRoom} into ${room}`)
+                //             this.mergeRooms(room, existingRoom)
+                //         }
+                //     })
+                    
+                    
+
+                //     // ChatLib.chat(`&aAdding room from socket: ${room}`)
                         
-                    this.addRoom(room)
-                }
+                //     this.addRoom(room)
+                // }
                 break;
                 
             case "mimicKilled":

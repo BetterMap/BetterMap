@@ -28,6 +28,7 @@ class DungeonMap {
          */
         this.rooms = new Map()
         this.roomComponentArray = []
+        this.scannedComponents = new Set() // For scanning, don't wanna re-scan a position multiple times
         this.unknownPuzzles = new Set() // Set of Rooms which are Room.PUZZLE and have no room data
 
         // Initialize the array of Positions, every spot in the 6x6 area where a room can be
@@ -364,7 +365,8 @@ class DungeonMap {
 
     scanCurrentRoom() {
         const currPos = this.getComponentAt(Player.getX(), Player.getZ())
-        if (!currPos) return
+        if (!currPos || this.scannedComponents.has(currPos)) return
+        this.scannedComponents.add(currPos)
 
         // [dx, dy, horizontal (for doors)]
         const directions = [

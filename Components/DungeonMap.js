@@ -445,7 +445,7 @@ class DungeonMap {
                 let doorBlockId = doorBlock.type.getID()
 
                 // There is a door here, roof heights do not match, or the block where the door should be is infested stonebrick (Spawn door)
-                if (block.type.getID() == 0 || block2.type.getID() !== 0 || (doorBlockId == 97 && doorBlock.getMetaData() == 5)) {
+                if (block.type.getID() == 0 || block2.type.getID() !== 0 || (doorBlockId == 97 && doorBlock.getMetadata() == 5)) {
                     let door = this.doors.get(doorPos.arrayStr)
                     if (!door) {
                         door = new Door(Room.UNKNOWN, doorPos, horizontal)

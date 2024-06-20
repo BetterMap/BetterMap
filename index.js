@@ -2,7 +2,6 @@
 /// <reference types="../CTAutocomplete" />
 /// <reference lib="es2015" />
 
-import { m } from "../mappings/mappings"
 import DungeonMap from "./Components/DungeonMap"
 import MapRenderer from "./Render/MapRenderer"
 import RenderContextManager from "./Render/RenderContextManager"
@@ -56,13 +55,15 @@ register("step", () => {
 
         try {
             let item = Player.getInventory().getStackInSlot(8)
-            mapData = item.getItem()[m.getMapData](item.getItemStack(), World.getWorld())
+            // getMapData
+            mapData = item.getItem().func_77873_a(item.getItemStack(), World.getWorld())
             if (mapData && !currentDungeonMap.mapId) {
                 currentDungeonMap.mapId = item.getMetadata()
             }
         } catch (error) {
             if (currentDungeonMap.mapId) {
-                mapData = World.getWorld()[m.loadItemData](MapData.class, "map_" + currentDungeonMap.mapId)
+                // loadItemData
+                mapData = World.getWorld().func_72943_a(MapData.class, "map_" + currentDungeonMap.mapId)
             }
         }
 
@@ -77,7 +78,8 @@ register("step", () => {
 
 register("packetReceived", (packet) => {
     if (currentDungeonMap && !currentDungeonMap.mapId) {
-        currentDungeonMap.mapId = packet[m.getMapId]()
+        // getMapId
+        currentDungeonMap.mapId = packet.func_149188_c()
     }
 }).setFilteredClass(net.minecraft.network.play.server.S34PacketMaps)
 

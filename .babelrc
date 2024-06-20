@@ -1,6 +1,0 @@
-{
-    "presets": [],
-    "plugins": [
-        "./babel-substitute-mappings/babel-substitute-mappings.js"
-    ]
-}

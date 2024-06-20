@@ -1,13 +1,14 @@
-import { m } from "../../mappings/mappings"
-
 /**
  * @param {Number} id id of the line that should be changed 
  * @param {String} line text that the line should be changed to
  */
 export function changeScoreboardLine(id, line) {
-    let scoreboard = World.getWorld()[m.getScoreboard.World]();
-    for (let team of scoreboard[m.getTeams]()) {
-        let name = team[m.getTeamName]();
+    //                                  getScoreboard
+    let scoreboard = World.getWorld().func_96441_U();
+    //                         .getTeams
+    for (let team of scoreboard.func_96525_g()) {
+        //             .getTeamName
+        let name = team.func_96669_c();
         if (name.includes('team') && name.includes(id)) {
             let prefix = line.substring(0, 15);
             let suffix = line.substring(15, 30);

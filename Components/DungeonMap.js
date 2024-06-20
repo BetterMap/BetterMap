@@ -1,4 +1,3 @@
-import { f, m } from "../../mappings/mappings.js"
 import Position from "../Utils/Position.js"
 import MapPlayer from "./MapPlayer.js"
 import Room from "./Room.js"
@@ -949,9 +948,10 @@ class DungeonMap {
     updateFromMap(mapData) {
         if (this.dungeonFinished) return
 
-        this.loadPlayersFromDecoration(mapData[f.mapDecorations])
-
-        let mapColors = mapData[f.colors.MapData]
+        //                                    .mapDecorators
+        this.loadPlayersFromDecoration(mapData.field_76203_h)
+        //                     .colors
+        let mapColors = mapData.field_76198_e
 
         if (!this.dungeonTopLeft && !this.loadDungeonTopLeft(mapColors)) return
 

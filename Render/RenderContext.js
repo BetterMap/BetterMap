@@ -549,7 +549,8 @@ class RenderContext {
      * Prepairs this render context for garbage collection, eg clearing cached map image from memory
      */
     destroy() {
-        this.image?.getTexture()?.[m.deleteGlTexture]()
+        //                      deleteGlTexture
+        this.image?.getTexture()?.func_147631_c()
         this.image = undefined
 
         this.onDestroys.forEach(fun => fun())

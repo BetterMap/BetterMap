@@ -127,7 +127,7 @@ class SettingsManager {
             [new Room(dungeon, Room.NORMAL, [new Position(-72, -168)]), 1, Checkmark.GREEN],
             [new Room(dungeon, Room.PUZZLE, [new Position(-72, -200)]), 0, Checkmark.NONE],
             [new Room(dungeon, Room.NORMAL, [new Position(-40, -168)]), 0, Checkmark.WHITE],
-            [new Room(dungeon, Room.PUZZLE, [new Position(-40, -200)]), 0, Checkmark.GRAY],
+            [new Room(dungeon, Room.PUZZLE, [new Position(-40, -200)]), 0, Checkmark.FAILED],
             [new Room(dungeon, Room.NORMAL, [new Position(-72, -136), new Position(-40, -136)]), 3, Checkmark.GREEN],
             [new Room(dungeon, Room.NORMAL, [new Position(-72, -104), new Position(-72, -72), new Position(-104, -72)]), 0, Checkmark.NONE],
             [new Room(dungeon, Room.NORMAL, [new Position(-40, -104), new Position(-40, -72), new Position(-40, -40)]), 0, Checkmark.WHITE],

@@ -174,10 +174,8 @@ class MapPlayer {
         this.yaw.set(yaw, time)
     }
 
-    getRoom(dungeon) {
-        let x = ~~((this.location.worldX + dungeonOffsetX) / 32);
-        let y = ~~((this.location.worldY + dungeonOffsetY) / 32);
-        return dungeon.rooms.get(x + ',' + y)
+    getRoom() {
+        return this.dungeonMap.getRoomAt(this.location.worldX, this.location.worldY)
     }
 
     drawAt(x, y, w, h, showIcons = false, rotation = 0, borderWidth = 2) {

@@ -149,8 +149,8 @@ class DungeonMap {
             Client.scheduleTask(5 * 20, () => { // Wait 5 seconds (5*20tps)
                 ChatLib.chat(MESSAGE_PREFIX + "Cleared room counts:")
                 this.players.forEach(p => {
-                    let mess = new Message()
-                    mess.addTextComponent(new TextComponent(MESSAGE_PREFIX_SHORT + "&3" + p.username + "&7 cleared "))
+                    let final = new Message()
+                    final.addTextComponent(new TextComponent(MESSAGE_PREFIX_SHORT + "&3" + p.username + "&7 cleared "))
 
                     let roomLore = ""
                     p.roomsData.forEach(([players, room]) => {
@@ -163,13 +163,13 @@ class DungeonMap {
                         roomLore += `&${color}${name} (${type})${stackStr}\n`
                     })
 
-                    mess.addTextComponent(new TextComponent("&6" + p.minRooms + "-" + p.maxRooms).setHover("show_text", roomLore.trim()))
+                    final.addTextComponent(new TextComponent("&6" + p.minRooms + "-" + p.maxRooms).setHover("show_text", roomLore.trim()))
 
-                    mess.addTextComponent(new TextComponent("&7 rooms | &6" + p.secretsCollected + "&7 secrets"))
+                    final.addTextComponent(new TextComponent("&7 rooms | &6" + p.secretsCollected + "&7 secrets"))
 
-                    mess.addTextComponent(new TextComponent("&7 | &6" + p.deaths + "&7 deaths"))
+                    final.addTextComponent(new TextComponent("&7 | &6" + p.deaths + "&7 deaths"))
 
-                    mess.chat()
+                    final.chat()
                 })
             })
         }).setChatCriteria(/^\s*(Master Mode)?(?:The)? Catacombs - Floor (.{1,3})$/)) // https://regex101.com/r/W4UjWQ/1
@@ -237,19 +237,19 @@ class DungeonMap {
         this.triggers.push(register("chat", () => {
             this.bloodOpen = true
             this.keys--
-        }).setChatCriteria("&r&cThe &r&c&lBLOOD DOOR&r&c has been opened!&r"))
+        }).setCriteria(/^The BLOOD DOOR has been opened!$/))
 
         this.triggers.push(register("chat", () => {
             this.keys++
-        }).setChatCriteria("${*} &r&ehas obtained &r&a&r&${*} Key&r&e!&r"))
+        }).setCriteria(/^(?:\[[\w\+-]+\] )?\w+ has obtained \w+ Key!$/))
 
         this.triggers.push(register("chat", () => {
             this.keys++
-        }).setChatCriteria("&r&eA &r&a&r&${*} Key&r&e was picked up!&r"))
+        }).setCriteria(/^A (?:Wither|Blood) Key was picked up!$/))
 
         this.triggers.push(register("chat", () => {
             this.keys--
-        }).setChatCriteria("&r&a${player}&r&a opened a &r&8&lWITHER &r&adoor!&r"))
+        }).setCriteria(/^\w+ opened a WITHER door!$/))
     }
     
     /**
@@ -365,8 +365,7 @@ class DungeonMap {
 
     scanCurrentRoom() {
         const currPos = this.getComponentAt(Player.getX(), Player.getZ())
-        if (!currPos || this.scannedComponents.has(currPos)) return
-        this.scannedComponents.add(currPos)
+        if (!currPos) return
 
         // [dx, dy, horizontal (for doors)]
         const directions = [
@@ -389,6 +388,9 @@ class DungeonMap {
             if (!room.corner) room.findRotationAndCorner()
             return
         }
+
+        if (this.scannedComponents.has(currPos)) return
+        this.scannedComponents.add(currPos)
 
         // const scannedRooms = new Set() // To send via socket after scanning is done
         // const scannedDoors = new Set()
@@ -1052,6 +1054,10 @@ class DungeonMap {
                     // Check if door exists, and update its type (For wither doors)
                     let existingDoor = this.doors.get(position.arrayStr)
                     if (existingDoor) {
+                        // Wither door was opened
+                        if (existingDoor.type == Room.BLACK && doorType !== Room.BLACK) {
+                            this.witherDoors.delete(existingDoor)
+                        }
                         if (doorType !== Room.UNKNOWN) existingDoor.type = doorType
                         this.markChanged()
                         continue

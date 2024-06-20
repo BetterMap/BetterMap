@@ -4,6 +4,7 @@ import CurrentSettings from "../Extra/Settings/CurrentSettings.js"
 import { drawBoxAtBlock } from "../Utils/renderUtils.js"
 import RoomComponent from "../Utils/RoomComponent.js"
 import { Checkmark, firstLetterCapital, rotateCoords } from "../Utils/Utils.js"
+import MapPlayer from "./MapPlayer.js"
 import { createEvent, RoomEvents, toDisplayString } from "./RoomEvent.js"
 
 class Room {
@@ -106,12 +107,14 @@ class Room {
     }
 
     set checkmarkState(val) {
-        if (this.checkmarkState !== val) {
+        // Checkmark changed to either Whiteo or Green
+        if (this.checkmarkState !== val && val !== Checkmark.GRAY && val !== Checkmark.NONE) {
             this.addEvent(RoomEvents.CHECKMARK_STATE_CHANGE, this.checkmarkState, val)
 
-            if ((this._checkmarkState === Checkmark.NONE || this._checkmarkState === Checkmark.GRAY)
-                && (val === Checkmark.WHITE || val === Checkmark.GREEN)
-                && this.type !== Room.FAIRY && this.type !== Room.SPAWN) {
+            const old = this._checkmarkState
+            const newlyCheckmarked = (old == Checkmark.NONE || old == Checkmark.GRAY) && (val == Checkmark.WHITE || val == Checkmark.GREEN)
+
+            if (newlyCheckmarked && this.type !== Room.FAIRY && this.type !== Room.SPAWN) {
                 let players = this.getPlayersInRoom()
 
                 players.forEach(p => {
@@ -258,8 +261,12 @@ class Room {
         return this.checkmarkState >= Room.CLEARED;
     }
 
+    /**
+     * 
+     * @returns {MapPlayer[]}
+     */
     getPlayersInRoom() {
-        return this.dungeon.players.filter(p => p.getRoom(this.dungeon) === this)
+        return this.dungeon.players.filter(p => p.getRoom() === this)
     }
 
     getLore() {

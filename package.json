@@ -4,5 +4,8 @@
         "@babel/core": "^7.0.0",
         "child_process": "^1.0.2",
         "sync-request": "^6.1.0"
+    },
+    "devDependencies": {
+        "babel-cli": "^6.26.0"
     }
 }

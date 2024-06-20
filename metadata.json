@@ -10,7 +10,6 @@
     "soopyApis",
     "guimanager",
     "soopyAddonsData",
-    "BeaconBeam",
-    "mappings"
+    "BeaconBeam"
   ]
 }

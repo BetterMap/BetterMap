@@ -33,14 +33,13 @@ class DungeonRoomStaticData {
         this.idMap = new Map()
         this.coreMap = new Map() // "CORE": "ROOMDATA"
 
-        this.update(this.fullRoomData)
+        this.update()
 
-        fetch("https://soopy.dev/api/bettermap/roomdata").json(data => {
-            // FileLib.write("BetterMap", "Data/roomdata.json", JSON.stringify(data, null, 4))
-
-            this.fullRoomData = data
-            this.update()
-        })
+        // fetch("https://soopy.dev/api/bettermap/roomdata").json(data => {
+        //     FileLib.write("BetterMap", "Data/roomdata.json", JSON.stringify(data, null, 4))
+        //     this.fullRoomData = data
+        //     this.update()
+        // })
     }
 
     update() {

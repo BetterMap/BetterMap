@@ -5,7 +5,7 @@ import Room from "./Room.js"
 import { getScoreboardInfo, getTabListInfo, getRequiredSecrets } from "../Utils/Score"
 import Door from "./Door.js"
 import DungeonRoomData from "../Data/DungeonRoomData.js"
-import { changeScoreboardLine, dungeonOffsetX, dungeonOffsetY, MESSAGE_PREFIX, MESSAGE_PREFIX_SHORT, renderLore, getPlayerName, getCore, getHighestBlock, getComponentFromPos, Checkmark } from "../Utils/Utils.js"
+import { changeScoreboardLine, dungeonOffsetX, dungeonOffsetY, MESSAGE_PREFIX, MESSAGE_PREFIX_SHORT, renderLore, getPlayerName, getCore, getHighestBlock, getComponentFromPos, Checkmark, chunkLoaded } from "../Utils/Utils.js"
 import socketConnection from "../socketConnection.js"
 import DataLoader from "../Utils/DataLoader.js"
 import { fetch } from "../Utils/networkUtils.js"
@@ -171,7 +171,7 @@ class DungeonMap {
                     final.chat()
                 })
             })
-        }).setChatCriteria(/^\s*(Master Mode)?(?:The)? Catacombs - Floor (.{1,3})$/)) // https://regex101.com/r/W4UjWQ/1
+        }).setChatCriteria(/^\s*(Master Mode)? ?(?:The)? Catacombs - (Entrance|Floor .{1,3})$/)) // https://regex101.com/r/W4UjWQ/2
 
         this.triggers.push(register("entityDeath", (entity) => {
             if (entity.getClassName() !== "EntityBlaze") return
@@ -364,7 +364,7 @@ class DungeonMap {
 
     scanCurrentRoom() {
         const currPos = this.getComponentAt(Player.getX(), Player.getZ())
-        if (!currPos) return
+        if (!currPos || !chunkLoaded(currPos.worldX, 68, currPos.worldY)) return
 
         // [dx, dy, horizontal (for doors)]
         const directions = [
@@ -423,7 +423,6 @@ class DungeonMap {
             if (roomData && !room.data) {
                 room.setRoomData(roomData)
                 this.markChanged()
-                // ChatLib.chat(`Updated roomdata for ${room.data.name}: ${roomData.type}`)
 
             }
             
@@ -581,12 +580,12 @@ class DungeonMap {
 
             case "newDoor":
                 // {type: Door.NORMAL, worldX: 69, worldZ: 69, horizontal: true}
-                let { type, doorType, x, z, horizontal } = data
+                // let { type, doorType, x, z, horizontal } = data
 
-                let doorPos = new Position(x, z, this)
-                let door = new Door(doorType, doorPos, horizontal)
-                this.addDoor(door)
-                break;
+                // let doorPos = new Position(x, z, this)
+                // let door = new Door(doorType, doorPos, horizontal)
+                // this.addDoor(door)
+                // break;
 
             case "newRoom":
                 // {
@@ -1074,6 +1073,9 @@ class DungeonMap {
                 let newWorldX = component.worldX + Math.sign(dx) * 32
                 let newWorldZ = component.worldY + Math.sign(dy) * 32
                 let newComponent = this.getComponentAt(newWorldX, newWorldZ)
+
+                if (!newComponent) continue
+                
                 let existingRoom = this.getRoomAtComponent(newComponent)
 
                 // This extension is already part of this room

@@ -3,7 +3,7 @@ import settings from "../Extra/Settings/CurrentSettings.js"
 import CurrentSettings from "../Extra/Settings/CurrentSettings.js"
 import { drawBoxAtBlock } from "../Utils/renderUtils.js"
 import RoomComponent from "../Utils/RoomComponent.js"
-import { Checkmark, firstLetterCapital, rotateCoords } from "../Utils/Utils.js"
+import { Checkmark, chunkLoaded, firstLetterCapital, rotateCoords } from "../Utils/Utils.js"
 import MapPlayer from "./MapPlayer.js"
 import { createEvent, RoomEvents, toDisplayString } from "./RoomEvent.js"
 
@@ -209,12 +209,13 @@ class Room {
 
             for (let i = 0; i < offsets.length; i++) {
                 let [dx, dz] = offsets[i]
+                if (!chunkLoaded(x+dx, this.roofHeight, z+dz)) return
+
                 let block = World.getBlockAt(x+dx, this.roofHeight, z+dz)
                 // Looking for blue stained hardened clay
                 if (block.type.getID() !== 159 || block.getMetadata() !== 11) continue
 
                 this.rotation = i
-                // ChatLib.chat(`Rotation for ${this} is ${i}`)
                 this.corner = [x+dx+0.5, 0, z+dz+0.5]
                 return
             }

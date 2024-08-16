@@ -1259,7 +1259,7 @@ class DungeonMap {
     }
 
     canUpdateRoom() {
-        return Date.now() - this.lastRoomChange > 1000
+        return Date.now() - this.lastRoomChange > 1500
     }
 
     secretCountActionBar(found, total) {

@@ -187,13 +187,6 @@ class Room {
         // Roof height is needed to find stained clay
         if (!this.roofHeight) return
 
-        const offsets = [
-            [-15, -15],
-            [15, -15],
-            [15, 15],
-            [-15, 15]
-        ]
-
         if (this.type == Room.FAIRY) {
             this.rotation = 0
             let x = this.components[0].worldX
@@ -203,22 +196,31 @@ class Room {
             return
         }
 
-        for (let component of this.components) {
-            let x = component.worldX
-            let z = component.worldY
+        const minX = Math.min(...this.components.map(a => a.worldX))
+        const maxX = Math.max(...this.components.map(a => a.worldX))
+        const minY = Math.min(...this.components.map(a => a.worldY))
+        const maxY = Math.max(...this.components.map(a => a.worldY))
 
-            for (let i = 0; i < offsets.length; i++) {
-                let [dx, dz] = offsets[i]
-                if (!chunkLoaded(x+dx, this.roofHeight, z+dz)) return
+        // Corners of the room, in clockwise order from top left
+        const spots = [
+            [minX - 15, minY - 15],
+            [maxX + 15, minY - 15],
+            [maxX + 15, maxY + 15],
+            [minX - 15, maxY + 15]
+        ]
 
-                let block = World.getBlockAt(x+dx, this.roofHeight, z+dz)
-                // Looking for blue stained hardened clay
-                if (block.type.getID() !== 159 || block.getMetadata() !== 11) continue
+        for (let i = 0; i < spots.length; i++) {
+            let [x, z] = spots[i]
 
-                this.rotation = i
-                this.corner = [x+dx+0.5, 0, z+dz+0.5]
-                return
-            }
+            if (!chunkLoaded(x, this.roofHeight, z)) return
+
+            // Looking for blue stained hardened clay at the corner of the room
+            let block = World.getBlockAt(x, this.roofHeight, z)
+            if (block.type.getID() !== 159 || block.getMetadata() !== 11) continue
+
+            this.rotation = i
+            this.corner = [x+0.5, 0, z+0.5]
+            return
         }
     }
 

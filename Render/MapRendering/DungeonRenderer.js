@@ -76,7 +76,7 @@ class DungeonRenderer extends MapTab {
         if (!renderContext.image
             || (renderContext.imageLastUpdate < dungeonMap.lastChanged)) {
             // Create image if not cached or cache outdated
-            // if (renderContext.image) renderContext.image.destroy() // Causes error for some reason
+            if (renderContext.image) renderContext.image.destroy() // Causes error for some reason
             renderContext.image = new Image(this.createMapImage(dungeonMap, renderContext));
 
             renderContext.imageLastUpdate = Date.now()

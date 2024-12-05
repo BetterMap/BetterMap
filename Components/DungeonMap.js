@@ -1185,10 +1185,10 @@ class DungeonMap {
 
 				if (this.floor == "F6" || this.floor == "F4") {
 					floortime = runtime - 240
-				} else if (this.floorNumber >= 3 || this.floor == "F5" || this.floor == "M6") {
-					floortime = runtime - 120
 				} else if (this.floor == "F7" || this.floor == "M7") {
 					floortime = runtime - 360
+				}  else if (this.floorNumber >= 3 || this.floor == "F5" || this.floor == "M6") {
+					floortime = runtime - 120
 				} else if (this.floor == "M1" || this.floor == "M2" || this.floor == "M3" || this.floor == "M4" || this.floor == "M5") {
 					floortime = runtime
 				}

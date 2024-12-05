@@ -1212,16 +1212,6 @@ class DungeonMap {
 				}
 				time = Math.round(time)
 
-			register("command", () => {
-				ChatLib.chat("Floor:  " + this.floor);
-				ChatLib.chat("Time now:  " + Math.floor(Date.now() / 1000))
-				ChatLib.chat("Dungeon start:  " + this.dungeonStart);
-				ChatLib.chat("Runtime real:  " + (Math.floor(Date.now() / 1000) - this.dungeonStart));
-				ChatLib.chat("Runtime:  " + runtime);
-				ChatLib.chat("Time score:  " + time);
-				ChatLib.chat("floortime:  " + floortime);
-			}).setName("mycommand");
-
         // Skill
         skill += ~~(completedRooms / totalRoomEstimate * 80) - unfinshedPuzzles * 10;
         skill -= deaths * 2;

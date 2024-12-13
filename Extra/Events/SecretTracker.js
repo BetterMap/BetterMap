@@ -1,4 +1,3 @@
-import { m } from "../../../mappings/mappings"
 import { registerForge } from "../../Utils/forgeEvents"
 import EventManager from "./EventManager"
 const EntityItem = Java.type("net.minecraft.entity.item.EntityItem")
@@ -12,8 +11,8 @@ registerForge(net.minecraftforge.event.entity.EntityJoinWorldEvent, undefined, (
     if (event.entity instanceof EntityItem) {
         let e = new Entity(event.entity)
         let pos = [e.getX(), e.getY(), e.getZ()]
-
-        tempItemIdLocs.set(event.entity[m.getEntityId.Entity](), pos)
+        //                              getEntityId
+        tempItemIdLocs.set(event.entity.func_145782_y(), pos)
     }
 })
 
@@ -74,7 +73,8 @@ register("playerInteract", (action, position, event) => {
 })
 
 register("packetReceived", (packet) => {
-    let pos = this.tempItemIdLocs.get(packet[m.getCollectedItemEntityID]())
+    //                                       getCollectedItemEntityID
+    let pos = this.tempItemIdLocs.get(packet.func_149354_c())
     if (!pos) return
     // TODO: only trigger on secret iten
     Client.scheduleTask(() => {

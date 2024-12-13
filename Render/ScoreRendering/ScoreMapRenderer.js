@@ -1,4 +1,3 @@
-import { m } from "../../../mappings/mappings";
 
 const { default: MapTab } = require("../MapTab");
 
@@ -18,7 +17,8 @@ class ScoreMapRenderer extends MapTab {
         let mapData // Get map data from hotbar
         try {
             let item = Player.getInventory().getStackInSlot(8)
-            mapData = item.getItem()[m.getMapData](item.getItemStack(), World.getWorld()); // ItemStack.getItem().getMapData()
+            //                      .getMapData
+            mapData = item.getItem().func_77873_a(item.getItemStack(), World.getWorld()); // ItemStack.getItem().getMapData()
         } catch (error) {
         }
 

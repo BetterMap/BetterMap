@@ -1,13 +1,14 @@
-import { m } from "../../mappings/mappings"
-
 /**
  * @param {Number} id id of the line that should be changed 
  * @param {String} line text that the line should be changed to
  */
 export function changeScoreboardLine(id, line) {
-    let scoreboard = World.getWorld()[m.getScoreboard.World]();
-    for (let team of scoreboard[m.getTeams]()) {
-        let name = team[m.getTeamName]();
+    //                                  getScoreboard
+    let scoreboard = World.getWorld().func_96441_U();
+    //                         .getTeams
+    for (let team of scoreboard.func_96525_g()) {
+        //             .getTeamName
+        let name = team.func_96669_c();
         if (name.includes('team') && name.includes(id)) {
             let prefix = line.substring(0, 15);
             let suffix = line.substring(15, 30);
@@ -71,14 +72,28 @@ export function renderLore(x, y, lore) {
 }
 
 /**
- * Maps a set of real coords (x and z) to 0-5, the same as the room components.
- * @param {Number[]} realCoords - The real coords in the world ranging from -200 to -10. 
+ * Maps a set of real coords (x and z) to 0-5.
+ * @param {Number} worldX
+ * @param {Number} worldY
  * @returns 
  */
-export const convertToRoomCoords = ([x, y]) => {
+export const getComponentFromPos = (worldX, worldZ) => {
     return [
-        MathLib.map(x, -200, -10, 0, 5),
-        MathLib.map(y, -200, -10, 0, 5)
+        Math.floor((worldX + 200.5) / 32),
+        Math.floor((worldZ + 200.5) / 32)
+    ]
+}
+
+/**
+ * Maps component to real coord
+ * @param {Number} componentX - 0-5
+ * @param {Number} componentZ - 0-5
+ * @returns 
+ */
+export const convertToRealCoords = (componentX, componentZ) => {
+    return [
+        -185 + 32 * x,
+        -185 + 32 * z,
     ]
 }
 
@@ -365,4 +380,85 @@ export const isBetween = (number, min, max) => (number - min) * (number - max) <
 export function getPlayerName(player) {
     if (!player) return '???';
     return ChatLib.removeFormatting(player.name ?? '???').replace(/[♲Ⓑ]/g, "").replace('§z', '').trim()
+}
+
+/**
+ * Checks if the chunk at the specified coordinate is loaded.
+ * @param {Number} x 
+ * @param {Number} y 
+ * @param {Number} z 
+ * @returns 
+ */
+export const chunkLoaded = (x, y, z) => {
+    if (!World || !World.getWorld()) return false
+    return World.getChunk(x, y, z).chunk.func_177410_o()
+}
+
+/**
+ * Gets the highest non-air block y value (And gold, for a room edge case) at this position, or null if there is only air
+ * @param {Number} x 
+ * @param {Number} z 
+ * @returns 
+ */
+export const getHighestBlock = (x, z) => {
+    for (let y = 255; y > 0; y--) {
+        let id = World.getBlockAt(x, y, z)?.type?.getID()
+        // Ignore gold blocks too because of Gold room with a random ass gold block on the roof sometimes.
+        if (id == 0 || id == 41) continue
+        return y
+    }
+    return null
+}
+
+const blacklisted = [
+    101,    // Iron Bars
+    54,     // Chest
+]
+export const hashCode = s => s.split('').reduce((a,b)=>{a=((a<<5)-a)+b.charCodeAt(0);return a&a},0) // From https://stackoverflow.com/a/15710692/15767968
+
+/**
+ * Gets the core hash at a certain x, z position
+ * @param {Number} x 
+ * @param {Number} z 
+ * @returns 
+ */
+export const getCore = (x, z) => {
+    let blockIds = ""
+    for (let y = 140; y >= 12; y--) {
+        let block = World.getBlockAt(x, y, z)
+        // Blacklisted blocks should just be counted as air.
+        if (blacklisted.includes(block.type.getID())) {
+            blockIds += "0"
+            continue
+        }
+
+        blockIds += block.type.getID()
+    }
+
+    return hashCode(blockIds)
+}
+
+export const Checkmark = {
+    NONE: 0,
+    GRAY: 1,
+    FAILED: 2,
+    WHITE: 3,
+    GREEN: 4
+}
+
+/**
+ * Rotates a set of coordinates clockwise.
+ * @param {[Number, Number, Number]} coordinates 
+ * @param {Number} degree - Angle in indexes, eg 90 degrees = 1, 270 degrees = 3
+ * @returns 
+ */
+export const rotateCoords = ([x, y, z], degree) => {
+    if (degree < 0) degree = degree + 4
+
+    if (degree == 0) return [x, y, z]
+    if (degree == 1) return [z, y, -x]
+    if (degree == 2) return [-x, y, -z]
+    if (degree == 3) return [-z, y, x]
+    
+    return [x, y, z]
 }

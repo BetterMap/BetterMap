@@ -1,9 +1,9 @@
 import SoopyNumber from "../../guimanager/Classes/SoopyNumber.js"
 import renderLibs from "../../guimanager/renderLibs.js"
-import { f, m } from "../../mappings/mappings.js"
 import settings from "../Extra/Settings/CurrentSettings.js"
 import RenderContext from "../Render/RenderContext.js"
 import Position from "../Utils/Position.js"
+import RoomComponent from "../Utils/RoomComponent.js"
 import { dungeonOffsetX, dungeonOffsetY, getSBID } from "../Utils/Utils.js"
 import { fetch } from "../Utils/networkUtils.js"
 
@@ -19,7 +19,7 @@ class MapPlayer {
         this.networkPlayerInfo = networkPlayerInfo
         this.dungeonMap = dungeonMap
 
-        this.location = new Position(0, 0, dungeonMap)
+        this.location = new RoomComponent(0, 0, dungeonMap)
         this.location.worldXRaw.setAnimMode("linea")
         this.location.worldYRaw.setAnimMode("linea")
 
@@ -173,10 +173,8 @@ class MapPlayer {
         this.yaw.set(yaw, time)
     }
 
-    getRoom(dungeon) {
-        let x = ~~((this.location.worldX + dungeonOffsetX) / 32);
-        let y = ~~((this.location.worldY + dungeonOffsetY) / 32);
-        return dungeon.rooms.get(x + ',' + y)
+    getRoom() {
+        return this.dungeonMap.getRoomAt(this.location.worldX, this.location.worldY)
     }
 
     drawAt(x, y, w, h, showIcons = false, rotation = 0, borderWidth = 2) {
@@ -199,27 +197,35 @@ class MapPlayer {
                 Renderer.drawRect(Renderer.color(this.playerColor[0] ?? 0, this.playerColor[1] ?? 0, this.playerColor[2] ?? 0, this.playerColor[3] ?? 255), -w / 2 - borderWidth * w / 30, -h / 2 - borderWidth * w / 30, w + borderWidth * 2 * w / 30, h + borderWidth * 2 * w / 30)
             }
 
-            GlStateManager[m.enableBlend]()
-            Client.getMinecraft()[m.getTextureManager]()[m.bindTexture.TextureManager](this.networkPlayerInfo[m.getLocationSkin.NetworkPlayerInfo]())
-            GlStateManager[m.enableTexture2D]()
+            Tessellator.enableBlend()
+            //                   .getTextureManager().bindTexture                     .getLocationSkin
+            Client.getMinecraft().func_110434_K().func_110577_a(this.networkPlayerInfo.func_178837_g())
+            Tessellator.enableTexture2D()
 
-            let tessellator = MCTessellator[m.getInstance.Tessellator]()
-            let worldRenderer = tessellator[m.getWorldRenderer]()
-            worldRenderer[m.begin](7, DefaultVertexFormats[f.POSITION_TEX])
+            //                             .getInstance()
+            let tessellator = MCTessellator.func_178181_a()
+            //                             .getWorldRenderer()
+            let worldRenderer = tessellator.func_178180_c()
+            //           .begin                                .POSITION_TEX
+            worldRenderer.func_181668_a(7, DefaultVertexFormats.field_181707_g)
+            
+            //           .pos                              .tex                           .endVertex
+            worldRenderer.func_181662_b(-w / 2, h / 2, 0.0).func_181673_a(8 / 64, 16 / 64).func_181675_d()
+            worldRenderer.func_181662_b(w / 2, h / 2, 0.0).func_181673_a(16 / 64, 16 / 64).func_181675_d()
+            worldRenderer.func_181662_b(w / 2, -h / 2, 0.0).func_181673_a(16 / 64, 8 / 64).func_181675_d()
+            worldRenderer.func_181662_b(-w / 2, -h / 2, 0.0).func_181673_a(8 / 64, 8 / 64).func_181675_d()
+            //         .draw
+            tessellator.func_78381_a()
+            
+            //           .begin                                .POSITION_TEX
+            worldRenderer.func_181668_a(7, DefaultVertexFormats.field_181707_g)
 
-            worldRenderer[m.pos](-w / 2, h / 2, 0.0)[m.tex](8 / 64, 16 / 64)[m.endVertex]()
-            worldRenderer[m.pos](w / 2, h / 2, 0.0)[m.tex](16 / 64, 16 / 64)[m.endVertex]()
-            worldRenderer[m.pos](w / 2, -h / 2, 0.0)[m.tex](16 / 64, 8 / 64)[m.endVertex]()
-            worldRenderer[m.pos](-w / 2, -h / 2, 0.0)[m.tex](8 / 64, 8 / 64)[m.endVertex]()
-            tessellator[m.draw.Tessellator]()
-
-            worldRenderer[m.begin](7, DefaultVertexFormats[f.POSITION_TEX])
-
-            worldRenderer[m.pos](-w / 2, h / 2, 0.0)[m.tex](40 / 64, 16 / 64)[m.endVertex]()
-            worldRenderer[m.pos](w / 2, h / 2, 0.0)[m.tex](48 / 64, 16 / 64)[m.endVertex]()
-            worldRenderer[m.pos](w / 2, -h / 2, 0.0)[m.tex](48 / 64, 8 / 64)[m.endVertex]()
-            worldRenderer[m.pos](-w / 2, -h / 2, 0.0)[m.tex](40 / 64, 8 / 64)[m.endVertex]()
-            tessellator[m.draw.Tessellator]()
+            worldRenderer.func_181662_b(-w / 2, h / 2, 0.0).func_181673_a(40 / 64, 16 / 64).func_181675_d()
+            worldRenderer.func_181662_b(w / 2, h / 2, 0.0).func_181673_a(48 / 64, 16 / 64).func_181675_d()
+            worldRenderer.func_181662_b(w / 2, -h / 2, 0.0).func_181673_a(48 / 64, 8 / 64).func_181675_d()
+            worldRenderer.func_181662_b(-w / 2, -h / 2, 0.0).func_181673_a(40 / 64, 8 / 64).func_181675_d()
+            //         .draw
+            tessellator.func_78381_a()
         }
         Renderer.retainTransforms(false)
         Tessellator.popMatrix()

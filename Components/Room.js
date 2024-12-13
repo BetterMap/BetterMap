@@ -1,13 +1,15 @@
-import { m } from "../../mappings/mappings.js"
 import DungeonRoomData from "../Data/DungeonRoomData.js"
 import settings from "../Extra/Settings/CurrentSettings.js"
 import CurrentSettings from "../Extra/Settings/CurrentSettings.js"
 import { drawBoxAtBlock } from "../Utils/renderUtils.js"
-import { firstLetterCapital } from "../Utils/Utils.js"
+import RoomComponent from "../Utils/RoomComponent.js"
+import { Checkmark, chunkLoaded, firstLetterCapital, rotateCoords } from "../Utils/Utils.js"
+import MapPlayer from "./MapPlayer.js"
 import { createEvent, RoomEvents, toDisplayString } from "./RoomEvent.js"
 
 class Room {
 
+    // Room and Door Types
     static SPAWN = 0
     static NORMAL = 1
     static PUZZLE = 2
@@ -18,21 +20,21 @@ class Room {
     static TRAP = 7
     static BLACK = 8 // For wither door only
 
-    static FAILED = -1;
-    static UNOPENED = 0;
-    static ADJACENT = 1;
-    static OPENED = 2;
-    static CLEARED = 3;
-    static COMPLETED = 4;
+    // Checkmarks
+    // static FAILED = -1;
+    // static UNOPENED = 0;
+    // static ADJACENT = 1;
+    // static OPENED = 2;
+    // static CLEARED = 3;
+    // static COMPLETED = 4;
 
     /**
      * Creates a room based on a type, components, and a room id
      * @param {Any} dungeon 
      * @param {Number} type 
-     * @param {Array<Position>} components 
-     * @param {String} roomId 
+     * @param {Array<RoomComponent>} components 
      */
-    constructor(dungeon, type, components, roomId) {
+    constructor(dungeon, type, components, roofHeight=null) {
         /**
          * @type {Array<Door>}
          */
@@ -41,14 +43,22 @@ class Room {
 
         this.dungeon = dungeon
 
+        this.name = null
         this.type = type
         this.components = components
+        this.sortComponents()
+        this.components.forEach(component => this.dungeon.rooms.set(component, this))
+
         this.width = 30;
         this.height = 30;
         this.minX = null;
         this.minY = null;
         this.shape = this.findShape()
-        this.rotation = this.findRotation();
+        this.rotation = null
+        this.roofHeight = roofHeight
+        this.cores = []
+        
+        this.findRotationAndCorner();
 
         /**
          * -1 -> failed
@@ -58,26 +68,53 @@ class Room {
          * 3 -> white tick
          * 4 -> green tick
          */
-        this._checkmarkState = 0
+        this._checkmarkState = Checkmark.NONE
 
-        this.maxSecrets = undefined
+        this.maxSecrets = 0
         this._currentSecrets = undefined
+        this.currentSecrets = 0
+        
 
 
         // Room data from the room id
         this.data = undefined
 
-        this._roomId = undefined
-        this.roomId = roomId
+    }
+
+    /**
+     * Loads this room's room data
+     * @param {Object} roomData 
+     */
+    setRoomData(roomData) {
+        this.data = roomData
+        this.name = roomData.name
+        this.type = this.getTypeFromString(this.data.type)
+        this.maxSecrets = this.data.secrets
+        this.cores = roomData.cores
+    }
+
+    /**
+     * Loads the room data for this room from it's core
+     * @param {Number} core 
+     * @returns 
+     */
+    loadFromCore(core) {
+        let roomData = DungeonRoomData.getDataFromCore(core)
+        if (!roomData) return false
+
+        this.setRoomData(roomData)
+        return true
     }
 
     set checkmarkState(val) {
-        if (this.checkmarkState !== val) {
+        // Checkmark changed to either Whiteo or Green
+        if (this.checkmarkState !== val && val !== Checkmark.GRAY && val !== Checkmark.NONE) {
             this.addEvent(RoomEvents.CHECKMARK_STATE_CHANGE, this.checkmarkState, val)
 
-            if ((this._checkmarkState === Room.OPENED || this._checkmarkState === Room.UNOPENED)
-                && (val === Room.CLEARED || val === Room.COMPLETED)
-                && this.type !== Room.FAIRY && this.type !== Room.SPAWN) {
+            const old = this._checkmarkState
+            const newlyCheckmarked = (old == Checkmark.NONE || old == Checkmark.GRAY) && (val == Checkmark.WHITE || val == Checkmark.GREEN)
+
+            if (newlyCheckmarked && this.type !== Room.FAIRY && this.type !== Room.SPAWN) {
                 let players = this.getPlayersInRoom()
 
                 players.forEach(p => {
@@ -105,20 +142,24 @@ class Room {
         return this._currentSecrets
     }
 
-    addComponents(newComponents) {
-
-        let parts = []
-        this.components.forEach(c => parts.push(c.arrayX + ',' + c.arrayY));
-
-        this.components.push(newComponents)
-        this.shape = this.findShape()
-        this.rotation = this.findRotation();
+    sortComponents() {
+        this.components.sort((a, b) => a.posIndex - b.posIndex)
     }
+    
+    /**
+     * 
+     * @param {RoomComponent} component 
+     */
+    addComponent(component) {
+        if (this.components.includes(component)) return
 
-    addDoor(newDoor) {
-        this.adjacentDoors.push(newDoor);
+        this.components.push(component)
+        this.sortComponents()
+
         this.shape = this.findShape()
-        this.rotation = this.findRotation()
+        this.findRotationAndCorner();
+
+        this.dungeon.rooms.set(component, this)
     }
 
     /**
@@ -142,140 +183,44 @@ class Room {
         return "L"
     }
 
-    findRotation() {
-        if (this.type === Room.FAIRY) return 1;
+    findRotationAndCorner() {
+        // Roof height is needed to find stained clay
+        if (!this.roofHeight) return
 
-        // Commented out stuff gets the room rotation differently to whatever soopy decided on for his rotations ):
-        // Rotates the room the same way Hypixel does, getting the same result as if you were to scan the ceiling.
+        if (this.type == Room.FAIRY) {
+            this.rotation = 0
+            let x = this.components[0].worldX
+            let z = this.components[0].worldY
 
-        // let components = this.components.map(a => [a.arrayX, a.arrayY])
-        // const x = this.components.map(a => a.arrayX)
-        // const y = this.components.map(a => a.arrayY)
-        // const uniqueX = new Set(x).size
-        // const uniqueY = new Set(y).size
-
-        // // 2x2's never rotate
-        // if (this.shape == "2x2") return 1
-
-        // // Flat long room = not rotated, vertical = rotated 270 degrees
-        // if (["1x4", "1x3", "1x2"].includes(this.shape)) {
-        //     if (uniqueX == 1) return 1
-        //     if (uniqueY == 1) return 3
-        // }
-
-
-        // // L rooms
-        // if (this.shape == "L") {
-        //     // Finds the component with two adjacent components. The corner of the L.
-        //     let corner = components.find(([x1, y1]) => components.filter(([x2, y2])=>(y1 == y2 && (x1 == x2+1 || x1 == x2-1)) || (x1 == x2 && (y1 == y2+1 || y1 == y2-1))).length == 2)
-        //     let [cx, cy] = corner
-
-        //     const minx = Math.min(...x)
-        //     const maxx = Math.max(...x)
-        //     const miny = Math.min(...y)
-        //     const maxy = Math.max(...y)
-
-        //     if (cx == minx && cy == maxy) return 1 // Bottom Left
-        //     if (cx == maxx&& cy == maxy) return 2 // Bottom Right
-        //     if (cx == maxx&& cy == miny) return 3 // Top Right
-        //     if (cx == minx && cy == miny) return 4 // Top Left
-        // }
-
-        // // Only 1x1's left, not done yet
-
-        // if (this.shape == "1x1") {
-        //     // a
-        // }
-
-        // -------------------------
-
-
-        let minX = -1, maxX = -1, minY = -1, maxY = -1;
-        this.components.forEach((c) => {
-
-            if (minX < 0 || c.arrayX < minX) minX = c.arrayX;
-            if (maxX < 0 || c.arrayX > maxX) maxX = c.arrayX;
-            if (minY < 0 || c.arrayY < minY) minY = c.arrayY;
-            if (maxY < 0 || c.arrayY > maxY) maxY = c.arrayY;
-
-            if (!this.minX || this.minX > c.worldX) this.minX = c.worldX;
-            if (!this.minY || this.minY > c.worldY) this.minY = c.worldY;
-        });
-
-        let dx = maxX - minX;
-        let dy = maxY - minY;
-
-        this.width = 30 + 32 * dx;
-        this.height = 30 + 32 * dy;
-
-        if (dx > 0 && dy > 0) {
-            // 2x2
-            if (this.components.length === 4) return 1
-            if (this.components.length === 3) {
-                let parts = this.components.reduce((a, b) => [...a, b.arrayX + ',' + b.arrayY], [])
-
-                if (!parts.includes(minX + ',' + minY)) return 0
-                if (!parts.includes(minX + ',' + maxY)) return 3
-                if (!parts.includes(maxX + ',' + minY)) return 1
-                if (!parts.includes(maxX + ',' + maxY)) return 2
-                return -1;
-                // OH IT'S AN L ROOM
-            }
-        }
-        if (dx > 0) return 1
-        if (dy > 0) return 2
-        let roomX = minX;
-        let roomY = minY;
-        let doorLocations = this.adjacentDoors.map(a => `${a.position.arrayX},${a.position.arrayY}`)
-        let up = doorLocations.includes((roomX + 0.5) + ',' + (roomY));
-        let down = doorLocations.includes((roomX + 0.5) + ',' + (roomY + 1));
-        let right = doorLocations.includes((roomX + 1) + ',' + (roomY + 0.5));
-        let left = doorLocations.includes((roomX) + ',' + (roomY + 0.5));
-        // 1x1s, check door positions
-        // Do not ask me why
-        if (this.adjacentDoors.length === 4) return 1
-        if (this.adjacentDoors.length === 3) {
-            if (!left) return 3;
-            if (!right) return 1;
-            if (!up) return 0;
-            if (!down) return 2;
-        }
-        if (this.adjacentDoors.length === 1) {
-            // Dead end 
-            if (right) return 2;
-            else if (left) return 0;
-            else if (down) return 3;
-            else if (up) return 1;
+            this.corner = [x-15.5, 0, z-15.5]
+            return
         }
 
-        if (up && down) return 2;
-        if (left && right) return 1;
-        if (left && down) return 1;
-        if (up && left) return 2;
-        if (up && right) return 3;
-        if (right && down) return 0
+        const minX = Math.min(...this.components.map(a => a.worldX))
+        const maxX = Math.max(...this.components.map(a => a.worldX))
+        const minY = Math.min(...this.components.map(a => a.worldY))
+        const maxY = Math.max(...this.components.map(a => a.worldY))
 
-        return -1;
-    }
+        // Corners of the room, in clockwise order from top left
+        const spots = [
+            [minX - 15, minY - 15],
+            [maxX + 15, minY - 15],
+            [maxX + 15, maxY + 15],
+            [minX - 15, maxY + 15]
+        ]
 
-    get roomId() {
-        return this._roomId
-    }
-    /**@param {String} value */
-    set roomId(value) {
-        if (!value) return
+        for (let i = 0; i < spots.length; i++) {
+            let [x, z] = spots[i]
 
-        this._roomId = value.trim()
-        this.data = DungeonRoomData.getDataFromId(value.trim())
+            if (!chunkLoaded(x, this.roofHeight, z)) return
 
-        if (!this.data) return
-        let oldMax = this.maxSecrets
+            // Looking for blue stained hardened clay at the corner of the room
+            let block = World.getBlockAt(x, this.roofHeight, z)
+            if (block.type.getID() !== 159 || block.getMetadata() !== 11) continue
 
-        this.maxSecrets = this.data.secrets
-        this.currentSecrets = this.currentSecrets || 0
-
-        if (this.maxSecrets !== oldMax) {
-            this.addEvent(RoomEvents.SECRET_COUNT_CHANGE, (this.currentSecrets || 0) + "/" + (oldMax || "???"), (this.currentSecrets || 0) + "/" + this.maxSecrets)
+            this.rotation = i
+            this.corner = [x+0.5, 0, z+0.5]
+            return
         }
     }
 
@@ -287,8 +232,26 @@ class Room {
         this.roomEvents.push(createEvent(event, ...args))
     }
 
+    getTypeFromString(typeString) {
+        const types = {
+            "spawn": Room.SPAWN,
+            "normal": Room.NORMAL,
+            "mobs": Room.NORMAL,
+            "miniboss": Room.NORMAL,
+            "puzzle": Room.PUZZLE,
+            "gold": Room.MINIBOSS,
+            "fairy": Room.FAIRY,
+            "blood": Room.BLOOD,
+            "unknown": Room.UNKNOWN,
+            "trap": Room.TRAP,
+        }
+        
+        if (!(typeString in types)) return null
+
+        return types[typeString]
+    }
+
     setType(type) {
-        if (this.roomId) return
         this.type = type
     }
     /**
@@ -301,23 +264,28 @@ class Room {
         return this.checkmarkState >= Room.CLEARED;
     }
 
+    /**
+     * 
+     * @returns {MapPlayer[]}
+     */
     getPlayersInRoom() {
-        return this.dungeon.players.filter(p => p.getRoom(this.dungeon) === this)
+        return this.dungeon.players.filter(p => p.getRoom() === this)
     }
 
     getLore() {
         let roomLore = []
-        if (this.roomId) {
-            roomLore.push(this.data?.name || '???')
-            roomLore.push("&8" + (this.roomId || ""))
-            if (CurrentSettings.settings.devInfo) roomLore.push('&9Rotation: ' + (this.rotation || 'NONE'));
+
+        if (this.data) {
+            roomLore.push(this.name ?? '???')
+            // roomLore.push("&8" + (this.roomId || ""))
+            if (CurrentSettings.settings.devInfo) roomLore.push('&9Rotation: ' + (this.rotation ?? 'NONE'));
             if (this.data && this.data?.soul) roomLore.push("&dFAIRY SOUL!")
             if (this.maxSecrets) roomLore.push("Secrets: " + this.currentSecrets + ' / ' + this.maxSecrets)
             if (this.data?.crypts !== undefined && (this.type === Room.NORMAL || this.type === Room.MINIBOSS || this.type === Room.TRAP)) roomLore.push("Crypts: " + this.data.crypts)
             if (this.type === Room.NORMAL) roomLore.push("Ceiling Spiders: " + (this.data?.spiders ? "Yes" : "No"))
         }
         else {
-            roomLore.push('Unknown room!')
+            roomLore.push(this.name ?? 'Unknown room!')
             if (CurrentSettings.settings.devInfo) roomLore.push('&9Rotation: ' + (this.rotation > -1 ? this.rotation : 'NONE'));
         }
 
@@ -332,60 +300,58 @@ class Room {
         return roomLore
     }
 
-    toRoomCoords(px, py, pz) {
-        let { x, y, z } = this.rotateCoords(px, py, pz);
-        return { x: this.minX + x, y: y, z: this.minY + z };
+    /**
+     * Converts coordinates from the real world into relative, rotated room coordinates
+     * @param {[Number, Number, Number]} coord 
+     * @returns 
+     */
+    getRoomCoord(coord, ints=true) {
+        if (this.rotation == null || !this.corner) return null
+
+        const cornerCoord = ints ? this.corner.map(Math.floor) : this.corner
+        const roomCoord = rotateCoords(coord.map((v, i) => v - cornerCoord[i]), this.rotation)
+
+        if (ints) return roomCoord.map(Math.floor)
+        
+        return roomCoord
     }
 
-    getRelativeCoords(x, y, z) {
-        let dx = x - this.minX
-        let dy = y;
-        let dz = z - this.minY;
+    /**
+     * Converts relative room coords and inversely rotates and translates them to real world coordinates
+     * @param {[Number, Number, Number]} coord 
+     * @returns 
+     */
+    getRealCoord(coord, ints=true) {
+        if (this.rotation == null || !this.corner) return null
+    
+        const rotated = rotateCoords(coord, 4 - this.rotation)
+        const roomCorner = ints ? this.corner.map(Math.floor) : this.corner
+        const realCoord = rotated.map((v, i) => v + roomCorner[i])
+    
+        if (ints) return realCoord.map(Math.floor)
+    
+        return realCoord
 
-        // Rotate opposite direction
-        switch (this.rotation) {
-            case 2:
-                return { x: dz, y: dy, z: this.width - dx };
-            case 3:
-                return { x: this.width - dx, y: dy, z: this.height - dz };;
-            case 0:
-                return { x: this.height - dz, y: dy, z: dx };;
-            case 1:
-            default:
-                return { x: dx, y: dy, z: dz };
-        }
-    }
-
-    rotateCoords(x, y, z) {
-        switch (this.rotation) {
-            case 2:
-                return { x: this.width - z, y: y, z: x };
-            case 3:
-                return { x: this.width - x, y: y, z: this.height - z };
-            case 0:
-                return { x: z, y: y, z: this.height - x };
-            case 1:
-            // No break, default rotation
-            default:
-                return { x: x, y: y, z: z };
-        }
     }
 
     drawRoomSecrets() {
         if (!settings.settings.showSecrets) return
-        if (!this.data) return
+        if (!this.data || !this.corner) return
         // TODO: account for 3/1 room
-        if (this.currentSecrets === this.maxSecrets) return
+        if (this.currentSecrets >= this.maxSecrets) return
         if (!("secret_coords" in this.data)) return //ChatLib.chat("No Data!")
 
         // Every secret type in the room
         Object.entries(this.data.secret_coords).forEach(([type, secrets]) => {
             // Loop over every secret
-            secrets.forEach(([rx, ry, rz]) => {
-                let { x, y, z } = this.toRoomCoords(rx, ry, rz)
+            secrets.forEach((pos) => {
+                const secretPos = this.getRealCoord(pos)
+                if (!secretPos) return
+                let [ x, y, z ] = secretPos
+
                 if (this.dungeon.collectedSecrets.has(x + "," + y + "," + z)) return;
 
-                if (type == "chest") drawBoxAtBlock(x, y, z, 0, 1, 0, 1, 1)
+                if (type == "chest") drawBoxAtBlock(x+0.0625, y, z+0.0625, 0, 1, 0, 0.875, 0.875)
                 if (type == "item") drawBoxAtBlock(x + 0.25, y, z + 0.25, 0, 0, 1, 0.5, 0.5)
                 if (type == "wither") drawBoxAtBlock(x + 0.25, y, z + 0.25, 1, 0, 1, 0.5, 0.5)
                 if (type == "bat") drawBoxAtBlock(x + 0.25, y + 0.25, z + 0.25, 0, 1, 0, 0.5, 0.5)
@@ -393,36 +359,6 @@ class Room {
             });
         })
 
-        // this.data.secret_coords?.chest?.forEach(([rx, ry, rz]) => {
-        //     let { x, y, z } = this.toRoomCoords(rx, ry, rz);
-
-        //     if (this.dungeon.collectedSecrets.has(x + "," + y + "," + z)) return
-        //     drawBoxAtBlock(x, y, z, 0, 1, 0, 1, 1)
-        // });
-        // this.data.secret_coords?.item?.forEach(([rx, ry, rz]) => {
-        //     let { x, y, z } = this.toRoomCoords(rx, ry, rz);
-
-        //     if (this.dungeon.collectedSecrets.has(x + "," + y + "," + z)) return
-        //     drawBoxAtBlock(x + 0.25, y, z + 0.25, 0, 0, 1, 0.5, 0.5)
-        // });
-        // this.data.secret_coords?.wither?.forEach(([rx, ry, rz]) => {
-        //     let { x, y, z } = this.toRoomCoords(rx, ry, rz);
-
-        //     if (this.dungeon.collectedSecrets.has(x + "," + y + "," + z)) return
-        //     drawBoxAtBlock(x + 0.25, y, z + 0.25, 1, 0, 1, 0.5, 0.5)
-        // });
-        // this.data.secret_coords?.bat?.forEach(([rx, ry, rz]) => {
-        //     let { x, y, z } = this.toRoomCoords(rx, ry, rz);
-
-        //     if (this.dungeon.collectedSecrets.has(x + "," + y + "," + z)) return
-        //     drawBoxAtBlock(x + 0.25, y + 0.25, z + 0.25, 0, 1, 0, 0.5, 0.5)
-        // });
-        // this.data.secret_coords?.redstone_key?.forEach(([rx, ry, rz]) => {
-        //     let { x, y, z } = this.toRoomCoords(rx, ry, rz);
-
-        //     if (this.dungeon.collectedSecrets.has(x + "," + y + "," + z)) return
-        //     drawBoxAtBlock(x + 0.25, y, z + 0.25, 1, 0, 0, 0.5, 0.5)
-        // });
     }
 
     checkmarkStateToName(state = this.checkmarkState) {
@@ -448,16 +384,19 @@ class Room {
     static typeToColor(type) {
         return typeColor.get(type)
     }
+
+    toString() {
+        return `Room["${this.name || "Unknown"}", [${this.components.map(a => a.toString()).join(",")}], ${this.type}, rot=${this.rotation}]`
+    }
 }
 
 let checkmarkStateName = new Map()
 
-checkmarkStateName.set(Room.FAILED, "FAILED")
-checkmarkStateName.set(Room.UNOPENED, "UNOPENED")
-checkmarkStateName.set(Room.ADJACENT, "ADJACENT")
-checkmarkStateName.set(Room.OPENED, "OPENED")
-checkmarkStateName.set(Room.CLEARED, "CLEARED")
-checkmarkStateName.set(Room.COMPLETED, "COMPLETED")
+checkmarkStateName.set(Checkmark.FAILED, "FAILED")
+checkmarkStateName.set(Checkmark.GRAY, "GRAY")
+checkmarkStateName.set(Checkmark.NONE, "NONE")
+checkmarkStateName.set(Checkmark.WHITE, "WHITE")
+checkmarkStateName.set(Checkmark.GREEN, "GREEN")
 
 let typeName = new Map()
 typeName.set(Room.SPAWN, "SPAWN")

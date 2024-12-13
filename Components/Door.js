@@ -11,6 +11,18 @@ class Door {
 
         this.horizontal = horizontal
     }
+
+    getX() {
+        return this.position.worldX
+    }
+
+    getZ() {
+        return this.position.worldY
+    }
+
+    toString() {
+        return `Door[(${this.getX()}, ${this.getZ()}), (${this.position.arrayX}, ${this.position.arrayY}) ${this,this.type}]`
+    }
 }
 
 export default Door

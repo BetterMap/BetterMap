@@ -7,6 +7,7 @@ import MapRenderer from "../../Render/MapRenderer";
 import RenderContext from "../../Render/RenderContext";
 import RenderContextManager from "../../Render/RenderContextManager";
 import Position from "../../Utils/Position";
+import { Checkmark } from "../../Utils/Utils";
 import SettingGui from "./SettingGui";
 const AbstractClientPlayer = Java.type("net.minecraft.client.entity.AbstractClientPlayer")
 
@@ -112,279 +113,63 @@ class SettingsManager {
      */
     createFakeDungeon() {
         let dungeon = new DungeonMap("F7", new Set(), false);
-        {
-            let r = new Room(dungeon, 0, [new Position(-168, -200)], "102,66");
-            r.currentSecrets = 0
-            r.checkmarkState = 4;
-            dungeon.roomsArr.add(r);
-            r.components.forEach(c => {
-                dungeon.rooms.set(c.arrayX + "," + c.arrayY, r);
-            });
-        }
-        {
-            let r = new Room(dungeon, 1, [new Position(-168, -168), new Position(-168, -136), new Position(-136, -136)], "1050,-524");
-            r.currentSecrets = 2
-            r.checkmarkState = 3;
-            dungeon.roomsArr.add(r);
-            r.components.forEach(c => {
-                dungeon.rooms.set(c.arrayX + "," + c.arrayY, r);
-            });
-        }
-        {
-            let r = new Room(dungeon, 1, [new Position(-136, -104)], "498,-240");
-            r.currentSecrets = 0
-            r.checkmarkState = 3;
-            dungeon.roomsArr.add(r);
-            r.components.forEach(c => {
-                dungeon.rooms.set(c.arrayX + "," + c.arrayY, r);
-            });
-        }
-        {
-            let r = new Room(dungeon, 2, [new Position(-104, -136)], "-60,-600");
-            r.currentSecrets = 0
-            r.checkmarkState = 4;
-            dungeon.roomsArr.add(r);
-            r.components.forEach(c => {
-                dungeon.rooms.set(c.arrayX + "," + c.arrayY, r);
-            });
-        }
-        {
-            let r = new Room(dungeon, 1, [new Position(-104, -104)], "246,-60");
-            r.currentSecrets = 0
-            r.checkmarkState = 2;
-            dungeon.roomsArr.add(r);
-            r.components.forEach(c => {
-                dungeon.rooms.set(c.arrayX + "," + c.arrayY, r);
-            });
-        }
-        {
-            let r = new Room(dungeon, 4, [new Position(-136, -72)], "462,-312");
-            r.currentSecrets = 0
-            r.checkmarkState = 4;
-            dungeon.roomsArr.add(r);
-            r.components.forEach(c => {
-                dungeon.rooms.set(c.arrayX + "," + c.arrayY, r);
-            });
-        }
-        {
-            let r = new Room(dungeon, 5, [new Position(-200, -72)], undefined);
-            r.currentSecrets = undefined
-            r.checkmarkState = 2;
-            dungeon.roomsArr.add(r);
-            r.components.forEach(c => {
-                dungeon.rooms.set(c.arrayX + "," + c.arrayY, r);
-            });
-        }
-        {
-            let r = new Room(dungeon, 1, [new Position(-200, -40), new Position(-168, -40), new Position(-136, -40)], "530,-420");
-            r.currentSecrets = 0
-            r.checkmarkState = 3;
-            dungeon.roomsArr.add(r);
-            r.components.forEach(c => {
-                dungeon.rooms.set(c.arrayX + "," + c.arrayY, r);
-            });
-        }
-        {
-            let r = new Room(dungeon, 1, [new Position(-136, -200), new Position(-104, -200), new Position(-136, -168), new Position(-104, -168)], "166,-592");
-            r.currentSecrets = 1
-            r.checkmarkState = 3;
-            dungeon.roomsArr.add(r);
-            r.components.forEach(c => {
-                dungeon.rooms.set(c.arrayX + "," + c.arrayY, r);
-            });
-        }
-        {
-            let r = new Room(dungeon, 1, [new Position(-72, -168)], "66,-276");
-            r.currentSecrets = 1
-            r.checkmarkState = 4;
-            dungeon.roomsArr.add(r);
-            r.components.forEach(c => {
-                dungeon.rooms.set(c.arrayX + "," + c.arrayY, r);
-            });
-        }
-        {
-            let r = new Room(dungeon, 2, [new Position(-72, -200)], "-96,-168");
-            r.currentSecrets = 0
-            r.checkmarkState = 2;
-            dungeon.roomsArr.add(r);
-            r.components.forEach(c => {
-                dungeon.rooms.set(c.arrayX + "," + c.arrayY, r);
-            });
-        }
-        {
-            let r = new Room(dungeon, 1, [new Position(-40, -168)], "66,-240");
-            r.currentSecrets = 0
-            r.checkmarkState = 3;
-            dungeon.roomsArr.add(r);
-            r.components.forEach(c => {
-                dungeon.rooms.set(c.arrayX + "," + c.arrayY, r);
-            });
-        }
-        {
-            let r = new Room(dungeon, 2, [new Position(-40, -200)], "-60,-564");
-            r.currentSecrets = 0
-            r.checkmarkState = -1;
-            dungeon.roomsArr.add(r);
-            r.components.forEach(c => {
-                dungeon.rooms.set(c.arrayX + "," + c.arrayY, r);
-            });
-        }
-        {
-            let r = new Room(dungeon, 1, [new Position(-72, -136), new Position(-40, -136)], "574,-384");
-            r.currentSecrets = 3
-            r.checkmarkState = 4;
-            dungeon.roomsArr.add(r);
-            r.components.forEach(c => {
-                dungeon.rooms.set(c.arrayX + "," + c.arrayY, r);
-            });
-        }
-        {
-            let r = new Room(dungeon, 1, [new Position(-72, -104), new Position(-72, -72), new Position(-104, -72)], "438,-524");
-            r.currentSecrets = 0
-            r.checkmarkState = 2;
-            dungeon.roomsArr.add(r);
-            r.components.forEach(c => {
-                dungeon.rooms.set(c.arrayX + "," + c.arrayY, r);
-            });
-        }
-        {
-            let r = new Room(dungeon, 1, [new Position(-40, -104), new Position(-40, -72), new Position(-40, -40)]);
-            r.currentSecrets = 0
-            r.checkmarkState = 3;
-            dungeon.roomsArr.add(r);
-            r.components.forEach(c => {
-                dungeon.rooms.set(c.arrayX + "," + c.arrayY, r);
-            });
-        }
-        {
-            let r = new Room(dungeon, 6, [new Position(-104, -40)], undefined);
-            r.currentSecrets = undefined
-            r.checkmarkState = 1;
-            dungeon.roomsArr.add(r);
-            r.components.forEach(c => {
-                dungeon.rooms.set(c.arrayX + "," + c.arrayY, r);
-            });
-        }
-        {
-            let r = new Room(dungeon, 3, [new Position(-72, -40)], "174,66");
-            r.currentSecrets = 0
-            r.checkmarkState = 4;
-            dungeon.roomsArr.add(r);
-            r.components.forEach(c => {
-                dungeon.rooms.set(c.arrayX + "," + c.arrayY, r);
-            });
-        }
-        {
-            let r = new Room(dungeon, 1, [new Position(-200, -200), new Position(-200, -168), new Position(-200, -136), new Position(-200, -104)], "30,-456");
-            r.currentSecrets = 0
-            r.checkmarkState = 3;
-            dungeon.roomsArr.add(r);
-            r.components.forEach(c => {
-                dungeon.rooms.set(c.arrayX + "," + c.arrayY, r);
-            });
-        }
-        {
-            let r = new Room(dungeon, 1, [new Position(-168, -104)], "174,-132");
-            r.currentSecrets = 0
-            r.checkmarkState = 3;
-            dungeon.roomsArr.add(r);
-            r.components.forEach(c => {
-                dungeon.rooms.set(c.arrayX + "," + c.arrayY, r);
-            });
-        }
-        {
-            let r = new Room(dungeon, 7, [new Position(-168, -72)], "-312,30");
-            r.currentSecrets = 1
-            r.checkmarkState = 3;
-            dungeon.roomsArr.add(r);
-            r.components.forEach(c => {
-                dungeon.rooms.set(c.arrayX + "," + c.arrayY, r);
-            });
-        }
-        {
-            let d = new Door(1, new Position(-157, -173), 0);
-            dungeon.doors.set("-157,-173", d);
-        }
-        {
-            let d = new Door(1, new Position(-156.8000030517578, -172.8000030517578), false);
-            dungeon.doors.set("-156.8000030517578,-172.8000030517578", d);
-        }
-        {
-            let d = new Door(1, new Position(-172.8000030517578, -156.8000030517578), true);
-            dungeon.doors.set("-172.8000030517578,-156.8000030517578", d);
-        }
-        {
-            let d = new Door(1, new Position(-140.8000030517578, -156.8000030517578), true);
-            dungeon.doors.set("-140.8000030517578,-156.8000030517578", d);
-        }
-        {
-            let d = new Door(2, new Position(-108.80000305175781, -124.80000305175781), true);
-            dungeon.doors.set("-108.80000305175781,-124.80000305175781", d);
-        }
-        {
-            let d = new Door(1, new Position(-124.80000305175781, -108.80000305175781), false);
-            dungeon.doors.set("-124.80000305175781,-108.80000305175781", d);
-        }
-        {
-            let d = new Door(1, new Position(-108.80000305175781, -92.80000305175781), true);
-            dungeon.doors.set("-108.80000305175781,-92.80000305175781", d);
-        }
-        {
-            let d = new Door(4, new Position(-124.80000305175781, -76.80000305175781), false);
-            dungeon.doors.set("-124.80000305175781,-76.80000305175781", d);
-        }
-        {
-            let d = new Door(1, new Position(-124.80000305175781, -44.80000305175781), false);
-            dungeon.doors.set("-124.80000305175781,-44.80000305175781", d);
-        }
-        {
-            let d = new Door(5, new Position(-188.8000030517578, -44.80000305175781), false);
-            dungeon.doors.set("-188.8000030517578,-44.80000305175781", d);
-        }
-        {
-            let d = new Door(1, new Position(-76.80000305175781, -156.8000030517578), true);
-            dungeon.doors.set("-76.80000305175781,-156.8000030517578", d);
-        }
-        {
-            let d = new Door(2, new Position(-60.80000305175781, -172.8000030517578), false);
-            dungeon.doors.set("-60.80000305175781,-172.8000030517578", d);
-        }
-        {
-            let d = new Door(1, new Position(-44.80000305175781, -156.8000030517578), true);
-            dungeon.doors.set("-44.80000305175781,-156.8000030517578", d);
-        }
-        {
-            let d = new Door(2, new Position(-28.800003051757812, -172.8000030517578), false);
-            dungeon.doors.set("-28.800003051757812,-172.8000030517578", d);
-        }
-        {
-            let d = new Door(1, new Position(-28.800003051757812, -140.8000030517578), false);
-            dungeon.doors.set("-28.800003051757812,-140.8000030517578", d);
-        }
-        {
-            let d = new Door(1, new Position(-60.80000305175781, -108.80000305175781), false);
-            dungeon.doors.set("-60.80000305175781,-108.80000305175781", d);
-        }
-        {
-            let d = new Door(1, new Position(-28.800003051757812, -108.80000305175781), false);
-            dungeon.doors.set("-28.800003051757812,-108.80000305175781", d);
-        }
-        {
-            let d = new Door(6, new Position(-92.80000305175781, -44.80000305175781), false);
-            dungeon.doors.set("-92.80000305175781,-44.80000305175781", d);
-        }
-        {
-            let d = new Door(3, new Position(-60.80000305175781, -44.80000305175781), false);
-            dungeon.doors.set("-60.80000305175781,-44.80000305175781", d);
-        }
-        {
-            let d = new Door(1, new Position(-172.8000030517578, -92.80000305175781), true);
-            dungeon.doors.set("-172.8000030517578,-92.80000305175781", d);
-        }
-        {
-            let d = new Door(7, new Position(-156.8000030517578, -76.80000305175781), false);
-            dungeon.doors.set("-156.8000030517578,-76.80000305175781", d);
-        }
+        // [Room, secrets, checkmarkState]
+        const rooms = [
+            [new Room(dungeon, Room.SPAWN, [new Position(-168, -200)]), 0, Checkmark.GREEN],
+            [new Room(dungeon, Room.NORMAL, [new Position(-168, -168), new Position(-168, -136), new Position(-136, -136)]), 2, Checkmark.WHITE],
+            [new Room(dungeon, Room.NORMAL, [new Position(-136, -104)]), 0, Checkmark.WHITE],
+            [new Room(dungeon, Room.PUZZLE, [new Position(-104, -136)]), 0, Checkmark.GREEN],
+            [new Room(dungeon, Room.NORMAL, [new Position(-104, -104)]), 0, Checkmark.NONE],
+            [new Room(dungeon, Room.FAIRY, [new Position(-136, -72)]), 0, Checkmark.GREEN],
+            [new Room(dungeon, Room.BLOOD, [new Position(-200, -72)]), undefined, Checkmark.NONE],
+            [new Room(dungeon, Room.NORMAL, [new Position(-200, -40), new Position(-168, -40), new Position(-136, -40)]), 0, Checkmark.WHITE],
+            [new Room(dungeon, Room.NORMAL, [new Position(-136, -200), new Position(-104, -200), new Position(-136, -168), new Position(-104, -168)]), 1, Checkmark.WHITE],
+            [new Room(dungeon, Room.NORMAL, [new Position(-72, -168)]), 1, Checkmark.GREEN],
+            [new Room(dungeon, Room.PUZZLE, [new Position(-72, -200)]), 0, Checkmark.NONE],
+            [new Room(dungeon, Room.NORMAL, [new Position(-40, -168)]), 0, Checkmark.WHITE],
+            [new Room(dungeon, Room.PUZZLE, [new Position(-40, -200)]), 0, Checkmark.FAILED],
+            [new Room(dungeon, Room.NORMAL, [new Position(-72, -136), new Position(-40, -136)]), 3, Checkmark.GREEN],
+            [new Room(dungeon, Room.NORMAL, [new Position(-72, -104), new Position(-72, -72), new Position(-104, -72)]), 0, Checkmark.NONE],
+            [new Room(dungeon, Room.NORMAL, [new Position(-40, -104), new Position(-40, -72), new Position(-40, -40)]), 0, Checkmark.WHITE],
+            [new Room(dungeon, Room.UNKNOWN, [new Position(-104, -40)]), undefined, Checkmark.GRAY],
+            [new Room(dungeon, Room.MINIBOSS, [new Position(-72, -40)]), 0, Checkmark.GREEN],
+            [new Room(dungeon, Room.NORMAL, [new Position(-200, -200), new Position(-200, -168), new Position(-200, -136), new Position(-200, -104)]), 0, Checkmark.WHITE],
+            [new Room(dungeon, Room.NORMAL, [new Position(-168, -104)]), 0, Checkmark.WHITE],
+            [new Room(dungeon, Room.TRAP, [new Position(-168, -72)]), 1, Checkmark.WHITE],
+        ]
+        rooms.forEach(([room, secrets, checkmarkState]) => {
+            room.secrets = secrets
+            room.checkmarkState = checkmarkState
+            dungeon.addRoom(room)
+        })
+
+        const doors = [
+            new Door(Room.NORMAL, new Position(-157, -173), false),
+            new Door(Room.NORMAL, new Position(-156, -172), false),
+            new Door(Room.NORMAL, new Position(-172, -156), true),
+            new Door(Room.NORMAL, new Position(-140, -156), true),
+            new Door(Room.PUZZLE, new Position(-108, -124), true),
+            new Door(Room.NORMAL, new Position(-124, -108), false),
+            new Door(Room.NORMAL, new Position(-108, -92), true),
+            new Door(Room.FAIRY, new Position(-124, -76), false),
+            new Door(Room.NORMAL, new Position(-124, -44), false),
+            new Door(Room.BLOOD, new Position(-188, -44), false),
+            new Door(Room.NORMAL, new Position(-76, -156), true),
+            new Door(Room.PUZZLE, new Position(-60, -172), false),
+            new Door(Room.NORMAL, new Position(-44, -156), true),
+            new Door(Room.PUZZLE, new Position(-28, -172), false),
+            new Door(Room.NORMAL, new Position(-28, -140), false),
+            new Door(Room.NORMAL, new Position(-60, -108), false),
+            new Door(Room.NORMAL, new Position(-28, -108), false),
+            new Door(Room.UNKNOWN, new Position(-92, -44), false),
+            new Door(Room.MINIBOSS, new Position(-60, -44), false),
+            new Door(Room.NORMAL, new Position(-172, -92), true),
+            new Door(Room.TRAP, new Position(-156, -76), false),
+        ]
+
+        doors.forEach(door => {
+            dungeon.doors.set(door.position.arrayStr, door)
+        })
 
         return dungeon;
     }
@@ -395,7 +180,7 @@ class SettingsManager {
     addPlayersToDungeonPreview(dungeon) {
         if (dungeon.players.length !== 0) return true
 
-        let fun = AbstractClientPlayer.class.getDeclaredMethod("func_175155_b")
+        let fun = AbstractClientPlayer.class.getDeclaredMethod("func_175155_b") // getPlayerInfo
         fun.setAccessible(true)
         let info = fun.invoke(Player.getPlayer())
         if (!info) return false

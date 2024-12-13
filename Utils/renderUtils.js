@@ -1,4 +1,3 @@
-import { f, m } from "../../mappings/mappings";
 
 const { default: renderBeaconBeam2 } = require("../../BeaconBeam/index");
 const { numberWithCommas } = require("./Utils");
@@ -180,7 +179,7 @@ let ret = {
         GL11.glDisable(GL11.GL_TEXTURE_2D);
         GL11.glDisable(GL11.GL_DEPTH_TEST);
         GL11.glDepthMask(false);
-        GlStateManager[m.pushMatrix]()
+        Tessellator.pushMatrix()
 
 
         Tessellator.begin(GL11.GL_LINE_STRIP).colorize(colorR, colorG, colorB, a);
@@ -207,7 +206,7 @@ let ret = {
 
         Tessellator.draw();
 
-        GlStateManager[m.popMatrix]()
+        Tessellator.popMatrix()
         GL11.glEnable(GL11.GL_TEXTURE_2D);
         GL11.glEnable(GL11.GL_DEPTH_TEST);
         GL11.glDepthMask(true);
@@ -221,7 +220,7 @@ let ret = {
         GL11.glDisable(GL11.GL_TEXTURE_2D);
         GL11.glDisable(GL11.GL_DEPTH_TEST);
         GL11.glDepthMask(false);
-        GlStateManager[m.pushMatrix]()
+        Tessellator.pushMatrix()
 
 
         Tessellator.begin(GL11.GL_LINE_STRIP).colorize(colorR, colorG, colorB, a);
@@ -251,7 +250,7 @@ let ret = {
 
         Tessellator.draw();
 
-        GlStateManager[m.popMatrix]()
+        Tessellator.popMatrix()
         GL11.glEnable(GL11.GL_TEXTURE_2D);
         GL11.glEnable(GL11.GL_DEPTH_TEST);
         GL11.glDepthMask(true);
@@ -381,7 +380,7 @@ let ret = {
         renderBeaconBeam2(x, y, z, r, g, b, alpha, !phase)
     },
     drawCoolWaypoint(x, y, z, r, g, b, { name = "", showDist = !!name, phase = false }) {
-        let distToPlayerSq = (x - Player.getRenderX()) ** 2 + (y - (Player.getRenderY() + Player.getPlayer()[m.getEyeHeight]())) ** 2 + (z - Player.getRenderZ()) ** 2
+        let distToPlayerSq = (x - Player.getRenderX()) ** 2 + (y - (Player.getRenderY() + Player.getPlayer().func_70047_e())) ** 2 + (z - Player.getRenderZ()) ** 2
 
         let alpha = Math.min(1, Math.max(0, 1 - (distToPlayerSq - 10000) / 12500))
 
@@ -394,8 +393,8 @@ let ret = {
 
             let distRender = Math.min(distToPlayer, 50)
 
-            let loc5 = [Player.getRenderX() + (x + 0.5 - Player.getRenderX()) / (distToPlayer / distRender), (Player.getRenderY() + Player.getPlayer()[m.getEyeHeight]()) + (y + 2 + 20 * distToPlayer / 300 - (Player.getRenderY() + Player.getPlayer()[m.getEyeHeight]())) / (distToPlayer / distRender), Player.getRenderZ() + (z + 0.5 - Player.getRenderZ()) / (distToPlayer / distRender)]
-            let loc6 = [Player.getRenderX() + (x + 0.5 - Player.getRenderX()) / (distToPlayer / distRender), (Player.getRenderY() + Player.getPlayer()[m.getEyeHeight]()) + (y + 2 + 20 * distToPlayer / 300 - 10 * distToPlayer / 300 - (Player.getRenderY() + Player.getPlayer()[m.getEyeHeight]())) / (distToPlayer / distRender), Player.getRenderZ() + (z + 0.5 - Player.getRenderZ()) / (distToPlayer / distRender)]
+            let loc5 = [Player.getRenderX() + (x + 0.5 - Player.getRenderX()) / (distToPlayer / distRender), (Player.getRenderY() + Player.getPlayer().func_70047_e()) + (y + 2 + 20 * distToPlayer / 300 - (Player.getRenderY() + Player.getPlayer().func_70047_e())) / (distToPlayer / distRender), Player.getRenderZ() + (z + 0.5 - Player.getRenderZ()) / (distToPlayer / distRender)]
+            let loc6 = [Player.getRenderX() + (x + 0.5 - Player.getRenderX()) / (distToPlayer / distRender), (Player.getRenderY() + Player.getPlayer().func_70047_e()) + (y + 2 + 20 * distToPlayer / 300 - 10 * distToPlayer / 300 - (Player.getRenderY() + Player.getPlayer().func_70047_e())) / (distToPlayer / distRender), Player.getRenderZ() + (z + 0.5 - Player.getRenderZ()) / (distToPlayer / distRender)]
 
             if (name) Tessellator.drawString("§a" + name, loc5[0], loc5[1], loc5[2], 0, true, distRender / 300, false)
             if (showDist) Tessellator.drawString("§b(" + numberWithCommas(Math.round(distToPlayer)) + "m)", (name ? loc6[0] : loc5[0]), (name ? loc6[1] : loc5[1]), (name ? loc6[2] : loc5[2]), 0, false, distRender / 300, false)

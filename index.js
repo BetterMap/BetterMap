@@ -2,7 +2,6 @@
 /// <reference types="../CTAutocomplete" />
 /// <reference lib="es2015" />
 
-import { m } from "../mappings/mappings"
 import DungeonMap from "./Components/DungeonMap"
 import MapRenderer from "./Render/MapRenderer"
 import RenderContextManager from "./Render/RenderContextManager"
@@ -48,49 +47,50 @@ register("step", () => {
         }
     }
 
-    if (currentDungeonMap) {
-        if (Player.getX() < 0 && Player.getZ() < 0) { // Ensuring they are not in boss room
-            let mapData
-            try {
-                let item = Player.getInventory().getStackInSlot(8)
-                mapData = item.getItem()[m.getMapData](item.getItemStack(), World.getWorld())
-                if (mapData && !currentDungeonMap.mapId) {
-                    currentDungeonMap.mapId = item.getMetadata()
-                }
-            } catch (error) {
-                if (currentDungeonMap.mapId) {
-                    mapData = World.getWorld()[m.loadItemData](MapData.class, "map_" + currentDungeonMap.mapId)
-                }
-            }
+    if (!currentDungeonMap) return
 
-            if (mapData) {
-                currentDungeonMap.updateFromMap(mapData)
+    if (Player.getX() < 0 && Player.getZ() < 0) { // Ensuring they are not in boss room
+        
+        let mapData = null
+
+        try {
+            let item = Player.getInventory().getStackInSlot(8)
+            // getMapData
+            mapData = item.getItem().func_77873_a(item.getItemStack(), World.getWorld())
+            if (mapData && !currentDungeonMap.mapId) {
+                currentDungeonMap.mapId = item.getMetadata()
             }
-            if (!mapData || !currentDungeonMap.dungeonTopLeft) {
-                currentDungeonMap.updateFromWorld();
+        } catch (error) {
+            if (currentDungeonMap.mapId) {
+                // loadItemData
+                mapData = World.getWorld().func_72943_a(MapData.class, "map_" + currentDungeonMap.mapId)
             }
         }
 
-        currentDungeonMap.updatePuzzles();
-        currentDungeonMap.updateTabInfo();
+        if (mapData) {
+            currentDungeonMap.updateFromMap(mapData)
+        }
     }
+
+    currentDungeonMap.updatePuzzles();
+    currentDungeonMap.updateTabInfo();
 }).setFps(5)
 
 register("packetReceived", (packet) => {
     if (currentDungeonMap && !currentDungeonMap.mapId) {
-        currentDungeonMap.mapId = packet[m.getMapId]()
+        // getMapId
+        currentDungeonMap.mapId = packet.func_149188_c()
     }
-}).setFilteredClasses([net.minecraft.network.play.server.S34PacketMaps])
+}).setFilteredClass(net.minecraft.network.play.server.S34PacketMaps)
 
 register("step", () => {
     if (!currentDungeonMap)
         return;
     currentDungeonMap.updatePlayers()
-    currentDungeonMap.identifyCurrentRoom();
 }).setFps(1)
+
 register("step", () => {
-    if (!currentDungeonMap)
-        return;
+    if (!currentDungeonMap) return;
     currentDungeonMap.syncPlayersThruSocket()
 }).setFps(3)
 
@@ -217,8 +217,8 @@ register("renderWorld", () => {
     if (settings.settings.boxDoors && !currentDungeonMap.bloodOpen) {
         let isOpenable = currentDungeonMap.keys >= 1
         currentDungeonMap.witherDoors.forEach(door => {
-            let x = door.position.worldX - door.position.worldX % 8 - 2 // Round to nearest door location, incase map is too low quality to get exact block
-            let y = door.position.worldY - door.position.worldY % 8 - 2
+            let x = door.position.worldX - 1 // Round to nearest door location, incase map is too low quality to get exact block
+            let y = door.position.worldY - 1
 
             drawBoxAtBlock(x, 69, y, isOpenable ? 0 : 1, isOpenable ? 1 : 0, 0, 3, 4)
         })

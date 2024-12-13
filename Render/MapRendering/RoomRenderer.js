@@ -1,11 +1,12 @@
 import renderLibs from "../../../guimanager/renderLibs.js"
 import Room from "../../Components/Room.js"
+import { Checkmark } from "../../Utils/Utils.js"
 import RenderContext from "./../RenderContext.js"
 
 const barrier_block_item = new Item("minecraft:barrier")
 const puzzleItems = {
     "Water Board": new Item("minecraft:water_bucket"),
-    "Higher Or Lower": new Item("minecraft:blaze_powder"),
+    "Blaze": new Item("minecraft:blaze_powder"),
     "Quiz": new Item("minecraft:book"),
     "Three Weirdos": new Item("minecraft:chest"),
     "Tic Tac Toe": new Item("minecraft:shears"),
@@ -18,11 +19,10 @@ const puzzleItems = {
 }
 
 const checkmarkStateToName = new Map()
-checkmarkStateToName.set(-1, "failedRoom")
-checkmarkStateToName.set(1, "questionMark")
-checkmarkStateToName.set(3, "whiteCheck")
-checkmarkStateToName.set(4, "greenCheck")
-checkmarkStateToName.set(5, "failedRoom")
+checkmarkStateToName.set(Checkmark.FAILED, "failedRoom")
+checkmarkStateToName.set(Checkmark.GRAY, "questionMark")
+checkmarkStateToName.set(Checkmark.WHITE, "whiteCheck")
+checkmarkStateToName.set(Checkmark.GREEN, "greenCheck")
 
 const Color = Java.type('java.awt.Color');
 const Font = Java.type('java.awt.Font');
@@ -81,23 +81,26 @@ class RoomRenderer {
     drawCheckmark(context, graphics, room) {
         //spawn room wont get checkmarked
         if (room.type === Room.SPAWN) return;
+        if (room.type == Room.BLOOD && room.checkmarkState == Checkmark.FAILED) return
         //puzzle checkmarks are drawn in drawPuzzle
         if (room.type === Room.PUZZLE) {
             if (context.puzzleNames === 'text') return;
-            if (context.puzzleNames === 'icon' && !(room.checkmarkState === Room.COMPLETED || room.checkmarkState === Room.FAILED)) return;
+            if (context.puzzleNames === 'icon' && !(room.checkmarkState === Checkmark.GREEN || room.checkmarkState === Checkmark.FAILED)) return;
         } else {
             //dont show checkmarks if all rooms are rendered by name
             if (context.showSecretCount === 'always') {
                 if (!context.checkmarkCompleteRooms) return;
-                if (context.checkmarkCompleteRooms && room.checkmarkState !== Room.COMPLETED) return;
+                if (context.checkmarkCompleteRooms && room.checkmarkState !== Checkmark.GREEN) return;
             }
             if (context.showSecretCount === 'hasSecrets' && room.maxSecrets > 0) {
                 if (!context.checkmarkCompleteRooms) return;
-                if (context.checkmarkCompleteRooms && room.checkmarkState !== Room.COMPLETED) return;
+                if (context.checkmarkCompleteRooms && room.checkmarkState !== Checkmark.GREEN) return;
             }
         }
         //room names are rendered in drawExtras 
         if (context.tickStyle === 'roomnames') return;
+
+        if (room.checkmarkState == Checkmark.NONE) return
 
 
         let location = [room.components[0].arrayX, room.components[0].arrayY];
@@ -123,20 +126,19 @@ class RoomRenderer {
             let fontSize = 24 * context.iconScale / 10 || 24;
             let teniosFont = new Font('Dialog', Font.BOLD, fontSize);
             graphics.setFont(teniosFont);
-            if (room.checkmarkState >= Room.CLEARED) {
-                if (room.checkmarkState >= Room.COMPLETED) {
+            if (room.checkmarkState >= Checkmark.WHITE) {
+                if (room.checkmarkState >= Checkmark.GREEN) {
                     graphics.setColor(green);
                 } else {
                     graphics.setColor(gray);
                 }
                 graphics.drawString('✔', location[0] * context.blockSize + (context.roomSize - fontSize) / 2 + 4, location[1] * context.blockSize + context.roomSize - (context.roomSize - fontSize) / 2);
-            } else if (room.checkmarkState === Room.ADJACENT) {
+            } else if (room.checkmarkState === Checkmark.NONE) {
                 graphics.setColor(black);
                 graphics.drawString('?', location[0] * context.blockSize + context.roomSize / 3 * 2 - fontSize / 3 - 1, location[1] * context.blockSize + context.roomSize - (context.roomSize - fontSize) / 2);
             }
             //checkmark done
-            if (room.checkmarkState !== Room.FAILED)
-                return;
+            if (room.checkmarkState !== Checkmark.FAILED) return;
         }
 
         const getX = (w) => (context.roomGap + context.roomSize - w) / 2 + context.blockSize * location[0]
@@ -165,17 +167,17 @@ class RoomRenderer {
 
         let scale = context.size / 250 * context.iconScale / 8
         let textScale = context.size / 250 * context.textScale / 8
-        if (context.puzzleNames === "text" || (context.puzzleNames === 'icon' && context.tickStyle === 'roomnames' && (room.checkmarkState === Room.COMPLETED || room.checkmarkState === Room.FAILED)) || context.puzzleNames === 'none' && context.tickStyle === 'roomnames') {
-            let text = room.data?.name?.split(" ") || ["???"]
+        if (context.puzzleNames === "text" || (context.puzzleNames === 'icon' && context.tickStyle === 'roomnames' && (room.checkmarkState === Checkmark.GREEN || room.checkmarkState === Checkmark.FAILED)) || context.puzzleNames === 'none' && context.tickStyle === 'roomnames') {
+            let text = room.name?.split(" ") || ["???"]
             let textColor = ""
             switch (room.checkmarkState) {
-                case Room.CLEARED:
+                case Checkmark.WHITE:
                     textColor = "&f"
                     break;
-                case Room.COMPLETED:
+                case Checkmark.GREEN:
                     textColor = "&a"
                     break;
-                case Room.FAILED:
+                case Checkmark.FAILED:
                     textColor = "&c"
                     break;
                 default:
@@ -203,8 +205,8 @@ class RoomRenderer {
         } else if (context.puzzleNames === "icon") {
             if (context.tickStyle === 'secrets') return;
             //dont draw icons if checkmark or fail
-            if (room.checkmarkState === Room.FAILED || room.checkmarkState === Room.COMPLETED) return;
-            let icon = puzzleItems[room.data?.name] || barrier_block_item
+            if (room.checkmarkState === Checkmark.FAILED || room.checkmarkState === Checkmark.GREEN) return;
+            let icon = puzzleItems[room.name] || barrier_block_item
 
             let iconScale = scale * 1.75
             icon.draw(x - 8 * iconScale, y - 8 * iconScale, iconScale)
@@ -222,7 +224,7 @@ class RoomRenderer {
 
         drawSecretCount = (location) => {
             if (context.showSecretCount === 'never') return;
-            if (context.checkmarkCompleteRooms && room.checkmarkState === Room.COMPLETED) return;
+            if (context.checkmarkCompleteRooms && room.checkmarkState === Checkmark.GREEN) return;
             if (context.showSecretCount === 'hasSecrets' && !room.maxSecrets > 0) return;
 
             let x = (context.roomGap / 2 + context.blockSize * location[0] + context.roomSize / 2 + context.borderWidth + context.paddingLeft) / context.getImageSize(dungeon.floor)
@@ -241,19 +243,19 @@ class RoomRenderer {
 
             let textColored = ""
             switch (room.checkmarkState) {
-                case Room.ADJACENT:
+                case Checkmark.NONE:
                     textColored = (context.mapStyle === 'teniosmap' ? "&0" : "&7") + text
                     break;
-                case Room.CLEARED:
+                case Checkmark.WHITE:
                     textColored = "&f" + text
                     break;
-                case Room.COMPLETED:
+                case Checkmark.GREEN:
                     textColored = "&a" + text
                     break;
-                case Room.FAILED:
+                case Checkmark.FAILED:
                     textColored = "&c" + text
                     break;
-                case Room.OPENED:
+                case Checkmark.NONE:
                 default:
                     textColored = (context.mapStyle === 'teniosmap' ? "&0" : "&8") + text
                     break;
@@ -279,10 +281,10 @@ class RoomRenderer {
             if (context.tickStyle !== 'roomnames') return;
             if (context.showSecretCount === 'always') {
                 if (!context.checkmarkCompleteRooms) return;
-                if (context.checkmarkCompleteRooms && room.checkmarkState !== Room.COMPLETED) return;
+                if (context.checkmarkCompleteRooms && room.checkmarkState !== Checkmark.GREEN) return;
             }
             if (context.showSecretCount === 'hasSecrets') {
-                if (room.maxSecrets > 0 && (!context.checkmarkCompleteRooms || room.checkmarkState !== Room.COMPLETED)) return;
+                if (room.maxSecrets > 0 && (!context.checkmarkCompleteRooms || room.checkmarkState !== Checkmark.GREEN)) return;
             }
 
             let x = (context.roomGap / 2 + context.blockSize * location[0] + context.roomSize / 2 + context.borderWidth + context.paddingLeft) / context.getImageSize(dungeon.floor)
@@ -292,16 +294,16 @@ class RoomRenderer {
             y = context.posY + y * (context.size - context.borderWidth) + context.borderWidth
 
             let scale = context.size / 250 * context.textScale / 8
-            let text = room.data?.name?.split(" ") || ["???"]
+            let text = room.name?.split(" ") || ["???"]
             let textColor = ""
             switch (room.checkmarkState) {
-                case Room.CLEARED:
+                case Checkmark.WHITE:
                     textColor = "&f"
                     break;
-                case Room.COMPLETED:
+                case Checkmark.GREEN:
                     textColor = "&a"
                     break;
-                case Room.FAILED:
+                case Checkmark.FAILED:
                     textColor = "&c"
                     break;
                 default:
@@ -360,7 +362,8 @@ class RoomRenderer {
     getRenderColor(context, room) {
         if (context.mapStyle === 'teniosmap') {
             return context.colorMap.get(room.data?.type || teniosRoomMap[room.type])
-        } else if (context.mapStyle === 'custom') {
+        }
+        if (context.mapStyle === 'custom') {
             switch (room.data?.type || teniosRoomMap[room.type]) {
                 case 'spawn': return new Color(Renderer.color(...context.customRoomColorSpawn), true);
                 case 'mobs': return new Color(Renderer.color(...context.customRoomColorNormal), true);
@@ -376,9 +379,10 @@ class RoomRenderer {
                 case 'unknown': return new Color(Renderer.color(...context.customRoomColorUnknown), true);
             }
         }
-        else {
-            return context.colorMap.get(room.type)
-        }
+
+        if (!context.colorMap.has(room.type)) return new Color(Renderer.color(107, 58, 17, 255))
+
+        return context.colorMap.get(room.type)
     }
 
 }

@@ -549,7 +549,8 @@ class RenderContext {
      * Prepairs this render context for garbage collection, eg clearing cached map image from memory
      */
     destroy() {
-        this.image?.getTexture()?.[m.deleteGlTexture]()
+        //                      deleteGlTexture
+        this.image?.getTexture()?.func_147631_c()
         this.image = undefined
 
         this.onDestroys.forEach(fun => fun())
@@ -581,7 +582,7 @@ let roomHash = {
     UNKNOWN: 6,
     TRAP: 7,
     BLACK: 8, // For rendering wither doors
-    NORMAL_CONNECTION: 9 // For rendering connections between normal rooms
+    NORMAL_CONNECTION: 9, // For rendering connections between normal rooms
 }
 
 const Color = Java.type("java.awt.Color")

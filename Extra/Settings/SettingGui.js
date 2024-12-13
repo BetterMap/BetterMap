@@ -271,6 +271,8 @@ class SettingGui {
         this.addDropdown("Player names on map", {
             "never": "Never",
             "leap": "Holding Leaps",
+            "haunt": "Holding Haunt",
+            "leap-haunt": "Holding Leaps or Haunt",
             "always": "Always"
         }, "playerNames", this.currentSettings.playerNames)
 

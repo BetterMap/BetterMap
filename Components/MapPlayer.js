@@ -270,10 +270,18 @@ class MapPlayer {
 
         let showNametag = renderContext.playerNames === "always"
 
-        if (renderContext.playerNames === "leap") {
-            let id = getSBID(Player.getHeldItem())
+        let heldItemId = getSBID(Player.getHeldItem())
 
-            if (id === "SPIRIT_LEAP" || id === "INFINITE_SPIRIT_LEAP") showNametag = true
+        switch (renderContext.playerNames) {
+            case "leap":
+                if (heldItemId === "SPIRIT_LEAP" || heldItemId === "INFINITE_SPIRIT_LEAP") showNametag = true
+                break;
+            case "haunt":
+                if (heldItemId === "HAUNT_ABILITY") showNametag = true
+                break;
+            case "leap-haunt":
+                if (heldItemId === "SPIRIT_LEAP" || heldItemId === "INFINITE_SPIRIT_LEAP" || heldItemId === "HAUNT_ABILITY") showNametag = true
+                break;
         }
 
         if (showNametag) {

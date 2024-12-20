@@ -54,6 +54,7 @@ class MapRenderer {
 
         scoreInfoLore.push(`&fTotal score: &b${scoreInfo.total}`)
         scoreInfoLore.push(`&fSkill score: &a${scoreInfo.skill}`)
+        scoreInfoLore.push(`&fSpeed score: &a${scoreInfo.time}`)
         scoreInfoLore.push(`&fExploration score: &a${scoreInfo.exploration}`)
         scoreInfoLore.push(`&fBonus score: &a${scoreInfo.bonus}`)
         scoreInfoLore.push(`&f`)

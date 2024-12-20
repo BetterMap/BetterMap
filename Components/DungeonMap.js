@@ -135,6 +135,11 @@ class DungeonMap {
             })
         }).setChatCriteria("&r&9Party &8> ${msg}"))
 
+				this.dungeonStart = 0
+				register("chat", () => {
+					 this.dungeonStart = Math.floor(Date.now() / 1000)
+				}).setCriteria("Mort: Here, I found this map when I first entered the dungeon").setContains();
+
         // this.triggers.push(register("command", () => {
         //     this.roomsArr.forEach(room => ChatLib.chat(room.toString()))
         // }).setName("sayrooms"))
@@ -1148,7 +1153,11 @@ class DungeonMap {
         if (Date.now() - this.cachedScore.time < 500) return this.cachedScore.data
 
         let exploration = 0;
-        let time = 100; // TODO:  Figure out how to actually do this one
+
+        let time = 12; 
+        let floortime = 0;
+        let runtime = 0;
+        
         let skill = 0;
         let bonus = 0;
 
@@ -1169,7 +1178,39 @@ class DungeonMap {
         exploration += Math.min(60, ~~(completedRooms / totalRoomEstimate * 60));
 
         // Time
-        // NOPE
+        // Community wiki is maybe wrong and there is no article on the official one,
+        // so the score is calculated in the same way Skytils dose it. 
+        // https://github.com/Skytils/SkytilsMod/blob/1.x/src/main/kotlin/gg/skytils/skytilsmod/features/impl/dungeons/ScoreCalculation.kt#L168
+        runtime = Math.round(Date.now() / 1000 - this.dungeonStart)
+
+        if (this.floor == "F6" || this.floor == "F4") {
+            floortime = runtime - 240
+        } else if (this.floor == "F7" || this.floor == "M7") {
+            floortime = runtime - 360
+        }  else if (this.floorNumber >= 3 || this.floor == "F5" || this.floor == "M6") {
+            floortime = runtime - 120
+        } else if (this.floor == "M1" || this.floor == "M2" || this.floor == "M3" || this.floor == "M4" || this.floor == "M5") {
+            floortime = runtime
+        }
+
+        if (floortime < 480) {
+            time = 100
+        } else if (floortime >= 480 && floortime < 600) {
+            time = 140 - floortime/12
+        } else if (floortime >= 600 && floortime < 840) {
+            time = 115 - floortime/24
+        } else if (floortime >= 840 && floortime < 1140) {
+            time = 108 - floortime/30
+        } else if (floortime >= 1140 && floortime < 3940) {
+            time = 98.5 - floortime/40
+        } else {
+            time = 0
+        }
+        
+        if (this.dungeonStart < 1700000000) { // For example if BetterMap is reloaded, or if something just breaks.
+            time = 100
+        }
+        time = Math.round(time)
 
         // Skill
         skill += ~~(completedRooms / totalRoomEstimate * 80) - unfinshedPuzzles * 10;

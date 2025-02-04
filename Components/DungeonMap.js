@@ -5,7 +5,7 @@ import Room from "./Room.js"
 import { getScoreboardInfo, getTabListInfo, getRequiredSecrets } from "../Utils/Score"
 import Door from "./Door.js"
 import DungeonRoomData from "../Data/DungeonRoomData.js"
-import { changeScoreboardLine, dungeonOffsetX, dungeonOffsetY, MESSAGE_PREFIX, MESSAGE_PREFIX_SHORT, renderLore, getPlayerName, getCore, getHighestBlock, getComponentFromPos, Checkmark, chunkLoaded } from "../Utils/Utils.js"
+import { changeScoreboardLine, dungeonOffsetX, dungeonOffsetY, MESSAGE_PREFIX, MESSAGE_PREFIX_SHORT, renderLore, getPlayerName, getCore, getHighestBlock, getComponentFromPos, Checkmark, chunkLoaded, offset, oscale } from "../Utils/Utils.js"
 import socketConnection from "../socketConnection.js"
 import DataLoader from "../Utils/DataLoader.js"
 import { fetch } from "../Utils/networkUtils.js"
@@ -140,9 +140,9 @@ class DungeonMap {
 					 this.dungeonStart = Math.floor(Date.now() / 1000)
 				}).setCriteria("Mort: Here, I found this map when I first entered the dungeon").setContains();
 
-        // this.triggers.push(register("command", () => {
-        //     this.roomsArr.forEach(room => ChatLib.chat(room.toString()))
-        // }).setName("sayrooms"))
+        //this.triggers.push(register("command", () => {
+            //this.roomsArr.forEach(room => ChatLib.chat(room.toString()))
+        //}).setName("sayrooms"))
 
         this.triggers.push(register("chat", () => {
             this.dungeonFinished = true
@@ -216,11 +216,11 @@ class DungeonMap {
             this.scanFirstDeathForSpiritPet(player);
         }).setChatCriteria("&r&c ☠ ${info} became a ghost&r&7.&r"));
 
-        this.triggers.push(register("chat", (info) => {
+        this.triggers.push(register("chat", () => {
             this.roomsArr.forEach(r => {
                 if (r.type !== Room.BLOOD) return
 
-                r.checkmarkState = Room.CLEARED
+                r.checkmarkState = Checkmark.WHITE
                 this.markChanged()
             })
         }).setChatCriteria("[BOSS] The Watcher: That will be enough for now."))
@@ -1020,8 +1020,13 @@ class DungeonMap {
 
             // White, green, failed checkmarks
             if (newCheck !== Checkmark.GRAY && newCheck !== room.checkmarkState && newCheck !== Checkmark.NONE) {
-                room.checkmarkState = newCheck
-                this.markChanged()
+                if(room.type !== Room.BLOOD){
+                    room.checkmarkState = newCheck
+                    this.markChanged()
+                } else if(newCheck === Checkmark.GREEN){
+                    room.checkmarkState = newCheck
+                    this.markChanged()
+                } 
             }
 
             // Room type changed
@@ -1431,8 +1436,8 @@ class DungeonMap {
 
         // Mouse somewhere on map
 
-        let worldX = (((cursorX - x - context.borderWidth) / context.size * context.getImageSize(this.floor) - context.paddingLeft - context.roomSize / 2 - context.roomGap / 2) / context.blockSize + 0.5) * 32 - 200
-        let worldY = (((cursorY - y - context.borderWidth) / context.size * context.getImageSize(this.floor) - context.paddingTop - context.roomSize / 2 - context.roomGap / 2) / context.blockSize + 0.5) * 32 - 200
+        let worldX = (((cursorX - x - context.borderWidth) / ((context.size + offset()) * oscale()) * context.getImageSize(this.floor) - context.paddingLeft - context.roomSize / 2 - context.roomGap / 2 ) / context.blockSize + 0.5) * 32 - 200
+        let worldY = (((cursorY - y - context.borderWidth) / (context.size * oscale())* context.getImageSize(this.floor) - context.paddingTop - context.roomSize / 2 - context.roomGap / 2 ) / context.blockSize + 0.5) * 32 - 200
 
         if (((worldX + 200) / 32) < 0) return
         if (((worldY + 200) / 32) < 0) return

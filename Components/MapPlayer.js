@@ -4,7 +4,8 @@ import settings from "../Extra/Settings/CurrentSettings.js"
 import RenderContext from "../Render/RenderContext.js"
 import Position from "../Utils/Position.js"
 import RoomComponent from "../Utils/RoomComponent.js"
-import { dungeonOffsetX, dungeonOffsetY, getSBID } from "../Utils/Utils.js"
+import DataLoader from "../Utils/DataLoader.js"
+import { dungeonOffsetX, dungeonOffsetY, getSBID, oscale, offset } from "../Utils/Utils.js"
 import { fetch } from "../Utils/networkUtils.js"
 
 const DefaultVertexFormats = Java.type("net.minecraft.client.renderer.vertex.DefaultVertexFormats")
@@ -259,14 +260,18 @@ class MapPlayer {
 
         let rx = -headScale / 2 * size / 100 // Offsetting to the left by half image width,
         let ry = -headScale / 2 * size / 100 // Image width = headscale* size /100 (size = map size eg 100px, dividing by 100 so its exactly headscale when mapsize is 100)
-        let rw = headScale * size / 100
-        let rh = headScale * size / 100
+        let rw = (headScale * size / 100) * oscale()
+        let rh = (headScale * size / 100) * oscale()
+
 
         let [x2, y2] = this.getRenderLocation(renderContext, dungeon)
         x2 = overrideX || x2
         y2 = overrideY || y2
 
-        this.drawAt(x2 + rx, y2 + ry, rw, rh, renderContext.showHeads === "icons" || renderContext.showHeads === 'self-icon' && this.username === Player.getName(), this.yaw.get(), renderContext.headBorder !== 'none' ? renderContext.headBorderWidth : 0)
+        x2 = x2 * oscale()
+        y2 = y2 * oscale()
+
+        this.drawAt(x2 + rx + offset() / 2, y2 + ry, rw, rh, renderContext.showHeads === "icons" || renderContext.showHeads === 'self-icon' && this.username === Player.getName(), this.yaw.get(), renderContext.headBorder !== 'none' ? renderContext.headBorderWidth : 0)
 
         let showNametag = renderContext.playerNames === "always"
 

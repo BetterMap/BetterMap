@@ -22,6 +22,7 @@
  * @property {"none"|"legalmap"|"simplified"} scoreInfoUnderMap - Render score info under the map
  * @property {Boolean} scoreInfoUnderMap_simplified_showMimicText - Wether to show 'mimic' before the tick/cross
  * @property {Boolean} tabSecretCount - Show the estimated secret count in tab
+ * @property {Boolean} tabMinSecrets - Shows the minimum amount of secrets needed in tab
  * @property {Boolean} tabCryptCount - Show the current total crypt count for discovered rooms in tab 
  * @property {Boolean} tabMimic - Show the mimic status in tab
  * @property {Boolean} fixScore - Replaces the sidebar scoreboard score with the correct score
@@ -169,6 +170,10 @@ class RenderContext {
 
     get tabSecretCount() {
         return this.settings.tabSecretCount
+    }
+
+    get tabMinSecrets() {
+        return this.settings.tabMinSecrets;
     }
 
     get tabCryptCount() {
@@ -435,6 +440,7 @@ class RenderContext {
         custom270scoreMessage = '270 Score reached!',
         custom300scoreMessage = '300 Score reached!',
         tabSecretCount = false,
+        tabMinSecrets = false,
         tabCryptCount = false,
         tabMimic = false,
         fixScore = true,
@@ -497,6 +503,7 @@ class RenderContext {
             custom300scoreMessage,
             tabCryptCount,
             tabSecretCount,
+            tabMinSecrets,
             tabMimic,
             fixScore,
             hideInBoss,

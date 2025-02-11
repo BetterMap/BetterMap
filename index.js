@@ -39,6 +39,7 @@ register("step", () => {
             currentDungeonMap = new DungeonMap(DataLoader.dungeonFloor, deadPlayers)
             CurrentSettings.currentDungeon = currentDungeonMap
         }
+
     } else {
         if (currentDungeonMap) { // Left dungeon, clear map data
             currentDungeonMap.destroy();
@@ -369,3 +370,7 @@ register("renderWorld", () => {
 //     DungeonRoomData.reloadData();
 //     currentDungeonMap.getCurrentRoom().roomId = currentDungeonMap.getCurrentRoom().roomId;
 // }).setName('reloadroomdata');
+
+register('command', () => {
+    ChatLib.chat(DataLoader.dungeonFloor)
+}).setName('getfloor')
